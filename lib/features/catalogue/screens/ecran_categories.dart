@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/categorie.dart';
+import 'package:poufiret/features/catalogue/screens/ecran_articles.dart';
 
 class EcranCategories extends ConsumerWidget {
   const EcranCategories({super.key});
@@ -67,9 +68,14 @@ class _TuileCategorie extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          // Étape suivante : naviguer vers la liste d'articles de la catégorie.
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Catégorie : ${categorie.nom}')),
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => EcranArticles(
+                categorieId: categorie.id,
+                categorieNom: categorie.nom,
+              ),
+            ),
           );
         },
         child: Padding(

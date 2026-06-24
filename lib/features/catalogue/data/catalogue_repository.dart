@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:poufiret/features/catalogue/domain/article_liste.dart';
 
 import '../../../core/config/env.dart';
 import '../domain/categorie.dart';
@@ -14,5 +15,16 @@ class CatalogueRepository {
     final data = r.data as Map<String, dynamic>;
     final results = (data['results'] as List).cast<Map<String, dynamic>>();
     return results.map(Categorie.fromJson).toList();
+  }
+
+  /// GET /catalogue/articles/?categorie=<id> — articles d'une catégorie (public, paginé).
+  Future<List<ArticleListe>> articles({int? categorie}) async {
+    final r = await _dio.get(
+      '${Env.apiPrefix}/catalogue/articles/',
+      queryParameters: {if (categorie != null) 'categorie': categorie},
+    );
+    final data = r.data as Map<String, dynamic>;
+    final results = (data['results'] as List).cast<Map<String, dynamic>>();
+    return results.map(ArticleListe.fromJson).toList();
   }
 }

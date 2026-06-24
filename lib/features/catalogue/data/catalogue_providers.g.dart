@@ -100,3 +100,94 @@ final class CategoriesProvider
 }
 
 String _$categoriesHash() => r'175c3af0a228629cc1bdcc809622adfaf63315ee';
+
+/// Articles d'une catégorie donnée. Le paramètre categorieId permet
+/// à Riverpod de mettre en cache par catégorie.
+
+@ProviderFor(articles)
+final articlesProvider = ArticlesFamily._();
+
+/// Articles d'une catégorie donnée. Le paramètre categorieId permet
+/// à Riverpod de mettre en cache par catégorie.
+
+final class ArticlesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ArticleListe>>,
+          List<ArticleListe>,
+          FutureOr<List<ArticleListe>>
+        >
+    with
+        $FutureModifier<List<ArticleListe>>,
+        $FutureProvider<List<ArticleListe>> {
+  /// Articles d'une catégorie donnée. Le paramètre categorieId permet
+  /// à Riverpod de mettre en cache par catégorie.
+  ArticlesProvider._({
+    required ArticlesFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'articlesProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$articlesHash();
+
+  @override
+  String toString() {
+    return r'articlesProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<ArticleListe>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<ArticleListe>> create(Ref ref) {
+    final argument = this.argument as int;
+    return articles(ref, categorieId: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ArticlesProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$articlesHash() => r'268b60da18576f01fd144d384659576e7cceec1c';
+
+/// Articles d'une catégorie donnée. Le paramètre categorieId permet
+/// à Riverpod de mettre en cache par catégorie.
+
+final class ArticlesFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<ArticleListe>>, int> {
+  ArticlesFamily._()
+    : super(
+        retry: null,
+        name: r'articlesProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Articles d'une catégorie donnée. Le paramètre categorieId permet
+  /// à Riverpod de mettre en cache par catégorie.
+
+  ArticlesProvider call({required int categorieId}) =>
+      ArticlesProvider._(argument: categorieId, from: this);
+
+  @override
+  String toString() => r'articlesProvider';
+}
