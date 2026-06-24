@@ -41,6 +41,28 @@ class AuthNotifier extends _$AuthNotifier {
     });
   }
 
+
+/// Inscription : crée le compte puis connecte directement (tokens renvoyés).
+  Future<void> inscription({
+    required String prenom,
+    required String nom,
+    required String telephone,
+    required String password,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      return ref
+          .read(authRepositoryProvider)
+          .inscription(
+            prenom: prenom,
+            nom: nom,
+            telephone: telephone,
+            password: password,
+          );
+    });
+  }
+
+  
   /// Déconnexion : blackliste côté serveur + efface localement.
   Future<void> deconnexion() async {
     await ref.read(authRepositoryProvider).deconnexion();

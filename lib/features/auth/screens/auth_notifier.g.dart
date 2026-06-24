@@ -14,19 +14,19 @@ part of 'auth_notifier.dart';
 /// - loading           → vérification/connexion en cours
 
 @ProviderFor(AuthNotifier)
-final authProvider = _AuthNotifierProvider._();
+final authProvider = AuthNotifierProvider._();
 
 /// État d'authentification de l'app.
 /// - data(null)        → déconnecté
 /// - data(Utilisateur) → connecté
 /// - loading           → vérification/connexion en cours
-final class _AuthNotifierProvider
+final class AuthNotifierProvider
     extends $AsyncNotifierProvider<AuthNotifier, Utilisateur?> {
   /// État d'authentification de l'app.
   /// - data(null)        → déconnecté
   /// - data(Utilisateur) → connecté
   /// - loading           → vérification/connexion en cours
-  _AuthNotifierProvider._()
+  AuthNotifierProvider._()
     : super(
         from: null,
         argument: null,
@@ -45,7 +45,7 @@ final class _AuthNotifierProvider
   AuthNotifier create() => AuthNotifier();
 }
 
-String _$authNotifierHash() => r'd382a78ba8fadfe502c92d9802e149fcc5ba2e82';
+String _$authNotifierHash() => r'e7d4555c631ac61980c99b8514d64ab613bbc243';
 
 /// État d'authentification de l'app.
 /// - data(null)        → déconnecté

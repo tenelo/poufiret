@@ -35,6 +35,23 @@ class ApiException implements Exception {
 
   bool get estAuth => code == 401;
 
+  /// Message lisible pour l'utilisateur : si le backend a renvoyé des erreurs
+  /// par champ (details), on les concatène ; sinon on retombe sur message.
+  String get messageLisible {
+    if (details.isNotEmpty) {
+      final morceaux = <String>[];
+      details.forEach((champ, valeur) {
+        if (valeur is List && valeur.isNotEmpty) {
+          morceaux.add(valeur.first.toString());
+        } else if (valeur is String) {
+          morceaux.add(valeur);
+        }
+      });
+      if (morceaux.isNotEmpty) return morceaux.join('\n');
+    }
+    return message;
+  }
+
   @override
   String toString() => 'ApiException($code): $message';
 }

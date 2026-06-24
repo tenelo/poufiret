@@ -1,0 +1,18 @@
+import 'package:dio/dio.dart';
+
+import '../../../core/config/env.dart';
+import '../domain/categorie.dart';
+
+class CatalogueRepository {
+  final Dio _dio;
+
+  CatalogueRepository({required Dio dio}) : _dio = dio;
+
+  /// GET /catalogue/categories/ — liste des catégories racines (public).
+  Future<List<Categorie>> categories() async {
+    final r = await _dio.get('${Env.apiPrefix}/catalogue/categories/');
+    final data = r.data as Map<String, dynamic>;
+    final results = (data['results'] as List).cast<Map<String, dynamic>>();
+    return results.map(Categorie.fromJson).toList();
+  }
+}

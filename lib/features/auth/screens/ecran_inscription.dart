@@ -4,32 +4,39 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/core/responsive/conteneur_adaptatif.dart';
 import 'package:poufiret/features/auth/screens/auth_notifier.dart';
-import 'package:poufiret/features/auth/screens/ecran_inscription.dart';
 
-class EcranConnexion extends ConsumerStatefulWidget {
-  const EcranConnexion({super.key});
+class EcranInscription extends ConsumerStatefulWidget {
+  const EcranInscription({super.key});
 
   @override
-  ConsumerState<EcranConnexion> createState() => _EcranConnexionState();
+  ConsumerState<EcranInscription> createState() => _EcranInscriptionState();
 }
 
-class _EcranConnexionState extends ConsumerState<EcranConnexion> {
+class _EcranInscriptionState extends ConsumerState<EcranInscription> {
+  final _prenom = TextEditingController();
+  final _nom = TextEditingController();
   final _telephone = TextEditingController();
   final _password = TextEditingController();
+  final _confirmation = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
+    _prenom.dispose();
+    _nom.dispose();
     _telephone.dispose();
     _password.dispose();
+    _confirmation.dispose();
     super.dispose();
   }
 
-  Future<void> _connecter() async {
+  Future<void> _inscrire() async {
     if (!_formKey.currentState!.validate()) return;
     await ref
         .read(authProvider.notifier)
-        .connexion(
+        .inscription(
+          prenom: _prenom.text.trim(),
+          nom: _nom.text.trim(),
           telephone: '+225${_telephone.text.trim()}',
           password: _password.text,
         );
@@ -40,13 +47,12 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
     final auth = ref.watch(authProvider);
     final enCours = auth.isLoading;
 
-    // Affiche un message si la dernière tentative a échoué.
     ref.listen(authProvider, (_, next) {
       if (next.hasError && !next.isLoading) {
         final err = next.error;
         final message = err is ApiException
             ? err.messageLisible
-            : 'Connexion impossible.';
+            : 'Inscription impossible.';
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
@@ -54,6 +60,7 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
     });
 
     return Scaffold(
+      appBar: AppBar(title: const Text('Créer un compte')),
       body: SafeArea(
         child: ConteneurAdaptatif(
           child: Form(
@@ -62,12 +69,29 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  'Poufiret',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineMedium,
+                TextFormField(
+                  controller: _prenom,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(
+                    labelText: 'Prénom',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? 'Entre ton prénom'
+                      : null,
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _nom,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(
+                    labelText: 'Nom',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Entre ton nom' : null,
+                ),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _telephone,
                   keyboardType: TextInputType.number,
@@ -89,34 +113,40 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
                   obscureText: true,
                   decoration: const InputDecoration(
                     labelText: 'Mot de passe',
+                    helperText: 'Au moins 8 caractères',
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) => (v == null || v.isEmpty)
-                      ? 'Entre ton mot de passe'
+                  validator: (v) => (v == null || v.length < 8)
+                      ? 'Au moins 8 caractères'
+                      : null,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _confirmation,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Confirme le mot de passe',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (v) => (v != _password.text)
+                      ? 'Les mots de passe ne correspondent pas'
                       : null,
                 ),
                 const SizedBox(height: 24),
                 FilledButton(
-                  onPressed: enCours ? null : _connecter,
+                  onPressed: enCours ? null : _inscrire,
                   child: enCours
                       ? const SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Text('Se connecter'),
+                      : const Text('Créer mon compte'),
                 ),
                 const SizedBox(height: 8),
                 TextButton(
-                  onPressed: enCours
-                      ? null
-                      : () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const EcranInscription(),
-                          ),
-                        ),
-                  child: const Text('Pas de compte ? Créer un compte'),
+                  onPressed: enCours ? null : () => Navigator.pop(context),
+                  child: const Text('Déjà un compte ? Se connecter'),
                 ),
               ],
             ),

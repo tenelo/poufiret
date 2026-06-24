@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:poufiret/features/catalogue/screens/ecran_categories.dart';
 
 import 'features/auth/screens/auth_notifier.dart';
 import 'features/auth/screens/ecran_connexion.dart';
@@ -37,9 +38,9 @@ class _Racine extends ConsumerWidget {
     return auth.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (_, __) => const EcranConnexion(),
+      error: (_, _) => const EcranConnexion(),
       data: (user) =>
-          user == null ? const EcranConnexion() : const EcranAccueil(),
+          user == null ? const EcranConnexion() : const EcranCategories(),
     );
   }
 }

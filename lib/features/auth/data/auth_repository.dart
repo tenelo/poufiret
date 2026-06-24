@@ -32,7 +32,36 @@ class AuthRepository {
 
     return Utilisateur.fromJson(data['utilisateur'] as Map<String, dynamic>);
   }
+/// POST /auth/inscription/ → crée un compte client + renvoie tokens + profil.
+  /// Le username est dérivé du téléphone (invisible pour l'utilisateur).
+  Future<Utilisateur> inscription({
+    required String prenom,
+    required String nom,
+    required String telephone, // déjà au format +225...
+    required String password,
+  }) async {
+    // Username technique unique, adossé au téléphone (déjà unique).
+    final username = 'user_${telephone.replaceAll('+', '')}';
 
+    final r = await _dio.post(
+      '${Env.apiPrefix}/auth/inscription/',
+      data: {
+        'telephone': telephone,
+        'username': username,
+        'first_name': prenom,
+        'last_name': nom,
+        'password': password,
+      },
+    );
+    final data = r.data as Map<String, dynamic>;
+
+    await _tokens.sauvegarder(
+      access: data['access'] as String,
+      refresh: data['refresh'] as String,
+    );
+
+    return Utilisateur.fromJson(data['utilisateur'] as Map<String, dynamic>);
+  }
   /// GET /auth/moi/ → profil de l'utilisateur courant (token déjà injecté).
   Future<Utilisateur> moi() async {
     final r = await _dio.get('${Env.apiPrefix}/auth/moi/');
