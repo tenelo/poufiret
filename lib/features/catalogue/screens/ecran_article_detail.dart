@@ -4,6 +4,10 @@ import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/article_detail.dart';
 
+import 'package:poufiret/features/social/data/social_providers.dart';
+import 'package:poufiret/features/social/widgets/bouton_social.dart';
+import 'package:poufiret/features/social/widgets/section_commentaires.dart';
+
 class EcranArticleDetail extends ConsumerWidget {
   final String slug;
   final String modeTransaction;
@@ -66,13 +70,13 @@ class EcranArticleDetail extends ConsumerWidget {
   }
 }
 
-class _Contenu extends StatelessWidget {
+class _Contenu extends ConsumerWidget {
   final ArticleDetail article;
   final String libelleAction;
   const _Contenu({required this.article, required this.libelleAction});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -151,25 +155,68 @@ class _Contenu extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         // Compteurs.
+                        // Réactions : like ❤️ et favori 🔖 cliquables ;
+                        // vues et commentaires en simple affichage.
                         Wrap(
                           spacing: 16,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             _Compteur(
                               icone: Icons.visibility,
                               valeur: article.nbVues,
                             ),
-                            _Compteur(
-                              icone: Icons.favorite,
-                              valeur: article.nbLikes,
+                            BoutonSocial(
+                              actifInitial: article.estLikeParMoi,
+                              totalInitial: article.nbLikes,
+                              iconeActive: Icons.favorite,
+                              iconeInactive: Icons.favorite_border,
+                              couleurActive: Colors.red,
+                              onToggle: () async {
+                                final res = await ref
+                                    .read(socialRepositoryProvider)
+                                    .toggleLikeArticle(article.id);
+                                return (actif: res.actif, total: res.total);
+                              },
                             ),
-                            _Compteur(
-                              icone: Icons.bookmark,
-                              valeur: article.nbFavoris,
+                            BoutonSocial(
+                              actifInitial: article.estFavoriParMoi,
+                              totalInitial: article.nbFavoris,
+                              iconeActive: Icons.bookmark,
+                              iconeInactive: Icons.bookmark_border,
+                              couleurActive: Colors.brown,
+                              afficherTotal: false,
+                              onToggle: () async {
+                                final res = await ref
+                                    .read(socialRepositoryProvider)
+                                    .toggleFavoriArticle(article.id);
+                                return (actif: res.actif, total: res.total);
+                              },
                             ),
-                            _Compteur(
-                              icone: Icons.comment,
-                              valeur: article.nbCommentaires,
-                            ),
+                            // Compteur de commentaires calculé depuis la liste réelle.
+                            ref
+                                .watch(
+                                  commentairesArticleProvider(
+                                    articleId: article.id,
+                                  ),
+                                )
+                                .maybeWhen(
+                                  data: (liste) {
+                                    final total =
+                                        liste.length +
+                                        liste.fold<int>(
+                                          0,
+                                          (s, c) => s + c.reponses.length,
+                                        );
+                                    return _Compteur(
+                                      icone: Icons.comment,
+                                      valeur: total,
+                                    );
+                                  },
+                                  orElse: () => const _Compteur(
+                                    icone: Icons.comment,
+                                    valeur: 0,
+                                  ),
+                                ),
                           ],
                         ),
                         if (article.description.isNotEmpty) ...[
@@ -216,6 +263,8 @@ class _Contenu extends StatelessWidget {
                             ),
                           ),
                         ],
+                        const SizedBox(height: 24),
+                        SectionCommentaires(articleId: article.id),
                       ],
                     ),
                   ),

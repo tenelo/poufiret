@@ -58,7 +58,9 @@ abstract class ArticleDetail with _$ArticleDetail {
     @Default(<String>[]) List<String> images,
     @Default(<Variante>[]) List<Variante> variantes,
     @Default(<Supplement>[]) List<Supplement> supplements,
-  }) = _ArticleDetail;
+    @JsonKey(name: 'est_like_par_moi') @Default(false) bool estLikeParMoi,
+    @JsonKey(name: 'est_favori_par_moi') @Default(false) bool estFavoriParMoi,
+   }) = _ArticleDetail;
 
   factory ArticleDetail.fromJson(Map<String, dynamic> json) =>
       _$ArticleDetailFromJson(json);

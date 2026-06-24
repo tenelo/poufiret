@@ -69,6 +69,8 @@ _ArticleDetail _$ArticleDetailFromJson(Map<String, dynamic> json) =>
               ?.map((e) => Supplement.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const <Supplement>[],
+      estLikeParMoi: json['est_like_par_moi'] as bool? ?? false,
+      estFavoriParMoi: json['est_favori_par_moi'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$ArticleDetailToJson(_ArticleDetail instance) =>
@@ -93,4 +95,6 @@ Map<String, dynamic> _$ArticleDetailToJson(_ArticleDetail instance) =>
       'images': instance.images,
       'variantes': instance.variantes,
       'supplements': instance.supplements,
+      'est_like_par_moi': instance.estLikeParMoi,
+      'est_favori_par_moi': instance.estFavoriParMoi,
     };

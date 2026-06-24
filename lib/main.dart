@@ -4,7 +4,6 @@ import 'package:poufiret/features/catalogue/screens/ecran_categories.dart';
 
 import 'features/auth/screens/auth_notifier.dart';
 import 'features/auth/screens/ecran_connexion.dart';
-import 'features/auth/screens/ecran_accueil.dart';
 
 void main() {
   runApp(const ProviderScope(child: PoufiretApp()));

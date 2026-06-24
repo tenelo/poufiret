@@ -559,7 +559,7 @@ as bool,
 /// @nodoc
 mixin _$ArticleDetail {
 
- int get id; String get nom; String get slug; String get description; String get type; String get prix;@JsonKey(name: 'prix_promotion') String? get prixPromotion; String get unite;@JsonKey(name: 'est_disponible') bool get estDisponible;@JsonKey(name: 'est_en_promotion') bool get estEnPromotion;@JsonKey(name: 'nb_vues') int get nbVues;@JsonKey(name: 'nb_likes') int get nbLikes;@JsonKey(name: 'nb_favoris') int get nbFavoris;@JsonKey(name: 'nb_commentaires') int get nbCommentaires;@JsonKey(name: 'partenaire_nom') String get partenaireNom; int? get partenaire; int? get categorie; List<String> get images; List<Variante> get variantes; List<Supplement> get supplements;
+ int get id; String get nom; String get slug; String get description; String get type; String get prix;@JsonKey(name: 'prix_promotion') String? get prixPromotion; String get unite;@JsonKey(name: 'est_disponible') bool get estDisponible;@JsonKey(name: 'est_en_promotion') bool get estEnPromotion;@JsonKey(name: 'nb_vues') int get nbVues;@JsonKey(name: 'nb_likes') int get nbLikes;@JsonKey(name: 'nb_favoris') int get nbFavoris;@JsonKey(name: 'nb_commentaires') int get nbCommentaires;@JsonKey(name: 'partenaire_nom') String get partenaireNom; int? get partenaire; int? get categorie; List<String> get images; List<Variante> get variantes; List<Supplement> get supplements;@JsonKey(name: 'est_like_par_moi') bool get estLikeParMoi;@JsonKey(name: 'est_favori_par_moi') bool get estFavoriParMoi;
 /// Create a copy of ArticleDetail
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -572,16 +572,16 @@ $ArticleDetailCopyWith<ArticleDetail> get copyWith => _$ArticleDetailCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ArticleDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.description, description) || other.description == description)&&(identical(other.type, type) || other.type == type)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixPromotion, prixPromotion) || other.prixPromotion == prixPromotion)&&(identical(other.unite, unite) || other.unite == unite)&&(identical(other.estDisponible, estDisponible) || other.estDisponible == estDisponible)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.nbVues, nbVues) || other.nbVues == nbVues)&&(identical(other.nbLikes, nbLikes) || other.nbLikes == nbLikes)&&(identical(other.nbFavoris, nbFavoris) || other.nbFavoris == nbFavoris)&&(identical(other.nbCommentaires, nbCommentaires) || other.nbCommentaires == nbCommentaires)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.partenaire, partenaire) || other.partenaire == partenaire)&&(identical(other.categorie, categorie) || other.categorie == categorie)&&const DeepCollectionEquality().equals(other.images, images)&&const DeepCollectionEquality().equals(other.variantes, variantes)&&const DeepCollectionEquality().equals(other.supplements, supplements));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ArticleDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.description, description) || other.description == description)&&(identical(other.type, type) || other.type == type)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixPromotion, prixPromotion) || other.prixPromotion == prixPromotion)&&(identical(other.unite, unite) || other.unite == unite)&&(identical(other.estDisponible, estDisponible) || other.estDisponible == estDisponible)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.nbVues, nbVues) || other.nbVues == nbVues)&&(identical(other.nbLikes, nbLikes) || other.nbLikes == nbLikes)&&(identical(other.nbFavoris, nbFavoris) || other.nbFavoris == nbFavoris)&&(identical(other.nbCommentaires, nbCommentaires) || other.nbCommentaires == nbCommentaires)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.partenaire, partenaire) || other.partenaire == partenaire)&&(identical(other.categorie, categorie) || other.categorie == categorie)&&const DeepCollectionEquality().equals(other.images, images)&&const DeepCollectionEquality().equals(other.variantes, variantes)&&const DeepCollectionEquality().equals(other.supplements, supplements)&&(identical(other.estLikeParMoi, estLikeParMoi) || other.estLikeParMoi == estLikeParMoi)&&(identical(other.estFavoriParMoi, estFavoriParMoi) || other.estFavoriParMoi == estFavoriParMoi));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,nom,slug,description,type,prix,prixPromotion,unite,estDisponible,estEnPromotion,nbVues,nbLikes,nbFavoris,nbCommentaires,partenaireNom,partenaire,categorie,const DeepCollectionEquality().hash(images),const DeepCollectionEquality().hash(variantes),const DeepCollectionEquality().hash(supplements)]);
+int get hashCode => Object.hashAll([runtimeType,id,nom,slug,description,type,prix,prixPromotion,unite,estDisponible,estEnPromotion,nbVues,nbLikes,nbFavoris,nbCommentaires,partenaireNom,partenaire,categorie,const DeepCollectionEquality().hash(images),const DeepCollectionEquality().hash(variantes),const DeepCollectionEquality().hash(supplements),estLikeParMoi,estFavoriParMoi]);
 
 @override
 String toString() {
-  return 'ArticleDetail(id: $id, nom: $nom, slug: $slug, description: $description, type: $type, prix: $prix, prixPromotion: $prixPromotion, unite: $unite, estDisponible: $estDisponible, estEnPromotion: $estEnPromotion, nbVues: $nbVues, nbLikes: $nbLikes, nbFavoris: $nbFavoris, nbCommentaires: $nbCommentaires, partenaireNom: $partenaireNom, partenaire: $partenaire, categorie: $categorie, images: $images, variantes: $variantes, supplements: $supplements)';
+  return 'ArticleDetail(id: $id, nom: $nom, slug: $slug, description: $description, type: $type, prix: $prix, prixPromotion: $prixPromotion, unite: $unite, estDisponible: $estDisponible, estEnPromotion: $estEnPromotion, nbVues: $nbVues, nbLikes: $nbLikes, nbFavoris: $nbFavoris, nbCommentaires: $nbCommentaires, partenaireNom: $partenaireNom, partenaire: $partenaire, categorie: $categorie, images: $images, variantes: $variantes, supplements: $supplements, estLikeParMoi: $estLikeParMoi, estFavoriParMoi: $estFavoriParMoi)';
 }
 
 
@@ -592,7 +592,7 @@ abstract mixin class $ArticleDetailCopyWith<$Res>  {
   factory $ArticleDetailCopyWith(ArticleDetail value, $Res Function(ArticleDetail) _then) = _$ArticleDetailCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom, String slug, String description, String type, String prix,@JsonKey(name: 'prix_promotion') String? prixPromotion, String unite,@JsonKey(name: 'est_disponible') bool estDisponible,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'nb_vues') int nbVues,@JsonKey(name: 'nb_likes') int nbLikes,@JsonKey(name: 'nb_favoris') int nbFavoris,@JsonKey(name: 'nb_commentaires') int nbCommentaires,@JsonKey(name: 'partenaire_nom') String partenaireNom, int? partenaire, int? categorie, List<String> images, List<Variante> variantes, List<Supplement> supplements
+ int id, String nom, String slug, String description, String type, String prix,@JsonKey(name: 'prix_promotion') String? prixPromotion, String unite,@JsonKey(name: 'est_disponible') bool estDisponible,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'nb_vues') int nbVues,@JsonKey(name: 'nb_likes') int nbLikes,@JsonKey(name: 'nb_favoris') int nbFavoris,@JsonKey(name: 'nb_commentaires') int nbCommentaires,@JsonKey(name: 'partenaire_nom') String partenaireNom, int? partenaire, int? categorie, List<String> images, List<Variante> variantes, List<Supplement> supplements,@JsonKey(name: 'est_like_par_moi') bool estLikeParMoi,@JsonKey(name: 'est_favori_par_moi') bool estFavoriParMoi
 });
 
 
@@ -609,7 +609,7 @@ class _$ArticleDetailCopyWithImpl<$Res>
 
 /// Create a copy of ArticleDetail
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? slug = null,Object? description = null,Object? type = null,Object? prix = null,Object? prixPromotion = freezed,Object? unite = null,Object? estDisponible = null,Object? estEnPromotion = null,Object? nbVues = null,Object? nbLikes = null,Object? nbFavoris = null,Object? nbCommentaires = null,Object? partenaireNom = null,Object? partenaire = freezed,Object? categorie = freezed,Object? images = null,Object? variantes = null,Object? supplements = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? slug = null,Object? description = null,Object? type = null,Object? prix = null,Object? prixPromotion = freezed,Object? unite = null,Object? estDisponible = null,Object? estEnPromotion = null,Object? nbVues = null,Object? nbLikes = null,Object? nbFavoris = null,Object? nbCommentaires = null,Object? partenaireNom = null,Object? partenaire = freezed,Object? categorie = freezed,Object? images = null,Object? variantes = null,Object? supplements = null,Object? estLikeParMoi = null,Object? estFavoriParMoi = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -631,7 +631,9 @@ as int?,categorie: freezed == categorie ? _self.categorie : categorie // ignore:
 as int?,images: null == images ? _self.images : images // ignore: cast_nullable_to_non_nullable
 as List<String>,variantes: null == variantes ? _self.variantes : variantes // ignore: cast_nullable_to_non_nullable
 as List<Variante>,supplements: null == supplements ? _self.supplements : supplements // ignore: cast_nullable_to_non_nullable
-as List<Supplement>,
+as List<Supplement>,estLikeParMoi: null == estLikeParMoi ? _self.estLikeParMoi : estLikeParMoi // ignore: cast_nullable_to_non_nullable
+as bool,estFavoriParMoi: null == estFavoriParMoi ? _self.estFavoriParMoi : estFavoriParMoi // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -716,10 +718,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String slug,  String description,  String type,  String prix, @JsonKey(name: 'prix_promotion')  String? prixPromotion,  String unite, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'nb_vues')  int nbVues, @JsonKey(name: 'nb_likes')  int nbLikes, @JsonKey(name: 'nb_favoris')  int nbFavoris, @JsonKey(name: 'nb_commentaires')  int nbCommentaires, @JsonKey(name: 'partenaire_nom')  String partenaireNom,  int? partenaire,  int? categorie,  List<String> images,  List<Variante> variantes,  List<Supplement> supplements)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String slug,  String description,  String type,  String prix, @JsonKey(name: 'prix_promotion')  String? prixPromotion,  String unite, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'nb_vues')  int nbVues, @JsonKey(name: 'nb_likes')  int nbLikes, @JsonKey(name: 'nb_favoris')  int nbFavoris, @JsonKey(name: 'nb_commentaires')  int nbCommentaires, @JsonKey(name: 'partenaire_nom')  String partenaireNom,  int? partenaire,  int? categorie,  List<String> images,  List<Variante> variantes,  List<Supplement> supplements, @JsonKey(name: 'est_like_par_moi')  bool estLikeParMoi, @JsonKey(name: 'est_favori_par_moi')  bool estFavoriParMoi)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ArticleDetail() when $default != null:
-return $default(_that.id,_that.nom,_that.slug,_that.description,_that.type,_that.prix,_that.prixPromotion,_that.unite,_that.estDisponible,_that.estEnPromotion,_that.nbVues,_that.nbLikes,_that.nbFavoris,_that.nbCommentaires,_that.partenaireNom,_that.partenaire,_that.categorie,_that.images,_that.variantes,_that.supplements);case _:
+return $default(_that.id,_that.nom,_that.slug,_that.description,_that.type,_that.prix,_that.prixPromotion,_that.unite,_that.estDisponible,_that.estEnPromotion,_that.nbVues,_that.nbLikes,_that.nbFavoris,_that.nbCommentaires,_that.partenaireNom,_that.partenaire,_that.categorie,_that.images,_that.variantes,_that.supplements,_that.estLikeParMoi,_that.estFavoriParMoi);case _:
   return orElse();
 
 }
@@ -737,10 +739,10 @@ return $default(_that.id,_that.nom,_that.slug,_that.description,_that.type,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String slug,  String description,  String type,  String prix, @JsonKey(name: 'prix_promotion')  String? prixPromotion,  String unite, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'nb_vues')  int nbVues, @JsonKey(name: 'nb_likes')  int nbLikes, @JsonKey(name: 'nb_favoris')  int nbFavoris, @JsonKey(name: 'nb_commentaires')  int nbCommentaires, @JsonKey(name: 'partenaire_nom')  String partenaireNom,  int? partenaire,  int? categorie,  List<String> images,  List<Variante> variantes,  List<Supplement> supplements)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String slug,  String description,  String type,  String prix, @JsonKey(name: 'prix_promotion')  String? prixPromotion,  String unite, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'nb_vues')  int nbVues, @JsonKey(name: 'nb_likes')  int nbLikes, @JsonKey(name: 'nb_favoris')  int nbFavoris, @JsonKey(name: 'nb_commentaires')  int nbCommentaires, @JsonKey(name: 'partenaire_nom')  String partenaireNom,  int? partenaire,  int? categorie,  List<String> images,  List<Variante> variantes,  List<Supplement> supplements, @JsonKey(name: 'est_like_par_moi')  bool estLikeParMoi, @JsonKey(name: 'est_favori_par_moi')  bool estFavoriParMoi)  $default,) {final _that = this;
 switch (_that) {
 case _ArticleDetail():
-return $default(_that.id,_that.nom,_that.slug,_that.description,_that.type,_that.prix,_that.prixPromotion,_that.unite,_that.estDisponible,_that.estEnPromotion,_that.nbVues,_that.nbLikes,_that.nbFavoris,_that.nbCommentaires,_that.partenaireNom,_that.partenaire,_that.categorie,_that.images,_that.variantes,_that.supplements);case _:
+return $default(_that.id,_that.nom,_that.slug,_that.description,_that.type,_that.prix,_that.prixPromotion,_that.unite,_that.estDisponible,_that.estEnPromotion,_that.nbVues,_that.nbLikes,_that.nbFavoris,_that.nbCommentaires,_that.partenaireNom,_that.partenaire,_that.categorie,_that.images,_that.variantes,_that.supplements,_that.estLikeParMoi,_that.estFavoriParMoi);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -757,10 +759,10 @@ return $default(_that.id,_that.nom,_that.slug,_that.description,_that.type,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String slug,  String description,  String type,  String prix, @JsonKey(name: 'prix_promotion')  String? prixPromotion,  String unite, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'nb_vues')  int nbVues, @JsonKey(name: 'nb_likes')  int nbLikes, @JsonKey(name: 'nb_favoris')  int nbFavoris, @JsonKey(name: 'nb_commentaires')  int nbCommentaires, @JsonKey(name: 'partenaire_nom')  String partenaireNom,  int? partenaire,  int? categorie,  List<String> images,  List<Variante> variantes,  List<Supplement> supplements)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String slug,  String description,  String type,  String prix, @JsonKey(name: 'prix_promotion')  String? prixPromotion,  String unite, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'nb_vues')  int nbVues, @JsonKey(name: 'nb_likes')  int nbLikes, @JsonKey(name: 'nb_favoris')  int nbFavoris, @JsonKey(name: 'nb_commentaires')  int nbCommentaires, @JsonKey(name: 'partenaire_nom')  String partenaireNom,  int? partenaire,  int? categorie,  List<String> images,  List<Variante> variantes,  List<Supplement> supplements, @JsonKey(name: 'est_like_par_moi')  bool estLikeParMoi, @JsonKey(name: 'est_favori_par_moi')  bool estFavoriParMoi)?  $default,) {final _that = this;
 switch (_that) {
 case _ArticleDetail() when $default != null:
-return $default(_that.id,_that.nom,_that.slug,_that.description,_that.type,_that.prix,_that.prixPromotion,_that.unite,_that.estDisponible,_that.estEnPromotion,_that.nbVues,_that.nbLikes,_that.nbFavoris,_that.nbCommentaires,_that.partenaireNom,_that.partenaire,_that.categorie,_that.images,_that.variantes,_that.supplements);case _:
+return $default(_that.id,_that.nom,_that.slug,_that.description,_that.type,_that.prix,_that.prixPromotion,_that.unite,_that.estDisponible,_that.estEnPromotion,_that.nbVues,_that.nbLikes,_that.nbFavoris,_that.nbCommentaires,_that.partenaireNom,_that.partenaire,_that.categorie,_that.images,_that.variantes,_that.supplements,_that.estLikeParMoi,_that.estFavoriParMoi);case _:
   return null;
 
 }
@@ -772,7 +774,7 @@ return $default(_that.id,_that.nom,_that.slug,_that.description,_that.type,_that
 @JsonSerializable()
 
 class _ArticleDetail extends ArticleDetail {
-  const _ArticleDetail({required this.id, required this.nom, required this.slug, this.description = '', this.type = '', this.prix = '0', @JsonKey(name: 'prix_promotion') this.prixPromotion, this.unite = '', @JsonKey(name: 'est_disponible') this.estDisponible = true, @JsonKey(name: 'est_en_promotion') this.estEnPromotion = false, @JsonKey(name: 'nb_vues') this.nbVues = 0, @JsonKey(name: 'nb_likes') this.nbLikes = 0, @JsonKey(name: 'nb_favoris') this.nbFavoris = 0, @JsonKey(name: 'nb_commentaires') this.nbCommentaires = 0, @JsonKey(name: 'partenaire_nom') this.partenaireNom = '', this.partenaire, this.categorie, final  List<String> images = const <String>[], final  List<Variante> variantes = const <Variante>[], final  List<Supplement> supplements = const <Supplement>[]}): _images = images,_variantes = variantes,_supplements = supplements,super._();
+  const _ArticleDetail({required this.id, required this.nom, required this.slug, this.description = '', this.type = '', this.prix = '0', @JsonKey(name: 'prix_promotion') this.prixPromotion, this.unite = '', @JsonKey(name: 'est_disponible') this.estDisponible = true, @JsonKey(name: 'est_en_promotion') this.estEnPromotion = false, @JsonKey(name: 'nb_vues') this.nbVues = 0, @JsonKey(name: 'nb_likes') this.nbLikes = 0, @JsonKey(name: 'nb_favoris') this.nbFavoris = 0, @JsonKey(name: 'nb_commentaires') this.nbCommentaires = 0, @JsonKey(name: 'partenaire_nom') this.partenaireNom = '', this.partenaire, this.categorie, final  List<String> images = const <String>[], final  List<Variante> variantes = const <Variante>[], final  List<Supplement> supplements = const <Supplement>[], @JsonKey(name: 'est_like_par_moi') this.estLikeParMoi = false, @JsonKey(name: 'est_favori_par_moi') this.estFavoriParMoi = false}): _images = images,_variantes = variantes,_supplements = supplements,super._();
   factory _ArticleDetail.fromJson(Map<String, dynamic> json) => _$ArticleDetailFromJson(json);
 
 @override final  int id;
@@ -813,6 +815,8 @@ class _ArticleDetail extends ArticleDetail {
   return EqualUnmodifiableListView(_supplements);
 }
 
+@override@JsonKey(name: 'est_like_par_moi') final  bool estLikeParMoi;
+@override@JsonKey(name: 'est_favori_par_moi') final  bool estFavoriParMoi;
 
 /// Create a copy of ArticleDetail
 /// with the given fields replaced by the non-null parameter values.
@@ -827,16 +831,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ArticleDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.description, description) || other.description == description)&&(identical(other.type, type) || other.type == type)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixPromotion, prixPromotion) || other.prixPromotion == prixPromotion)&&(identical(other.unite, unite) || other.unite == unite)&&(identical(other.estDisponible, estDisponible) || other.estDisponible == estDisponible)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.nbVues, nbVues) || other.nbVues == nbVues)&&(identical(other.nbLikes, nbLikes) || other.nbLikes == nbLikes)&&(identical(other.nbFavoris, nbFavoris) || other.nbFavoris == nbFavoris)&&(identical(other.nbCommentaires, nbCommentaires) || other.nbCommentaires == nbCommentaires)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.partenaire, partenaire) || other.partenaire == partenaire)&&(identical(other.categorie, categorie) || other.categorie == categorie)&&const DeepCollectionEquality().equals(other._images, _images)&&const DeepCollectionEquality().equals(other._variantes, _variantes)&&const DeepCollectionEquality().equals(other._supplements, _supplements));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ArticleDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.description, description) || other.description == description)&&(identical(other.type, type) || other.type == type)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixPromotion, prixPromotion) || other.prixPromotion == prixPromotion)&&(identical(other.unite, unite) || other.unite == unite)&&(identical(other.estDisponible, estDisponible) || other.estDisponible == estDisponible)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.nbVues, nbVues) || other.nbVues == nbVues)&&(identical(other.nbLikes, nbLikes) || other.nbLikes == nbLikes)&&(identical(other.nbFavoris, nbFavoris) || other.nbFavoris == nbFavoris)&&(identical(other.nbCommentaires, nbCommentaires) || other.nbCommentaires == nbCommentaires)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.partenaire, partenaire) || other.partenaire == partenaire)&&(identical(other.categorie, categorie) || other.categorie == categorie)&&const DeepCollectionEquality().equals(other._images, _images)&&const DeepCollectionEquality().equals(other._variantes, _variantes)&&const DeepCollectionEquality().equals(other._supplements, _supplements)&&(identical(other.estLikeParMoi, estLikeParMoi) || other.estLikeParMoi == estLikeParMoi)&&(identical(other.estFavoriParMoi, estFavoriParMoi) || other.estFavoriParMoi == estFavoriParMoi));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,nom,slug,description,type,prix,prixPromotion,unite,estDisponible,estEnPromotion,nbVues,nbLikes,nbFavoris,nbCommentaires,partenaireNom,partenaire,categorie,const DeepCollectionEquality().hash(_images),const DeepCollectionEquality().hash(_variantes),const DeepCollectionEquality().hash(_supplements)]);
+int get hashCode => Object.hashAll([runtimeType,id,nom,slug,description,type,prix,prixPromotion,unite,estDisponible,estEnPromotion,nbVues,nbLikes,nbFavoris,nbCommentaires,partenaireNom,partenaire,categorie,const DeepCollectionEquality().hash(_images),const DeepCollectionEquality().hash(_variantes),const DeepCollectionEquality().hash(_supplements),estLikeParMoi,estFavoriParMoi]);
 
 @override
 String toString() {
-  return 'ArticleDetail(id: $id, nom: $nom, slug: $slug, description: $description, type: $type, prix: $prix, prixPromotion: $prixPromotion, unite: $unite, estDisponible: $estDisponible, estEnPromotion: $estEnPromotion, nbVues: $nbVues, nbLikes: $nbLikes, nbFavoris: $nbFavoris, nbCommentaires: $nbCommentaires, partenaireNom: $partenaireNom, partenaire: $partenaire, categorie: $categorie, images: $images, variantes: $variantes, supplements: $supplements)';
+  return 'ArticleDetail(id: $id, nom: $nom, slug: $slug, description: $description, type: $type, prix: $prix, prixPromotion: $prixPromotion, unite: $unite, estDisponible: $estDisponible, estEnPromotion: $estEnPromotion, nbVues: $nbVues, nbLikes: $nbLikes, nbFavoris: $nbFavoris, nbCommentaires: $nbCommentaires, partenaireNom: $partenaireNom, partenaire: $partenaire, categorie: $categorie, images: $images, variantes: $variantes, supplements: $supplements, estLikeParMoi: $estLikeParMoi, estFavoriParMoi: $estFavoriParMoi)';
 }
 
 
@@ -847,7 +851,7 @@ abstract mixin class _$ArticleDetailCopyWith<$Res> implements $ArticleDetailCopy
   factory _$ArticleDetailCopyWith(_ArticleDetail value, $Res Function(_ArticleDetail) _then) = __$ArticleDetailCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom, String slug, String description, String type, String prix,@JsonKey(name: 'prix_promotion') String? prixPromotion, String unite,@JsonKey(name: 'est_disponible') bool estDisponible,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'nb_vues') int nbVues,@JsonKey(name: 'nb_likes') int nbLikes,@JsonKey(name: 'nb_favoris') int nbFavoris,@JsonKey(name: 'nb_commentaires') int nbCommentaires,@JsonKey(name: 'partenaire_nom') String partenaireNom, int? partenaire, int? categorie, List<String> images, List<Variante> variantes, List<Supplement> supplements
+ int id, String nom, String slug, String description, String type, String prix,@JsonKey(name: 'prix_promotion') String? prixPromotion, String unite,@JsonKey(name: 'est_disponible') bool estDisponible,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'nb_vues') int nbVues,@JsonKey(name: 'nb_likes') int nbLikes,@JsonKey(name: 'nb_favoris') int nbFavoris,@JsonKey(name: 'nb_commentaires') int nbCommentaires,@JsonKey(name: 'partenaire_nom') String partenaireNom, int? partenaire, int? categorie, List<String> images, List<Variante> variantes, List<Supplement> supplements,@JsonKey(name: 'est_like_par_moi') bool estLikeParMoi,@JsonKey(name: 'est_favori_par_moi') bool estFavoriParMoi
 });
 
 
@@ -864,7 +868,7 @@ class __$ArticleDetailCopyWithImpl<$Res>
 
 /// Create a copy of ArticleDetail
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? slug = null,Object? description = null,Object? type = null,Object? prix = null,Object? prixPromotion = freezed,Object? unite = null,Object? estDisponible = null,Object? estEnPromotion = null,Object? nbVues = null,Object? nbLikes = null,Object? nbFavoris = null,Object? nbCommentaires = null,Object? partenaireNom = null,Object? partenaire = freezed,Object? categorie = freezed,Object? images = null,Object? variantes = null,Object? supplements = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? slug = null,Object? description = null,Object? type = null,Object? prix = null,Object? prixPromotion = freezed,Object? unite = null,Object? estDisponible = null,Object? estEnPromotion = null,Object? nbVues = null,Object? nbLikes = null,Object? nbFavoris = null,Object? nbCommentaires = null,Object? partenaireNom = null,Object? partenaire = freezed,Object? categorie = freezed,Object? images = null,Object? variantes = null,Object? supplements = null,Object? estLikeParMoi = null,Object? estFavoriParMoi = null,}) {
   return _then(_ArticleDetail(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -886,7 +890,9 @@ as int?,categorie: freezed == categorie ? _self.categorie : categorie // ignore:
 as int?,images: null == images ? _self._images : images // ignore: cast_nullable_to_non_nullable
 as List<String>,variantes: null == variantes ? _self._variantes : variantes // ignore: cast_nullable_to_non_nullable
 as List<Variante>,supplements: null == supplements ? _self._supplements : supplements // ignore: cast_nullable_to_non_nullable
-as List<Supplement>,
+as List<Supplement>,estLikeParMoi: null == estLikeParMoi ? _self.estLikeParMoi : estLikeParMoi // ignore: cast_nullable_to_non_nullable
+as bool,estFavoriParMoi: null == estFavoriParMoi ? _self.estFavoriParMoi : estFavoriParMoi // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
