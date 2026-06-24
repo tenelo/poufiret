@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/article_liste.dart';
+import 'package:poufiret/features/catalogue/screens/ecran_article_detail.dart';
 
 class EcranArticles extends ConsumerWidget {
   final int categorieId;
@@ -73,10 +74,12 @@ class _VignetteArticle extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          // Étape 3 : naviguer vers la fiche détail de l'article.
-          ScaffoldMessenger.of(
+          Navigator.push(
             context,
-          ).showSnackBar(SnackBar(content: Text('Article : ${article.nom}')));
+            MaterialPageRoute(
+              builder: (_) => EcranArticleDetail(slug: article.slug),
+            ),
+          );
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -3,6 +3,7 @@ import 'package:poufiret/features/catalogue/domain/article_liste.dart';
 
 import '../../../core/config/env.dart';
 import '../domain/categorie.dart';
+import '../domain/article_detail.dart';
 
 class CatalogueRepository {
   final Dio _dio;
@@ -26,5 +27,11 @@ class CatalogueRepository {
     final data = r.data as Map<String, dynamic>;
     final results = (data['results'] as List).cast<Map<String, dynamic>>();
     return results.map(ArticleListe.fromJson).toList();
+  }
+
+  /// GET /catalogue/articles/<slug>/ — fiche détail (public).
+  Future<ArticleDetail> articleDetail(String slug) async {
+    final r = await _dio.get('${Env.apiPrefix}/catalogue/articles/$slug/');
+    return ArticleDetail.fromJson(r.data as Map<String, dynamic>);
   }
 }

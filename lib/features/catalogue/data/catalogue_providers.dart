@@ -4,6 +4,7 @@ import '../../../core/network/providers.dart';
 import '../domain/categorie.dart';
 import 'catalogue_repository.dart';
 import '../domain/article_liste.dart';
+import '../domain/article_detail.dart';
 
 part 'catalogue_providers.g.dart';
 
@@ -25,4 +26,10 @@ Future<List<ArticleListe>> articles(Ref ref, {required int categorieId}) {
   return ref
       .watch(catalogueRepositoryProvider)
       .articles(categorie: categorieId);
+}
+
+/// Fiche détail d'un article par son slug.
+@riverpod
+Future<ArticleDetail> articleDetail(Ref ref, {required String slug}) {
+  return ref.watch(catalogueRepositoryProvider).articleDetail(slug);
 }

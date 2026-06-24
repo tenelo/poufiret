@@ -191,3 +191,87 @@ final class ArticlesFamily extends $Family
   @override
   String toString() => r'articlesProvider';
 }
+
+/// Fiche détail d'un article par son slug.
+
+@ProviderFor(articleDetail)
+final articleDetailProvider = ArticleDetailFamily._();
+
+/// Fiche détail d'un article par son slug.
+
+final class ArticleDetailProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ArticleDetail>,
+          ArticleDetail,
+          FutureOr<ArticleDetail>
+        >
+    with $FutureModifier<ArticleDetail>, $FutureProvider<ArticleDetail> {
+  /// Fiche détail d'un article par son slug.
+  ArticleDetailProvider._({
+    required ArticleDetailFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'articleDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$articleDetailHash();
+
+  @override
+  String toString() {
+    return r'articleDetailProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ArticleDetail> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ArticleDetail> create(Ref ref) {
+    final argument = this.argument as String;
+    return articleDetail(ref, slug: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ArticleDetailProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$articleDetailHash() => r'ad4c91ec0d608927523f7bffd2cd3335f46e64ca';
+
+/// Fiche détail d'un article par son slug.
+
+final class ArticleDetailFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ArticleDetail>, String> {
+  ArticleDetailFamily._()
+    : super(
+        retry: null,
+        name: r'articleDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Fiche détail d'un article par son slug.
+
+  ArticleDetailProvider call({required String slug}) =>
+      ArticleDetailProvider._(argument: slug, from: this);
+
+  @override
+  String toString() => r'articleDetailProvider';
+}
