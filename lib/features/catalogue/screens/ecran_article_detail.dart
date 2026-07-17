@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/article_detail.dart';
+import 'package:poufiret/features/partenaire/screens/ecran_vitrine_partenaire.dart';
 
 import 'package:poufiret/features/social/data/social_providers.dart';
 import 'package:poufiret/features/social/widgets/bouton_social.dart';
@@ -149,10 +150,37 @@ class _Contenu extends ConsumerWidget {
                           ],
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          'Vendu par ${article.partenaireNom}',
-                          style: theme.textTheme.bodyMedium,
-                        ),
+                        if (article.partenaire != null)
+                          InkWell(
+                            onTap: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => EcranVitrinePartenaire(
+                                  partenaireId: article.partenaire!,
+                                ),
+                              ),
+                            ),
+                            child: Text.rich(
+                              
+                              TextSpan(
+                                children: [
+                                  const TextSpan(text: 'Vendu par '),
+                                  TextSpan(
+                                    text: article.partenaireNom,
+                                    style: TextStyle(
+                                      color: theme.colorScheme.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              style: theme.textTheme.bodyMedium,
+                            ),
+                          )
+                        else
+                          Text(
+                            'Vendu par ${article.partenaireNom}',
+                            style: theme.textTheme.bodyMedium,
+                          ),
                         const SizedBox(height: 16),
                         // Compteurs.
                         // Réactions : like ❤️ et favori 🔖 cliquables ;
