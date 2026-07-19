@@ -60,15 +60,62 @@ class EcranPanier extends ConsumerWidget {
 }
 
 /// Un bloc = une catégorie, contenant les lignes de plusieurs commerçants.
-class _BlocCategorie extends ConsumerWidget {
+class _BlocCategorie extends ConsumerStatefulWidget {
   const _BlocCategorie({required this.titre, required this.paniers});
   final String titre;
   final List<Panier> paniers;
 
-  int get _totalCategorie => paniers.fold(0, (somme, p) => somme + p.total);
+  @override
+  ConsumerState<_BlocCategorie> createState() => _BlocCategorieState();
+}
+
+class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
+  bool _envoiEnCours = false;
+
+  /// Livraison par défaut ; le client peut choisir de venir chercher.
+  bool _livraison = true;
+
+  int get _totalCategorie =>
+      widget.paniers.fold(0, (somme, p) => somme + p.total);
+
+  Future<void> _validerCommande() async {
+    if (_envoiEnCours) return;
+    setState(() => _envoiEnCours = true);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final repo = ref.read(ordersRepositoryProvider);
+      final numeros = <String>[];
+      // Un panier = un commerçant : une commande par panier de la catégorie.
+      for (final panier in widget.paniers) {
+        final commande = await repo.validerPanier(
+          panierId: panier.id,
+          modeLivraison: _livraison ? 'livraison' : 'emporter',
+          // Paiement à la remise : le client règle comme il veut.
+          modePaiement: 'cash',
+        );
+        numeros.add(commande.numero);
+      }
+      ref.invalidate(paniersProvider);
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            numeros.length == 1
+                ? 'Commande ${numeros.first} envoyée.'
+                : '${numeros.length} commandes envoyées.',
+          ),
+        ),
+      );
+    } catch (_) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Impossible de valider la commande.')),
+      );
+    } finally {
+      if (mounted) setState(() => _envoiEnCours = false);
+    }
+  }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Card(
@@ -78,14 +125,70 @@ class _BlocCategorie extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(titre, style: theme.textTheme.titleLarge),
+            Text(widget.titre, style: theme.textTheme.titleLarge),
             const Divider(),
-            // Pour chaque panier (= un commerçant) de cette catégorie.
-            for (final panier in paniers) ...[
+            for (final panier in widget.paniers)
               for (final ligne in panier.lignes)
                 _LigneTuile(ligne: ligne, commercant: panier.partenaireNom),
-            ],
             const Divider(),
+
+            // ── Mode de retrait (actif) ─────────────────────────────
+            Text('Retrait', style: theme.textTheme.labelMedium),
+            const SizedBox(height: 6),
+            Wrap(
+              spacing: 8,
+              children: [
+                ChoiceChip(
+                  label: const Text('Livraison'),
+                  selected: _livraison,
+                  onSelected: _envoiEnCours
+                      ? null
+                      : (_) => setState(() => _livraison = true),
+                ),
+                ChoiceChip(
+                  label: const Text('Je viens chercher'),
+                  selected: !_livraison,
+                  onSelected: _envoiEnCours
+                      ? null
+                      : (_) => setState(() => _livraison = false),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            // ── Paiement : information, pas un choix ────────────────
+            Row(
+              children: [
+                Icon(
+                  Icons.payments_outlined,
+                  size: 18,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  child: Text(
+                    _livraison
+                        ? 'Paiement à la livraison'
+                        : 'Paiement au retrait',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 24, top: 2),
+              child: Text(
+                'Réglez comme vous voulez à la remise (espèces, Wave, '
+                'Mobile Money…).',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.outline,
+                ),
+              ),
+            ),
+            const Divider(height: 24),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -103,14 +206,14 @@ class _BlocCategorie extends ConsumerWidget {
             SizedBox(
               width: double.infinity,
               child: FilledButton(
-                onPressed: () {
-                  // TODO étape suivante : ouvrir l'écran de validation
-                  // qui commandera chaque panier de cette catégorie.
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Commander : $titre')));
-                },
-                child: const Text('Commander'),
+                onPressed: _envoiEnCours ? null : _validerCommande,
+                child: _envoiEnCours
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Valider Commande'),
               ),
             ),
           ],

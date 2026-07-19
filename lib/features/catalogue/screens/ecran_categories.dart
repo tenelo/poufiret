@@ -5,6 +5,7 @@ import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/categorie.dart';
 import 'package:poufiret/features/catalogue/screens/ecran_articles.dart';
 import 'package:poufiret/features/orders/screens/ecran_panier.dart';
+import 'package:poufiret/core/navigation/app_drawer.dart';
 
 class EcranCategories extends ConsumerWidget {
   const EcranCategories({super.key});
@@ -26,6 +27,7 @@ class EcranCategories extends ConsumerWidget {
           ),
         ],
       ),
+      drawer: const AppDrawer(),
       body: categoriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) {
