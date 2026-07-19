@@ -6,6 +6,7 @@ import 'package:poufiret/features/catalogue/domain/categorie.dart';
 import 'package:poufiret/features/catalogue/screens/ecran_articles.dart';
 import 'package:poufiret/features/orders/screens/ecran_panier.dart';
 import 'package:poufiret/core/navigation/app_drawer.dart';
+import 'package:poufiret/features/orders/data/orders_providers.dart';
 
 class EcranCategories extends ConsumerWidget {
   const EcranCategories({super.key});
@@ -13,13 +14,26 @@ class EcranCategories extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(categoriesProvider);
+    // Nombre d'articles dans tous les paniers, pour le badge.
+    final nbPanier = ref
+        .watch(paniersProvider)
+        .maybeWhen(
+          data: (paniers) =>
+              paniers.fold<int>(0, (n, p) => n + p.lignes.length),
+          orElse: () => 0,
+        );
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Poufiret'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.shopping_cart_outlined),
+            icon: nbPanier > 0
+                ? Badge(
+                    label: Text('$nbPanier'),
+                    child: const Icon(Icons.shopping_cart_outlined),
+                  )
+                : const Icon(Icons.shopping_cart_outlined),
             tooltip: 'Mon panier',
             onPressed: () => Navigator.of(
               context,

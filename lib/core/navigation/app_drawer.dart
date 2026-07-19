@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/screens/auth_notifier.dart';
 import '../../features/orders/screens/ecran_commandes.dart';
 import '../../features/orders/screens/ecran_panier.dart';
+import '../../features/orders/screens/ecran_commandes_partenaire.dart';
 
 /// Menu latéral partagé par les écrans principaux.
 class AppDrawer extends ConsumerWidget {
@@ -52,7 +53,18 @@ class AppDrawer extends ConsumerWidget {
                     leading: const Icon(Icons.shopping_cart_outlined),
                     title: const Text('Mon panier'),
                     onTap: () => ouvrir(const EcranPanier()),
-                  ),
+                  ), // Réservé aux partenaires : leur espace pro.
+                  if (user?.estPartenaire ?? false) ...[
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.storefront_outlined),
+                      title: const Text('Commandes reçues'),
+                      subtitle: const Text('Espace partenaire'),
+                      onTap: () => ouvrir(const EcranCommandesPartenaire()),
+                    ),
+                    const Divider(),
+                  ],
+
                   ListTile(
                     leading: const Icon(Icons.person_outline),
                     title: const Text('Mon compte'),

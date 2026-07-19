@@ -4,6 +4,7 @@ import 'package:poufiret/features/chat/screens/ecran_conversations.dart';
 import 'destinations.dart';
 import 'placeholder_screens.dart';
 import '../../features/catalogue/screens/ecran_categories.dart';
+import '../../features/favoris/screens/ecran_favoris.dart';
 
 /// Coquille principale : héberge les onglets et bascule entre
 /// barre basse (mobile) et rail latéral (tablette / web) selon la largeur.
@@ -17,10 +18,10 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int _index = 0;
 
-  static const _pages = [
+   static const _pages = [
     EcranCategories(),
     SearchScreen(),
-    FavoritesScreen(),
+    EcranFavoris(),
     EcranConversations(),
     AccountScreen(),
   ];

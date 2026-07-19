@@ -261,3 +261,88 @@ final class CommandeDetailFamily extends $Family
   @override
   String toString() => r'commandeDetailProvider';
 }
+
+/// Commandes reçues par le partenaire connecté.
+
+@ProviderFor(commandesPartenaire)
+final commandesPartenaireProvider = CommandesPartenaireFamily._();
+
+/// Commandes reçues par le partenaire connecté.
+
+final class CommandesPartenaireProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Commande>>,
+          List<Commande>,
+          FutureOr<List<Commande>>
+        >
+    with $FutureModifier<List<Commande>>, $FutureProvider<List<Commande>> {
+  /// Commandes reçues par le partenaire connecté.
+  CommandesPartenaireProvider._({
+    required CommandesPartenaireFamily super.from,
+    required String? super.argument,
+  }) : super(
+         retry: null,
+         name: r'commandesPartenaireProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$commandesPartenaireHash();
+
+  @override
+  String toString() {
+    return r'commandesPartenaireProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Commande>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Commande>> create(Ref ref) {
+    final argument = this.argument as String?;
+    return commandesPartenaire(ref, statut: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CommandesPartenaireProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$commandesPartenaireHash() =>
+    r'2e7061e647326f46c94e90e967eee63620d5448e';
+
+/// Commandes reçues par le partenaire connecté.
+
+final class CommandesPartenaireFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<Commande>>, String?> {
+  CommandesPartenaireFamily._()
+    : super(
+        retry: null,
+        name: r'commandesPartenaireProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Commandes reçues par le partenaire connecté.
+
+  CommandesPartenaireProvider call({String? statut}) =>
+      CommandesPartenaireProvider._(argument: statut, from: this);
+
+  @override
+  String toString() => r'commandesPartenaireProvider';
+}

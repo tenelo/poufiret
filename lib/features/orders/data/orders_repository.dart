@@ -112,6 +112,18 @@ class OrdersRepository {
         .toList();
   }
 
+/// GET /orders/commandes/partenaire/ — commandes reçues par le partenaire.
+  Future<List<Commande>> commandesPartenaire({String? statut}) async {
+    final r = await _dio.get(
+      '${Env.apiPrefix}/orders/commandes/partenaire/',
+      queryParameters: {if (statut != null) 'statut': statut},
+    );
+    return (r.data as List)
+        .cast<Map<String, dynamic>>()
+        .map(Commande.fromJson)
+        .toList();
+  }
+
   /// GET /orders/commandes/<id>/ — détail d'une commande.
   Future<Commande> commandeDetail(int id) async {
     final r = await _dio.get('${Env.apiPrefix}/orders/commandes/$id/');

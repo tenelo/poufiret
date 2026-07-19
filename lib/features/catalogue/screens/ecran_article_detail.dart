@@ -109,6 +109,13 @@ class _Contenu extends ConsumerWidget {
                         await ref
                             .read(ordersRepositoryProvider)
                             .ajouterLigne(articleId: article.id, quantite: 1);
+                        await ref
+                            .read(ordersRepositoryProvider)
+                            .ajouterLigne(articleId: article.id, quantite: 1);
+                        ref.invalidate(paniersProvider);
+                        messenger.showSnackBar(
+                          const SnackBar(content: Text('Ajouté au panier.')),
+                        );
                         messenger.showSnackBar(
                           const SnackBar(content: Text('Ajouté au panier.')),
                         );

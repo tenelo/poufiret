@@ -28,3 +28,12 @@ Future<List<Commande>> commandes(Ref ref, {String? statut}) {
 Future<Commande> commandeDetail(Ref ref, {required int id}) {
   return ref.watch(ordersRepositoryProvider).commandeDetail(id);
 }
+
+
+/// Commandes reçues par le partenaire connecté.
+@riverpod
+Future<List<Commande>> commandesPartenaire(Ref ref, {String? statut}) {
+  return ref
+      .watch(ordersRepositoryProvider)
+      .commandesPartenaire(statut: statut);
+}
