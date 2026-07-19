@@ -3,11 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/article_detail.dart';
+import 'package:poufiret/features/chat/data/chat_providers.dart';
+import 'package:poufiret/features/chat/screens/ecran_discussion.dart';
 import 'package:poufiret/features/partenaire/screens/ecran_vitrine_partenaire.dart';
 
 import 'package:poufiret/features/social/data/social_providers.dart';
 import 'package:poufiret/features/social/widgets/bouton_social.dart';
 import 'package:poufiret/features/social/widgets/section_commentaires.dart';
+import 'package:poufiret/features/orders/data/orders_providers.dart';
 
 class EcranArticleDetail extends ConsumerWidget {
   final String slug;
@@ -64,8 +67,11 @@ class EcranArticleDetail extends ConsumerWidget {
             ),
           );
         },
-        data: (article) =>
-            _Contenu(article: article, libelleAction: _libelleAction),
+        data: (article) => _Contenu(
+          article: article,
+          libelleAction: _libelleAction,
+          modeTransaction: modeTransaction,
+        ),
       ),
     );
   }
@@ -74,7 +80,12 @@ class EcranArticleDetail extends ConsumerWidget {
 class _Contenu extends ConsumerWidget {
   final ArticleDetail article;
   final String libelleAction;
-  const _Contenu({required this.article, required this.libelleAction});
+  final String modeTransaction;
+  const _Contenu({
+    required this.article,
+    required this.libelleAction,
+    required this.modeTransaction,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -88,11 +99,54 @@ class _Contenu extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           child: FilledButton(
             onPressed: article.estDisponible
-                ? () => ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('$libelleAction — bientôt disponible'),
-                    ),
-                  )
+                ? () async {
+                    final messenger = ScaffoldMessenger.of(context);
+                    final navigator = Navigator.of(context);
+
+                    // Mode panier : ajouter au panier, rester sur la fiche.
+                    if (modeTransaction == 'panier_commande') {
+                      try {
+                        await ref
+                            .read(ordersRepositoryProvider)
+                            .ajouterLigne(articleId: article.id, quantite: 1);
+                        messenger.showSnackBar(
+                          const SnackBar(content: Text('Ajouté au panier.')),
+                        );
+                      } catch (_) {
+                        messenger.showSnackBar(
+                          const SnackBar(
+                            content: Text('Impossible d\'ajouter au panier.'),
+                          ),
+                        );
+                      }
+                      return;
+                    }
+
+                    // Autres modes : ouvrir la conversation (chat).
+                    try {
+                      final conv = await ref
+                          .read(chatRepositoryProvider)
+                          .contacter(articleId: article.id);
+                      navigator.push(
+                        MaterialPageRoute(
+                          builder: (_) => EcranDiscussion(
+                            conversationId: conv.id,
+                            titre: conv.partenaireNom.isEmpty
+                                ? 'Conversation'
+                                : conv.partenaireNom,
+                          ),
+                        ),
+                      );
+                    } catch (_) {
+                      messenger.showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Impossible de démarrer la conversation.',
+                          ),
+                        ),
+                      );
+                    }
+                  }
                 : null,
             child: Text(article.estDisponible ? libelleAction : 'Indisponible'),
           ),
@@ -160,7 +214,6 @@ class _Contenu extends ConsumerWidget {
                               ),
                             ),
                             child: Text.rich(
-                              
                               TextSpan(
                                 children: [
                                   const TextSpan(text: 'Vendu par '),

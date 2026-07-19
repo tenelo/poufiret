@@ -4,6 +4,7 @@ import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/categorie.dart';
 import 'package:poufiret/features/catalogue/screens/ecran_articles.dart';
+import 'package:poufiret/features/orders/screens/ecran_panier.dart';
 
 class EcranCategories extends ConsumerWidget {
   const EcranCategories({super.key});
@@ -13,7 +14,18 @@ class EcranCategories extends ConsumerWidget {
     final categoriesAsync = ref.watch(categoriesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Poufiret')),
+      appBar: AppBar(
+        title: const Text('Poufiret'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart_outlined),
+            tooltip: 'Mon panier',
+            onPressed: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const EcranPanier())),
+          ),
+        ],
+      ),
       body: categoriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) {
@@ -74,6 +86,7 @@ class _TuileCategorie extends StatelessWidget {
               builder: (_) => EcranArticles(
                 categorieId: categorie.id,
                 categorieNom: categorie.nom,
+                modeTransaction: categorie.modeTransaction,
               ),
             ),
           );

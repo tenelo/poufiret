@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poufiret/features/chat/screens/ecran_conversations.dart';
 
 import 'destinations.dart';
 import 'placeholder_screens.dart';
@@ -20,7 +21,7 @@ class _AppShellState extends State<AppShell> {
     EcranCategories(),
     SearchScreen(),
     FavoritesScreen(),
-    MessagesScreen(),
+    EcranConversations(),
     AccountScreen(),
   ];
 

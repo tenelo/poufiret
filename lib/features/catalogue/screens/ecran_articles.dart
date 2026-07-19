@@ -8,11 +8,12 @@ import 'package:poufiret/features/catalogue/screens/ecran_article_detail.dart';
 class EcranArticles extends ConsumerWidget {
   final int categorieId;
   final String categorieNom;
-
+  final String modeTransaction;
   const EcranArticles({
     super.key,
     required this.categorieId,
     required this.categorieNom,
+    this.modeTransaction = '',
   });
 
   @override
@@ -53,8 +54,10 @@ class EcranArticles extends ConsumerWidget {
                   childAspectRatio: 0.75, // vignette plus haute que large
                 ),
                 itemCount: articles.length,
-                itemBuilder: (context, i) =>
-                    _VignetteArticle(article: articles[i]),
+                itemBuilder: (context, i) => _VignetteArticle(
+                  article: articles[i],
+                  modeTransaction: modeTransaction,
+                ),
               );
             },
           );
@@ -66,7 +69,11 @@ class EcranArticles extends ConsumerWidget {
 
 class _VignetteArticle extends StatelessWidget {
   final ArticleListe article;
-  const _VignetteArticle({required this.article});
+  final String modeTransaction;
+  const _VignetteArticle({
+    required this.article,
+    required this.modeTransaction,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +84,10 @@ class _VignetteArticle extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => EcranArticleDetail(slug: article.slug),
+              builder: (_) => EcranArticleDetail(
+                slug: article.slug,
+                modeTransaction: modeTransaction,
+              ),
             ),
           );
         },
