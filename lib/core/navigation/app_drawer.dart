@@ -1,3 +1,4 @@
+import '../../features/partenaire/screens/ecran_espace_partenaire.dart';
 import '../../features/prestations/screens/ecran_mes_demandes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -73,6 +74,12 @@ class AppDrawer extends ConsumerWidget {
                       title: const Text('Demandes reçues (interventions)'),
                       subtitle: const Text('Espace partenaire'),
                       onTap: () => ouvrir(const EcranDemandesRecues()),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.dashboard_outlined),
+                      title: const Text('Mon espace partenaire'),
+                      subtitle: const Text('Articles et statistiques'),
+                      onTap: () => ouvrir(const EcranEspacePartenaire()),
                     ),
                     const Divider(),
                   ],

@@ -47,6 +47,7 @@ abstract class ArticleDetail with _$ArticleDetail {
     @JsonKey(name: 'prix_promotion') String? prixPromotion,
     @Default('') String unite,
     @JsonKey(name: 'est_disponible') @Default(true) bool estDisponible,
+    @JsonKey(name: 'est_actif') @Default(true) bool estActif,
     @JsonKey(name: 'est_en_promotion') @Default(false) bool estEnPromotion,
     @JsonKey(name: 'nb_vues') @Default(0) int nbVues,
     @JsonKey(name: 'nb_likes') @Default(0) int nbLikes,
