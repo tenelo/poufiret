@@ -18,17 +18,23 @@ class CatalogueRepository {
     return results.map(Categorie.fromJson).toList();
   }
 
-  /// GET /catalogue/articles/?categorie=<id> — articles d'une catégorie (public, paginé).
-  Future<List<ArticleListe>> articles({int? categorie}) async {
+/// GET /catalogue/articles/ — articles filtrés (catégorie et/ou recherche).
+  Future<List<ArticleListe>> articles({
+    int? categorie,
+    String? recherche,
+  }) async {
     final r = await _dio.get(
       '${Env.apiPrefix}/catalogue/articles/',
-      queryParameters: {if (categorie != null) 'categorie': categorie},
+      queryParameters: {
+        if (categorie != null) 'categorie': categorie,
+        if (recherche != null && recherche.isNotEmpty) 'recherche': recherche,
+      },
     );
     final data = r.data as Map<String, dynamic>;
     final results = (data['results'] as List).cast<Map<String, dynamic>>();
     return results.map(ArticleListe.fromJson).toList();
   }
-
+  
   /// GET /catalogue/articles/<slug>/ — fiche détail (public).
   Future<ArticleDetail> articleDetail(String slug) async {
     final r = await _dio.get('${Env.apiPrefix}/catalogue/articles/$slug/');

@@ -275,3 +275,89 @@ final class ArticleDetailFamily extends $Family
   @override
   String toString() => r'articleDetailProvider';
 }
+
+/// Recherche d'articles par nom. Renvoie une liste vide si le terme est vide.
+
+@ProviderFor(rechercheArticles)
+final rechercheArticlesProvider = RechercheArticlesFamily._();
+
+/// Recherche d'articles par nom. Renvoie une liste vide si le terme est vide.
+
+final class RechercheArticlesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ArticleListe>>,
+          List<ArticleListe>,
+          FutureOr<List<ArticleListe>>
+        >
+    with
+        $FutureModifier<List<ArticleListe>>,
+        $FutureProvider<List<ArticleListe>> {
+  /// Recherche d'articles par nom. Renvoie une liste vide si le terme est vide.
+  RechercheArticlesProvider._({
+    required RechercheArticlesFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'rechercheArticlesProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$rechercheArticlesHash();
+
+  @override
+  String toString() {
+    return r'rechercheArticlesProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<ArticleListe>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<ArticleListe>> create(Ref ref) {
+    final argument = this.argument as String;
+    return rechercheArticles(ref, terme: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is RechercheArticlesProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$rechercheArticlesHash() => r'9a542fb54927a26780774ffc1f03e314d241216b';
+
+/// Recherche d'articles par nom. Renvoie une liste vide si le terme est vide.
+
+final class RechercheArticlesFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<ArticleListe>>, String> {
+  RechercheArticlesFamily._()
+    : super(
+        retry: null,
+        name: r'rechercheArticlesProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Recherche d'articles par nom. Renvoie une liste vide si le terme est vide.
+
+  RechercheArticlesProvider call({required String terme}) =>
+      RechercheArticlesProvider._(argument: terme, from: this);
+
+  @override
+  String toString() => r'rechercheArticlesProvider';
+}

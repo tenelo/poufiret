@@ -33,3 +33,12 @@ Future<List<ArticleListe>> articles(Ref ref, {required int categorieId}) {
 Future<ArticleDetail> articleDetail(Ref ref, {required String slug}) {
   return ref.watch(catalogueRepositoryProvider).articleDetail(slug);
 }
+
+/// Recherche d'articles par nom. Renvoie une liste vide si le terme est vide.
+@riverpod
+Future<List<ArticleListe>> rechercheArticles(Ref ref, {required String terme}) {
+  if (terme.trim().isEmpty) return Future.value(const []);
+  return ref
+      .watch(catalogueRepositoryProvider)
+      .articles(recherche: terme.trim());
+}
