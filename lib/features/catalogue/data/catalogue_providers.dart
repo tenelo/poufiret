@@ -1,3 +1,4 @@
+import '../domain/partenaire_categorie.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/network/providers.dart';
@@ -22,10 +23,11 @@ Future<List<Categorie>> categories(Ref ref) {
 /// Articles d'une catégorie donnée. Le paramètre categorieId permet
 /// à Riverpod de mettre en cache par catégorie.
 @riverpod
-Future<List<ArticleListe>> articles(Ref ref, {required int categorieId}) {
+Future<List<ArticleListe>> articles(Ref ref,
+    {required int categorieId, int? partenaireId}) {
   return ref
       .watch(catalogueRepositoryProvider)
-      .articles(categorie: categorieId);
+      .articles(categorie: categorieId, partenaire: partenaireId);
 }
 
 /// Fiche détail d'un article par son slug.
@@ -41,4 +43,13 @@ Future<List<ArticleListe>> rechercheArticles(Ref ref, {required String terme}) {
   return ref
       .watch(catalogueRepositoryProvider)
       .articles(recherche: terme.trim());
+}
+
+/// Annuaire des prestataires d'une catégorie.
+@riverpod
+Future<List<PartenaireCategorie>> partenairesParCategorie(Ref ref,
+    {required String slug}) {
+  return ref
+      .watch(catalogueRepositoryProvider)
+      .partenairesParCategorie(slug);
 }

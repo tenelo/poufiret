@@ -135,24 +135,33 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
             // ── Mode de retrait (actif) ─────────────────────────────
             Text('Retrait', style: theme.textTheme.labelMedium),
             const SizedBox(height: 6),
-            Wrap(
-              spacing: 8,
-              children: [
-                ChoiceChip(
-                  label: const Text('Livraison'),
-                  selected: _livraison,
-                  onSelected: _envoiEnCours
-                      ? null
-                      : (_) => setState(() => _livraison = true),
-                ),
-                ChoiceChip(
-                  label: const Text('Je viens chercher'),
-                  selected: !_livraison,
-                  onSelected: _envoiEnCours
-                      ? null
-                      : (_) => setState(() => _livraison = false),
-                ),
-              ],
+            RadioGroup<bool>(
+              groupValue: _livraison,
+              onChanged: _envoiEnCours
+                  ? (_) {}
+                  : (v) => setState(() => _livraison = v ?? true),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: RadioListTile<bool>(
+                      value: true,
+                      title: const Text('Livraison'),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                  Expanded(
+                    child: RadioListTile<bool>(
+                      value: false,
+                      title: const Text('Je viens chercher'),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 12),
 

@@ -124,7 +124,7 @@ final class ArticlesProvider
   /// à Riverpod de mettre en cache par catégorie.
   ArticlesProvider._({
     required ArticlesFamily super.from,
-    required int super.argument,
+    required ({int categorieId, int? partenaireId}) super.argument,
   }) : super(
          retry: null,
          name: r'articlesProvider',
@@ -140,7 +140,7 @@ final class ArticlesProvider
   String toString() {
     return r'articlesProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -151,8 +151,12 @@ final class ArticlesProvider
 
   @override
   FutureOr<List<ArticleListe>> create(Ref ref) {
-    final argument = this.argument as int;
-    return articles(ref, categorieId: argument);
+    final argument = this.argument as ({int categorieId, int? partenaireId});
+    return articles(
+      ref,
+      categorieId: argument.categorieId,
+      partenaireId: argument.partenaireId,
+    );
   }
 
   @override
@@ -166,13 +170,17 @@ final class ArticlesProvider
   }
 }
 
-String _$articlesHash() => r'268b60da18576f01fd144d384659576e7cceec1c';
+String _$articlesHash() => r'fbc3cbf02e7840a9d7cde94568980e30a36d112a';
 
 /// Articles d'une catégorie donnée. Le paramètre categorieId permet
 /// à Riverpod de mettre en cache par catégorie.
 
 final class ArticlesFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<ArticleListe>>, int> {
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<List<ArticleListe>>,
+          ({int categorieId, int? partenaireId})
+        > {
   ArticlesFamily._()
     : super(
         retry: null,
@@ -185,8 +193,11 @@ final class ArticlesFamily extends $Family
   /// Articles d'une catégorie donnée. Le paramètre categorieId permet
   /// à Riverpod de mettre en cache par catégorie.
 
-  ArticlesProvider call({required int categorieId}) =>
-      ArticlesProvider._(argument: categorieId, from: this);
+  ArticlesProvider call({required int categorieId, int? partenaireId}) =>
+      ArticlesProvider._(
+        argument: (categorieId: categorieId, partenaireId: partenaireId),
+        from: this,
+      );
 
   @override
   String toString() => r'articlesProvider';
@@ -360,4 +371,93 @@ final class RechercheArticlesFamily extends $Family
 
   @override
   String toString() => r'rechercheArticlesProvider';
+}
+
+/// Annuaire des prestataires d'une catégorie.
+
+@ProviderFor(partenairesParCategorie)
+final partenairesParCategorieProvider = PartenairesParCategorieFamily._();
+
+/// Annuaire des prestataires d'une catégorie.
+
+final class PartenairesParCategorieProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<PartenaireCategorie>>,
+          List<PartenaireCategorie>,
+          FutureOr<List<PartenaireCategorie>>
+        >
+    with
+        $FutureModifier<List<PartenaireCategorie>>,
+        $FutureProvider<List<PartenaireCategorie>> {
+  /// Annuaire des prestataires d'une catégorie.
+  PartenairesParCategorieProvider._({
+    required PartenairesParCategorieFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'partenairesParCategorieProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$partenairesParCategorieHash();
+
+  @override
+  String toString() {
+    return r'partenairesParCategorieProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<PartenaireCategorie>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<PartenaireCategorie>> create(Ref ref) {
+    final argument = this.argument as String;
+    return partenairesParCategorie(ref, slug: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PartenairesParCategorieProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$partenairesParCategorieHash() =>
+    r'1e894168bc3c4d26de05060e48cc09f626f87283';
+
+/// Annuaire des prestataires d'une catégorie.
+
+final class PartenairesParCategorieFamily extends $Family
+    with
+        $FunctionalFamilyOverride<FutureOr<List<PartenaireCategorie>>, String> {
+  PartenairesParCategorieFamily._()
+    : super(
+        retry: null,
+        name: r'partenairesParCategorieProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Annuaire des prestataires d'une catégorie.
+
+  PartenairesParCategorieProvider call({required String slug}) =>
+      PartenairesParCategorieProvider._(argument: slug, from: this);
+
+  @override
+  String toString() => r'partenairesParCategorieProvider';
 }

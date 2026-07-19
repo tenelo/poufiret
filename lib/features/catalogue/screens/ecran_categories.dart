@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/categorie.dart';
-import 'package:poufiret/features/catalogue/screens/ecran_articles.dart';
+import 'package:poufiret/features/catalogue/screens/ecran_prestataires.dart';
 import 'package:poufiret/features/orders/screens/ecran_panier.dart';
 import 'package:poufiret/core/navigation/app_drawer.dart';
 import 'package:poufiret/features/orders/data/orders_providers.dart';
@@ -99,9 +99,10 @@ class _TuileCategorie extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => EcranArticles(
+              builder: (_) => EcranPrestataires(
                 categorieId: categorie.id,
                 categorieNom: categorie.nom,
+                categorieSlug: categorie.slug,
                 modeTransaction: categorie.modeTransaction,
               ),
             ),

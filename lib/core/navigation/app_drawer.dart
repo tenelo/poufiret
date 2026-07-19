@@ -1,3 +1,4 @@
+import '../../features/prestations/screens/ecran_mes_demandes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -53,6 +54,11 @@ class AppDrawer extends ConsumerWidget {
                     leading: const Icon(Icons.shopping_cart_outlined),
                     title: const Text('Mon panier'),
                     onTap: () => ouvrir(const EcranPanier()),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.handyman_outlined),
+                    title: const Text('Mes demandes d\'intervention'),
+                    onTap: () => ouvrir(const EcranMesDemandes()),
                   ), // Réservé aux partenaires : leur espace pro.
                   if (user?.estPartenaire ?? false) ...[
                     const Divider(),
@@ -61,6 +67,12 @@ class AppDrawer extends ConsumerWidget {
                       title: const Text('Commandes reçues'),
                       subtitle: const Text('Espace partenaire'),
                       onTap: () => ouvrir(const EcranCommandesPartenaire()),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.build_outlined),
+                      title: const Text('Demandes reçues (interventions)'),
+                      subtitle: const Text('Espace partenaire'),
+                      onTap: () => ouvrir(const EcranDemandesRecues()),
                     ),
                     const Divider(),
                   ],

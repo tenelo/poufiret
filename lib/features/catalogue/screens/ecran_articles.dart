@@ -9,16 +9,18 @@ class EcranArticles extends ConsumerWidget {
   final int categorieId;
   final String categorieNom;
   final String modeTransaction;
+  final int? partenaireId;
   const EcranArticles({
     super.key,
     required this.categorieId,
     required this.categorieNom,
     this.modeTransaction = '',
+    this.partenaireId,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final articlesAsync = ref.watch(articlesProvider(categorieId: categorieId));
+    final articlesAsync = ref.watch(articlesProvider(categorieId: categorieId, partenaireId: partenaireId));
 
     return Scaffold(
       appBar: AppBar(title: Text(categorieNom)),
@@ -31,7 +33,7 @@ class EcranArticles extends ConsumerWidget {
           return _MessageErreur(
             message: message,
             onReessayer: () =>
-                ref.invalidate(articlesProvider(categorieId: categorieId)),
+                ref.invalidate(articlesProvider(categorieId: categorieId, partenaireId: partenaireId)),
           );
         },
         data: (articles) {
@@ -116,14 +118,16 @@ class _VignetteArticle extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${article.prixEffectif.toStringAsFixed(0)} FCFA',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.bold,
+                  if (modeTransaction != 'demande_intervention') ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      '${article.prixEffectif.toStringAsFixed(0)} FCFA',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),

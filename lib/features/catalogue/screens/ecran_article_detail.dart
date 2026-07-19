@@ -1,3 +1,4 @@
+import '../../prestations/screens/ecran_demande_intervention.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
@@ -109,13 +110,7 @@ class _Contenu extends ConsumerWidget {
                         await ref
                             .read(ordersRepositoryProvider)
                             .ajouterLigne(articleId: article.id, quantite: 1);
-                        await ref
-                            .read(ordersRepositoryProvider)
-                            .ajouterLigne(articleId: article.id, quantite: 1);
                         ref.invalidate(paniersProvider);
-                        messenger.showSnackBar(
-                          const SnackBar(content: Text('Ajouté au panier.')),
-                        );
                         messenger.showSnackBar(
                           const SnackBar(content: Text('Ajouté au panier.')),
                         );
@@ -129,6 +124,26 @@ class _Contenu extends ConsumerWidget {
                       return;
                     }
 
+                    // Mode intervention : ouvrir le formulaire de demande.
+                    if (modeTransaction == 'demande_intervention') {
+                      if (article.partenaire == null) {
+                        messenger.showSnackBar(
+                          const SnackBar(
+                            content: Text('Prestataire indisponible.'),
+                          ),
+                        );
+                        return;
+                      }
+                      navigator.push(
+                        MaterialPageRoute(
+                          builder: (_) => EcranDemandeIntervention(
+                            artisanId: article.partenaire!,
+                            artisanNom: article.partenaireNom,
+                          ),
+                        ),
+                      );
+                      return;
+                    }
                     // Autres modes : ouvrir la conversation (chat).
                     try {
                       final conv = await ref
@@ -188,8 +203,9 @@ class _Contenu extends ConsumerWidget {
                       children: [
                         Text(article.nom, style: theme.textTheme.headlineSmall),
                         const SizedBox(height: 8),
-                        // Prix (+ prix barré si promo).
-                        Row(
+                        // Prix (+ prix barré si promo) — masqué pour les prestations.
+                        if (modeTransaction != 'demande_intervention')
+                          Row(
                           children: [
                             Text(
                               '${article.prixEffectif.toStringAsFixed(0)} FCFA',
