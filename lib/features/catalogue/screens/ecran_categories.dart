@@ -90,12 +90,20 @@ class _TuileCategorie extends StatelessWidget {
   final Categorie categorie;
   const _TuileCategorie({required this.categorie});
 
+  /// Grisée si désactivée par l'admin OU si aucun partenaire enregistré.
+  bool get _bientot =>
+      !categorie.estActive ||
+      (categorie.nbPartenaires != null && categorie.nbPartenaires == 0);
+
   @override
   Widget build(BuildContext context) {
+    final bientot = _bientot;
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {
+        onTap: bientot
+            ? null
+            : () {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -108,26 +116,34 @@ class _TuileCategorie extends StatelessWidget {
             ),
           );
         },
-        child: Padding(
+        child: Opacity(
+          opacity: bientot ? 0.45 : 1.0,
+          child: Padding(
           padding: const EdgeInsets.all(12),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              FittedBox(
-                child: Text(
-                  categorie.icone.isNotEmpty ? categorie.icone : '📦',
-                  style: const TextStyle(fontSize: 48),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    categorie.icone.isNotEmpty ? categorie.icone : '📦',
+                    style: const TextStyle(fontSize: 48),
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                categorie.nom,
+                bientot
+                    ? '${categorie.nom}\nBientôt disponible'
+                    : categorie.nom,
                 textAlign: TextAlign.center,
-                maxLines: 2,
+                maxLines: bientot ? 3 : 2,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ],
+          ),
           ),
         ),
       ),

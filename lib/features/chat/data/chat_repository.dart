@@ -10,10 +10,13 @@ class ChatRepository {
 
   /// POST /messaging/contacter/ — ouvre (ou récupère) une conversation
   /// à partir d'un article. Renvoie la conversation avec `nouvelle`.
-  Future<Conversation> contacter({required int articleId}) async {
+  Future<Conversation> contacter({int? articleId, int? partenaireId}) async {
+    assert(articleId != null || partenaireId != null);
     final r = await _dio.post(
       '${Env.apiPrefix}/messaging/contacter/',
-      data: {'article': articleId},
+      data: articleId != null
+          ? {'article': articleId}
+          : {'partenaire': partenaireId},
     );
     return Conversation.fromJson(r.data as Map<String, dynamic>);
   }

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/partenaire_categorie.dart';
 import 'package:poufiret/features/catalogue/screens/ecran_articles.dart';
+import 'package:poufiret/features/chat/data/chat_providers.dart';
+import 'package:poufiret/features/chat/screens/ecran_discussion.dart';
 
 /// Annuaire d'une catégorie : les prestataires/commerces (couverture + nom).
 /// Le client choisit un commerce avant de voir ses articles.
@@ -100,14 +103,14 @@ class EcranPrestataires extends ConsumerWidget {
   }
 }
 
-class _CartePrestataire extends StatelessWidget {
+class _CartePrestataire extends ConsumerWidget {
   const _CartePrestataire({required this.prestataire, required this.onTap});
 
   final PartenaireCategorie prestataire;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -145,6 +148,30 @@ class _CartePrestataire extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleMedium,
                     ),
+                  ),
+                  IconButton(
+                    icon: FaIcon(FontAwesomeIcons.whatsapp,
+                        color: theme.colorScheme.primary),
+                    tooltip: 'Discuter',
+                    onPressed: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final nav = Navigator.of(context);
+                      try {
+                        final conv = await ref
+                            .read(chatRepositoryProvider)
+                            .contacter(partenaireId: prestataire.id);
+                        nav.push(MaterialPageRoute(
+                          builder: (_) => EcranDiscussion(
+                            conversationId: conv.id,
+                            titre: prestataire.nomCommerce,
+                          ),
+                        ));
+                      } catch (_) {
+                        messenger.showSnackBar(const SnackBar(
+                            content: Text(
+                                'Connexion requise pour discuter.')));
+                      }
+                    },
                   ),
                 ],
               ),

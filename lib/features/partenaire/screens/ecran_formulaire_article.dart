@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../core/errors/api_exception.dart';
 import '../../catalogue/data/catalogue_providers.dart';
+import '../../catalogue/domain/categorie.dart';
 import '../data/espace_partenaire_providers.dart';
 
 /// Création (slug == null) ou modification (slug fourni) d'un article.
@@ -48,6 +49,17 @@ class _EcranFormulaireArticleState
     'modele_couture': 'Modèle de couture',
     'modele_menuiserie': 'Modèle de menuiserie',
   };
+
+  List<Categorie> _categories = const [];
+
+  /// Types proposes pour la categorie choisie.
+  /// Liste vide cote backend = tous les types autorises.
+  List<String> get _typesPermis {
+    if (_categorieId == null) return _types.keys.toList();
+    final cat = _categories.where((c) => c.id == _categorieId).firstOrNull;
+    if (cat == null || cat.typesArticles.isEmpty) return _types.keys.toList();
+    return cat.typesArticles.where(_types.containsKey).toList();
+  }
 
   bool get _estEdition => widget.slug != null;
 
@@ -231,8 +243,9 @@ class _EcranFormulaireArticleState
                             loading: () => const LinearProgressIndicator(),
                             error: (e, s) =>
                                 const Text('Catégories indisponibles.'),
-                            data: (cats) =>
-                                DropdownButtonFormField<int>(
+                            data: (cats) {
+                              _categories = cats;
+                              return DropdownButtonFormField<int>(
                               initialValue: _categorieId,
                               decoration: const InputDecoration(
                                   labelText: 'Catégorie'),
@@ -240,18 +253,24 @@ class _EcranFormulaireArticleState
                                   .map((c) => DropdownMenuItem(
                                       value: c.id, child: Text(c.nom)))
                                   .toList(),
-                              onChanged: (v) =>
-                                  setState(() => _categorieId = v),
-                            ),
+                              onChanged: (v) => setState(() {
+                                _categorieId = v;
+                                final permis = _typesPermis;
+                                if (!permis.contains(_type)) {
+                                  _type = permis.first;
+                                }
+                              }),
+                              );
+                            },
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
                             initialValue: _type,
                             decoration:
                                 const InputDecoration(labelText: 'Type'),
-                            items: _types.entries
-                                .map((e) => DropdownMenuItem(
-                                    value: e.key, child: Text(e.value)))
+                            items: _typesPermis
+                                .map((k) => DropdownMenuItem(
+                                    value: k, child: Text(_types[k] ?? k)))
                                 .toList(),
                             onChanged: (v) => setState(() => _type = v!),
                           ),

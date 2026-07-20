@@ -16,6 +16,13 @@ _Categorie _$CategorieFromJson(Map<String, dynamic> json) => _Categorie(
   parent: (json['parent'] as num?)?.toInt(),
   modeTransaction: json['mode_transaction'] as String? ?? '',
   ordre: (json['ordre'] as num?)?.toInt() ?? 0,
+  typesArticles:
+      (json['types_articles'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const <String>[],
+  estActive: json['est_active'] as bool? ?? true,
+  nbPartenaires: (json['nb_partenaires'] as num?)?.toInt(),
   enfants:
       (json['enfants'] as List<dynamic>?)
           ?.map((e) => Categorie.fromJson(e as Map<String, dynamic>))
@@ -34,5 +41,8 @@ Map<String, dynamic> _$CategorieToJson(_Categorie instance) =>
       'parent': instance.parent,
       'mode_transaction': instance.modeTransaction,
       'ordre': instance.ordre,
+      'types_articles': instance.typesArticles,
+      'est_active': instance.estActive,
+      'nb_partenaires': instance.nbPartenaires,
       'enfants': instance.enfants,
     };

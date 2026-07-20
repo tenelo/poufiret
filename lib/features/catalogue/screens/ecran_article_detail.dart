@@ -1,6 +1,7 @@
 import '../../prestations/screens/ecran_demande_intervention.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/article_detail.dart';
@@ -261,7 +262,11 @@ class _Contenu extends ConsumerWidget {
                         // Compteurs.
                         // Réactions : like ❤️ et favori 🔖 cliquables ;
                         // vues et commentaires en simple affichage.
-                        Wrap(
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Wrap(
                           spacing: 16,
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
@@ -321,6 +326,38 @@ class _Contenu extends ConsumerWidget {
                                     valeur: 0,
                                   ),
                                 ),
+                          ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: FaIcon(FontAwesomeIcons.whatsapp,
+                                  color: theme.colorScheme.primary),
+                              tooltip: 'Discuter',
+                              onPressed: () async {
+                                final messenger =
+                                    ScaffoldMessenger.of(context);
+                                final navigator = Navigator.of(context);
+                                try {
+                                  final conv = await ref
+                                      .read(chatRepositoryProvider)
+                                      .contacter(articleId: article.id);
+                                  navigator.push(
+                                    MaterialPageRoute(
+                                      builder: (_) => EcranDiscussion(
+                                        conversationId: conv.id,
+                                        titre: conv.partenaireNom.isEmpty
+                                            ? 'Conversation'
+                                            : conv.partenaireNom,
+                                      ),
+                                    ),
+                                  );
+                                } catch (_) {
+                                  messenger.showSnackBar(const SnackBar(
+                                      content: Text(
+                                          'Connexion requise pour discuter.')));
+                                }
+                              },
+                            ),
                           ],
                         ),
                         if (article.description.isNotEmpty) ...[

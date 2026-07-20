@@ -15,6 +15,9 @@ abstract class Categorie with _$Categorie {
     int? parent,
     @JsonKey(name: 'mode_transaction') @Default('') String modeTransaction,
     @Default(0) int ordre,
+    @JsonKey(name: 'types_articles') @Default(<String>[]) List<String> typesArticles,
+    @JsonKey(name: 'est_active') @Default(true) bool estActive,
+    @JsonKey(name: 'nb_partenaires') int? nbPartenaires,
     @Default(<Categorie>[]) List<Categorie> enfants,
   }) = _Categorie;
 
