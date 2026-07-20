@@ -33,10 +33,14 @@ class ChatSocket {
   bool _fermeManuellement = false;
 
   final _messagesCtrl = StreamController<Message>.broadcast();
+  final _lusCtrl = StreamController<List<int>>.broadcast();
   final _etatCtrl = StreamController<EtatSocket>.broadcast();
 
   /// Messages reçus (le mien rediffusé par le serveur + ceux des autres).
   Stream<Message> get messages => _messagesCtrl.stream;
+
+  /// Ids de mes messages passes au statut lu (accuses de lecture).
+  Stream<List<int>> get messagesLus => _lusCtrl.stream;
 
   /// État courant de la connexion, pour un bandeau d'info dans l'UI.
   Stream<EtatSocket> get etat => _etatCtrl.stream;
@@ -88,7 +92,11 @@ class ChatSocket {
       (data) {
         try {
           final json = jsonDecode(data as String) as Map<String, dynamic>;
-          _messagesCtrl.add(Message.fromJson(json));
+          if (json['type'] == 'messages_lus') {
+            _lusCtrl.add((json['message_ids'] as List).cast<int>());
+          } else {
+            _messagesCtrl.add(Message.fromJson(json));
+          }
         } catch (_) {
           // trame non-JSON ou inattendue : on ignore
         }
@@ -133,6 +141,12 @@ class ChatSocket {
     _canal!.sink.add(jsonEncode({'contenu': texte}));
   }
 
+  /// Signale au serveur que j'ai lu les messages de cette conversation.
+  void marquerLu() {
+    if (_canal == null) return;
+    _canal!.sink.add(jsonEncode({'type': 'marquer_lu'}));
+  }
+
   /// Fermeture propre (quand on quitte l'écran).
   Future<void> fermer() async {
     _fermeManuellement = true;
@@ -140,6 +154,7 @@ class ChatSocket {
     await _sub?.cancel();
     await _canal?.sink.close();
     await _messagesCtrl.close();
+    await _lusCtrl.close();
     await _etatCtrl.close();
   }
 }

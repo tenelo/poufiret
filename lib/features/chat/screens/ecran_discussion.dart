@@ -57,8 +57,10 @@ class _EcranDiscussionState extends ConsumerState<EcranDiscussion> {
     _socket = socket;
 
     socket.messages.listen(_surMessage);
+    socket.messagesLus.listen(_surMessagesLus);
     socket.etat.listen((e) {
       if (mounted) setState(() => _etat = e);
+      if (e == EtatSocket.connecte) socket.marquerLu();
     });
     socket.connecter();
   }
@@ -69,6 +71,18 @@ class _EcranDiscussionState extends ConsumerState<EcranDiscussion> {
     if (_messages.any((x) => x.id == m.id)) return;
     setState(() => _messages.add(m));
     _scrollEnBas();
+    final monId = ref.read(monUtilisateurIdProvider);
+    if (monId != null && !m.estDeMoi(monId)) _socket?.marquerLu();
+  }
+  void _surMessagesLus(List<int> ids) {
+    if (!mounted || ids.isEmpty) return;
+    setState(() {
+      for (var i = 0; i < _messages.length; i++) {
+        if (ids.contains(_messages[i].id)) {
+          _messages[i] = _messages[i].copyWith(statut: 'lu');
+        }
+      }
+    });
   }
 
   void _envoyer() {
@@ -186,6 +200,17 @@ class _Bulle extends StatelessWidget {
                 ),
               ),
             Text(message.contenu),
+            if (estDeMoi)
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Icon(
+                  message.statut == 'lu' ? Icons.done_all : Icons.done,
+                  size: 14,
+                  color: message.statut == 'lu'
+                      ? Colors.blue
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
           ],
         ),
       ),

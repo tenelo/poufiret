@@ -16,6 +16,7 @@ abstract class Message with _$Message {
     @JsonKey(name: 'expediteur_nom') @Default('') String expediteurNom,
     @Default('') String contenu,
     @JsonKey(name: 'created_at') String? createdAt,
+  @Default('envoye') String statut,
   }) = _Message;
 
   factory Message.fromJson(Map<String, dynamic> json) =>

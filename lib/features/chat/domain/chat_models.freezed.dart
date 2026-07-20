@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Message {
 
- int get id; int get conversation; int? get expediteur;@JsonKey(name: 'expediteur_nom') String get expediteurNom; String get contenu;@JsonKey(name: 'created_at') String? get createdAt;
+ int get id; int get conversation; int? get expediteur;@JsonKey(name: 'expediteur_nom') String get expediteurNom; String get contenu;@JsonKey(name: 'created_at') String? get createdAt; String get statut;
 /// Create a copy of Message
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $MessageCopyWith<Message> get copyWith => _$MessageCopyWithImpl<Message>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Message&&(identical(other.id, id) || other.id == id)&&(identical(other.conversation, conversation) || other.conversation == conversation)&&(identical(other.expediteur, expediteur) || other.expediteur == expediteur)&&(identical(other.expediteurNom, expediteurNom) || other.expediteurNom == expediteurNom)&&(identical(other.contenu, contenu) || other.contenu == contenu)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Message&&(identical(other.id, id) || other.id == id)&&(identical(other.conversation, conversation) || other.conversation == conversation)&&(identical(other.expediteur, expediteur) || other.expediteur == expediteur)&&(identical(other.expediteurNom, expediteurNom) || other.expediteurNom == expediteurNom)&&(identical(other.contenu, contenu) || other.contenu == contenu)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.statut, statut) || other.statut == statut));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,conversation,expediteur,expediteurNom,contenu,createdAt);
+int get hashCode => Object.hash(runtimeType,id,conversation,expediteur,expediteurNom,contenu,createdAt,statut);
 
 @override
 String toString() {
-  return 'Message(id: $id, conversation: $conversation, expediteur: $expediteur, expediteurNom: $expediteurNom, contenu: $contenu, createdAt: $createdAt)';
+  return 'Message(id: $id, conversation: $conversation, expediteur: $expediteur, expediteurNom: $expediteurNom, contenu: $contenu, createdAt: $createdAt, statut: $statut)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $MessageCopyWith<$Res>  {
   factory $MessageCopyWith(Message value, $Res Function(Message) _then) = _$MessageCopyWithImpl;
 @useResult
 $Res call({
- int id, int conversation, int? expediteur,@JsonKey(name: 'expediteur_nom') String expediteurNom, String contenu,@JsonKey(name: 'created_at') String? createdAt
+ int id, int conversation, int? expediteur,@JsonKey(name: 'expediteur_nom') String expediteurNom, String contenu,@JsonKey(name: 'created_at') String? createdAt, String statut
 });
 
 
@@ -65,7 +65,7 @@ class _$MessageCopyWithImpl<$Res>
 
 /// Create a copy of Message
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? conversation = null,Object? expediteur = freezed,Object? expediteurNom = null,Object? contenu = null,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? conversation = null,Object? expediteur = freezed,Object? expediteurNom = null,Object? contenu = null,Object? createdAt = freezed,Object? statut = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,conversation: null == conversation ? _self.conversation : conversation // ignore: cast_nullable_to_non_nullable
@@ -73,7 +73,8 @@ as int,expediteur: freezed == expediteur ? _self.expediteur : expediteur // igno
 as int?,expediteurNom: null == expediteurNom ? _self.expediteurNom : expediteurNom // ignore: cast_nullable_to_non_nullable
 as String,contenu: null == contenu ? _self.contenu : contenu // ignore: cast_nullable_to_non_nullable
 as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,statut: null == statut ? _self.statut : statut // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 
@@ -158,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int conversation,  int? expediteur, @JsonKey(name: 'expediteur_nom')  String expediteurNom,  String contenu, @JsonKey(name: 'created_at')  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int conversation,  int? expediteur, @JsonKey(name: 'expediteur_nom')  String expediteurNom,  String contenu, @JsonKey(name: 'created_at')  String? createdAt,  String statut)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Message() when $default != null:
-return $default(_that.id,_that.conversation,_that.expediteur,_that.expediteurNom,_that.contenu,_that.createdAt);case _:
+return $default(_that.id,_that.conversation,_that.expediteur,_that.expediteurNom,_that.contenu,_that.createdAt,_that.statut);case _:
   return orElse();
 
 }
@@ -179,10 +180,10 @@ return $default(_that.id,_that.conversation,_that.expediteur,_that.expediteurNom
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int conversation,  int? expediteur, @JsonKey(name: 'expediteur_nom')  String expediteurNom,  String contenu, @JsonKey(name: 'created_at')  String? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int conversation,  int? expediteur, @JsonKey(name: 'expediteur_nom')  String expediteurNom,  String contenu, @JsonKey(name: 'created_at')  String? createdAt,  String statut)  $default,) {final _that = this;
 switch (_that) {
 case _Message():
-return $default(_that.id,_that.conversation,_that.expediteur,_that.expediteurNom,_that.contenu,_that.createdAt);case _:
+return $default(_that.id,_that.conversation,_that.expediteur,_that.expediteurNom,_that.contenu,_that.createdAt,_that.statut);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +200,10 @@ return $default(_that.id,_that.conversation,_that.expediteur,_that.expediteurNom
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int conversation,  int? expediteur, @JsonKey(name: 'expediteur_nom')  String expediteurNom,  String contenu, @JsonKey(name: 'created_at')  String? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int conversation,  int? expediteur, @JsonKey(name: 'expediteur_nom')  String expediteurNom,  String contenu, @JsonKey(name: 'created_at')  String? createdAt,  String statut)?  $default,) {final _that = this;
 switch (_that) {
 case _Message() when $default != null:
-return $default(_that.id,_that.conversation,_that.expediteur,_that.expediteurNom,_that.contenu,_that.createdAt);case _:
+return $default(_that.id,_that.conversation,_that.expediteur,_that.expediteurNom,_that.contenu,_that.createdAt,_that.statut);case _:
   return null;
 
 }
@@ -214,7 +215,7 @@ return $default(_that.id,_that.conversation,_that.expediteur,_that.expediteurNom
 @JsonSerializable()
 
 class _Message extends Message {
-  const _Message({required this.id, required this.conversation, this.expediteur, @JsonKey(name: 'expediteur_nom') this.expediteurNom = '', this.contenu = '', @JsonKey(name: 'created_at') this.createdAt}): super._();
+  const _Message({required this.id, required this.conversation, this.expediteur, @JsonKey(name: 'expediteur_nom') this.expediteurNom = '', this.contenu = '', @JsonKey(name: 'created_at') this.createdAt, this.statut = 'envoye'}): super._();
   factory _Message.fromJson(Map<String, dynamic> json) => _$MessageFromJson(json);
 
 @override final  int id;
@@ -223,6 +224,7 @@ class _Message extends Message {
 @override@JsonKey(name: 'expediteur_nom') final  String expediteurNom;
 @override@JsonKey() final  String contenu;
 @override@JsonKey(name: 'created_at') final  String? createdAt;
+@override@JsonKey() final  String statut;
 
 /// Create a copy of Message
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Message&&(identical(other.id, id) || other.id == id)&&(identical(other.conversation, conversation) || other.conversation == conversation)&&(identical(other.expediteur, expediteur) || other.expediteur == expediteur)&&(identical(other.expediteurNom, expediteurNom) || other.expediteurNom == expediteurNom)&&(identical(other.contenu, contenu) || other.contenu == contenu)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Message&&(identical(other.id, id) || other.id == id)&&(identical(other.conversation, conversation) || other.conversation == conversation)&&(identical(other.expediteur, expediteur) || other.expediteur == expediteur)&&(identical(other.expediteurNom, expediteurNom) || other.expediteurNom == expediteurNom)&&(identical(other.contenu, contenu) || other.contenu == contenu)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.statut, statut) || other.statut == statut));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,conversation,expediteur,expediteurNom,contenu,createdAt);
+int get hashCode => Object.hash(runtimeType,id,conversation,expediteur,expediteurNom,contenu,createdAt,statut);
 
 @override
 String toString() {
-  return 'Message(id: $id, conversation: $conversation, expediteur: $expediteur, expediteurNom: $expediteurNom, contenu: $contenu, createdAt: $createdAt)';
+  return 'Message(id: $id, conversation: $conversation, expediteur: $expediteur, expediteurNom: $expediteurNom, contenu: $contenu, createdAt: $createdAt, statut: $statut)';
 }
 
 
@@ -257,7 +259,7 @@ abstract mixin class _$MessageCopyWith<$Res> implements $MessageCopyWith<$Res> {
   factory _$MessageCopyWith(_Message value, $Res Function(_Message) _then) = __$MessageCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int conversation, int? expediteur,@JsonKey(name: 'expediteur_nom') String expediteurNom, String contenu,@JsonKey(name: 'created_at') String? createdAt
+ int id, int conversation, int? expediteur,@JsonKey(name: 'expediteur_nom') String expediteurNom, String contenu,@JsonKey(name: 'created_at') String? createdAt, String statut
 });
 
 
@@ -274,7 +276,7 @@ class __$MessageCopyWithImpl<$Res>
 
 /// Create a copy of Message
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? conversation = null,Object? expediteur = freezed,Object? expediteurNom = null,Object? contenu = null,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? conversation = null,Object? expediteur = freezed,Object? expediteurNom = null,Object? contenu = null,Object? createdAt = freezed,Object? statut = null,}) {
   return _then(_Message(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,conversation: null == conversation ? _self.conversation : conversation // ignore: cast_nullable_to_non_nullable
@@ -282,7 +284,8 @@ as int,expediteur: freezed == expediteur ? _self.expediteur : expediteur // igno
 as int?,expediteurNom: null == expediteurNom ? _self.expediteurNom : expediteurNom // ignore: cast_nullable_to_non_nullable
 as String,contenu: null == contenu ? _self.contenu : contenu // ignore: cast_nullable_to_non_nullable
 as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,statut: null == statut ? _self.statut : statut // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

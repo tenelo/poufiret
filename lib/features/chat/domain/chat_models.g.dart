@@ -13,6 +13,7 @@ _Message _$MessageFromJson(Map<String, dynamic> json) => _Message(
   expediteurNom: json['expediteur_nom'] as String? ?? '',
   contenu: json['contenu'] as String? ?? '',
   createdAt: json['created_at'] as String?,
+  statut: json['statut'] as String? ?? 'envoye',
 );
 
 Map<String, dynamic> _$MessageToJson(_Message instance) => <String, dynamic>{
@@ -22,6 +23,7 @@ Map<String, dynamic> _$MessageToJson(_Message instance) => <String, dynamic>{
   'expediteur_nom': instance.expediteurNom,
   'contenu': instance.contenu,
   'created_at': instance.createdAt,
+  'statut': instance.statut,
 };
 
 _DernierMessage _$DernierMessageFromJson(Map<String, dynamic> json) =>
