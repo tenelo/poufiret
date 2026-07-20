@@ -48,8 +48,12 @@ class ChatSocket {
     if (access == null) return null;
     final base = Uri.parse(Env.apiBaseUrl);
     final wsScheme = base.scheme == 'https' ? 'wss' : 'ws';
-    final hote = base.hasPort ? '${base.host}:${base.port}' : base.host;
-    return '$wsScheme://$hote/ws/chat/$conversationId/?token=$access';
+    final ws = base.replace(
+      scheme: wsScheme,
+      path: '/ws/chat/$conversationId/',
+      queryParameters: {'token': access},
+    );
+    return ws.toString();
   }
 
   /// Ouvre la connexion. Idempotent tant qu'un canal est actif.
@@ -66,7 +70,10 @@ class ChatSocket {
     }
 
     try {
-      _canal = IOWebSocketChannel.connect(url);
+      _canal = IOWebSocketChannel.connect(
+        url,
+        headers: {'Origin': Env.apiBaseUrl},
+      );
       await _canal!.ready;
     } catch (e) {
       print('[ChatSocket] echec connexion: $e');

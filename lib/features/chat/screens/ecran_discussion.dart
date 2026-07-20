@@ -106,14 +106,6 @@ class _EcranDiscussionState extends ConsumerState<EcranDiscussion> {
       appBar: AppBar(title: Text(widget.titre)),
       body: Column(
         children: [
-          if (_etat == EtatSocket.deconnecte ||
-              _etat == EtatSocket.connexion)
-            _Bandeau(
-              texte: _etat == EtatSocket.connexion
-                  ? 'Connexion…'
-                  : 'Reconnexion…',
-              couleur: Colors.orange.shade100,
-            ),
           if (_etat == EtatSocket.refuse)
             _Bandeau(
               texte: 'Connexion impossible à cette conversation.',
