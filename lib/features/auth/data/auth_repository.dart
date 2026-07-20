@@ -62,6 +62,28 @@ class AuthRepository {
 
     return Utilisateur.fromJson(data['utilisateur'] as Map<String, dynamic>);
   }
+  /// PATCH /auth/moi/ → modifie le profil (champs éditables uniquement).
+  Future<Utilisateur> modifierProfil(Map<String, dynamic> donnees) async {
+    final r = await _dio.patch('${Env.apiPrefix}/auth/moi/', data: donnees);
+    return Utilisateur.fromJson(r.data as Map<String, dynamic>);
+  }
+
+  /// GET /auth/appareils/ → sessions appareils de l'utilisateur.
+  Future<List<Map<String, dynamic>>> appareils() async {
+    final r = await _dio.get('${Env.apiPrefix}/auth/appareils/');
+    return (r.data as List).cast<Map<String, dynamic>>();
+  }
+
+  /// POST /auth/appareils/<id>/revoquer/ → désactive une session.
+  Future<void> revoquerAppareil(String id) async {
+    await _dio.post('${Env.apiPrefix}/auth/appareils/$id/revoquer/');
+  }
+
+  /// POST /auth/devenir-partenaire/ → crée le profil partenaire (en attente).
+  Future<void> devenirPartenaire(Map<String, dynamic> donnees) async {
+    await _dio.post('${Env.apiPrefix}/auth/devenir-partenaire/', data: donnees);
+  }
+
   /// GET /auth/moi/ → profil de l'utilisateur courant (token déjà injecté).
   Future<Utilisateur> moi() async {
     final r = await _dio.get('${Env.apiPrefix}/auth/moi/');

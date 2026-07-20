@@ -1,3 +1,4 @@
+import '../../features/account/screens/ecran_mon_compte.dart';
 import '../../features/partenaire/screens/ecran_espace_partenaire.dart';
 import '../../features/prestations/screens/ecran_mes_demandes.dart';
 import 'package:flutter/material.dart';
@@ -87,12 +88,7 @@ class AppDrawer extends ConsumerWidget {
                   ListTile(
                     leading: const Icon(Icons.person_outline),
                     title: const Text('Mon compte'),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Bientôt disponible.')),
-                      );
-                    },
+                    onTap: () => ouvrir(const EcranMonCompte()),
                   ),
                 ],
               ),
