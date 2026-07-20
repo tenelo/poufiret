@@ -51,13 +51,13 @@ class EcranConversations extends ConsumerWidget {
   }
 }
 
-class _Tuile extends StatelessWidget {
+class _Tuile extends ConsumerWidget {
   const _Tuile({required this.conversation, required this.monId});
   final Conversation conversation;
   final int? monId;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = conversation;
     // Côté client on montre le partenaire ; si je suis le partenaire, le client.
     final jeSuisPartenaire = monId != null && c.client != monId;
@@ -80,14 +80,19 @@ class _Tuile extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => EcranDiscussion(
-            conversationId: c.id,
-            titre: titre.isEmpty ? 'Conversation' : titre,
+      onTap: () async {
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => EcranDiscussion(
+              conversationId: c.id,
+              titre: titre.isEmpty ? 'Conversation' : titre,
+            ),
           ),
-        ),
-      ),
+        );
+        // Retour de la discussion : la liste se met a jour
+        // (dernier message + ordre par derniere activite).
+        ref.invalidate(conversationsProvider);
+      },
     );
   }
 }
