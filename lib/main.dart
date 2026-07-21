@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/navigation/app_shell.dart';
 import 'core/notifications/fcm_service.dart';
+import 'features/analytics/data/analytics_providers.dart';
 import 'features/auth/screens/auth_notifier.dart';
 import 'features/auth/screens/ecran_connexion.dart';
 
@@ -32,21 +33,62 @@ class PoufiretApp extends StatelessWidget {
   }
 }
 
-/// Aiguille selon l'état d'authentification.
-class _Racine extends ConsumerWidget {
+/// Aiguille selon l'etat d'authentification et pilote le suivi de session.
+class _Racine extends ConsumerStatefulWidget {
   const _Racine();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_Racine> createState() => _RacineState();
+}
+
+class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  /// Le heartbeat ne tourne que quand l'app est reellement au premier plan :
+  /// une session mise en pause s'arrete au dernier ping recu par le serveur.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState etat) {
+    final connecte = ref.read(authProvider).value != null;
+    if (!connecte) return;
+    final session = ref.read(sessionAnalyticsProvider.notifier);
+    switch (etat) {
+      case AppLifecycleState.resumed:
+        session.reprendre();
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+        session.arreter();
+      case AppLifecycleState.inactive:
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
 
-    // Des qu'un utilisateur est connecte, on active les notifications push.
     ref.listen(authProvider, (avant, apres) {
       final user = apres.value;
-      if (user != null && avant?.value == null) {
+      final etaitConnecte = avant?.value != null;
+      if (user != null && !etaitConnecte) {
+        // Connexion : notifications push + ouverture de la session analytics.
         ref.read(fcmServiceProvider).initialiser();
+        ref.read(sessionAnalyticsProvider.notifier).demarrer();
+      } else if (user == null && etaitConnecte) {
+        ref.read(sessionAnalyticsProvider.notifier).arreter();
       }
     });
+
     return auth.when(
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),

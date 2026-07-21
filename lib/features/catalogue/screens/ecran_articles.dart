@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
+import 'package:poufiret/features/analytics/data/analytics_providers.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/article_liste.dart';
 import 'package:poufiret/features/catalogue/screens/ecran_article_detail.dart';
@@ -21,6 +22,8 @@ class EcranArticles extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final articlesAsync = ref.watch(articlesProvider(categorieId: categorieId, partenaireId: partenaireId));
+    // Une entree dans le catalogue = une visite de categorie.
+    ref.watch(visiteCategorieProvider(categorieId: categorieId));
 
     return Scaffold(
       appBar: AppBar(title: Text(categorieNom)),

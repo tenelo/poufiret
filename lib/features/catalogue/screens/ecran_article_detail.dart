@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
+import 'package:poufiret/features/analytics/data/analytics_providers.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/article_detail.dart';
 import 'package:poufiret/features/chat/data/chat_providers.dart';
@@ -39,6 +40,8 @@ class EcranArticleDetail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final detailAsync = ref.watch(articleDetailProvider(slug: slug));
+    // Enregistre la consultation (alimente stats partenaire et profil de navigation).
+    ref.watch(vueArticleProvider(slug: slug));
 
     return Scaffold(
       body: detailAsync.when(
