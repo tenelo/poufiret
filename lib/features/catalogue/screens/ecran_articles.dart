@@ -22,8 +22,11 @@ class EcranArticles extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final articlesAsync = ref.watch(articlesProvider(categorieId: categorieId, partenaireId: partenaireId));
-    // Une entree dans le catalogue = une visite de categorie.
-    ref.watch(visiteCategorieProvider(categorieId: categorieId));
+    // Ouverture du catalogue d un partenaire = une vue catalogue.
+    if (partenaireId != null) {
+      ref.watch(vueVitrineProvider(
+          partenaireId: partenaireId!, source: 'annuaire'));
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text(categorieNom)),
@@ -121,16 +124,51 @@ class _VignetteArticle extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleSmall,
                   ),
-                  if (modeTransaction != 'demande_intervention') ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      '${article.prixEffectif.toStringAsFixed(0)} FCFA',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      if (modeTransaction != 'demande_intervention')
+                        Flexible(
+                          child: Text(
+                            '${article.prixEffectif.toStringAsFixed(0)} FCFA',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        )
+                      else
+                        const SizedBox.shrink(),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Voir détails',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                          ),
+                          const SizedBox(width: 2),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 11,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ],
               ),
             ),

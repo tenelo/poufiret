@@ -55,6 +55,26 @@ class AnalyticsRepository {
     }
   }
 
+  /// Enregistre la consultation de la vitrine d'un partenaire.
+  ///
+  /// Seul signal disponible pour les metiers de service, ou le client
+  /// ne consulte aucun article.
+  Future<void> enregistrerVueVitrine(int partenaireId,
+      {String source = 'annuaire', bool avecCatalogue = true}) async {
+    try {
+      await _dio.post<void>(
+        '${Env.apiPrefix}/analytics/vitrine/vue/',
+        data: {
+          'partenaire': partenaireId,
+          'source': source,
+          'avec_catalogue': avecCatalogue,
+        },
+      );
+    } catch (_) {
+      // Silencieux : le tracking ne bloque jamais l'affichage.
+    }
+  }
+
   /// Enregistre la consultation d'un article (alimente le profil de navigation).
   Future<void> enregistrerVueArticle(String slug, {String source = 'liste'}) async {
     try {

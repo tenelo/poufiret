@@ -23,6 +23,7 @@ abstract class PartenaireVitrine with _$PartenaireVitrine {
     @JsonKey(name: 'telephone_pro') @Default('') String telephonePro,
     @Default('') String whatsapp,
     @JsonKey(name: 'email_pro') @Default('') String emailPro,
+    @JsonKey(name: 'nb_vues') @Default(0) int nbVues,
     @JsonKey(name: 'nombre_likes') @Default(0) int nombreLikes,
     @JsonKey(name: 'est_like_par_moi') @Default(false) bool estLikeParMoi,
     @JsonKey(name: 'est_favori_par_moi') @Default(false) bool estFavoriParMoi,

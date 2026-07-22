@@ -141,3 +141,91 @@ final class CommentairesArticleFamily extends $Family
   @override
   String toString() => r'commentairesArticleProvider';
 }
+
+/// Commentaires d'une vitrine partenaire (racines + réponses imbriquées).
+
+@ProviderFor(commentairesPartenaire)
+final commentairesPartenaireProvider = CommentairesPartenaireFamily._();
+
+/// Commentaires d'une vitrine partenaire (racines + réponses imbriquées).
+
+final class CommentairesPartenaireProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Commentaire>>,
+          List<Commentaire>,
+          FutureOr<List<Commentaire>>
+        >
+    with
+        $FutureModifier<List<Commentaire>>,
+        $FutureProvider<List<Commentaire>> {
+  /// Commentaires d'une vitrine partenaire (racines + réponses imbriquées).
+  CommentairesPartenaireProvider._({
+    required CommentairesPartenaireFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'commentairesPartenaireProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$commentairesPartenaireHash();
+
+  @override
+  String toString() {
+    return r'commentairesPartenaireProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Commentaire>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Commentaire>> create(Ref ref) {
+    final argument = this.argument as int;
+    return commentairesPartenaire(ref, partenaireId: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CommentairesPartenaireProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$commentairesPartenaireHash() =>
+    r'832c0aa1a1458f65a03894511ac759b697d72437';
+
+/// Commentaires d'une vitrine partenaire (racines + réponses imbriquées).
+
+final class CommentairesPartenaireFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<Commentaire>>, int> {
+  CommentairesPartenaireFamily._()
+    : super(
+        retry: null,
+        name: r'commentairesPartenaireProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Commentaires d'une vitrine partenaire (racines + réponses imbriquées).
+
+  CommentairesPartenaireProvider call({required int partenaireId}) =>
+      CommentairesPartenaireProvider._(argument: partenaireId, from: this);
+
+  @override
+  String toString() => r'commentairesPartenaireProvider';
+}

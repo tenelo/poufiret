@@ -107,3 +107,19 @@ Future<void> visiteCategorie(Ref ref, {required int categorieId}) async {
       .read(analyticsRepositoryProvider)
       .enregistrerVisiteCategorie(categorieId);
 }
+
+/// Enregistre la consultation de la vitrine d'un partenaire.
+///
+/// Auto-disposable : une vue par ouverture de la fiche.
+@riverpod
+Future<void> vueVitrine(
+  Ref ref, {
+  required int partenaireId,
+  String source = 'annuaire',
+  bool avecCatalogue = true,
+}) async {
+  await ref
+      .read(analyticsRepositoryProvider)
+      .enregistrerVueVitrine(partenaireId,
+          source: source, avecCatalogue: avecCatalogue);
+}

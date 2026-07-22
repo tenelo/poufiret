@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/config/config.dart';
 import 'core/navigation/app_shell.dart';
 import 'core/notifications/fcm_service.dart';
 import 'features/analytics/data/analytics_providers.dart';
@@ -24,7 +25,8 @@ class PoufiretApp extends StatelessWidget {
     return MaterialApp(
       title: 'Poufiret',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        colorScheme: Config.schemaCouleurs,
+        scaffoldBackgroundColor: Config.couleurFond,
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,

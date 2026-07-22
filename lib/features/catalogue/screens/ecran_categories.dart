@@ -112,6 +112,7 @@ class _TuileCategorie extends StatelessWidget {
                 categorieNom: categorie.nom,
                 categorieSlug: categorie.slug,
                 modeTransaction: categorie.modeTransaction,
+                afficheCatalogue: categorie.afficheCatalogue,
               ),
             ),
           );

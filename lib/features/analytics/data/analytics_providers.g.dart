@@ -320,3 +320,113 @@ final class VisiteCategorieFamily extends $Family
   @override
   String toString() => r'visiteCategorieProvider';
 }
+
+/// Enregistre la consultation de la vitrine d'un partenaire.
+///
+/// Auto-disposable : une vue par ouverture de la fiche.
+
+@ProviderFor(vueVitrine)
+final vueVitrineProvider = VueVitrineFamily._();
+
+/// Enregistre la consultation de la vitrine d'un partenaire.
+///
+/// Auto-disposable : une vue par ouverture de la fiche.
+
+final class VueVitrineProvider
+    extends $FunctionalProvider<AsyncValue<void>, void, FutureOr<void>>
+    with $FutureModifier<void>, $FutureProvider<void> {
+  /// Enregistre la consultation de la vitrine d'un partenaire.
+  ///
+  /// Auto-disposable : une vue par ouverture de la fiche.
+  VueVitrineProvider._({
+    required VueVitrineFamily super.from,
+    required ({int partenaireId, String source, bool avecCatalogue})
+    super.argument,
+  }) : super(
+         retry: null,
+         name: r'vueVitrineProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$vueVitrineHash();
+
+  @override
+  String toString() {
+    return r'vueVitrineProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<void> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<void> create(Ref ref) {
+    final argument =
+        this.argument
+            as ({int partenaireId, String source, bool avecCatalogue});
+    return vueVitrine(
+      ref,
+      partenaireId: argument.partenaireId,
+      source: argument.source,
+      avecCatalogue: argument.avecCatalogue,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is VueVitrineProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$vueVitrineHash() => r'f6510fb421e82d8a1cddbcda8feed7c7a70bee3c';
+
+/// Enregistre la consultation de la vitrine d'un partenaire.
+///
+/// Auto-disposable : une vue par ouverture de la fiche.
+
+final class VueVitrineFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<void>,
+          ({int partenaireId, String source, bool avecCatalogue})
+        > {
+  VueVitrineFamily._()
+    : super(
+        retry: null,
+        name: r'vueVitrineProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Enregistre la consultation de la vitrine d'un partenaire.
+  ///
+  /// Auto-disposable : une vue par ouverture de la fiche.
+
+  VueVitrineProvider call({
+    required int partenaireId,
+    String source = 'annuaire',
+    bool avecCatalogue = true,
+  }) => VueVitrineProvider._(
+    argument: (
+      partenaireId: partenaireId,
+      source: source,
+      avecCatalogue: avecCatalogue,
+    ),
+    from: this,
+  );
+
+  @override
+  String toString() => r'vueVitrineProvider';
+}

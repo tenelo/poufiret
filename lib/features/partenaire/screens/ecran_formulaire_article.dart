@@ -78,8 +78,11 @@ class _EcranFormulaireArticleState
   }
 
   Future<void> _choisirPhotos() async {
-    final images = await ImagePicker()
-        .pickMultiImage(maxWidth: 1600, imageQuality: 80, limit: 5);
+    final images = await ImagePicker().pickMultiImage(
+      maxWidth: 1600,
+      imageQuality: 80,
+      limit: 5,
+    );
     if (images.isNotEmpty) {
       setState(() => _nouvellesPhotos.addAll(images.take(5)));
     }
@@ -128,14 +131,18 @@ class _EcranFormulaireArticleState
         }
       }
       if (!mounted) return;
-      _message(echecs == 0
-          ? (_estEdition ? 'Article modifié.' : 'Article créé.')
-          : 'Enregistré, mais $echecs photo(s) refusée(s) (quota du plan ?).');
+      _message(
+        echecs == 0
+            ? (_estEdition ? 'Article modifié.' : 'Article créé.')
+            : 'Enregistré, mais $echecs photo(s) refusée(s) (quota du plan ?).',
+      );
       Navigator.of(context).pop(true);
     } catch (e) {
-      _message(e is ApiException
-          ? e.messageLisible
-          : 'Enregistrement impossible. Réessayez.');
+      _message(
+        e is ApiException
+            ? e.messageLisible
+            : 'Enregistrement impossible. Réessayez.',
+      );
     } finally {
       if (mounted) setState(() => _envoiEnCours = false);
     }
@@ -146,14 +153,17 @@ class _EcranFormulaireArticleState
       context: context,
       builder: (ctx) => AlertDialog(
         content: const Text(
-            'Supprimer cet article ? Cette action est définitive.'),
+          'Supprimer cet article ? Cette action est définitive.',
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Annuler')),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Annuler'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Supprimer')),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Supprimer'),
+          ),
         ],
       ),
     );
@@ -167,9 +177,9 @@ class _EcranFormulaireArticleState
       _message('Article supprimé.');
       Navigator.of(context).pop(true);
     } catch (e) {
-      _message(e is ApiException
-          ? e.messageLisible
-          : 'Suppression impossible.');
+      _message(
+        e is ApiException ? e.messageLisible : 'Suppression impossible.',
+      );
       if (mounted) setState(() => _envoiEnCours = false);
     }
   }
@@ -180,8 +190,7 @@ class _EcranFormulaireArticleState
 
     // En édition : préremplir une seule fois depuis la fiche.
     if (_estEdition && !_prerempli) {
-      final detailAsync =
-          ref.watch(articleDetailProvider(slug: widget.slug!));
+      final detailAsync = ref.watch(articleDetailProvider(slug: widget.slug!));
       final article = detailAsync.whenOrNull(data: (a) => a);
       if (article != null) {
         _prerempli = true;
@@ -231,12 +240,12 @@ class _EcranFormulaireArticleState
                           TextFormField(
                             controller: _ctrlNom,
                             decoration: const InputDecoration(
-                                labelText: 'Nom de l\'article'),
+                              labelText: 'Nom de l\'article',
+                            ),
                             maxLength: 150,
-                            validator: (v) =>
-                                v == null || v.trim().length < 3
-                                    ? 'Nom trop court.'
-                                    : null,
+                            validator: (v) => v == null || v.trim().length < 3
+                                ? 'Nom trop court.'
+                                : null,
                           ),
                           const SizedBox(height: 8),
                           categoriesAsync.when(
@@ -246,31 +255,41 @@ class _EcranFormulaireArticleState
                             data: (cats) {
                               _categories = cats;
                               return DropdownButtonFormField<int>(
-                              initialValue: _categorieId,
-                              decoration: const InputDecoration(
-                                  labelText: 'Catégorie'),
-                              items: cats
-                                  .map((c) => DropdownMenuItem(
-                                      value: c.id, child: Text(c.nom)))
-                                  .toList(),
-                              onChanged: (v) => setState(() {
-                                _categorieId = v;
-                                final permis = _typesPermis;
-                                if (!permis.contains(_type)) {
-                                  _type = permis.first;
-                                }
-                              }),
+                                initialValue: _categorieId,
+                                decoration: const InputDecoration(
+                                  labelText: 'Catégorie',
+                                ),
+                                items: cats
+                                    .map(
+                                      (c) => DropdownMenuItem(
+                                        value: c.id,
+                                        child: Text(c.nom),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (v) => setState(() {
+                                  _categorieId = v;
+                                  final permis = _typesPermis;
+                                  if (!permis.contains(_type)) {
+                                    _type = permis.first;
+                                  }
+                                }),
                               );
                             },
                           ),
                           const SizedBox(height: 12),
                           DropdownButtonFormField<String>(
                             initialValue: _type,
-                            decoration:
-                                const InputDecoration(labelText: 'Type'),
+                            decoration: const InputDecoration(
+                              labelText: 'Type',
+                            ),
                             items: _typesPermis
-                                .map((k) => DropdownMenuItem(
-                                    value: k, child: Text(_types[k] ?? k)))
+                                .map(
+                                  (k) => DropdownMenuItem(
+                                    value: k,
+                                    child: Text(_types[k] ?? k),
+                                  ),
+                                )
                                 .toList(),
                             onChanged: (v) => setState(() => _type = v!),
                           ),
@@ -279,15 +298,15 @@ class _EcranFormulaireArticleState
                             controller: _ctrlPrix,
                             keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
-                                labelText: 'Prix (FCFA)',
-                                helperText:
-                                    'Laissez 0 pour une prestation sur devis.'),
+                              labelText: 'Prix (FCFA)',
+                              helperText:
+                                  'Laissez 0 pour une prestation sur devis.',
+                            ),
                           ),
                           const SizedBox(height: 8),
                           SwitchListTile(
                             value: _enPromotion,
-                            onChanged: (v) =>
-                                setState(() => _enPromotion = v),
+                            onChanged: (v) => setState(() => _enPromotion = v),
                             title: const Text('En promotion'),
                             dense: true,
                             contentPadding: EdgeInsets.zero,
@@ -297,13 +316,14 @@ class _EcranFormulaireArticleState
                               controller: _ctrlPrixPromo,
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration(
-                                  labelText: 'Prix promotionnel (FCFA)'),
+                                labelText: 'Prix promotionnel (FCFA)',
+                              ),
                               validator: (v) {
                                 if (!_enPromotion) return null;
-                                final promo =
-                                    int.tryParse(v?.trim() ?? '');
+                                final promo = int.tryParse(v?.trim() ?? '');
                                 final prix = int.tryParse(
-                                    _ctrlPrix.text.trim());
+                                  _ctrlPrix.text.trim(),
+                                );
                                 if (promo == null) {
                                   return 'Prix promo requis.';
                                 }
@@ -326,11 +346,11 @@ class _EcranFormulaireArticleState
                           const SizedBox(height: 8),
                           SwitchListTile(
                             value: _disponible,
-                            onChanged: (v) =>
-                                setState(() => _disponible = v),
+                            onChanged: (v) => setState(() => _disponible = v),
                             title: const Text('Disponible'),
                             subtitle: const Text(
-                                'Indisponible = visible mais non commandable.'),
+                              'Indisponible = visible mais non commandable.',
+                            ),
                             dense: true,
                             contentPadding: EdgeInsets.zero,
                           ),
@@ -339,7 +359,8 @@ class _EcranFormulaireArticleState
                             onChanged: (v) => setState(() => _actif = v),
                             title: const Text('Actif'),
                             subtitle: const Text(
-                                'Inactif = retiré de l\'application (non supprimé).'),
+                              'Inactif = retiré de l\'application (non supprimé).',
+                            ),
                             dense: true,
                             contentPadding: EdgeInsets.zero,
                           ),
@@ -348,10 +369,9 @@ class _EcranFormulaireArticleState
                             children: [
                               Expanded(
                                 child: Text(
-                                    'Nouvelles photos (${_nouvellesPhotos.length})',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleSmall),
+                                  'Nouvelles photos (${_nouvellesPhotos.length})',
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
                               ),
                               TextButton.icon(
                                 onPressed: _choisirPhotos,
@@ -371,24 +391,24 @@ class _EcranFormulaireArticleState
                                 itemBuilder: (_, i) => Stack(
                                   children: [
                                     ClipRRect(
-                                      borderRadius:
-                                          BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(8),
                                       child: Image.file(
-                                          File(_nouvellesPhotos[i].path),
-                                          width: 90,
-                                          height: 90,
-                                          fit: BoxFit.cover),
+                                        File(_nouvellesPhotos[i].path),
+                                        width: 90,
+                                        height: 90,
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                     Positioned(
                                       top: 0,
                                       right: 0,
                                       child: InkWell(
-                                        onTap: () => setState(() =>
-                                            _nouvellesPhotos.removeAt(i)),
+                                        onTap: () => setState(
+                                          () => _nouvellesPhotos.removeAt(i),
+                                        ),
                                         child: const CircleAvatar(
                                           radius: 12,
-                                          child: Icon(Icons.close,
-                                              size: 14),
+                                          child: Icon(Icons.close, size: 14),
                                         ),
                                       ),
                                     ),
@@ -414,14 +434,15 @@ class _EcranFormulaireArticleState
               child: SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
-                  onPressed:
-                      _envoiEnCours || chargementEdition ? null : _enregistrer,
+                  onPressed: _envoiEnCours || chargementEdition
+                      ? null
+                      : _enregistrer,
                   icon: _envoiEnCours
                       ? const SizedBox(
                           width: 18,
                           height: 18,
-                          child:
-                              CircularProgressIndicator(strokeWidth: 2))
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : const Icon(Icons.save),
                   label: Text(_estEdition ? 'Enregistrer' : 'Créer'),
                 ),

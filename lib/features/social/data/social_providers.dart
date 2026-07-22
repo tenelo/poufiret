@@ -19,3 +19,14 @@ Future<List<Commentaire>> commentairesArticle(
 }) {
   return ref.watch(socialRepositoryProvider).commentairesArticle(articleId);
 }
+
+/// Commentaires d'une vitrine partenaire (racines + réponses imbriquées).
+@riverpod
+Future<List<Commentaire>> commentairesPartenaire(
+  Ref ref, {
+  required int partenaireId,
+}) {
+  return ref
+      .watch(socialRepositoryProvider)
+      .commentairesPartenaire(partenaireId);
+}

@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:poufiret/core/config/config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:poufiret/features/analytics/data/analytics_providers.dart';
+import 'package:poufiret/features/social/data/social_providers.dart';
+import 'package:poufiret/features/social/widgets/bouton_social.dart';
+import 'package:poufiret/features/social/widgets/section_commentaires.dart';
+import 'package:poufiret/features/chat/data/chat_providers.dart';
+import 'package:poufiret/features/chat/screens/ecran_discussion.dart';
+import 'package:poufiret/features/prestations/screens/ecran_demande_intervention.dart';
 
 import '../data/partenaire_providers.dart';
 import '../domain/partenaire_vitrine.dart';
@@ -7,13 +16,57 @@ import '../domain/partenaire_vitrine.dart';
 /// Vitrine publique d'un partenaire (côté client).
 /// Affiche couverture, logo, infos, localisation, contacts.
 class EcranVitrinePartenaire extends ConsumerWidget {
-  const EcranVitrinePartenaire({super.key, required this.partenaireId});
+  const EcranVitrinePartenaire({
+    super.key,
+    required this.partenaireId,
+    this.modeTransaction = '',
+  });
+
+  /// Mode de la categorie d'ou vient le client : determine l'action principale.
+  final String modeTransaction;
 
   final int partenaireId;
+
+  /// Vrai si la categorie d'origine fonctionne par demande d'intervention
+  /// (plomberie, electricite, maconnerie, mecanique...).
+  bool get _estIntervention => modeTransaction == 'demande_intervention';
+
+  /// Demande d'intervention pour les metiers de service, chat sinon.
+  Future<void> _actionPrincipale(
+      BuildContext context, WidgetRef ref, PartenaireVitrine p) async {
+    final nav = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    if (_estIntervention) {
+      nav.push(MaterialPageRoute(
+        builder: (_) => EcranDemandeIntervention(
+          artisanId: partenaireId,
+          artisanNom: p.nomCommerce,
+        ),
+      ));
+      return;
+    }
+    try {
+      final conv = await ref
+          .read(chatRepositoryProvider)
+          .contacter(partenaireId: partenaireId);
+      nav.push(MaterialPageRoute(
+        builder: (_) => EcranDiscussion(
+          conversationId: conv.id,
+          titre: p.nomCommerce,
+        ),
+      ));
+    } catch (_) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Connexion requise pour discuter.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(partenaireVitrineProvider(id: partenaireId));
+    // Une ouverture de fiche = une vue de vitrine.
+    ref.watch(vueVitrineProvider(partenaireId: partenaireId, avecCatalogue: false));
 
     return Scaffold(
       body: async.when(
@@ -30,11 +83,13 @@ class EcranVitrinePartenaire extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(12),
             child: FilledButton.icon(
-              onPressed: () {
-                // TODO: brancher sur le module Chat (Contacter).
-              },
-              icon: const Icon(Icons.chat_bubble_outline),
-              label: const Text('Contacter'),
+              onPressed: () => _actionPrincipale(context, ref, p),
+              icon: Icon(_estIntervention
+                  ? Icons.handyman_outlined
+                  : Icons.chat_bubble_outline),
+              label: Text(_estIntervention
+                  ? 'Demande d\'intervention'
+                  : 'Contacter'),
               style: FilledButton.styleFrom(
                 minimumSize: const Size.fromHeight(52),
               ),
@@ -123,13 +178,13 @@ class _Couverture extends StatelessWidget {
   }
 }
 
-class _Infos extends StatelessWidget {
+class _Infos extends ConsumerWidget {
   const _Infos({required this.partenaire, required this.theme});
   final PartenaireVitrine partenaire;
   final ThemeData theme;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final p = partenaire;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -160,11 +215,61 @@ class _Infos extends StatelessWidget {
 
         // Stats sociales.
         Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(Icons.favorite,
-                size: 18, color: theme.colorScheme.primary),
-            const SizedBox(width: 4),
-            Text('${p.nombreLikes}'),
+            _Compteur(icone: Icons.visibility, valeur: p.nbVues),
+            const SizedBox(width: 16),
+            BoutonSocial(
+              actifInitial: p.estLikeParMoi,
+              totalInitial: p.nombreLikes,
+              iconeActive: Icons.favorite,
+              iconeInactive: Icons.favorite_border,
+              couleurActive: Config.couleurLike,
+              onToggle: () async {
+                final res = await ref
+                    .read(socialRepositoryProvider)
+                    .toggleLikePartenaire(p.id);
+                return (actif: res.actif, total: res.total);
+              },
+            ),
+            BoutonSocial(
+              actifInitial: p.estFavoriParMoi,
+              totalInitial: 0,
+              iconeActive: Icons.bookmark,
+              iconeInactive: Icons.bookmark_border,
+              couleurActive: Config.couleurFavori,
+              afficherTotal: false,
+              onToggle: () async {
+                final res = await ref
+                    .read(socialRepositoryProvider)
+                    .toggleFavoriPartenaire(p.id);
+                return (actif: res.actif, total: res.total);
+              },
+            ),
+            const Spacer(),
+            IconButton(
+              icon: FaIcon(FontAwesomeIcons.whatsapp,
+                  color: theme.colorScheme.primary),
+              tooltip: 'Discuter',
+              onPressed: () async {
+                final messenger = ScaffoldMessenger.of(context);
+                final nav = Navigator.of(context);
+                try {
+                  final conv = await ref
+                      .read(chatRepositoryProvider)
+                      .contacter(partenaireId: p.id);
+                  nav.push(MaterialPageRoute(
+                    builder: (_) => EcranDiscussion(
+                      conversationId: conv.id,
+                      titre: p.nomCommerce,
+                    ),
+                  ));
+                } catch (_) {
+                  messenger.showSnackBar(const SnackBar(
+                      content: Text('Connexion requise pour discuter.')));
+                }
+              },
+            ),
           ],
         ),
 
@@ -211,6 +316,8 @@ class _Infos extends StatelessWidget {
             ]),
         ],
 
+        const SizedBox(height: 24),
+        SectionCommentaires(partenaireId: p.id),
         const SizedBox(height: 80), // espace sous le bouton Contacter
       ],
     );
@@ -264,6 +371,28 @@ class _Erreur extends StatelessWidget {
           FilledButton(onPressed: onRetry, child: const Text('Réessayer')),
         ],
       ),
+    );
+  }
+}
+
+
+/// Petit compteur icone + valeur, aligne sur la fiche article.
+class _Compteur extends StatelessWidget {
+  const _Compteur({required this.icone, required this.valeur});
+
+  final IconData icone;
+  final int valeur;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icone, size: 18, color: theme.colorScheme.outline),
+        const SizedBox(width: 4),
+        Text('$valeur', style: theme.textTheme.bodyMedium),
+      ],
     );
   }
 }

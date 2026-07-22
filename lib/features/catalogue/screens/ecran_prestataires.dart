@@ -5,6 +5,8 @@ import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/partenaire_categorie.dart';
 import 'package:poufiret/features/catalogue/screens/ecran_articles.dart';
+import 'package:poufiret/features/partenaire/screens/ecran_vitrine_partenaire.dart';
+import 'package:poufiret/features/analytics/data/analytics_providers.dart';
 import 'package:poufiret/features/chat/data/chat_providers.dart';
 import 'package:poufiret/features/chat/screens/ecran_discussion.dart';
 
@@ -17,7 +19,11 @@ class EcranPrestataires extends ConsumerWidget {
     required this.categorieNom,
     required this.categorieSlug,
     this.modeTransaction = '',
+    this.afficheCatalogue = true,
   });
+
+  /// Faux pour les metiers de service pur : on va droit a la fiche partenaire.
+  final bool afficheCatalogue;
 
   final int categorieId;
   final String categorieNom;
@@ -26,6 +32,8 @@ class EcranPrestataires extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // L affichage de la liste des prestataires = une visite de categorie.
+    ref.watch(visiteCategorieProvider(categorieId: categorieId));
     final annuaireAsync =
         ref.watch(partenairesParCategorieProvider(slug: categorieSlug));
     return Scaffold(
@@ -82,12 +90,18 @@ class EcranPrestataires extends ConsumerWidget {
                       onTap: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (_) => EcranArticles(
-                              categorieId: categorieId,
-                              categorieNom: prestataires[i].nomCommerce,
-                              modeTransaction: modeTransaction,
-                              partenaireId: prestataires[i].id,
-                            ),
+                            builder: (_) => afficheCatalogue
+                                ? EcranArticles(
+                                    categorieId: categorieId,
+                                    categorieNom:
+                                        prestataires[i].nomCommerce,
+                                    modeTransaction: modeTransaction,
+                                    partenaireId: prestataires[i].id,
+                                  )
+                                : EcranVitrinePartenaire(
+                                    partenaireId: prestataires[i].id,
+                                    modeTransaction: modeTransaction,
+                                  ),
                           ),
                         );
                       },

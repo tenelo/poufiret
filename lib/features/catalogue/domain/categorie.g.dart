@@ -21,6 +21,7 @@ _Categorie _$CategorieFromJson(Map<String, dynamic> json) => _Categorie(
           ?.map((e) => e as String)
           .toList() ??
       const <String>[],
+  afficheCatalogue: json['affiche_catalogue'] as bool? ?? true,
   estActive: json['est_active'] as bool? ?? true,
   nbPartenaires: (json['nb_partenaires'] as num?)?.toInt(),
   enfants:
@@ -42,6 +43,7 @@ Map<String, dynamic> _$CategorieToJson(_Categorie instance) =>
       'mode_transaction': instance.modeTransaction,
       'ordre': instance.ordre,
       'types_articles': instance.typesArticles,
+      'affiche_catalogue': instance.afficheCatalogue,
       'est_active': instance.estActive,
       'nb_partenaires': instance.nbPartenaires,
       'enfants': instance.enfants,

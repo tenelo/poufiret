@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:poufiret/core/config/config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/features/auth/screens/auth_notifier.dart';
 import 'package:poufiret/features/social/data/social_providers.dart';
-import 'package:poufiret/features/social/data/social_repository.dart';
 import 'package:poufiret/features/social/domain/commentaire.dart';
 import 'package:poufiret/features/social/widgets/bouton_social.dart';
 
+/// Fil de commentaires avec réponses à un niveau.
+///
+/// S'utilise sur une fiche article (`articleId`) ou sur une vitrine
+/// partenaire (`partenaireId`) : exactement un des deux doit être fourni.
 class SectionCommentaires extends ConsumerStatefulWidget {
-  final int articleId;
-  const SectionCommentaires({super.key, required this.articleId});
+  final int? articleId;
+  final int? partenaireId;
+
+  const SectionCommentaires({super.key, this.articleId, this.partenaireId})
+      : assert(
+          (articleId == null) != (partenaireId == null),
+          'Fournir soit articleId, soit partenaireId, mais pas les deux.',
+        );
 
   @override
   ConsumerState<SectionCommentaires> createState() =>
@@ -22,10 +32,26 @@ class _SectionCommentairesState extends ConsumerState<SectionCommentaires> {
   String _repondAQui = '';
   bool _envoiEnCours = false;
 
+  bool get _estPartenaire => widget.partenaireId != null;
+
+  /// Type attendu par la route de like : article ou partenaire.
+  String get _typeComm => _estPartenaire ? 'partenaire' : 'article';
+
   @override
   void dispose() {
     _champ.dispose();
     super.dispose();
+  }
+
+  /// Recharge le fil après un ajout ou une suppression.
+  void _recharger() {
+    if (_estPartenaire) {
+      ref.invalidate(
+        commentairesPartenaireProvider(partenaireId: widget.partenaireId!),
+      );
+    } else {
+      ref.invalidate(commentairesArticleProvider(articleId: widget.articleId!));
+    }
   }
 
   Future<void> _envoyer() async {
@@ -33,20 +59,26 @@ class _SectionCommentairesState extends ConsumerState<SectionCommentaires> {
     if (texte.isEmpty) return;
     setState(() => _envoiEnCours = true);
     try {
-      await ref
-          .read(socialRepositoryProvider)
-          .posterCommentaire(
-            articleId: widget.articleId,
-            contenu: texte,
-            parentId: _repondA,
-          );
+      final repo = ref.read(socialRepositoryProvider);
+      if (_estPartenaire) {
+        await repo.posterCommentairePartenaire(
+          partenaireId: widget.partenaireId!,
+          contenu: texte,
+          parentId: _repondA,
+        );
+      } else {
+        await repo.posterCommentaire(
+          articleId: widget.articleId!,
+          contenu: texte,
+          parentId: _repondA,
+        );
+      }
       _champ.clear();
       setState(() {
         _repondA = null;
         _repondAQui = '';
       });
-      // Recharge la liste pour voir le nouveau commentaire.
-      ref.invalidate(commentairesArticleProvider(articleId: widget.articleId));
+      _recharger();
     } on ApiException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -60,8 +92,13 @@ class _SectionCommentairesState extends ConsumerState<SectionCommentaires> {
 
   Future<void> _supprimer(int id) async {
     try {
-      await ref.read(socialRepositoryProvider).supprimerCommentaire(id);
-      ref.invalidate(commentairesArticleProvider(articleId: widget.articleId));
+      final repo = ref.read(socialRepositoryProvider);
+      if (_estPartenaire) {
+        await repo.supprimerCommentairePartenaire(id);
+      } else {
+        await repo.supprimerCommentaire(id);
+      }
+      _recharger();
     } on ApiException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -80,9 +117,11 @@ class _SectionCommentairesState extends ConsumerState<SectionCommentaires> {
 
   @override
   Widget build(BuildContext context) {
-    final commentairesAsync = ref.watch(
-      commentairesArticleProvider(articleId: widget.articleId),
-    );
+    final commentairesAsync = _estPartenaire
+        ? ref.watch(
+            commentairesPartenaireProvider(partenaireId: widget.partenaireId!),
+          )
+        : ref.watch(commentairesArticleProvider(articleId: widget.articleId!));
     // id de l'utilisateur connecté, pour savoir quels commentaires sont les siens.
     final monId = ref.watch(authProvider).value?.id;
 
@@ -112,10 +151,10 @@ class _SectionCommentairesState extends ConsumerState<SectionCommentaires> {
                     (c) => _Commentaire(
                       commentaire: c,
                       monId: monId,
+                      typeComm: _typeComm,
                       onRepondre: () => _prepererReponse(c),
                       onSupprimer: () => _supprimer(c.id),
                       onSupprimerReponse: _supprimer,
-                      articleId: widget.articleId,
                     ),
                   )
                   .toList(),
@@ -182,7 +221,7 @@ class _SectionCommentairesState extends ConsumerState<SectionCommentaires> {
 class _Commentaire extends StatelessWidget {
   final Commentaire commentaire;
   final int? monId;
-  final int articleId;
+  final String typeComm;
   final VoidCallback onRepondre;
   final VoidCallback onSupprimer;
   final void Function(int id) onSupprimerReponse;
@@ -190,7 +229,7 @@ class _Commentaire extends StatelessWidget {
   const _Commentaire({
     required this.commentaire,
     required this.monId,
-    required this.articleId,
+    required this.typeComm,
     required this.onRepondre,
     required this.onSupprimer,
     required this.onSupprimerReponse,
@@ -204,6 +243,7 @@ class _Commentaire extends StatelessWidget {
         _Ligne(
           commentaire: commentaire,
           estLeMien: monId != null && commentaire.user == monId,
+          typeComm: typeComm,
           onRepondre: onRepondre,
           onSupprimer: onSupprimer,
         ),
@@ -217,6 +257,7 @@ class _Commentaire extends StatelessWidget {
                     (r) => _Ligne(
                       commentaire: r,
                       estLeMien: monId != null && r.user == monId,
+                      typeComm: typeComm,
                       onRepondre: null, // pas de réponse à une réponse
                       onSupprimer: () => onSupprimerReponse(r.id),
                     ),
@@ -233,12 +274,14 @@ class _Commentaire extends StatelessWidget {
 class _Ligne extends ConsumerWidget {
   final Commentaire commentaire;
   final bool estLeMien;
+  final String typeComm;
   final VoidCallback? onRepondre;
   final VoidCallback onSupprimer;
 
   const _Ligne({
     required this.commentaire,
     required this.estLeMien,
+    required this.typeComm,
     required this.onRepondre,
     required this.onSupprimer,
   });
@@ -265,11 +308,14 @@ class _Ligne extends ConsumerWidget {
                 totalInitial: commentaire.nbLikes,
                 iconeActive: Icons.favorite,
                 iconeInactive: Icons.favorite_border,
-                couleurActive: Colors.brown,
+                couleurActive: Config.couleurLike,
                 onToggle: () async {
                   final res = await ref
                       .read(socialRepositoryProvider)
-                      .toggleLikeCommentaire(commentaire.id);
+                      .toggleLikeCommentaire(
+                        commentaire.id,
+                        typeComm: typeComm,
+                      );
                   return (actif: res.actif, total: res.total);
                 },
               ),

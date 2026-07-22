@@ -1,4 +1,5 @@
 import '../../prestations/screens/ecran_demande_intervention.dart';
+import 'package:poufiret/core/config/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -282,7 +283,7 @@ class _Contenu extends ConsumerWidget {
                               totalInitial: article.nbLikes,
                               iconeActive: Icons.favorite,
                               iconeInactive: Icons.favorite_border,
-                              couleurActive: Colors.red,
+                              couleurActive: Config.couleurLike,
                               onToggle: () async {
                                 final res = await ref
                                     .read(socialRepositoryProvider)
@@ -295,7 +296,7 @@ class _Contenu extends ConsumerWidget {
                               totalInitial: article.nbFavoris,
                               iconeActive: Icons.bookmark,
                               iconeInactive: Icons.bookmark_border,
-                              couleurActive: Colors.brown,
+                              couleurActive: Config.couleurFavori,
                               afficherTotal: false,
                               onToggle: () async {
                                 final res = await ref
