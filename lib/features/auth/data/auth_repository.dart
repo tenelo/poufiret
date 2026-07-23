@@ -70,8 +70,18 @@ class AuthRepository {
 
   /// GET /auth/appareils/ → sessions appareils de l'utilisateur.
   Future<List<Map<String, dynamic>>> appareils() async {
-    final r = await _dio.get('${Env.apiPrefix}/auth/appareils/');
-    return (r.data as List).cast<Map<String, dynamic>>();
+    final r = await _dio.get(
+      '${Env.apiPrefix}/auth/appareils/',
+      queryParameters: {'page_size': 100},
+    );
+    final data = r.data;
+    // L'API peut renvoyer une liste brute OU une reponse paginee DRF.
+    final brut = data is Map<String, dynamic> ? data['results'] : data;
+    if (brut is! List) return const [];
+    return brut
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
   }
 
   /// POST /auth/appareils/<id>/revoquer/ → désactive une session.
