@@ -9,6 +9,7 @@ import 'core/notifications/fcm_service.dart';
 import 'features/analytics/data/analytics_providers.dart';
 import 'features/auth/screens/auth_notifier.dart';
 import 'features/auth/screens/ecran_connexion.dart';
+import 'features/publicites/widgets/observateur_interstitiel.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -95,7 +96,11 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (_, _) => const EcranConnexion(),
-      data: (user) => user == null ? const EcranConnexion() : const AppShell(),
+      data: (user) => user == null
+          ? const EcranConnexion()
+          // L'observateur ne couvre que la partie connectee : pas
+          // d'interstitiel sur l'ecran de connexion.
+          : const ObservateurInterstitiel(enfant: AppShell()),
     );
   }
 }

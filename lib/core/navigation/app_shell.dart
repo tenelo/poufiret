@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:poufiret/features/chat/screens/ecran_conversations.dart';
 
 import 'destinations.dart';
+import '../../features/publicites/widgets/bandeau_bas_publicite.dart';
 import 'placeholder_screens.dart';
 import '../../features/catalogue/screens/ecran_categories.dart';
 import '../../features/favoris/screens/ecran_favoris.dart';
@@ -36,7 +37,14 @@ static const _pages = [
       builder: (context, constraints) {
         final useRail = constraints.maxWidth >= 600;
         final extended = constraints.maxWidth >= 1024;
-        final body = IndexedStack(index: _index, children: _pages);
+        // Le bandeau publicitaire accompagne le contenu, au-dessus de
+        // la barre de navigation (ou en bas du corps en mode rail).
+        final body = Column(
+          children: [
+            Expanded(child: IndexedStack(index: _index, children: _pages)),
+            const BandeauBasPublicite(),
+          ],
+        );
 
         if (useRail) {
           return Scaffold(
