@@ -89,6 +89,46 @@ class PublicitesRepository {
     }
   }
 
+  /// GET /publicites/mes-publicites/ — campagnes du partenaire connecte.
+  Future<List<Map<String, dynamic>>> mesPublicites() async {
+    final r = await _dio.get(
+      '$_base/mes-publicites/',
+      queryParameters: {'page_size': 100},
+    );
+    return _liste(r.data, 'results');
+  }
+
+  /// POST /publicites/mes-publicites/ — cree une campagne (brouillon).
+  ///
+  /// [cheminImage] est le chemin local du flyer choisi par le partenaire.
+  Future<Map<String, dynamic>> creerPublicite({
+    required String formuleId,
+    required String titre,
+    required String description,
+    required String cheminImage,
+  }) async {
+    final form = FormData.fromMap({
+      'formule': formuleId,
+      'titre': titre,
+      'description': description,
+      'image_couverture': await MultipartFile.fromFile(cheminImage),
+    });
+    final r = await _dio.post('$_base/mes-publicites/', data: form);
+    return Map<String, dynamic>.from(r.data as Map);
+  }
+
+  /// POST `/publicites/<id>/transition/<action>/` — change le statut.
+  ///
+  /// Cote partenaire, seule l'action `soumettre` est autorisee
+  /// (brouillon -> en attente de paiement).
+  Future<String> transition(String id, String action) async {
+    final r = await _dio.post('$_base/$id/transition/$action/');
+    final data = r.data;
+    return data is Map && data['statut'] != null
+        ? data['statut'].toString()
+        : '';
+  }
+
   /// GET /publicites/formules/ — forfaits disponibles (partenaire).
   Future<List<FormulePublicite>> formules() async {
     final r = await _dio.get(

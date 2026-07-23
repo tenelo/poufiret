@@ -324,3 +324,49 @@ final class PubliciteDetailFamily extends $Family
   @override
   String toString() => r'publiciteDetailProvider';
 }
+
+/// Campagnes du partenaire connecte.
+
+@ProviderFor(mesPublicites)
+final mesPublicitesProvider = MesPublicitesProvider._();
+
+/// Campagnes du partenaire connecte.
+
+final class MesPublicitesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Map<String, dynamic>>>,
+          List<Map<String, dynamic>>,
+          FutureOr<List<Map<String, dynamic>>>
+        >
+    with
+        $FutureModifier<List<Map<String, dynamic>>>,
+        $FutureProvider<List<Map<String, dynamic>>> {
+  /// Campagnes du partenaire connecte.
+  MesPublicitesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'mesPublicitesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$mesPublicitesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Map<String, dynamic>>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Map<String, dynamic>>> create(Ref ref) {
+    return mesPublicites(ref);
+  }
+}
+
+String _$mesPublicitesHash() => r'0dca638df8308b5d363d60a8cbd11e644d9038dd';

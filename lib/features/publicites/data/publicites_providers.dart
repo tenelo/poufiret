@@ -42,3 +42,9 @@ Future<List<FormulePublicite>> formulesPublicite(Ref ref) {
 Future<PubliciteDetail> publiciteDetail(Ref ref, {required String id}) {
   return ref.watch(publicitesRepositoryProvider).detail(id);
 }
+
+/// Campagnes du partenaire connecte.
+@riverpod
+Future<List<Map<String, dynamic>>> mesPublicites(Ref ref) {
+  return ref.watch(publicitesRepositoryProvider).mesPublicites();
+}
