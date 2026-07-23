@@ -22,9 +22,9 @@ const List<AppDestination> kDestinations = [
     selectedIcon: Icons.home,
   ),
   AppDestination(
-    label: 'Recherche',
-    icon: Icons.search_outlined,
-    selectedIcon: Icons.search,
+    label: 'Publicités',
+    icon: Icons.campaign_outlined,
+    selectedIcon: Icons.campaign,
   ),
   AppDestination(
     label: 'Favoris',

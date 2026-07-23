@@ -55,11 +55,9 @@ _ArticleDetail _$ArticleDetailFromJson(Map<String, dynamic> json) =>
       partenaireNom: json['partenaire_nom'] as String? ?? '',
       partenaire: (json['partenaire'] as num?)?.toInt(),
       categorie: (json['categorie'] as num?)?.toInt(),
-      images:
-          (json['images'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList() ??
-          const <String>[],
+      images: json['images'] == null
+          ? const <String>[]
+          : const ImagesUrlConverter().fromJson(json['images'] as List?),
       variantes:
           (json['variantes'] as List<dynamic>?)
               ?.map((e) => Variante.fromJson(e as Map<String, dynamic>))
@@ -94,7 +92,7 @@ Map<String, dynamic> _$ArticleDetailToJson(_ArticleDetail instance) =>
       'partenaire_nom': instance.partenaireNom,
       'partenaire': instance.partenaire,
       'categorie': instance.categorie,
-      'images': instance.images,
+      'images': const ImagesUrlConverter().toJson(instance.images),
       'variantes': instance.variantes,
       'supplements': instance.supplements,
       'est_like_par_moi': instance.estLikeParMoi,

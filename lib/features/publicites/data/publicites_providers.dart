@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/network/providers.dart';
 import '../domain/formule_publicite.dart';
+import '../domain/publicite_detail.dart';
 import '../domain/publicite_liste.dart';
 import 'publicites_repository.dart';
 
@@ -34,4 +35,10 @@ Future<PubliciteListe?> bandeauBasPublicite(Ref ref) {
 @riverpod
 Future<List<FormulePublicite>> formulesPublicite(Ref ref) {
   return ref.watch(publicitesRepositoryProvider).formules();
+}
+
+/// Fiche detail d'une publicite.
+@riverpod
+Future<PubliciteDetail> publiciteDetail(Ref ref, {required String id}) {
+  return ref.watch(publicitesRepositoryProvider).detail(id);
 }

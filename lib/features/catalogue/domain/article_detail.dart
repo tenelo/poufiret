@@ -3,6 +3,32 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'article_detail.freezed.dart';
 part 'article_detail.g.dart';
 
+/// L'API renvoie les images comme objets ({id, image, legende, ordre...}).
+/// L'app n'a besoin que des URLs : ce convertisseur fait le pont, tout en
+/// acceptant une liste de chaines si le format venait a changer.
+class ImagesUrlConverter
+    implements JsonConverter<List<String>, List<dynamic>?> {
+  const ImagesUrlConverter();
+
+  @override
+  List<String> fromJson(List<dynamic>? json) {
+    if (json == null) return const [];
+    final urls = <String>[];
+    for (final e in json) {
+      if (e is String) {
+        if (e.isNotEmpty) urls.add(e);
+      } else if (e is Map) {
+        final url = e['image'];
+        if (url is String && url.isNotEmpty) urls.add(url);
+      }
+    }
+    return urls;
+  }
+
+  @override
+  List<dynamic> toJson(List<String> objet) => objet;
+}
+
 @freezed
 abstract class Variante with _$Variante {
   const Variante._();
@@ -56,7 +82,7 @@ abstract class ArticleDetail with _$ArticleDetail {
     @JsonKey(name: 'partenaire_nom') @Default('') String partenaireNom,
     int? partenaire,
     int? categorie,
-    @Default(<String>[]) List<String> images,
+    @ImagesUrlConverter() @Default(<String>[]) List<String> images,
     @Default(<Variante>[]) List<Variante> variantes,
     @Default(<Supplement>[]) List<Supplement> supplements,
     @JsonKey(name: 'est_like_par_moi') @Default(false) bool estLikeParMoi,

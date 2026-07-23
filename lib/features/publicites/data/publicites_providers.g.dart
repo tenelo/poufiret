@@ -240,3 +240,87 @@ final class FormulesPubliciteProvider
 }
 
 String _$formulesPubliciteHash() => r'a3d5a4e6804b46581d527dd7b242d74000da525c';
+
+/// Fiche detail d'une publicite.
+
+@ProviderFor(publiciteDetail)
+final publiciteDetailProvider = PubliciteDetailFamily._();
+
+/// Fiche detail d'une publicite.
+
+final class PubliciteDetailProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<PubliciteDetail>,
+          PubliciteDetail,
+          FutureOr<PubliciteDetail>
+        >
+    with $FutureModifier<PubliciteDetail>, $FutureProvider<PubliciteDetail> {
+  /// Fiche detail d'une publicite.
+  PubliciteDetailProvider._({
+    required PubliciteDetailFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'publiciteDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$publiciteDetailHash();
+
+  @override
+  String toString() {
+    return r'publiciteDetailProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<PubliciteDetail> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<PubliciteDetail> create(Ref ref) {
+    final argument = this.argument as String;
+    return publiciteDetail(ref, id: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PubliciteDetailProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$publiciteDetailHash() => r'4b61bd66b751d85b72e8c09df84b69e85d449c25';
+
+/// Fiche detail d'une publicite.
+
+final class PubliciteDetailFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<PubliciteDetail>, String> {
+  PubliciteDetailFamily._()
+    : super(
+        retry: null,
+        name: r'publiciteDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Fiche detail d'une publicite.
+
+  PubliciteDetailProvider call({required String id}) =>
+      PubliciteDetailProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'publiciteDetailProvider';
+}

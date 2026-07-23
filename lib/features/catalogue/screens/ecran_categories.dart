@@ -7,6 +7,8 @@ import 'package:poufiret/features/catalogue/screens/ecran_prestataires.dart';
 import 'package:poufiret/features/orders/screens/ecran_panier.dart';
 import 'package:poufiret/core/navigation/app_drawer.dart';
 import 'package:poufiret/features/orders/data/orders_providers.dart';
+import 'package:poufiret/features/publicites/widgets/carrousel_publicites.dart';
+import 'package:poufiret/features/catalogue/screens/ecran_recherche.dart';
 
 class EcranCategories extends ConsumerWidget {
   const EcranCategories({super.key});
@@ -42,7 +44,14 @@ class EcranCategories extends ConsumerWidget {
         ],
       ),
       drawer: const AppDrawer(),
-      body: categoriesAsync.when(
+      floatingActionButton: const _BoutonRecherche(),
+      body: Column(
+        children: [
+          const SizedBox(height: 12),
+          const CarrouselPublicites(),
+          const SizedBox(height: 12),
+          Expanded(
+            child: categoriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) {
           final message = err is ApiException
@@ -81,7 +90,38 @@ class EcranCategories extends ConsumerWidget {
             },
           );
         },
+            ),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+/// Bouton flottant de recherche : ouvre l'ecran Recherche au tap.
+class _BoutonRecherche extends StatelessWidget {
+  const _BoutonRecherche();
+
+  @override
+  Widget build(BuildContext context) {
+    // Etendu sur grand ecran (place disponible), compact sur mobile.
+    final large = MediaQuery.sizeOf(context).width >= 600;
+    void ouvrir() => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const EcranRecherche()),
+        );
+
+    if (large) {
+      return FloatingActionButton.extended(
+        onPressed: ouvrir,
+        icon: const Icon(Icons.search),
+        label: const Text('Rechercher'),
+        tooltip: 'Rechercher sur Poufiret',
+      );
+    }
+    return FloatingActionButton(
+      onPressed: ouvrir,
+      tooltip: 'Rechercher sur Poufiret',
+      child: const Icon(Icons.search),
     );
   }
 }

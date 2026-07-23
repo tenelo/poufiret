@@ -5,7 +5,7 @@ import 'destinations.dart';
 import 'placeholder_screens.dart';
 import '../../features/catalogue/screens/ecran_categories.dart';
 import '../../features/favoris/screens/ecran_favoris.dart';
-import '../../features/catalogue/screens/ecran_recherche.dart';
+import '../../features/publicites/screens/ecran_publicites.dart';
 
 
 /// Coquille principale : héberge les onglets et bascule entre
@@ -22,7 +22,7 @@ class _AppShellState extends State<AppShell> {
 
 static const _pages = [
     EcranCategories(),
-    EcranRecherche(),
+    EcranPublicites(),
     EcranFavoris(),
     EcranConversations(),
     AccountScreen(),
