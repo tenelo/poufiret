@@ -158,6 +158,9 @@ class _CarteTotal extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
+          // Aligne les colonnes par le haut : sans cela, la colonne au
+          // libelle le plus court est centree et son chiffre descend.
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Column(
@@ -169,7 +172,11 @@ class _CarteTotal extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Text('Vues totales de tous mes articles'),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Vues totales de tous mes articles',
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),
@@ -183,7 +190,11 @@ class _CarteTotal extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Text('Nombre total d’articles'),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Nombre total d’articles',
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),
