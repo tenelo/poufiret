@@ -78,12 +78,17 @@ class PublicitesRepository {
     required String typeAffichage,
     bool cliquee = false,
     int? minuteSession,
+    String? sessionId,
   }) async {
     try {
       await _dio.post('$_base/$id/impression/', data: {
         'type_affichage': typeAffichage,
         'cliquee': cliquee,
         'minute_session': ?minuteSession,
+        // Permet au serveur de ne compter qu'une impression par session
+        // et par emplacement : un retour sur l'accueil ne regonfle pas
+        // les compteurs et ne brule pas un passage.
+        'session_id': ?sessionId,
       });
     } catch (_) {
       // Tracking best-effort : on ignore silencieusement.

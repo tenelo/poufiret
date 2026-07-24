@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/config.dart';
+import '../../analytics/data/analytics_providers.dart';
 import '../data/publicites_providers.dart';
 import '../data/publicites_repository.dart';
 import '../domain/publicite_liste.dart';
@@ -55,6 +56,7 @@ class _CarrouselPublicitesState extends ConsumerState<CarrouselPublicites> {
     ref.read(publicitesRepositoryProvider).enregistrerImpression(
           pub.id,
           typeAffichage: TypeAffichage.carrousel,
+          sessionId: ref.read(sessionAnalyticsProvider).sessionId,
         );
   }
 

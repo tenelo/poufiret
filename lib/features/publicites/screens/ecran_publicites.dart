@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/config.dart';
 import '../../../core/errors/api_exception.dart';
+import '../../analytics/data/analytics_providers.dart';
 import '../data/publicites_providers.dart';
 import '../data/publicites_repository.dart';
 import '../domain/publicite_liste.dart';
@@ -81,6 +82,7 @@ class _CarteAfficheState extends ConsumerState<_CarteAffiche> {
       ref.read(publicitesRepositoryProvider).enregistrerImpression(
             widget.pub.id,
             typeAffichage: TypeAffichage.pagePublicites,
+            sessionId: ref.read(sessionAnalyticsProvider).sessionId,
           );
     });
   }

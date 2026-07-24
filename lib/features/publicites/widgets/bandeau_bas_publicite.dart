@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/config.dart';
+import '../../analytics/data/analytics_providers.dart';
 import '../data/publicites_providers.dart';
 import '../data/publicites_repository.dart';
 import '../domain/publicite_liste.dart';
@@ -29,6 +30,7 @@ class _BandeauBasPubliciteState extends ConsumerState<BandeauBasPublicite> {
     ref.read(publicitesRepositoryProvider).enregistrerImpression(
           pub.id,
           typeAffichage: TypeAffichage.bandeauBas,
+          sessionId: ref.read(sessionAnalyticsProvider).sessionId,
         );
   }
 

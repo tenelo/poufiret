@@ -63,6 +63,7 @@ class _ObservateurInterstitielState
           pub.id,
           typeAffichage: TypeAffichage.interstitiel,
           minuteSession: minute,
+          sessionId: ref.read(sessionAnalyticsProvider).sessionId,
         );
     await showDialog<void>(
       context: context,
