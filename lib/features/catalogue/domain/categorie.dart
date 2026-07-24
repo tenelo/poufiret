@@ -17,6 +17,9 @@ abstract class Categorie with _$Categorie {
     @Default(0) int ordre,
     @JsonKey(name: 'types_articles') @Default(<String>[]) List<String> typesArticles,
     @JsonKey(name: 'affiche_catalogue') @Default(true) bool afficheCatalogue,
+    @JsonKey(name: 'types_partenaire')
+    @Default(<String>[])
+    List<String> typesPartenaire,
     @JsonKey(name: 'est_active') @Default(true) bool estActive,
     @JsonKey(name: 'nb_partenaires') int? nbPartenaires,
     @Default(<Categorie>[]) List<Categorie> enfants,

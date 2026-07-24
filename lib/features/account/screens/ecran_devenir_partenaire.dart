@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/errors/api_exception.dart';
 import '../../auth/data/auth_providers.dart';
 import '../../auth/screens/auth_notifier.dart';
+import '../../catalogue/data/catalogue_providers.dart';
 
 /// Formulaire « Devenir partenaire » : crée le ProfilPartenaire
 /// (statut en attente de validation par un administrateur).
@@ -27,6 +28,13 @@ class _EcranDevenirPartenaireState
 
   String _type = 'commercant';
   bool _envoiEnCours = false;
+
+  /// Categories choisies. La premiere devient la principale cote backend.
+  final List<int> _categories = [];
+
+  /// Vrai tant que l'utilisateur n'a rien coche lui-meme : on peut alors
+  /// re-deduire la selection du type d'activite choisi.
+  bool _selectionAuto = true;
 
   static const _types = {
     'commercant': 'Commerçant',
@@ -64,6 +72,7 @@ class _EcranDevenirPartenaireState
     try {
       await ref.read(authRepositoryProvider).devenirPartenaire({
         'type_partenaire': _type,
+        if (_categories.isNotEmpty) 'categories': _categories,
         'nom_commerce': _ctrlNomCommerce.text.trim(),
         'description': _ctrlDescription.text.trim(),
         'adresse': _ctrlAdresse.text.trim(),
@@ -125,7 +134,10 @@ class _EcranDevenirPartenaireState
                           .map((e) => DropdownMenuItem(
                               value: e.key, child: Text(e.value)))
                           .toList(),
-                      onChanged: (v) => setState(() => _type = v!),
+                      onChanged: (v) => setState(() {
+                        _type = v!;
+                        if (_selectionAuto) _categories.clear();
+                      }),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -146,6 +158,17 @@ class _EcranDevenirPartenaireState
                       ),
                       minLines: 2,
                       maxLines: 4,
+                    ),
+                    const SizedBox(height: 12),
+                    _ChoixCategories(
+                      type: _type,
+                      selection: _categories,
+                      onChange: (ids, parUtilisateur) => setState(() {
+                        _categories
+                          ..clear()
+                          ..addAll(ids);
+                        if (parUtilisateur) _selectionAuto = false;
+                      }),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
@@ -206,6 +229,93 @@ class _EcranDevenirPartenaireState
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Choix des categories du partenaire.
+///
+/// La categorie correspondant au type d'activite est pre-cochee (via le
+/// champ `types_partenaire` de chaque categorie), mais le partenaire peut
+/// en ajouter : a Ferke, beaucoup cumulent les activites (un restaurant
+/// qui vend aussi du pain).
+class _ChoixCategories extends ConsumerStatefulWidget {
+  const _ChoixCategories({
+    required this.type,
+    required this.selection,
+    required this.onChange,
+  });
+
+  final String type;
+  final List<int> selection;
+
+  /// [parUtilisateur] distingue un clic reel d'une pre-selection auto.
+  final void Function(List<int> ids, bool parUtilisateur) onChange;
+
+  @override
+  ConsumerState<_ChoixCategories> createState() => _ChoixCategoriesState();
+}
+
+class _ChoixCategoriesState extends ConsumerState<_ChoixCategories> {
+  @override
+  Widget build(BuildContext context) {
+    final async = ref.watch(categoriesProvider);
+    final theme = Theme.of(context);
+
+    return async.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(vertical: 12),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (_, _) => const SizedBox.shrink(),
+      data: (categories) {
+        // Pre-selection : la categorie qui declare ce type d'activite.
+        if (widget.selection.isEmpty) {
+          final auto = categories
+              .where((c) => c.typesPartenaire.contains(widget.type))
+              .map((c) => c.id)
+              .toList();
+          if (auto.isNotEmpty) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) widget.onChange(auto, false);
+            });
+          }
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Vos catégories', style: theme.textTheme.titleSmall),
+            const SizedBox(height: 2),
+            Text(
+              'Où les clients vous trouveront. Vous pouvez en choisir '
+              'plusieurs ; la première sera votre catégorie principale.',
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.outline),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [
+                for (final c in categories.where((c) => c.estActive))
+                  FilterChip(
+                    label: Text(
+                      '${c.icone.isNotEmpty ? '${c.icone} ' : ''}${c.nom}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    selected: widget.selection.contains(c.id),
+                    onSelected: (coche) {
+                      final ids = List<int>.from(widget.selection);
+                      coche ? ids.add(c.id) : ids.remove(c.id);
+                      widget.onChange(ids, true);
+                    },
+                  ),
+              ],
+            ),
+          ],
+        );
+      },
     );
   }
 }
