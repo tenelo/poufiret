@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../../core/config/env.dart';
 import '../domain/formule_publicite.dart';
 import '../domain/publicite_detail.dart';
+import '../domain/stats_publicite.dart';
 import '../domain/publicite_liste.dart';
 
 /// Types d'affichage cotes backend (TypeAffichage).
@@ -127,6 +128,14 @@ class PublicitesRepository {
     return data is Map && data['statut'] != null
         ? data['statut'].toString()
         : '';
+  }
+
+  /// GET /publicites/mes-stats/ — resultats des campagnes du partenaire.
+  Future<List<StatsPublicite>> mesStats() async {
+    final r = await _dio.get('$_base/mes-stats/');
+    return _liste(r.data, 'publicites')
+        .map(StatsPublicite.fromJson)
+        .toList();
   }
 
   /// GET /publicites/formules/ — forfaits disponibles (partenaire).

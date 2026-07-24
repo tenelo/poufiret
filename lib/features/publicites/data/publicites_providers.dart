@@ -4,6 +4,7 @@ import '../../../core/network/providers.dart';
 import '../domain/formule_publicite.dart';
 import '../domain/publicite_detail.dart';
 import '../domain/publicite_liste.dart';
+import '../domain/stats_publicite.dart';
 import 'publicites_repository.dart';
 
 part 'publicites_providers.g.dart';
@@ -47,4 +48,10 @@ Future<PubliciteDetail> publiciteDetail(Ref ref, {required String id}) {
 @riverpod
 Future<List<Map<String, dynamic>>> mesPublicites(Ref ref) {
   return ref.watch(publicitesRepositoryProvider).mesPublicites();
+}
+
+/// Resultats des campagnes du partenaire connecte.
+@riverpod
+Future<List<StatsPublicite>> mesStatsPublicites(Ref ref) {
+  return ref.watch(publicitesRepositoryProvider).mesStats();
 }

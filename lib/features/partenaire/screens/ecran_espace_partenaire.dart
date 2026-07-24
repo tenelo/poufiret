@@ -7,6 +7,7 @@ import '../domain/stats_vues.dart';
 import 'ecran_formulaire_article.dart';
 import 'ecran_mes_categories.dart';
 import 'ecran_mon_profil_partenaire.dart';
+import '../../publicites/screens/ecran_mes_publicites.dart';
 
 /// Tableau de bord du partenaire : total de vues + articles avec stats,
 /// création/modification/suppression d'articles.
@@ -21,8 +22,7 @@ class EcranEspacePartenaire extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           final cree = await Navigator.of(context).push<bool>(
-            MaterialPageRoute(
-                builder: (_) => const EcranFormulaireArticle()),
+            MaterialPageRoute(builder: (_) => const EcranFormulaireArticle()),
           );
           if (cree == true) ref.invalidate(statsVuesPartenaireProvider);
         },
@@ -35,13 +35,14 @@ class EcranEspacePartenaire extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(err is ApiException
-                  ? err.messageLisible
-                  : 'Erreur de chargement.'),
+              Text(
+                err is ApiException
+                    ? err.messageLisible
+                    : 'Erreur de chargement.',
+              ),
               const SizedBox(height: 12),
               FilledButton(
-                onPressed: () =>
-                    ref.invalidate(statsVuesPartenaireProvider),
+                onPressed: () => ref.invalidate(statsVuesPartenaireProvider),
                 child: const Text('Réessayer'),
               ),
             ],
@@ -49,8 +50,9 @@ class EcranEspacePartenaire extends ConsumerWidget {
         ),
         data: (stats) => LayoutBuilder(
           builder: (context, contraintes) {
-            final largeur =
-                contraintes.maxWidth > 700 ? 700.0 : contraintes.maxWidth;
+            final largeur = contraintes.maxWidth > 700
+                ? 700.0
+                : contraintes.maxWidth;
             return Center(
               child: SizedBox(
                 width: largeur,
@@ -60,8 +62,10 @@ class EcranEspacePartenaire extends ConsumerWidget {
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(12, 12, 12, 88),
                     children: [
-                      _CarteTotal(totalVues: stats.totalVues,
-                          nbArticles: stats.articles.length),
+                      _CarteTotal(
+                        totalVues: stats.totalVues,
+                        nbArticles: stats.articles.length,
+                      ),
                       const SizedBox(height: 12),
                       // Raccourcis de gestion de la vitrine.
                       Card(
@@ -72,7 +76,8 @@ class EcranEspacePartenaire extends ConsumerWidget {
                               leading: const Icon(Icons.storefront_outlined),
                               title: const Text('Ma vitrine'),
                               subtitle: const Text(
-                                  'Nom, description, contacts, images'),
+                                'Nom, description, contacts, images',
+                              ),
                               trailing: const Icon(Icons.chevron_right),
                               onTap: () => Navigator.of(context).push(
                                 MaterialPageRoute(
@@ -85,8 +90,7 @@ class EcranEspacePartenaire extends ConsumerWidget {
                             ListTile(
                               leading: const Icon(Icons.category_outlined),
                               title: const Text('Mes catégories'),
-                              subtitle: const Text(
-                                  'Une image par catégorie'),
+                              subtitle: const Text('Une image par catégorie'),
                               trailing: const Icon(Icons.chevron_right),
                               onTap: () => Navigator.of(context).push(
                                 MaterialPageRoute(
@@ -94,26 +98,42 @@ class EcranEspacePartenaire extends ConsumerWidget {
                                 ),
                               ),
                             ),
+                            const Divider(height: 1),
+                            ListTile(
+                              leading: const Icon(Icons.campaign_outlined),
+                              title: const Text('Mes publicités'),
+                              subtitle: const Text('Campagnes et résultats'),
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const EcranMesPublicites(),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Text('Mes articles',
-                          style: Theme.of(context).textTheme.titleMedium),
+                      Text(
+                        'Mes articles',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                       const SizedBox(height: 8),
                       if (stats.articles.isEmpty)
                         const Padding(
                           padding: EdgeInsets.all(24),
                           child: Center(
-                              child: Text(
-                                  'Aucun article. Créez le premier !')),
+                            child: Text('Aucun article. Créez le premier !'),
+                          ),
                         )
                       else
-                        ...stats.articles.map((a) => _CarteArticle(
-                              stats: a,
-                              onModifie: () => ref.invalidate(
-                                  statsVuesPartenaireProvider),
-                            )),
+                        ...stats.articles.map(
+                          (a) => _CarteArticle(
+                            stats: a,
+                            onModifie: () =>
+                                ref.invalidate(statsVuesPartenaireProvider),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -142,22 +162,28 @@ class _CarteTotal extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  Text('$totalVues',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.bold)),
-                  const Text('Vues totales'),
+                  Text(
+                    '$totalVues',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text('Vues totales de tous mes articles'),
                 ],
               ),
             ),
             Expanded(
               child: Column(
                 children: [
-                  Text('$nbArticles',
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.bold)),
-                  const Text('Articles'),
+                  Text(
+                    '$nbArticles',
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text('Nombre total d’articles'),
                 ],
               ),
             ),
@@ -189,8 +215,11 @@ class _CarteArticle extends ConsumerWidget {
         title: Row(
           children: [
             Expanded(
-              child: Text(stats.nom,
-                  maxLines: 1, overflow: TextOverflow.ellipsis),
+              child: Text(
+                stats.nom,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             if (!stats.estActif)
               Chip(

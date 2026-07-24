@@ -370,3 +370,50 @@ final class MesPublicitesProvider
 }
 
 String _$mesPublicitesHash() => r'0dca638df8308b5d363d60a8cbd11e644d9038dd';
+
+/// Resultats des campagnes du partenaire connecte.
+
+@ProviderFor(mesStatsPublicites)
+final mesStatsPublicitesProvider = MesStatsPublicitesProvider._();
+
+/// Resultats des campagnes du partenaire connecte.
+
+final class MesStatsPublicitesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<StatsPublicite>>,
+          List<StatsPublicite>,
+          FutureOr<List<StatsPublicite>>
+        >
+    with
+        $FutureModifier<List<StatsPublicite>>,
+        $FutureProvider<List<StatsPublicite>> {
+  /// Resultats des campagnes du partenaire connecte.
+  MesStatsPublicitesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'mesStatsPublicitesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$mesStatsPublicitesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<StatsPublicite>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<StatsPublicite>> create(Ref ref) {
+    return mesStatsPublicites(ref);
+  }
+}
+
+String _$mesStatsPublicitesHash() =>
+    r'869059ffe66a0bb5034dc21e6219dda0104369c9';

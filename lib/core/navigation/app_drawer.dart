@@ -1,6 +1,6 @@
 import '../../features/account/screens/ecran_mon_compte.dart';
 import '../../features/partenaire/screens/ecran_espace_partenaire.dart';
-import '../../features/publicites/screens/ecran_faire_publicite.dart';
+import '../../features/publicites/screens/ecran_mes_publicites.dart';
 import '../../features/prestations/screens/ecran_mes_demandes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -85,9 +85,9 @@ class AppDrawer extends ConsumerWidget {
                     ),
                     ListTile(
                       leading: const Icon(Icons.campaign_outlined),
-                      title: const Text('Faire une publicité'),
-                      subtitle: const Text('Mettre en avant mon commerce'),
-                      onTap: () => ouvrir(const EcranFairePublicite()),
+                      title: const Text('Mes publicités'),
+                      subtitle: const Text('Campagnes et résultats'),
+                      onTap: () => ouvrir(const EcranMesPublicites()),
                     ),
                     const Divider(),
                   ],
