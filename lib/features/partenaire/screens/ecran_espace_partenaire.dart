@@ -5,6 +5,8 @@ import '../../../core/errors/api_exception.dart';
 import '../data/espace_partenaire_providers.dart';
 import '../domain/stats_vues.dart';
 import 'ecran_formulaire_article.dart';
+import 'ecran_mes_categories.dart';
+import 'ecran_mon_profil_partenaire.dart';
 
 /// Tableau de bord du partenaire : total de vues + articles avec stats,
 /// création/modification/suppression d'articles.
@@ -60,6 +62,41 @@ class EcranEspacePartenaire extends ConsumerWidget {
                     children: [
                       _CarteTotal(totalVues: stats.totalVues,
                           nbArticles: stats.articles.length),
+                      const SizedBox(height: 12),
+                      // Raccourcis de gestion de la vitrine.
+                      Card(
+                        clipBehavior: Clip.antiAlias,
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.storefront_outlined),
+                              title: const Text('Ma vitrine'),
+                              subtitle: const Text(
+                                  'Nom, description, contacts, images'),
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const EcranMonProfilPartenaire(),
+                                ),
+                              ),
+                            ),
+                            const Divider(height: 1),
+                            ListTile(
+                              leading: const Icon(Icons.category_outlined),
+                              title: const Text('Mes catégories'),
+                              subtitle: const Text(
+                                  'Une image par catégorie'),
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => const EcranMesCategories(),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       Text('Mes articles',
                           style: Theme.of(context).textTheme.titleMedium),

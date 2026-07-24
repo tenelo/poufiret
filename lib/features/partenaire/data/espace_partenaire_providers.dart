@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/network/providers.dart';
+import '../domain/ma_categorie.dart';
 import '../domain/stats_vues.dart';
 import 'espace_partenaire_repository.dart';
 
@@ -16,4 +17,16 @@ EspacePartenaireRepository espacePartenaireRepository(Ref ref) {
 @riverpod
 Future<StatsVues> statsVuesPartenaire(Ref ref) {
   return ref.watch(espacePartenaireRepositoryProvider).statsVues();
+}
+
+/// Profil du partenaire connecte.
+@riverpod
+Future<Map<String, dynamic>> monProfilPartenaire(Ref ref) {
+  return ref.watch(espacePartenaireRepositoryProvider).monProfil();
+}
+
+/// Categories du partenaire connecte.
+@riverpod
+Future<List<MaCategorie>> mesCategories(Ref ref) {
+  return ref.watch(espacePartenaireRepositoryProvider).mesCategories();
 }

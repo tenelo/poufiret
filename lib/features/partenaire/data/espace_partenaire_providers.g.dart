@@ -101,3 +101,96 @@ final class StatsVuesPartenaireProvider
 
 String _$statsVuesPartenaireHash() =>
     r'51d4287973de94fd0181ed830be8e58304aa11e5';
+
+/// Profil du partenaire connecte.
+
+@ProviderFor(monProfilPartenaire)
+final monProfilPartenaireProvider = MonProfilPartenaireProvider._();
+
+/// Profil du partenaire connecte.
+
+final class MonProfilPartenaireProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Map<String, dynamic>>,
+          Map<String, dynamic>,
+          FutureOr<Map<String, dynamic>>
+        >
+    with
+        $FutureModifier<Map<String, dynamic>>,
+        $FutureProvider<Map<String, dynamic>> {
+  /// Profil du partenaire connecte.
+  MonProfilPartenaireProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'monProfilPartenaireProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$monProfilPartenaireHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<Map<String, dynamic>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<Map<String, dynamic>> create(Ref ref) {
+    return monProfilPartenaire(ref);
+  }
+}
+
+String _$monProfilPartenaireHash() =>
+    r'41269f3571aa4f7cdaed1caf1f541e8cae52ff35';
+
+/// Categories du partenaire connecte.
+
+@ProviderFor(mesCategories)
+final mesCategoriesProvider = MesCategoriesProvider._();
+
+/// Categories du partenaire connecte.
+
+final class MesCategoriesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<MaCategorie>>,
+          List<MaCategorie>,
+          FutureOr<List<MaCategorie>>
+        >
+    with
+        $FutureModifier<List<MaCategorie>>,
+        $FutureProvider<List<MaCategorie>> {
+  /// Categories du partenaire connecte.
+  MesCategoriesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'mesCategoriesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$mesCategoriesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<MaCategorie>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<MaCategorie>> create(Ref ref) {
+    return mesCategories(ref);
+  }
+}
+
+String _$mesCategoriesHash() => r'2cc232b18bbb172a05d574229adf04b8d10c4160';
