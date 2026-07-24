@@ -10,6 +10,7 @@ import '../data/catalogue_providers.dart';
 import '../domain/resultats_recherche.dart';
 import 'ecran_article_detail.dart';
 import 'ecran_prestataires.dart';
+import '../../../core/widgets/image_reseau.dart';
 
 /// Recherche unifiee : categories, partenaires, articles.
 ///
@@ -251,7 +252,7 @@ class _LignePartenaire extends StatelessWidget {
       leading: CircleAvatar(
         backgroundColor: Config.couleurFond,
         backgroundImage: partenaire.logo.isNotEmpty
-            ? NetworkImage(partenaire.logo)
+            ? imageReseauProvider(partenaire.logo)
             : null,
         child: partenaire.logo.isEmpty
             ? const Icon(Icons.storefront_outlined,
@@ -290,7 +291,7 @@ class _LigneArticle extends StatelessWidget {
         child: article.imagePrincipale.isNotEmpty
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
+                child: ImageReseau(
                   article.imagePrincipale,
                   fit: BoxFit.cover,
                   errorBuilder: (_, e, s) => const _Vignette(),

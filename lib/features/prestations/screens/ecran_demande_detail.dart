@@ -6,6 +6,7 @@ import '../../../core/errors/api_exception.dart';
 import '../data/prestations_providers.dart';
 import '../domain/demande_intervention.dart';
 import 'ecran_mes_demandes.dart' show couleurStatut;
+import '../../../core/widgets/image_reseau.dart';
 
 /// Détail d'une demande d'intervention, actions selon le rôle.
 class EcranDemandeDetail extends ConsumerStatefulWidget {
@@ -350,7 +351,7 @@ class _Contenu extends StatelessWidget {
               separatorBuilder: (_, i) => const SizedBox(width: 8),
               itemBuilder: (_, i) => ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
+                child: ImageReseau(
                   demande.photos[i].image,
                   width: 110,
                   height: 110,

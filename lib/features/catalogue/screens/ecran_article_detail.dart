@@ -15,6 +15,7 @@ import 'package:poufiret/features/social/data/social_providers.dart';
 import 'package:poufiret/features/social/widgets/bouton_social.dart';
 import 'package:poufiret/features/social/widgets/section_commentaires.dart';
 import 'package:poufiret/features/orders/data/orders_providers.dart';
+import '../../../core/widgets/image_reseau.dart';
 
 class EcranArticleDetail extends ConsumerWidget {
   final String slug;
@@ -194,7 +195,7 @@ class _Contenu extends ConsumerWidget {
                   AspectRatio(
                     aspectRatio: 16 / 9,
                     child: article.images.isNotEmpty
-                        ? Image.network(
+                        ? ImageReseau(
                             article.images.first,
                             fit: BoxFit.cover,
                             errorBuilder: (_, __, ___) => _placeholder(theme),

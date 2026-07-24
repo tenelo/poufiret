@@ -6,6 +6,7 @@ import '../../../core/config/config.dart';
 import '../../../core/errors/api_exception.dart';
 import '../data/espace_partenaire_providers.dart';
 import '../domain/ma_categorie.dart';
+import '../../../core/widgets/image_reseau.dart';
 
 /// Categories du partenaire : il y depose une image differente par
 /// categorie, celle que les clients verront dans l'annuaire.
@@ -148,7 +149,7 @@ class _CarteCategorieState extends ConsumerState<_CarteCategorie> {
               fit: StackFit.expand,
               children: [
                 if (c.aUneImage)
-                  Image.network(
+                  ImageReseau(
                     c.imageCouverture!,
                     fit: BoxFit.cover,
                     errorBuilder: (_, e, s) => _Vide(),

@@ -8,6 +8,7 @@ import '../data/publicites_providers.dart';
 import '../data/publicites_repository.dart';
 import '../domain/publicite_liste.dart';
 import 'ecran_publicite_detail.dart';
+import '../../../core/widgets/image_reseau.dart';
 
 /// Onglet Publicites : toutes les campagnes en cours de diffusion.
 class EcranPublicites extends ConsumerWidget {
@@ -113,7 +114,7 @@ class _CarteAfficheState extends ConsumerState<_CarteAffiche> {
                       child: const Icon(Icons.image_outlined,
                           color: Config.couleurTexteSecondaire),
                     )
-                  : Image.network(
+                  : ImageReseau(
                       url,
                       fit: BoxFit.cover,
                       errorBuilder: (_, e, s) => Container(

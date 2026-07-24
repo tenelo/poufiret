@@ -9,6 +9,7 @@ import '../data/publicites_providers.dart';
 import '../data/publicites_repository.dart';
 import '../domain/publicite_detail.dart';
 import '../screens/ecran_publicite_detail.dart';
+import '../../../core/widgets/image_reseau.dart';
 
 /// Duree pendant laquelle l'interstitiel reste non fermable.
 const _dureeAvantFermeture = Duration(seconds: 10);
@@ -152,7 +153,7 @@ class _BoiteInterstitielState extends State<_BoiteInterstitiel> {
                             ),
                           );
                         },
-                        child: Image.network(
+                        child: ImageReseau(
                           url,
                           fit: BoxFit.cover,
                           errorBuilder: (_, e, s) => Container(

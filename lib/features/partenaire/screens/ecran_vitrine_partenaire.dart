@@ -12,6 +12,7 @@ import 'package:poufiret/features/prestations/screens/ecran_demande_intervention
 
 import '../data/partenaire_providers.dart';
 import '../domain/partenaire_vitrine.dart';
+import '../../../core/widgets/image_reseau.dart';
 
 /// Vitrine publique d'un partenaire (côté client).
 /// Affiche couverture, logo, infos, localisation, contacts.
@@ -155,7 +156,7 @@ class _Couverture extends StatelessWidget {
       fit: StackFit.expand,
       children: [
         if (couv != null && couv.isNotEmpty)
-          Image.network(
+          ImageReseau(
             couv,
             fit: BoxFit.cover,
             errorBuilder: (_, __, ___) =>
@@ -341,7 +342,7 @@ class _Logo extends StatelessWidget {
     }
     return ClipRRect(
       borderRadius: BorderRadius.circular(size / 2),
-      child: Image.network(
+      child: ImageReseau(
         logo!,
         width: size,
         height: size,

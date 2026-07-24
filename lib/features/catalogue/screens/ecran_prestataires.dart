@@ -9,6 +9,7 @@ import 'package:poufiret/features/partenaire/screens/ecran_vitrine_partenaire.da
 import 'package:poufiret/features/analytics/data/analytics_providers.dart';
 import 'package:poufiret/features/chat/data/chat_providers.dart';
 import 'package:poufiret/features/chat/screens/ecran_discussion.dart';
+import '../../../core/widgets/image_reseau.dart';
 
 /// Annuaire d'une catégorie : les prestataires/commerces (couverture + nom).
 /// Le client choisit un commerce avant de voir ses articles.
@@ -136,7 +137,7 @@ class _CartePrestataire extends ConsumerWidget {
             // Photo de couverture (ou fond neutre si absente).
             Expanded(
               child: prestataire.photoCouverture.isNotEmpty
-                  ? Image.network(
+                  ? ImageReseau(
                       prestataire.photoCouverture,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) =>
@@ -151,7 +152,7 @@ class _CartePrestataire extends ConsumerWidget {
                   if (prestataire.logo.isNotEmpty) ...[
                     CircleAvatar(
                       radius: 16,
-                      backgroundImage: NetworkImage(prestataire.logo),
+                      backgroundImage: imageReseauProvider(prestataire.logo),
                     ),
                     const SizedBox(width: 8),
                   ],

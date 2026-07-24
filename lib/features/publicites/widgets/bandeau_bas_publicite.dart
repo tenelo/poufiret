@@ -7,6 +7,7 @@ import '../data/publicites_providers.dart';
 import '../data/publicites_repository.dart';
 import '../domain/publicite_liste.dart';
 import '../screens/ecran_publicite_detail.dart';
+import '../../../core/widgets/image_reseau.dart';
 
 /// Bandeau publicitaire discret, ancre en bas de l'ecran.
 ///
@@ -98,7 +99,7 @@ class _Bandeau extends StatelessWidget {
                           if (url.isNotEmpty)
                             ClipRRect(
                               borderRadius: BorderRadius.circular(6),
-                              child: Image.network(
+                              child: ImageReseau(
                                 url,
                                 width: 46,
                                 height: 46,

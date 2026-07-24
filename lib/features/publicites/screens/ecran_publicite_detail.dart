@@ -6,6 +6,7 @@ import '../../../core/errors/api_exception.dart';
 import '../data/publicites_providers.dart';
 import '../data/publicites_repository.dart';
 import '../domain/publicite_detail.dart';
+import '../../../core/widgets/image_reseau.dart';
 
 /// Page detail d'une publicite : affiche le flyer en entier + description.
 class EcranPubliciteDetail extends ConsumerStatefulWidget {
@@ -81,7 +82,7 @@ class _Contenu extends StatelessWidget {
                 if ((pub.imageCouverture ?? '').isNotEmpty)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
+                    child: ImageReseau(
                       pub.imageCouverture!,
                       fit: BoxFit.contain,
                       errorBuilder: (_, e, s) => _ImageIndisponible(),
@@ -143,7 +144,7 @@ class _Contenu extends StatelessWidget {
                         if (url.isEmpty) return const SizedBox.shrink();
                         return ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.network(url, fit: BoxFit.cover,
+                          child: ImageReseau(url, fit: BoxFit.cover,
                               errorBuilder: (_, e, s) => _ImageIndisponible()),
                         );
                       },

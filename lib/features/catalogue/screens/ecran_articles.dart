@@ -5,6 +5,7 @@ import 'package:poufiret/features/analytics/data/analytics_providers.dart';
 import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/article_liste.dart';
 import 'package:poufiret/features/catalogue/screens/ecran_article_detail.dart';
+import '../../../core/widgets/image_reseau.dart';
 
 class EcranArticles extends ConsumerWidget {
   final int categorieId;
@@ -105,7 +106,7 @@ class _VignetteArticle extends StatelessWidget {
             // Zone image : photo si dispo, sinon placeholder.
             Expanded(
               child: article.imagePrincipale != null
-                  ? Image.network(
+                  ? ImageReseau(
                       article.imagePrincipale!,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) => const _PlaceholderImage(),

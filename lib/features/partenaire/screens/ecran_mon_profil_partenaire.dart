@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/config/config.dart';
 import '../../../core/errors/api_exception.dart';
 import '../data/espace_partenaire_providers.dart';
+import '../../../core/widgets/image_reseau.dart';
 
 /// Le partenaire gere sa vitrine : identite, contacts, localisation.
 ///
@@ -329,7 +330,7 @@ class _ZoneImage extends StatelessWidget {
             if (fichier != null)
               Image.file(File(fichier!.path), fit: BoxFit.cover)
             else if (url.isNotEmpty)
-              Image.network(url, fit: BoxFit.cover,
+              ImageReseau(url, fit: BoxFit.cover,
                   errorBuilder: (_, e, s) => const SizedBox.shrink())
             else
               const Center(
