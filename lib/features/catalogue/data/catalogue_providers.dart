@@ -6,6 +6,7 @@ import '../domain/categorie.dart';
 import 'catalogue_repository.dart';
 import '../domain/article_liste.dart';
 import '../domain/article_detail.dart';
+import '../domain/resultats_recherche.dart';
 
 part 'catalogue_providers.g.dart';
 
@@ -52,4 +53,13 @@ Future<List<PartenaireCategorie>> partenairesParCategorie(Ref ref,
   return ref
       .watch(catalogueRepositoryProvider)
       .partenairesParCategorie(slug);
+}
+
+/// Recherche unifiee : categories + partenaires + articles.
+@riverpod
+Future<ResultatsRecherche> rechercheUnifiee(Ref ref, {required String terme}) {
+  if (terme.trim().length < 2) {
+    return Future.value(const ResultatsRecherche());
+  }
+  return ref.watch(catalogueRepositoryProvider).rechercheUnifiee(terme.trim());
 }

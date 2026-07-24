@@ -461,3 +461,89 @@ final class PartenairesParCategorieFamily extends $Family
   @override
   String toString() => r'partenairesParCategorieProvider';
 }
+
+/// Recherche unifiee : categories + partenaires + articles.
+
+@ProviderFor(rechercheUnifiee)
+final rechercheUnifieeProvider = RechercheUnifieeFamily._();
+
+/// Recherche unifiee : categories + partenaires + articles.
+
+final class RechercheUnifieeProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ResultatsRecherche>,
+          ResultatsRecherche,
+          FutureOr<ResultatsRecherche>
+        >
+    with
+        $FutureModifier<ResultatsRecherche>,
+        $FutureProvider<ResultatsRecherche> {
+  /// Recherche unifiee : categories + partenaires + articles.
+  RechercheUnifieeProvider._({
+    required RechercheUnifieeFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'rechercheUnifieeProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$rechercheUnifieeHash();
+
+  @override
+  String toString() {
+    return r'rechercheUnifieeProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ResultatsRecherche> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ResultatsRecherche> create(Ref ref) {
+    final argument = this.argument as String;
+    return rechercheUnifiee(ref, terme: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is RechercheUnifieeProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$rechercheUnifieeHash() => r'd51c307f4bebc7c0d751d050d7fc34975165a5e0';
+
+/// Recherche unifiee : categories + partenaires + articles.
+
+final class RechercheUnifieeFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ResultatsRecherche>, String> {
+  RechercheUnifieeFamily._()
+    : super(
+        retry: null,
+        name: r'rechercheUnifieeProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Recherche unifiee : categories + partenaires + articles.
+
+  RechercheUnifieeProvider call({required String terme}) =>
+      RechercheUnifieeProvider._(argument: terme, from: this);
+
+  @override
+  String toString() => r'rechercheUnifieeProvider';
+}

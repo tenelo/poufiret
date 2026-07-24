@@ -5,6 +5,7 @@ import 'package:poufiret/features/catalogue/domain/article_liste.dart';
 import '../../../core/config/env.dart';
 import '../domain/categorie.dart';
 import '../domain/article_detail.dart';
+import '../domain/resultats_recherche.dart';
 
 class CatalogueRepository {
   final Dio _dio;
@@ -51,5 +52,18 @@ class CatalogueRepository {
   Future<ArticleDetail> articleDetail(String slug) async {
     final r = await _dio.get('${Env.apiPrefix}/catalogue/articles/$slug/');
     return ArticleDetail.fromJson(r.data as Map<String, dynamic>);
+  }
+
+  /// GET /catalogue/recherche/?q= — recherche unifiee en 3 sections.
+  ///
+  /// Poufiret est un annuaire avant d'etre un catalogue : on renvoie les
+  /// categories (intention annuaire), les partenaires, puis les articles
+  /// (intention produit), pour que le client choisisse son chemin.
+  Future<ResultatsRecherche> rechercheUnifiee(String terme) async {
+    final r = await _dio.get(
+      '${Env.apiPrefix}/catalogue/recherche/',
+      queryParameters: {'q': terme},
+    );
+    return ResultatsRecherche.fromJson(r.data as Map<String, dynamic>);
   }
 }

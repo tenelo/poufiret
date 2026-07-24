@@ -3,10 +3,20 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/config/config.dart';
+import '../../../core/errors/api_exception.dart';
+import '../../partenaire/screens/ecran_vitrine_partenaire.dart';
 import '../data/catalogue_providers.dart';
+import '../domain/resultats_recherche.dart';
 import 'ecran_article_detail.dart';
+import 'ecran_prestataires.dart';
 
-/// Onglet Recherche : cherche un article par son nom.
+/// Recherche unifiee : categories, partenaires, articles.
+///
+/// L'ordre n'est pas anodin. Poufiret est un annuaire avant d'etre un
+/// catalogue : un terme generique ("chaussure", "plombier") cherche un
+/// metier, un terme precis ("doliprane") cherche un produit. On montre
+/// les deux chemins et le client choisit.
 class EcranRecherche extends ConsumerStatefulWidget {
   const EcranRecherche({super.key});
 
@@ -20,7 +30,6 @@ class _EcranRechercheState extends ConsumerState<EcranRecherche> {
   String _terme = '';
 
   void _surSaisie(String valeur) {
-    // Attend 400 ms d'inactivité avant d'interroger le serveur.
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 400), () {
       if (mounted) setState(() => _terme = valeur.trim());
@@ -42,8 +51,6 @@ class _EcranRechercheState extends ConsumerState<EcranRecherche> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(title: const Text('Recherche')),
       body: Column(
@@ -52,11 +59,11 @@ class _EcranRechercheState extends ConsumerState<EcranRecherche> {
             padding: const EdgeInsets.all(12),
             child: TextField(
               controller: _controleur,
-              autofocus: false,
+              autofocus: true,
               textInputAction: TextInputAction.search,
               onChanged: _surSaisie,
               decoration: InputDecoration(
-                hintText: 'Rechercher un produit…',
+                hintText: 'Un métier, un commerce, un produit…',
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _controleur.text.isEmpty
                     ? null
@@ -69,8 +76,8 @@ class _EcranRechercheState extends ConsumerState<EcranRecherche> {
             ),
           ),
           Expanded(
-            child: _terme.isEmpty
-                ? _Invite(theme: theme)
+            child: _terme.length < 2
+                ? const _Invite()
                 : _Resultats(terme: _terme),
           ),
         ],
@@ -79,13 +86,12 @@ class _EcranRechercheState extends ConsumerState<EcranRecherche> {
   }
 }
 
-/// Écran d'accueil de la recherche, avant toute saisie.
 class _Invite extends StatelessWidget {
-  const _Invite({required this.theme});
-  final ThemeData theme;
+  const _Invite();
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -96,11 +102,11 @@ class _Invite extends StatelessWidget {
                 size: 64, color: theme.colorScheme.outlineVariant),
             const SizedBox(height: 12),
             Text(
-              'Tapez le nom d\'un produit pour le trouver.',
+              'Cherchez un métier (plombier, coiffure),\n'
+              'un commerce, ou un produit précis.',
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.outline,
-              ),
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(color: theme.colorScheme.outline),
             ),
           ],
         ),
@@ -115,90 +121,61 @@ class _Resultats extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(rechercheArticlesProvider(terme: terme));
-    final theme = Theme.of(context);
+    final async = ref.watch(rechercheUnifieeProvider(terme: terme));
 
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(
+      error: (err, _) => Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Erreur lors de la recherche.'),
-              const SizedBox(height: 8),
+              Text(err is ApiException
+                  ? err.messageLisible
+                  : 'Erreur lors de la recherche.'),
+              const SizedBox(height: 12),
               FilledButton(
                 onPressed: () =>
-                    ref.invalidate(rechercheArticlesProvider(terme: terme)),
+                    ref.invalidate(rechercheUnifieeProvider(terme: terme)),
                 child: const Text('Réessayer'),
               ),
             ],
           ),
         ),
       ),
-      data: (articles) {
-        if (articles.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(
-                'Aucun résultat pour « $terme ».',
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.outline,
-                ),
-              ),
-            ),
-          );
-        }
+      data: (r) {
+        if (r.estVide) return _Aucun(terme: terme);
 
         return LayoutBuilder(
-          builder: (context, constraints) {
-            final maxWidth =
-                constraints.maxWidth > 700 ? 700.0 : constraints.maxWidth;
+          builder: (context, contraintes) {
+            final largeur =
+                contraintes.maxWidth > 700 ? 700.0 : contraintes.maxWidth;
             return Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxWidth),
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  itemCount: articles.length,
-                  separatorBuilder: (_, i) => const Divider(height: 1),
-                  itemBuilder: (context, i) {
-                    final a = articles[i];
-                    return ListTile(
-                      leading: SizedBox(
-                        width: 48,
-                        height: 48,
-                        child: a.imagePrincipale != null
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  a.imagePrincipale!,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, e, s) =>
-                                      _vignetteVide(theme),
-                                ),
-                              )
-                            : _vignetteVide(theme),
-                      ),
-                      title: Text(a.nom,
-                          maxLines: 1, overflow: TextOverflow.ellipsis),
-                      subtitle: Text(a.partenaireNom),
-                      trailing: Text(
-                        '${a.prix} FCFA',
-                        style: TextStyle(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => EcranArticleDetail(slug: a.slug),
-                        ),
-                      ),
-                    );
-                  },
+              child: SizedBox(
+                width: largeur,
+                child: ListView(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  children: [
+                    if (r.categories.isNotEmpty) ...[
+                      const _TitreSection(
+                          titre: 'Catégories', icone: Icons.category_outlined),
+                      for (final c in r.categories) _LigneCategorie(categorie: c),
+                    ],
+                    if (r.partenaires.isNotEmpty) ...[
+                      const _TitreSection(
+                          titre: 'Commerces',
+                          icone: Icons.storefront_outlined),
+                      for (final p in r.partenaires)
+                        _LignePartenaire(partenaire: p),
+                    ],
+                    if (r.articles.isNotEmpty) ...[
+                      const _TitreSection(
+                          titre: 'Produits',
+                          icone: Icons.shopping_bag_outlined),
+                      for (final a in r.articles) _LigneArticle(article: a),
+                    ],
+                  ],
                 ),
               ),
             );
@@ -207,13 +184,186 @@ class _Resultats extends ConsumerWidget {
       },
     );
   }
+}
 
-  Widget _vignetteVide(ThemeData theme) => Container(
+class _TitreSection extends StatelessWidget {
+  const _TitreSection({required this.titre, required this.icone});
+  final String titre;
+  final IconData icone;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
+        child: Row(
+          children: [
+            Icon(icone, size: 16, color: Config.couleurPrimaire),
+            const SizedBox(width: 8),
+            Text(
+              titre,
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                color: Config.couleurPrimaire,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ],
+        ),
+      );
+}
+
+class _LigneCategorie extends StatelessWidget {
+  const _LigneCategorie({required this.categorie});
+  final CategorieTrouvee categorie;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Text(
+        categorie.icone.isNotEmpty ? categorie.icone : '📦',
+        style: const TextStyle(fontSize: 28),
+      ),
+      title: Text(categorie.nom,
+          maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: const Text('Voir tous les professionnels'),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => EcranPrestataires(
+            categorieId: categorie.id,
+            categorieNom: categorie.nom,
+            categorieSlug: categorie.slug,
+            modeTransaction: categorie.modeTransaction,
+            afficheCatalogue: categorie.afficheCatalogue,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LignePartenaire extends StatelessWidget {
+  const _LignePartenaire({required this.partenaire});
+  final PartenaireTrouve partenaire;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: Config.couleurFond,
+        backgroundImage: partenaire.logo.isNotEmpty
+            ? NetworkImage(partenaire.logo)
+            : null,
+        child: partenaire.logo.isEmpty
+            ? const Icon(Icons.storefront_outlined,
+                color: Config.couleurTexteSecondaire)
+            : null,
+      ),
+      title: Text(partenaire.nomCommerce,
+          maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: Text(
+        partenaire.typePartenaire,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) =>
+              EcranVitrinePartenaire(partenaireId: partenaire.id),
+        ),
+      ),
+    );
+  }
+}
+
+class _LigneArticle extends StatelessWidget {
+  const _LigneArticle({required this.article});
+  final ArticleTrouve article;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      leading: SizedBox(
+        width: 48,
+        height: 48,
+        child: article.imagePrincipale.isNotEmpty
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  article.imagePrincipale,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, e, s) => const _Vignette(),
+                ),
+              )
+            : const _Vignette(),
+      ),
+      title:
+          Text(article.nom, maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: Text(article.partenaireNom,
+          maxLines: 1, overflow: TextOverflow.ellipsis),
+      trailing: Text(
+        '${article.prix} FCFA',
+        style: TextStyle(
+          color: theme.colorScheme.primary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => EcranArticleDetail(slug: article.slug),
+        ),
+      ),
+    );
+  }
+}
+
+class _Vignette extends StatelessWidget {
+  const _Vignette();
+
+  @override
+  Widget build(BuildContext context) => Container(
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest,
+          color: Config.couleurFond,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(Icons.image_outlined,
-            size: 24, color: theme.colorScheme.outline),
+        child: const Icon(Icons.image_outlined,
+            size: 22, color: Config.couleurTexteSecondaire),
       );
+}
+
+class _Aucun extends StatelessWidget {
+  const _Aucun({required this.terme});
+  final String terme;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.search_off,
+                size: 56, color: theme.colorScheme.outlineVariant),
+            const SizedBox(height: 12),
+            Text(
+              'Aucun résultat pour « $terme ».',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleSmall,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              'Essayez un autre mot : le nom du métier, '
+              'du commerce, ou du produit.',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.outline),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
