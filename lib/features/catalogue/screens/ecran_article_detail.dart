@@ -16,6 +16,7 @@ import 'package:poufiret/features/social/widgets/bouton_social.dart';
 import 'package:poufiret/features/social/widgets/section_commentaires.dart';
 import 'package:poufiret/features/orders/data/orders_providers.dart';
 import '../../../core/widgets/image_reseau.dart';
+import '../../../core/widgets/visionneuse_images.dart';
 
 class EcranArticleDetail extends ConsumerWidget {
   final String slug;
@@ -191,14 +192,58 @@ class _Contenu extends ConsumerWidget {
               constraints: BoxConstraints(maxWidth: largeurMax),
               child: ListView(
                 children: [
-                  // Image principale ou placeholder.
+                  // Image principale : cliquable pour voir en grand.
                   AspectRatio(
                     aspectRatio: 16 / 9,
                     child: article.images.isNotEmpty
-                        ? ImageReseau(
-                            article.images.first,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _placeholder(theme),
+                        ? GestureDetector(
+                            onTap: () => VisionneuseImages.ouvrir(
+                              context,
+                              images: article.images,
+                              titre: article.nom,
+                            ),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                ImageReseau(
+                                  article.images.first,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, _, _) =>
+                                      _placeholder(theme),
+                                ),
+                                // Indice visuel : sans lui, personne ne
+                                // devine que l'image s'agrandit.
+                                Positioned(
+                                  right: 10,
+                                  bottom: 10,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 5),
+                                    decoration: BoxDecoration(
+                                      color: Colors.black54,
+                                      borderRadius:
+                                          BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(Icons.zoom_out_map,
+                                            size: 14, color: Colors.white),
+                                        if (article.images.length > 1) ...[
+                                          const SizedBox(width: 5),
+                                          Text(
+                                            '${article.images.length}',
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           )
                         : _placeholder(theme),
                   ),

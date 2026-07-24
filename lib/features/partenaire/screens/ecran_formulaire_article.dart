@@ -77,15 +77,35 @@ class _EcranFormulaireArticleState
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(texte)));
   }
 
+  /// Nombre de photos encore acceptees, selon le plan du partenaire.
+  int get _placesRestantes {
+    final max = ref.read(monProfilPartenaireProvider).maybeWhen(
+          data: (p) => (p['nb_photos_par_article'] as int?) ?? 1,
+          orElse: () => 1,
+        );
+    return (max - _nouvellesPhotos.length).clamp(0, max);
+  }
+
   Future<void> _choisirPhotos() async {
+    final restantes = _placesRestantes;
+    if (restantes <= 0) {
+      _message('Votre plan ne permet pas plus de photos pour cet article.');
+      return;
+    }
     final images = await ImagePicker().pickMultiImage(
       maxWidth: 1600,
       imageQuality: 80,
-      limit: 5,
+      limit: restantes,
     );
-    if (images.isNotEmpty) {
-      setState(() => _nouvellesPhotos.addAll(images.take(5)));
+    if (images.isEmpty) return;
+    // On tronque aussi cote app : selon les galeries, `limit` n'est
+    // qu'une indication et l'utilisateur peut en choisir davantage.
+    final retenues = images.take(restantes).toList();
+    if (images.length > retenues.length) {
+      _message('Seules $restantes photo(s) ont été retenues '
+          '(limite de votre plan).');
     }
+    setState(() => _nouvellesPhotos.addAll(retenues));
   }
 
   Future<void> _enregistrer() async {
@@ -368,9 +388,23 @@ class _EcranFormulaireArticleState
                           Row(
                             children: [
                               Expanded(
-                                child: Text(
-                                  'Nouvelles photos (${_nouvellesPhotos.length})',
-                                  style: Theme.of(context).textTheme.titleSmall,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Nouvelles photos '
+                                      '(${_nouvellesPhotos.length})',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall,
+                                    ),
+                                    // La limite annoncee AVANT la
+                                    // selection : sans elle, le partenaire
+                                    // choisit cinq photos et en perd
+                                    // quatre sans comprendre pourquoi.
+                                    const _LimitePhotos(),
+                                  ],
                                 ),
                               ),
                               TextButton.icon(
@@ -452,5 +486,30 @@ class _EcranFormulaireArticleState
         ),
       ),
     );
+  }
+}
+
+/// Rappel de la limite de photos accordee par le plan du partenaire.
+class _LimitePhotos extends ConsumerWidget {
+  const _LimitePhotos();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(monProfilPartenaireProvider).maybeWhen(
+          orElse: () => const SizedBox.shrink(),
+          data: (profil) {
+            final max = (profil['nb_photos_par_article'] as int?) ?? 1;
+            final plan = profil['plan_libelle']?.toString() ?? '';
+            return Text(
+              max <= 1
+                  ? 'Plan $plan : 1 photo par article'
+                  : 'Plan $plan : $max photos par article',
+              style: TextStyle(
+                fontSize: 11,
+                color: Theme.of(context).colorScheme.outline,
+              ),
+            );
+          },
+        );
   }
 }
