@@ -76,14 +76,12 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
     super.initState();
     // Masque le bandeau publicitaire : ici une distraction
     // coute une conversation ou une vente.
-    EtatCouchePub.ecranSensible.value = 'panier';
+    EtatCouchePub.signalerEcran('panier');
   }
 
   @override
   void dispose() {
-    if (EtatCouchePub.ecranSensible.value == 'panier') {
-      EtatCouchePub.ecranSensible.value = null;
-    }
+    EtatCouchePub.libererEcran('panier');
     super.dispose();
   }
 

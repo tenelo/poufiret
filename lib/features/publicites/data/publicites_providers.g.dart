@@ -151,11 +151,21 @@ final class PagePublicitesProvider
 String _$pagePublicitesHash() => r'22de15462f8b31a5fd0b64c60b94e2469446c3fe';
 
 /// Pub du bandeau bas (peut etre nulle).
+///
+/// keepAlive : le bandeau est affiche globalement et disparait sur
+/// certains ecrans. Sans cela, Riverpod detruirait le provider des qu'il
+/// n'est plus ecoute, et le bandeau repasserait par un etat de
+/// chargement — donc invisible — a chaque navigation.
 
 @ProviderFor(bandeauBasPublicite)
 final bandeauBasPubliciteProvider = BandeauBasPubliciteProvider._();
 
 /// Pub du bandeau bas (peut etre nulle).
+///
+/// keepAlive : le bandeau est affiche globalement et disparait sur
+/// certains ecrans. Sans cela, Riverpod detruirait le provider des qu'il
+/// n'est plus ecoute, et le bandeau repasserait par un etat de
+/// chargement — donc invisible — a chaque navigation.
 
 final class BandeauBasPubliciteProvider
     extends
@@ -166,13 +176,18 @@ final class BandeauBasPubliciteProvider
         >
     with $FutureModifier<PubliciteListe?>, $FutureProvider<PubliciteListe?> {
   /// Pub du bandeau bas (peut etre nulle).
+  ///
+  /// keepAlive : le bandeau est affiche globalement et disparait sur
+  /// certains ecrans. Sans cela, Riverpod detruirait le provider des qu'il
+  /// n'est plus ecoute, et le bandeau repasserait par un etat de
+  /// chargement — donc invisible — a chaque navigation.
   BandeauBasPubliciteProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'bandeauBasPubliciteProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -193,7 +208,7 @@ final class BandeauBasPubliciteProvider
 }
 
 String _$bandeauBasPubliciteHash() =>
-    r'264fd9788a5824b63d08ef9dac2ff33913bd63ff';
+    r'9dc47bf6815d3204f098d99960889977b39a1b01';
 
 /// Forfaits proposes au partenaire.
 

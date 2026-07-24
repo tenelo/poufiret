@@ -34,7 +34,7 @@ class _EcranDiscussionState extends ConsumerState<EcranDiscussion> {
   void initState() {
     super.initState();
     // Masque le bandeau publicitaire pendant le chat.
-    EtatCouchePub.ecranSensible.value = 'discussion';
+    EtatCouchePub.signalerEcran('discussion');
     _init();
   }
 
@@ -109,9 +109,7 @@ class _EcranDiscussionState extends ConsumerState<EcranDiscussion> {
 
   @override
   void dispose() {
-    if (EtatCouchePub.ecranSensible.value == 'discussion') {
-      EtatCouchePub.ecranSensible.value = null;
-    }
+    EtatCouchePub.libererEcran('discussion');
     _socket?.fermer();
     _champ.dispose();
     _scroll.dispose();

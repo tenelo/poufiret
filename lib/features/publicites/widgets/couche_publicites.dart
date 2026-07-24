@@ -22,6 +22,21 @@ class EtatCouchePub {
 
   static final ValueNotifier<String?> ecranSensible = ValueNotifier(null);
   static final ValueNotifier<int> profondeur = ValueNotifier(0);
+
+  /// Signale l'ecran sensible courant, apres la frame en cours.
+  ///
+  /// Ecrire directement depuis initState notifierait l'Overlay alors
+  /// qu'il est deja en train de se construire — Flutter l'interdit.
+  static void signalerEcran(String? nom) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ecranSensible.value = nom;
+    });
+  }
+
+  /// Libere l'ecran s'il est toujours celui au premier plan.
+  static void libererEcran(String nom) {
+    if (ecranSensible.value == nom) signalerEcran(null);
+  }
 }
 
 /// Suit les ecrans empiles au-dessus de la coquille a onglets.
@@ -39,8 +54,9 @@ class ObservateurNavigation extends NavigatorObserver {
   }
 
   @override
-  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) =>
-      _maj(-1);
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
+    _maj(-1);
+  }
 
   @override
   void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) =>
@@ -51,10 +67,10 @@ final observateurNavigation = ObservateurNavigation();
 
 /// Superpose le bandeau publicitaire au-dessus de toute l'application.
 ///
-/// Place a la racine plutot que dans la coquille a onglets, il reste
-/// visible sur les ecrans pousses par-dessus : fiche article, vitrine,
-/// detail d'une publicite.
-class CouchePublicites extends StatelessWidget {
+/// Passe par un [Overlay] et non par un Stack : chaque ecran pousse a son
+/// propre Scaffold opaque qui recouvrirait un simple Stack racine. Une
+/// entree d'Overlay, elle, flotte au-dessus de toutes les routes.
+class CouchePublicites extends StatefulWidget {
   const CouchePublicites({
     super.key,
     required this.enfant,
@@ -67,48 +83,71 @@ class CouchePublicites extends StatelessWidget {
   final double hauteurBarreOnglets;
 
   @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        enfant,
-        ValueListenableBuilder<String?>(
-          valueListenable: EtatCouchePub.ecranSensible,
-          builder: (context, sensible, _) {
-            if (sensible != null && ecransSansBandeau.contains(sensible)) {
-              return const SizedBox.shrink();
-            }
-            return ValueListenableBuilder<int>(
-              valueListenable: EtatCouchePub.profondeur,
-              builder: (context, profondeur, _) {
-                // A la racine, la barre d'onglets occupe le bas : on se
-                // place juste au-dessus. Sur un ecran pousse, elle n'est
-                // pas la, le bandeau descend au ras du bord.
-                final aLaRacine = profondeur == 0;
-                final large = MediaQuery.sizeOf(context).width >= 600;
-                final bas = (aLaRacine && !large)
-                    ? hauteurBarreOnglets +
-                        MediaQuery.paddingOf(context).bottom
-                    : 0.0;
-                return Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: bas,
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: SafeArea(
-                      top: false,
-                      bottom: !aLaRacine,
-                      child: const BandeauBasPublicite(),
-                    ),
-                  ),
-                );
-              },
+  State<CouchePublicites> createState() => _CouchePublicitesState();
+}
+
+class _CouchePublicitesState extends State<CouchePublicites> {
+  OverlayEntry? _entree;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _installer());
+  }
+
+  void _installer() {
+    if (!mounted || _entree != null) return;
+    final overlay = Overlay.of(context, rootOverlay: true);
+    _entree = OverlayEntry(builder: _construire);
+    overlay.insert(_entree!);
+  }
+
+  @override
+  void dispose() {
+    _entree?.remove();
+    _entree = null;
+    super.dispose();
+  }
+
+  Widget _construire(BuildContext context) {
+    return ValueListenableBuilder<String?>(
+      valueListenable: EtatCouchePub.ecranSensible,
+      builder: (context, sensible, _) {
+        if (sensible != null && ecransSansBandeau.contains(sensible)) {
+          return const SizedBox.shrink();
+        }
+        return ValueListenableBuilder<int>(
+          valueListenable: EtatCouchePub.profondeur,
+          builder: (context, profondeur, _) {
+            // A la racine, la barre d'onglets occupe le bas : on se place
+            // juste au-dessus. Sur un ecran pousse, elle n'est pas la.
+            final aLaRacine = profondeur == 0;
+            final large = MediaQuery.sizeOf(context).width >= 600;
+            final bas = (aLaRacine && !large)
+                ? widget.hauteurBarreOnglets +
+                    MediaQuery.paddingOf(context).bottom
+                : 0.0;
+            return Positioned(
+              left: 0,
+              right: 0,
+              bottom: bas,
+              child: Material(
+                type: MaterialType.transparency,
+                child: SafeArea(
+                  top: false,
+                  bottom: !aLaRacine,
+                  child: const BandeauBasPublicite(),
+                ),
+              ),
             );
           },
-        ),
-      ],
+        );
+      },
     );
   }
+
+  @override
+  Widget build(BuildContext context) => widget.enfant;
 }
 
 /// Enveloppe un ecran ou le bandeau doit disparaitre.

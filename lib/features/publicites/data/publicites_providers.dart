@@ -27,7 +27,12 @@ Future<List<PubliciteListe>> pagePublicites(Ref ref) {
 }
 
 /// Pub du bandeau bas (peut etre nulle).
-@riverpod
+///
+/// keepAlive : le bandeau est affiche globalement et disparait sur
+/// certains ecrans. Sans cela, Riverpod detruirait le provider des qu'il
+/// n'est plus ecoute, et le bandeau repasserait par un etat de
+/// chargement — donc invisible — a chaque navigation.
+@Riverpod(keepAlive: true)
 Future<PubliciteListe?> bandeauBasPublicite(Ref ref) {
   return ref.watch(publicitesRepositoryProvider).bandeauBas();
 }

@@ -39,18 +39,19 @@ class _BandeauBasPubliciteState extends ConsumerState<BandeauBasPublicite> {
   Widget build(BuildContext context) {
     if (_ferme) return const SizedBox.shrink();
 
-    return ref.watch(bandeauBasPubliciteProvider).maybeWhen(
-          // Silencieux pendant le chargement ou en cas d'erreur.
-          orElse: () => const SizedBox.shrink(),
-          data: (pub) {
-            if (pub == null) return const SizedBox.shrink();
-            _tracer(pub);
-            return _Bandeau(
-              pub: pub,
-              onFermer: () => setState(() => _ferme = true),
-            );
-          },
-        );
+
+    final async = ref.watch(bandeauBasPubliciteProvider);
+    // On garde la derniere pub connue pendant un rechargement : sinon le
+    // bandeau clignote a chaque navigation. `value` reste renseigne
+    // pendant un rechargement, contrairement a maybeWhen(data:).
+    final pub = async.value;
+    if (pub == null) return const SizedBox.shrink();
+
+    _tracer(pub);
+    return _Bandeau(
+      pub: pub,
+      onFermer: () => setState(() => _ferme = true),
+    );
   }
 }
 
