@@ -9,6 +9,7 @@ import 'core/notifications/fcm_service.dart';
 import 'features/analytics/data/analytics_providers.dart';
 import 'features/auth/screens/auth_notifier.dart';
 import 'features/auth/screens/ecran_connexion.dart';
+import 'features/publicites/widgets/couche_publicites.dart';
 import 'features/publicites/widgets/observateur_interstitiel.dart';
 
 Future<void> main() async {
@@ -31,6 +32,7 @@ class PoufiretApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
+      navigatorObservers: [observateurNavigation],
       home: const _Racine(),
     );
   }
@@ -100,7 +102,9 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
           ? const EcranConnexion()
           // L'observateur ne couvre que la partie connectee : pas
           // d'interstitiel sur l'ecran de connexion.
-          : const ObservateurInterstitiel(enfant: AppShell()),
+          : const ObservateurInterstitiel(
+              enfant: CouchePublicites(enfant: AppShell()),
+            ),
     );
   }
 }

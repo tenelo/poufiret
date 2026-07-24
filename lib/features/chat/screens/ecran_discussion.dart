@@ -5,6 +5,7 @@ import '../../../core/network/providers.dart';
 import '../data/chat_providers.dart';
 import '../data/chat_socket.dart';
 import '../domain/chat_models.dart';
+import '../../publicites/widgets/couche_publicites.dart';
 
 /// Fil de discussion temps réel d'une conversation.
 class EcranDiscussion extends ConsumerStatefulWidget {
@@ -32,6 +33,8 @@ class _EcranDiscussionState extends ConsumerState<EcranDiscussion> {
   @override
   void initState() {
     super.initState();
+    // Masque le bandeau publicitaire pendant le chat.
+    EtatCouchePub.ecranSensible.value = 'discussion';
     _init();
   }
 
@@ -106,6 +109,9 @@ class _EcranDiscussionState extends ConsumerState<EcranDiscussion> {
 
   @override
   void dispose() {
+    if (EtatCouchePub.ecranSensible.value == 'discussion') {
+      EtatCouchePub.ecranSensible.value = null;
+    }
     _socket?.fermer();
     _champ.dispose();
     _scroll.dispose();

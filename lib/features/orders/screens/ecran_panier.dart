@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/orders_providers.dart';
 import '../domain/orders_models.dart';
+import '../../publicites/widgets/couche_publicites.dart';
 
 /// Écran panier : regroupe les paniers par catégorie (option A).
 /// Chaque ligne indique le commerçant. Un bouton "Commander" par catégorie.
@@ -70,6 +71,22 @@ class _BlocCategorie extends ConsumerStatefulWidget {
 }
 
 class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
+  @override
+  void initState() {
+    super.initState();
+    // Masque le bandeau publicitaire : ici une distraction
+    // coute une conversation ou une vente.
+    EtatCouchePub.ecranSensible.value = 'panier';
+  }
+
+  @override
+  void dispose() {
+    if (EtatCouchePub.ecranSensible.value == 'panier') {
+      EtatCouchePub.ecranSensible.value = null;
+    }
+    super.dispose();
+  }
+
   bool _envoiEnCours = false;
 
   /// Livraison par défaut ; le client peut choisir de venir chercher.
