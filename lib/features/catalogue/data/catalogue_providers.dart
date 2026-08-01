@@ -7,6 +7,7 @@ import 'catalogue_repository.dart';
 import '../domain/article_liste.dart';
 import '../domain/article_detail.dart';
 import '../domain/resultats_recherche.dart';
+import '../domain/video_article.dart';
 
 part 'catalogue_providers.g.dart';
 
@@ -62,4 +63,13 @@ Future<ResultatsRecherche> rechercheUnifiee(Ref ref, {required String terme}) {
     return Future.value(const ResultatsRecherche());
   }
   return ref.watch(catalogueRepositoryProvider).rechercheUnifiee(terme.trim());
+}
+
+/// Videos d'un partenaire, pour l'onglet Videos de sa vitrine.
+@riverpod
+Future<List<VideoArticle>> videosPartenaire(Ref ref,
+    {required int partenaireId}) {
+  return ref
+      .watch(catalogueRepositoryProvider)
+      .videosPartenaire(partenaireId);
 }

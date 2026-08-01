@@ -6,6 +6,7 @@ import '../../../core/config/env.dart';
 import '../domain/categorie.dart';
 import '../domain/article_detail.dart';
 import '../domain/resultats_recherche.dart';
+import '../domain/video_article.dart';
 
 class CatalogueRepository {
   final Dio _dio;
@@ -65,5 +66,19 @@ class CatalogueRepository {
       queryParameters: {'q': terme},
     );
     return ResultatsRecherche.fromJson(r.data as Map<String, dynamic>);
+  }
+
+  /// Toutes les videos actives d'un partenaire (onglet Videos).
+  Future<List<VideoArticle>> videosPartenaire(int partenaireId) async {
+    final r = await _dio.get(
+      '${Env.apiPrefix}/catalogue/partenaire/$partenaireId/videos/',
+    );
+    final data = r.data;
+    final brut = data is Map<String, dynamic> ? data['results'] : data;
+    if (brut is! List) return const [];
+    return brut
+        .whereType<Map>()
+        .map((e) => VideoArticle.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
   }
 }

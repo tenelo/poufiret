@@ -547,3 +547,89 @@ final class RechercheUnifieeFamily extends $Family
   @override
   String toString() => r'rechercheUnifieeProvider';
 }
+
+/// Videos d'un partenaire, pour l'onglet Videos de sa vitrine.
+
+@ProviderFor(videosPartenaire)
+final videosPartenaireProvider = VideosPartenaireFamily._();
+
+/// Videos d'un partenaire, pour l'onglet Videos de sa vitrine.
+
+final class VideosPartenaireProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<VideoArticle>>,
+          List<VideoArticle>,
+          FutureOr<List<VideoArticle>>
+        >
+    with
+        $FutureModifier<List<VideoArticle>>,
+        $FutureProvider<List<VideoArticle>> {
+  /// Videos d'un partenaire, pour l'onglet Videos de sa vitrine.
+  VideosPartenaireProvider._({
+    required VideosPartenaireFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'videosPartenaireProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$videosPartenaireHash();
+
+  @override
+  String toString() {
+    return r'videosPartenaireProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<VideoArticle>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<VideoArticle>> create(Ref ref) {
+    final argument = this.argument as int;
+    return videosPartenaire(ref, partenaireId: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is VideosPartenaireProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$videosPartenaireHash() => r'd1a21686db9f1e2675a2d89152a6ddfe36b76061';
+
+/// Videos d'un partenaire, pour l'onglet Videos de sa vitrine.
+
+final class VideosPartenaireFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<VideoArticle>>, int> {
+  VideosPartenaireFamily._()
+    : super(
+        retry: null,
+        name: r'videosPartenaireProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Videos d'un partenaire, pour l'onglet Videos de sa vitrine.
+
+  VideosPartenaireProvider call({required int partenaireId}) =>
+      VideosPartenaireProvider._(argument: partenaireId, from: this);
+
+  @override
+  String toString() => r'videosPartenaireProvider';
+}

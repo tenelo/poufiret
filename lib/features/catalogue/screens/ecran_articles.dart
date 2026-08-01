@@ -6,6 +6,8 @@ import 'package:poufiret/features/catalogue/data/catalogue_providers.dart';
 import 'package:poufiret/features/catalogue/domain/article_liste.dart';
 import 'package:poufiret/features/catalogue/screens/ecran_article_detail.dart';
 import '../../../core/widgets/image_reseau.dart';
+import 'package:poufiret/features/catalogue/widgets/lecteur_video.dart';
+import 'package:poufiret/features/catalogue/domain/video_article.dart';
 
 class EcranArticles extends ConsumerWidget {
   final int categorieId;
@@ -27,6 +29,36 @@ class EcranArticles extends ConsumerWidget {
     if (partenaireId != null) {
       ref.watch(vueVitrineProvider(
           partenaireId: partenaireId!, source: 'annuaire'));
+    }
+
+    // Onglets Images/Videos uniquement sur la vitrine d'UN partenaire :
+    // par categorie (tous partenaires confondus), un onglet Videos
+    // melangerait les videos de tout le monde.
+    if (partenaireId != null) {
+      return DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(categorieNom),
+            bottom: const TabBar(
+              tabs: [
+                Tab(text: 'Images'),
+                Tab(text: 'Vidéos'),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              _OngletArticles(
+                categorieId: categorieId,
+                partenaireId: partenaireId,
+                modeTransaction: modeTransaction,
+              ),
+              _OngletVideos(partenaireId: partenaireId!),
+            ],
+          ),
+        ),
+      );
     }
 
     return Scaffold(
@@ -76,6 +108,154 @@ class EcranArticles extends ConsumerWidget {
   }
 }
 
+/// Onglet Images : la grille d'articles du partenaire.
+class _OngletArticles extends ConsumerWidget {
+  const _OngletArticles({
+    required this.categorieId,
+    required this.partenaireId,
+    required this.modeTransaction,
+  });
+
+  final int categorieId;
+  final int? partenaireId;
+  final String modeTransaction;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final articlesAsync = ref.watch(
+        articlesProvider(categorieId: categorieId, partenaireId: partenaireId));
+    return articlesAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, _) {
+        final message =
+            err is ApiException ? err.messageLisible : 'Erreur de chargement.';
+        return _MessageErreur(
+          message: message,
+          onReessayer: () => ref.invalidate(articlesProvider(
+              categorieId: categorieId, partenaireId: partenaireId)),
+        );
+      },
+      data: (articles) {
+        if (articles.isEmpty) {
+          return const Center(child: Text('Aucun article pour l\'instant.'));
+        }
+        return LayoutBuilder(
+          builder: (context, contraintes) {
+            final nbColonnes = (contraintes.maxWidth / 220).floor().clamp(1, 5);
+            return GridView.builder(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: nbColonnes,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.75,
+              ),
+              itemCount: articles.length,
+              itemBuilder: (context, i) => _VignetteArticle(
+                article: articles[i],
+                modeTransaction: modeTransaction,
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+/// Onglet Videos : les videos de tous les articles du partenaire.
+class _OngletVideos extends ConsumerWidget {
+  const _OngletVideos({required this.partenaireId});
+  final int partenaireId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async =
+        ref.watch(videosPartenaireProvider(partenaireId: partenaireId));
+    return async.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (err, _) => _MessageErreur(
+        message: err is ApiException
+            ? err.messageLisible
+            : 'Erreur de chargement.',
+        onReessayer: () => ref
+            .invalidate(videosPartenaireProvider(partenaireId: partenaireId)),
+      ),
+      data: (videos) {
+        if (videos.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.videocam_off_outlined,
+                      size: 48, color: Theme.of(context).colorScheme.outline),
+                  const SizedBox(height: 12),
+                  const Text('Aucune vidéo pour le moment.',
+                      textAlign: TextAlign.center),
+                ],
+              ),
+            ),
+          );
+        }
+        return LayoutBuilder(
+          builder: (context, contraintes) {
+            final largeur =
+                contraintes.maxWidth > 700 ? 700.0 : contraintes.maxWidth;
+            return Center(
+              child: SizedBox(
+                width: largeur,
+                child: ListView.separated(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: videos.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 16),
+                  itemBuilder: (context, i) {
+                    final VideoArticle v = videos[i];
+                    return Card(
+                      clipBehavior: Clip.antiAlias,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          LecteurVideo(
+                            url: v.video,
+                            miniature: v.miniature,
+                            titre: v.titre,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  v.titre.isNotEmpty ? v.titre : v.articleNom,
+                                  style:
+                                      Theme.of(context).textTheme.titleSmall,
+                                ),
+                                if (v.articleNom.isNotEmpty) ...[
+                                  const SizedBox(height: 2),
+                                  Text(v.articleNom,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
 class _VignetteArticle extends StatelessWidget {
   final ArticleListe article;
   final String modeTransaction;
@@ -109,7 +289,7 @@ class _VignetteArticle extends StatelessWidget {
                   ? ImageReseau(
                       article.imagePrincipale!,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const _PlaceholderImage(),
+                      errorBuilder: (_, _, _) => const _PlaceholderImage(),
                     )
                   : const _PlaceholderImage(),
             ),
