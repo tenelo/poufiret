@@ -47,6 +47,9 @@ class AuthNotifier extends _$AuthNotifier {
     required String nom,
     required String telephone,
     required String password,
+    int? departement,
+    String? trancheAge,
+    String? sexe,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
@@ -57,6 +60,9 @@ class AuthNotifier extends _$AuthNotifier {
             nom: nom,
             telephone: telephone,
             password: password,
+            departement: departement,
+            trancheAge: trancheAge,
+            sexe: sexe,
           );
     });
   }

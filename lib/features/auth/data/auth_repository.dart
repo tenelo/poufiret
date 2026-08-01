@@ -39,6 +39,9 @@ class AuthRepository {
     required String nom,
     required String telephone, // déjà au format +225...
     required String password,
+    int? departement,
+    String? trancheAge,
+    String? sexe,
   }) async {
     // Username technique unique, adossé au téléphone (déjà unique).
     final username = 'user_${telephone.replaceAll('+', '')}';
@@ -51,6 +54,10 @@ class AuthRepository {
         'first_name': prenom,
         'last_name': nom,
         'password': password,
+        if (departement != null) 'departement': departement,
+        if (trancheAge != null && trancheAge.isNotEmpty)
+          'tranche_age': trancheAge,
+        if (sexe != null && sexe.isNotEmpty) 'sexe': sexe,
       },
     );
     final data = r.data as Map<String, dynamic>;

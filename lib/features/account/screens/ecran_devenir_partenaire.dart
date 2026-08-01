@@ -5,6 +5,7 @@ import '../../../core/errors/api_exception.dart';
 import '../../auth/data/auth_providers.dart';
 import '../../auth/screens/auth_notifier.dart';
 import '../../catalogue/data/catalogue_providers.dart';
+import '../../geo/widgets/champ_departement.dart';
 
 /// Formulaire « Devenir partenaire » : crée le ProfilPartenaire
 /// (statut en attente de validation par un administrateur).
@@ -26,6 +27,7 @@ class _EcranDevenirPartenaireState
   final _ctrlTelephonePro = TextEditingController();
   final _ctrlWhatsapp = TextEditingController();
 
+  int? _departement;
   String _type = 'commercant';
   bool _envoiEnCours = false;
 
@@ -72,6 +74,7 @@ class _EcranDevenirPartenaireState
     try {
       await ref.read(authRepositoryProvider).devenirPartenaire({
         'type_partenaire': _type,
+        if (_departement != null) 'departement': _departement,
         if (_categories.isNotEmpty) 'categories': _categories,
         'nom_commerce': _ctrlNomCommerce.text.trim(),
         'description': _ctrlDescription.text.trim(),
@@ -181,6 +184,12 @@ class _EcranDevenirPartenaireState
                       controller: _ctrlQuartier,
                       decoration:
                           const InputDecoration(labelText: 'Quartier'),
+                    ),
+                    const SizedBox(height: 12),
+                    ChampDepartement(
+                      valeur: _departement,
+                      obligatoire: true,
+                      onChange: (v) => setState(() => _departement = v),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
