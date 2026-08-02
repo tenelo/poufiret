@@ -11,6 +11,8 @@ import '../domain/resultats_recherche.dart';
 import 'ecran_article_detail.dart';
 import 'ecran_prestataires.dart';
 import '../../../core/widgets/image_reseau.dart';
+import '../../auth/widgets/mur_inscription.dart';
+import '../../auth/screens/auth_notifier.dart';
 
 /// Recherche unifiee : categories, partenaires, articles.
 ///
@@ -123,6 +125,7 @@ class _Resultats extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(rechercheUnifieeProvider(terme: terme));
+    final connecte = ref.watch(authProvider).value != null;
 
     return async.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -168,13 +171,14 @@ class _Resultats extends ConsumerWidget {
                           titre: 'Commerces',
                           icone: Icons.storefront_outlined),
                       for (final p in r.partenaires)
-                        _LignePartenaire(partenaire: p),
+                        _LignePartenaire(partenaire: p, connecte: connecte),
                     ],
                     if (r.articles.isNotEmpty) ...[
                       const _TitreSection(
                           titre: 'Produits',
                           icone: Icons.shopping_bag_outlined),
-                      for (final a in r.articles) _LigneArticle(article: a),
+                      for (final a in r.articles)
+                        _LigneArticle(article: a, connecte: connecte),
                     ],
                   ],
                 ),
@@ -243,7 +247,8 @@ class _LigneCategorie extends StatelessWidget {
 }
 
 class _LignePartenaire extends StatelessWidget {
-  const _LignePartenaire({required this.partenaire});
+  const _LignePartenaire({required this.partenaire, required this.connecte});
+  final bool connecte;
   final PartenaireTrouve partenaire;
 
   @override
@@ -267,10 +272,14 @@ class _LignePartenaire extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       trailing: const Icon(Icons.chevron_right),
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) =>
-              EcranVitrinePartenaire(partenaireId: partenaire.id),
+      onTap: () => murInscriptionSi(
+        context,
+        connecte: connecte,
+        action: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) =>
+                EcranVitrinePartenaire(partenaireId: partenaire.id),
+          ),
         ),
       ),
     );
@@ -278,7 +287,8 @@ class _LignePartenaire extends StatelessWidget {
 }
 
 class _LigneArticle extends StatelessWidget {
-  const _LigneArticle({required this.article});
+  const _LigneArticle({required this.article, required this.connecte});
+  final bool connecte;
   final ArticleTrouve article;
 
   @override
@@ -315,9 +325,13 @@ class _LigneArticle extends StatelessWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => EcranArticleDetail(slug: article.slug),
+      onTap: () => murInscriptionSi(
+        context,
+        connecte: connecte,
+        action: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => EcranArticleDetail(slug: article.slug),
+          ),
         ),
       ),
     );

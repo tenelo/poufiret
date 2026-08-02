@@ -10,6 +10,7 @@ import 'package:poufiret/features/analytics/data/analytics_providers.dart';
 import 'package:poufiret/features/chat/data/chat_providers.dart';
 import 'package:poufiret/features/chat/screens/ecran_discussion.dart';
 import '../../../core/widgets/image_reseau.dart';
+import '../../auth/widgets/mur_inscription.dart';
 
 /// Annuaire d'une catégorie : les prestataires/commerces (couverture + nom).
 /// Le client choisit un commerce avant de voir ses articles.
@@ -35,8 +36,9 @@ class EcranPrestataires extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // L affichage de la liste des prestataires = une visite de categorie.
     ref.watch(visiteCategorieProvider(categorieId: categorieId));
-    final annuaireAsync =
-        ref.watch(partenairesParCategorieProvider(slug: categorieSlug));
+    final annuaireAsync = ref.watch(
+      partenairesParCategorieProvider(slug: categorieSlug),
+    );
     return Scaffold(
       appBar: AppBar(title: Text(categorieNom)),
       body: annuaireAsync.when(
@@ -53,7 +55,8 @@ class EcranPrestataires extends ConsumerWidget {
                 const SizedBox(height: 12),
                 FilledButton(
                   onPressed: () => ref.invalidate(
-                      partenairesParCategorieProvider(slug: categorieSlug)),
+                    partenairesParCategorieProvider(slug: categorieSlug),
+                  ),
                   child: const Text('Réessayer'),
                 ),
               ],
@@ -78,8 +81,7 @@ class EcranPrestataires extends ConsumerWidget {
                   width: largeur,
                   child: GridView.builder(
                     padding: const EdgeInsets.all(12),
-                    gridDelegate:
-                        SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: colonnes,
                       mainAxisSpacing: 12,
                       crossAxisSpacing: 12,
@@ -89,22 +91,26 @@ class EcranPrestataires extends ConsumerWidget {
                     itemBuilder: (context, i) => _CartePrestataire(
                       prestataire: prestataires[i],
                       onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => afficheCatalogue
-                                ? EcranArticles(
-                                    categorieId: categorieId,
-                                    categorieNom:
-                                        prestataires[i].nomCommerce,
-                                    modeTransaction: modeTransaction,
-                                    partenaireId: prestataires[i].id,
-                                  )
-                                : EcranVitrinePartenaire(
-                                    partenaireId: prestataires[i].id,
-                                    modeTransaction: modeTransaction,
-                                  ),
-                          ),
-                        );
+                        // Mur d'inscription : un visiteur non enregistre
+                        // voit la liste mais doit creer un compte pour
+                        // ouvrir une fiche partenaire.
+                        murInscription(context, ref, () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => afficheCatalogue
+                                  ? EcranArticles(
+                                      categorieId: categorieId,
+                                      categorieNom: prestataires[i].nomCommerce,
+                                      modeTransaction: modeTransaction,
+                                      partenaireId: prestataires[i].id,
+                                    )
+                                  : EcranVitrinePartenaire(
+                                      partenaireId: prestataires[i].id,
+                                      modeTransaction: modeTransaction,
+                                    ),
+                            ),
+                          );
+                        });
                       },
                     ),
                   ),
@@ -140,8 +146,7 @@ class _CartePrestataire extends ConsumerWidget {
                   ? ImageReseau(
                       prestataire.photoCouverture,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) =>
-                          _FondNeutre(theme: theme),
+                      errorBuilder: (_, __, ___) => _FondNeutre(theme: theme),
                     )
                   : _FondNeutre(theme: theme),
             ),
@@ -171,9 +176,11 @@ class _CartePrestataire extends ConsumerWidget {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.place_outlined,
-                                  size: 13,
-                                  color: theme.colorScheme.outline),
+                              Icon(
+                                Icons.place_outlined,
+                                size: 13,
+                                color: theme.colorScheme.outline,
+                              ),
                               const SizedBox(width: 2),
                               Flexible(
                                 child: Text(
@@ -181,7 +188,8 @@ class _CartePrestataire extends ConsumerWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.outline),
+                                    color: theme.colorScheme.outline,
+                                  ),
                                 ),
                               ),
                             ],
@@ -190,8 +198,10 @@ class _CartePrestataire extends ConsumerWidget {
                     ),
                   ),
                   IconButton(
-                    icon: FaIcon(FontAwesomeIcons.whatsapp,
-                        color: theme.colorScheme.primary),
+                    icon: FaIcon(
+                      FontAwesomeIcons.whatsapp,
+                      color: theme.colorScheme.primary,
+                    ),
                     tooltip: 'Discuter',
                     onPressed: () async {
                       final messenger = ScaffoldMessenger.of(context);
@@ -200,16 +210,20 @@ class _CartePrestataire extends ConsumerWidget {
                         final conv = await ref
                             .read(chatRepositoryProvider)
                             .contacter(partenaireId: prestataire.id);
-                        nav.push(MaterialPageRoute(
-                          builder: (_) => EcranDiscussion(
-                            conversationId: conv.id,
-                            titre: prestataire.nomCommerce,
+                        nav.push(
+                          MaterialPageRoute(
+                            builder: (_) => EcranDiscussion(
+                              conversationId: conv.id,
+                              titre: prestataire.nomCommerce,
+                            ),
                           ),
-                        ));
+                        );
                       } catch (_) {
-                        messenger.showSnackBar(const SnackBar(
-                            content: Text(
-                                'Connexion requise pour discuter.')));
+                        messenger.showSnackBar(
+                          const SnackBar(
+                            content: Text('Connexion requise pour discuter.'),
+                          ),
+                        );
                       }
                     },
                   ),
@@ -231,8 +245,7 @@ class _FondNeutre extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: theme.colorScheme.surfaceContainerHighest,
-      child: Icon(Icons.storefront,
-          size: 48, color: theme.colorScheme.outline),
+      child: Icon(Icons.storefront, size: 48, color: theme.colorScheme.outline),
     );
   }
 }
