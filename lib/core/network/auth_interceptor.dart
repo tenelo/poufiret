@@ -48,6 +48,13 @@ class AuthInterceptor extends QueuedInterceptor {
       return handler.next(err);
     }
 
+    // Visiteur (aucune session) : un 401 est normal sur une route
+    // protegee. On ne declenche PAS onSessionExpiree — il n'y a pas
+    // de session a couper, et le faire detruirait le dioProvider en
+    // plein appel. On laisse simplement passer l'erreur.
+    if (!await _tokens.aSession) {
+      return handler.next(err);
+    }
     // Démarre le refresh partagé s'il n'y en a pas déjà un en cours.
     _refreshEnCours ??= _rafraichir();
     final succes = await _refreshEnCours!;

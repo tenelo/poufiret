@@ -40,8 +40,20 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
     final auth = ref.watch(authProvider);
     final enCours = auth.isLoading;
 
-    // Affiche un message si la dernière tentative a échoué.
-    ref.listen(authProvider, (_, next) {
+    // Reagit au resultat de la tentative de connexion.
+    ref.listen(authProvider, (avant, next) {
+      // Succes : l'utilisateur vient de passer a connecte. On ferme
+      // l'ecran de connexion pour revenir a l'application. Le retirer de
+      // la pile evite qu'un retour n'y ramene.
+      final connecteMaintenant = next.value != null;
+      final etaitConnecte = avant?.value != null;
+      if (connecteMaintenant && !etaitConnecte) {
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        }
+        return;
+      }
+      // Echec : on affiche le message d'erreur.
       if (next.hasError && !next.isLoading) {
         final err = next.error;
         final message = err is ApiException

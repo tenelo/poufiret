@@ -56,7 +56,18 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
     final auth = ref.watch(authProvider);
     final enCours = auth.isLoading;
 
-    ref.listen(authProvider, (_, next) {
+    ref.listen(authProvider, (avant, next) {
+      // Succes : le compte est cree et l'utilisateur connecte. On ferme
+      // l'ecran d'inscription (et, si on venait du mur via la connexion,
+      // le retour ne ramene pas sur ces ecrans).
+      final connecteMaintenant = next.value != null;
+      final etaitConnecte = avant?.value != null;
+      if (connecteMaintenant && !etaitConnecte) {
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        }
+        return;
+      }
       if (next.hasError && !next.isLoading) {
         final err = next.error;
         final message = err is ApiException
