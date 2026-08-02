@@ -12,6 +12,8 @@ abstract class PartenaireCategorie with _$PartenaireCategorie {
     @Default('') String description,
     @Default('') String logo,
     @JsonKey(name: 'photo_couverture') @Default('') String photoCouverture,
+    @Default('') String departement,
+    @Default('') String region,
   }) = _PartenaireCategorie;
 
   factory PartenaireCategorie.fromJson(Map<String, dynamic> json) =>

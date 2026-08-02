@@ -157,11 +157,36 @@ class _CartePrestataire extends ConsumerWidget {
                     const SizedBox(width: 8),
                   ],
                   Expanded(
-                    child: Text(
-                      prestataire.nomCommerce,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          prestataire.nomCommerce,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleMedium,
+                        ),
+                        if (prestataire.departement.isNotEmpty)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.place_outlined,
+                                  size: 13,
+                                  color: theme.colorScheme.outline),
+                              const SizedBox(width: 2),
+                              Flexible(
+                                child: Text(
+                                  prestataire.departement,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.outline),
+                                ),
+                              ),
+                            ],
+                          ),
+                      ],
                     ),
                   ),
                   IconButton(

@@ -53,6 +53,7 @@ _ArticleTrouve _$ArticleTrouveFromJson(Map<String, dynamic> json) =>
       slug: json['slug'] as String? ?? '',
       prix: json['prix'] as String? ?? '0',
       partenaireNom: json['partenaire_nom'] as String? ?? '',
+      departement: json['departement'] as String? ?? '',
       imagePrincipale: json['image_principale'] as String? ?? '',
     );
 
@@ -63,6 +64,7 @@ Map<String, dynamic> _$ArticleTrouveToJson(_ArticleTrouve instance) =>
       'slug': instance.slug,
       'prix': instance.prix,
       'partenaire_nom': instance.partenaireNom,
+      'departement': instance.departement,
       'image_principale': instance.imagePrincipale,
     };
 

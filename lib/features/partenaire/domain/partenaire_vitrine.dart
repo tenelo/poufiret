@@ -19,6 +19,8 @@ abstract class PartenaireVitrine with _$PartenaireVitrine {
     @Default('') String quartier,
     @Default('') String secteur,
     @Default('') String ville,
+    @Default('') String departement,
+    @Default('') String region,
     @JsonKey(name: 'description_acces') @Default('') String descriptionAcces,
     @JsonKey(name: 'telephone_pro') @Default('') String telephonePro,
     @Default('') String whatsapp,
@@ -32,9 +34,16 @@ abstract class PartenaireVitrine with _$PartenaireVitrine {
   factory PartenaireVitrine.fromJson(Map<String, dynamic> json) =>
       _$PartenaireVitrineFromJson(json);
 
-  /// Localisation lisible : concatène quartier / secteur / ville non vides.
+  /// Localisation fine : quartier / secteur / ville non vides.
   String get localisationLisible {
     final parts = [quartier, secteur, ville].where((p) => p.isNotEmpty);
     return parts.join(' · ');
+  }
+
+  /// Localisation administrative : « Département (Région) ».
+  /// C'est l'ancrage geographique officiel, distinct de l'adresse fine.
+  String get localisationGeo {
+    if (departement.isEmpty) return '';
+    return region.isEmpty ? departement : '$departement ($region)';
   }
 }

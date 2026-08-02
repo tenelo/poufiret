@@ -281,17 +281,37 @@ class _Infos extends ConsumerWidget {
           Text(p.description),
         ],
 
-        if (p.localisationLisible.isNotEmpty) ...[
+        if (p.localisationGeo.isNotEmpty ||
+            p.localisationLisible.isNotEmpty) ...[
           const SizedBox(height: 16),
           Text('Localisation', style: theme.textTheme.titleMedium),
           const SizedBox(height: 4),
-          Row(
-            children: [
-              const Icon(Icons.place_outlined, size: 18),
-              const SizedBox(width: 4),
-              Expanded(child: Text(p.localisationLisible)),
-            ],
-          ),
+          // Ancrage administratif (Departement (Region)), mis en avant.
+          if (p.localisationGeo.isNotEmpty)
+            Row(
+              children: [
+                Icon(Icons.place, size: 18, color: theme.colorScheme.primary),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    p.localisationGeo,
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+          // Adresse fine (quartier / secteur / ville), en complement.
+          if (p.localisationLisible.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                const Icon(Icons.place_outlined, size: 18),
+                const SizedBox(width: 4),
+                Expanded(child: Text(p.localisationLisible)),
+              ],
+            ),
+          ],
           if (p.descriptionAcces.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(p.descriptionAcces,

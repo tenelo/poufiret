@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PartenaireCategorie {
 
- int get id;@JsonKey(name: 'nom_commerce') String get nomCommerce; String get description; String get logo;@JsonKey(name: 'photo_couverture') String get photoCouverture;
+ int get id;@JsonKey(name: 'nom_commerce') String get nomCommerce; String get description; String get logo;@JsonKey(name: 'photo_couverture') String get photoCouverture; String get departement; String get region;
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $PartenaireCategorieCopyWith<PartenaireCategorie> get copyWith => _$PartenaireCa
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nomCommerce,description,logo,photoCouverture);
+int get hashCode => Object.hash(runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region);
 
 @override
 String toString() {
-  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture)';
+  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $PartenaireCategorieCopyWith<$Res>  {
   factory $PartenaireCategorieCopyWith(PartenaireCategorie value, $Res Function(PartenaireCategorie) _then) = _$PartenaireCategorieCopyWithImpl;
 @useResult
 $Res call({
- int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture
+ int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region
 });
 
 
@@ -65,13 +65,15 @@ class _$PartenaireCategorieCopyWithImpl<$Res>
 
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nomCommerce: null == nomCommerce ? _self.nomCommerce : nomCommerce // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,logo: null == logo ? _self.logo : logo // ignore: cast_nullable_to_non_nullable
 as String,photoCouverture: null == photoCouverture ? _self.photoCouverture : photoCouverture // ignore: cast_nullable_to_non_nullable
+as String,departement: null == departement ? _self.departement : departement // ignore: cast_nullable_to_non_nullable
+as String,region: null == region ? _self.region : region // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -157,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PartenaireCategorie() when $default != null:
-return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture);case _:
+return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region);case _:
   return orElse();
 
 }
@@ -178,10 +180,10 @@ return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.ph
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region)  $default,) {final _that = this;
 switch (_that) {
 case _PartenaireCategorie():
-return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture);case _:
+return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +200,10 @@ return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.ph
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region)?  $default,) {final _that = this;
 switch (_that) {
 case _PartenaireCategorie() when $default != null:
-return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture);case _:
+return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region);case _:
   return null;
 
 }
@@ -213,7 +215,7 @@ return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.ph
 @JsonSerializable()
 
 class _PartenaireCategorie implements PartenaireCategorie {
-  const _PartenaireCategorie({required this.id, @JsonKey(name: 'nom_commerce') this.nomCommerce = '', this.description = '', this.logo = '', @JsonKey(name: 'photo_couverture') this.photoCouverture = ''});
+  const _PartenaireCategorie({required this.id, @JsonKey(name: 'nom_commerce') this.nomCommerce = '', this.description = '', this.logo = '', @JsonKey(name: 'photo_couverture') this.photoCouverture = '', this.departement = '', this.region = ''});
   factory _PartenaireCategorie.fromJson(Map<String, dynamic> json) => _$PartenaireCategorieFromJson(json);
 
 @override final  int id;
@@ -221,6 +223,8 @@ class _PartenaireCategorie implements PartenaireCategorie {
 @override@JsonKey() final  String description;
 @override@JsonKey() final  String logo;
 @override@JsonKey(name: 'photo_couverture') final  String photoCouverture;
+@override@JsonKey() final  String departement;
+@override@JsonKey() final  String region;
 
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nomCommerce,description,logo,photoCouverture);
+int get hashCode => Object.hash(runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region);
 
 @override
 String toString() {
-  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture)';
+  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region)';
 }
 
 
@@ -255,7 +259,7 @@ abstract mixin class _$PartenaireCategorieCopyWith<$Res> implements $PartenaireC
   factory _$PartenaireCategorieCopyWith(_PartenaireCategorie value, $Res Function(_PartenaireCategorie) _then) = __$PartenaireCategorieCopyWithImpl;
 @override @useResult
 $Res call({
- int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture
+ int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region
 });
 
 
@@ -272,13 +276,15 @@ class __$PartenaireCategorieCopyWithImpl<$Res>
 
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,}) {
   return _then(_PartenaireCategorie(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nomCommerce: null == nomCommerce ? _self.nomCommerce : nomCommerce // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,logo: null == logo ? _self.logo : logo // ignore: cast_nullable_to_non_nullable
 as String,photoCouverture: null == photoCouverture ? _self.photoCouverture : photoCouverture // ignore: cast_nullable_to_non_nullable
+as String,departement: null == departement ? _self.departement : departement // ignore: cast_nullable_to_non_nullable
+as String,region: null == region ? _self.region : region // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

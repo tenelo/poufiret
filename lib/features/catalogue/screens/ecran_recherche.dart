@@ -301,8 +301,13 @@ class _LigneArticle extends StatelessWidget {
       ),
       title:
           Text(article.nom, maxLines: 1, overflow: TextOverflow.ellipsis),
-      subtitle: Text(article.partenaireNom,
-          maxLines: 1, overflow: TextOverflow.ellipsis),
+      subtitle: Text(
+        article.departement.isNotEmpty
+            ? '${article.partenaireNom} · ${article.departement}'
+            : article.partenaireNom,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
       trailing: Text(
         '${article.prix} FCFA',
         style: TextStyle(

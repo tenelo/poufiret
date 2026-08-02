@@ -43,6 +43,7 @@ abstract class ArticleTrouve with _$ArticleTrouve {
     @Default('') String slug,
     @Default('0') String prix,
     @JsonKey(name: 'partenaire_nom') @Default('') String partenaireNom,
+    @Default('') String departement,
     @JsonKey(name: 'image_principale') @Default('') String imagePrincipale,
   }) = _ArticleTrouve;
 
