@@ -11,6 +11,7 @@ import 'package:poufiret/features/chat/data/chat_providers.dart';
 import 'package:poufiret/features/chat/screens/ecran_discussion.dart';
 import '../../../core/widgets/image_reseau.dart';
 import '../../auth/widgets/mur_inscription.dart';
+import '../../geo/widgets/filtre_localites.dart';
 
 /// Annuaire d'une catégorie : les prestataires/commerces (couverture + nom).
 /// Le client choisit un commerce avant de voir ses articles.
@@ -41,84 +42,94 @@ class EcranPrestataires extends ConsumerWidget {
     );
     return Scaffold(
       appBar: AppBar(title: Text(categorieNom)),
-      body: annuaireAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) {
-          final message = err is ApiException
-              ? err.messageLisible
-              : 'Erreur de chargement.';
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(message),
-                const SizedBox(height: 12),
-                FilledButton(
-                  onPressed: () => ref.invalidate(
-                    partenairesParCategorieProvider(slug: categorieSlug),
+      body: Column(
+        children: [
+          const FiltreLocalites(),
+          const Divider(height: 1),
+          Expanded(
+            child: annuaireAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, _) {
+                final message = err is ApiException
+                    ? err.messageLisible
+                    : 'Erreur de chargement.';
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(message),
+                      const SizedBox(height: 12),
+                      FilledButton(
+                        onPressed: () => ref.invalidate(
+                          partenairesParCategorieProvider(slug: categorieSlug),
+                        ),
+                        child: const Text('Réessayer'),
+                      ),
+                    ],
                   ),
-                  child: const Text('Réessayer'),
-                ),
-              ],
+                );
+              },
+              data: (prestataires) {
+                if (prestataires.isEmpty) {
+                  return const Center(
+                    child: Text('Aucun prestataire dans cette catégorie.'),
+                  );
+                }
+                return LayoutBuilder(
+                  builder: (context, contraintes) {
+                    final largeur = contraintes.maxWidth > 700
+                        ? 700.0
+                        : contraintes.maxWidth;
+                    // Colonnes selon la largeur disponible (tuiles ~330px).
+                    final colonnes = (largeur / 330).floor().clamp(1, 2);
+                    return Center(
+                      child: SizedBox(
+                        width: largeur,
+                        child: GridView.builder(
+                          padding: const EdgeInsets.all(12),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: colonnes,
+                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 12,
+                                childAspectRatio: 16 / 11,
+                              ),
+                          itemCount: prestataires.length,
+                          itemBuilder: (context, i) => _CartePrestataire(
+                            prestataire: prestataires[i],
+                            onTap: () {
+                              // Mur d'inscription : un visiteur non enregistre
+                              // voit la liste mais doit creer un compte pour
+                              // ouvrir une fiche partenaire.
+                              murInscription(context, ref, () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => afficheCatalogue
+                                        ? EcranArticles(
+                                            categorieId: categorieId,
+                                            categorieNom:
+                                                prestataires[i].nomCommerce,
+                                            modeTransaction: modeTransaction,
+                                            partenaireId: prestataires[i].id,
+                                          )
+                                        : EcranVitrinePartenaire(
+                                            partenaireId: prestataires[i].id,
+                                            modeTransaction: modeTransaction,
+                                          ),
+                                  ),
+                                );
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
-          );
-        },
-        data: (prestataires) {
-          if (prestataires.isEmpty) {
-            return const Center(
-              child: Text('Aucun prestataire dans cette catégorie.'),
-            );
-          }
-          return LayoutBuilder(
-            builder: (context, contraintes) {
-              final largeur = contraintes.maxWidth > 700
-                  ? 700.0
-                  : contraintes.maxWidth;
-              // Colonnes selon la largeur disponible (tuiles ~330px).
-              final colonnes = (largeur / 330).floor().clamp(1, 2);
-              return Center(
-                child: SizedBox(
-                  width: largeur,
-                  child: GridView.builder(
-                    padding: const EdgeInsets.all(12),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: colonnes,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 16 / 11,
-                    ),
-                    itemCount: prestataires.length,
-                    itemBuilder: (context, i) => _CartePrestataire(
-                      prestataire: prestataires[i],
-                      onTap: () {
-                        // Mur d'inscription : un visiteur non enregistre
-                        // voit la liste mais doit creer un compte pour
-                        // ouvrir une fiche partenaire.
-                        murInscription(context, ref, () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => afficheCatalogue
-                                  ? EcranArticles(
-                                      categorieId: categorieId,
-                                      categorieNom: prestataires[i].nomCommerce,
-                                      modeTransaction: modeTransaction,
-                                      partenaireId: prestataires[i].id,
-                                    )
-                                  : EcranVitrinePartenaire(
-                                      partenaireId: prestataires[i].id,
-                                      modeTransaction: modeTransaction,
-                                    ),
-                            ),
-                          );
-                        });
-                      },
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
-        },
+          ),
+        ],
       ),
     );
   }

@@ -373,12 +373,88 @@ final class RechercheArticlesFamily extends $Family
   String toString() => r'rechercheArticlesProvider';
 }
 
-/// Annuaire des prestataires d'une catégorie.
+/// Localites choisies par l'utilisateur pour elargir sa vue.
+///
+/// Liste d'ids de departements, ou ['all'] pour tout voir. Vide = vue par
+/// defaut (son departement + ce que la portee des partenaires autorise).
+/// keepAlive : le choix persiste entre les categories consultees.
+
+@ProviderFor(LocalitesChoisies)
+final localitesChoisiesProvider = LocalitesChoisiesProvider._();
+
+/// Localites choisies par l'utilisateur pour elargir sa vue.
+///
+/// Liste d'ids de departements, ou ['all'] pour tout voir. Vide = vue par
+/// defaut (son departement + ce que la portee des partenaires autorise).
+/// keepAlive : le choix persiste entre les categories consultees.
+final class LocalitesChoisiesProvider
+    extends $NotifierProvider<LocalitesChoisies, List<String>> {
+  /// Localites choisies par l'utilisateur pour elargir sa vue.
+  ///
+  /// Liste d'ids de departements, ou ['all'] pour tout voir. Vide = vue par
+  /// defaut (son departement + ce que la portee des partenaires autorise).
+  /// keepAlive : le choix persiste entre les categories consultees.
+  LocalitesChoisiesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'localitesChoisiesProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$localitesChoisiesHash();
+
+  @$internal
+  @override
+  LocalitesChoisies create() => LocalitesChoisies();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<String> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<String>>(value),
+    );
+  }
+}
+
+String _$localitesChoisiesHash() => r'57e7a80f9cabbd6fd4f96d6064fb3d751900c3d7';
+
+/// Localites choisies par l'utilisateur pour elargir sa vue.
+///
+/// Liste d'ids de departements, ou ['all'] pour tout voir. Vide = vue par
+/// defaut (son departement + ce que la portee des partenaires autorise).
+/// keepAlive : le choix persiste entre les categories consultees.
+
+abstract class _$LocalitesChoisies extends $Notifier<List<String>> {
+  List<String> build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<List<String>, List<String>>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<List<String>, List<String>>,
+              List<String>,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}
+
+/// Annuaire des prestataires d'une catégorie, filtre par les localites
+/// choisies (le backend applique aussi la regle de portee).
 
 @ProviderFor(partenairesParCategorie)
 final partenairesParCategorieProvider = PartenairesParCategorieFamily._();
 
-/// Annuaire des prestataires d'une catégorie.
+/// Annuaire des prestataires d'une catégorie, filtre par les localites
+/// choisies (le backend applique aussi la regle de portee).
 
 final class PartenairesParCategorieProvider
     extends
@@ -390,7 +466,8 @@ final class PartenairesParCategorieProvider
     with
         $FutureModifier<List<PartenaireCategorie>>,
         $FutureProvider<List<PartenaireCategorie>> {
-  /// Annuaire des prestataires d'une catégorie.
+  /// Annuaire des prestataires d'une catégorie, filtre par les localites
+  /// choisies (le backend applique aussi la regle de portee).
   PartenairesParCategorieProvider._({
     required PartenairesParCategorieFamily super.from,
     required String super.argument,
@@ -437,9 +514,10 @@ final class PartenairesParCategorieProvider
 }
 
 String _$partenairesParCategorieHash() =>
-    r'1e894168bc3c4d26de05060e48cc09f626f87283';
+    r'77bad025c404ecc3f0da0ef303f066ba83fadc1a';
 
-/// Annuaire des prestataires d'une catégorie.
+/// Annuaire des prestataires d'une catégorie, filtre par les localites
+/// choisies (le backend applique aussi la regle de portee).
 
 final class PartenairesParCategorieFamily extends $Family
     with
@@ -453,7 +531,8 @@ final class PartenairesParCategorieFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Annuaire des prestataires d'une catégorie.
+  /// Annuaire des prestataires d'une catégorie, filtre par les localites
+  /// choisies (le backend applique aussi la regle de portee).
 
   PartenairesParCategorieProvider call({required String slug}) =>
       PartenairesParCategorieProvider._(argument: slug, from: this);

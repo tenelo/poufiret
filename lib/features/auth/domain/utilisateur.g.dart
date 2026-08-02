@@ -16,6 +16,9 @@ _Utilisateur _$UtilisateurFromJson(Map<String, dynamic> json) => _Utilisateur(
   estVerifie: json['est_verifie'] as bool? ?? false,
   languePreferee: json['langue_preferee'] as String? ?? 'fr',
   tokenFcm: json['token_fcm'] as String?,
+  departement: (json['departement'] as num?)?.toInt(),
+  departementNom: json['departement_nom'] as String? ?? '',
+  regionNom: json['region_nom'] as String? ?? '',
 );
 
 Map<String, dynamic> _$UtilisateurToJson(_Utilisateur instance) =>
@@ -29,4 +32,7 @@ Map<String, dynamic> _$UtilisateurToJson(_Utilisateur instance) =>
       'est_verifie': instance.estVerifie,
       'langue_preferee': instance.languePreferee,
       'token_fcm': instance.tokenFcm,
+      'departement': instance.departement,
+      'departement_nom': instance.departementNom,
+      'region_nom': instance.regionNom,
     };

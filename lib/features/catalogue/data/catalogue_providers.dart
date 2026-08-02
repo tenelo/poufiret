@@ -47,13 +47,30 @@ Future<List<ArticleListe>> rechercheArticles(Ref ref, {required String terme}) {
       .articles(recherche: terme.trim());
 }
 
-/// Annuaire des prestataires d'une catégorie.
+/// Localites choisies par l'utilisateur pour elargir sa vue.
+///
+/// Liste d'ids de departements, ou ['all'] pour tout voir. Vide = vue par
+/// defaut (son departement + ce que la portee des partenaires autorise).
+/// keepAlive : le choix persiste entre les categories consultees.
+@Riverpod(keepAlive: true)
+class LocalitesChoisies extends _$LocalitesChoisies {
+  @override
+  List<String> build() => const [];
+
+  void definir(List<String> localites) => state = localites;
+  void tout() => state = const ['all'];
+  void reinitialiser() => state = const [];
+}
+
+/// Annuaire des prestataires d'une catégorie, filtre par les localites
+/// choisies (le backend applique aussi la regle de portee).
 @riverpod
 Future<List<PartenaireCategorie>> partenairesParCategorie(Ref ref,
     {required String slug}) {
+  final localites = ref.watch(localitesChoisiesProvider);
   return ref
       .watch(catalogueRepositoryProvider)
-      .partenairesParCategorie(slug);
+      .partenairesParCategorie(slug, localites: localites);
 }
 
 /// Recherche unifiee : categories + partenaires + articles.

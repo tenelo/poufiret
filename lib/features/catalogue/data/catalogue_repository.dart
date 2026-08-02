@@ -41,9 +41,17 @@ class CatalogueRepository {
   }
   
   /// GET /catalogue/categories/<slug>/partenaires/ — annuaire d'une catégorie.
-  Future<List<PartenaireCategorie>> partenairesParCategorie(String slug) async {
-    final r = await _dio
-        .get('${Env.apiPrefix}/catalogue/categories/$slug/partenaires/');
+  Future<List<PartenaireCategorie>> partenairesParCategorie(
+    String slug, {
+    List<String>? localites,
+  }) async {
+    final r = await _dio.get(
+      '${Env.apiPrefix}/catalogue/categories/$slug/partenaires/',
+      queryParameters: {
+        if (localites != null && localites.isNotEmpty)
+          'localites': localites.join(','),
+      },
+    );
     return (r.data as List)
         .map((e) => PartenaireCategorie.fromJson(e as Map<String, dynamic>))
         .toList();

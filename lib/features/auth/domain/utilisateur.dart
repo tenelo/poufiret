@@ -17,6 +17,9 @@ abstract class Utilisateur with _$Utilisateur {
     @JsonKey(name: 'est_verifie') @Default(false) bool estVerifie,
     @JsonKey(name: 'langue_preferee') @Default('fr') String languePreferee,
     @JsonKey(name: 'token_fcm') String? tokenFcm,
+    int? departement,
+    @JsonKey(name: 'departement_nom') @Default('') String departementNom,
+    @JsonKey(name: 'region_nom') @Default('') String regionNom,
   }) = _Utilisateur;
 
   factory Utilisateur.fromJson(Map<String, dynamic> json) =>
