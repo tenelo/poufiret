@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../features/auth/screens/auth_notifier.dart';
+import '../../features/auth/screens/ecran_connexion.dart';
 import '../../features/orders/screens/ecran_commandes.dart';
 import '../../features/orders/screens/ecran_panier.dart';
 import '../../features/orders/screens/ecran_commandes_partenaire.dart';
@@ -48,21 +49,27 @@ class AppDrawer extends ConsumerWidget {
               child: ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  ListTile(
-                    leading: const Icon(Icons.receipt_long_outlined),
-                    title: const Text('Mes commandes'),
-                    onTap: () => ouvrir(const EcranCommandes()),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.shopping_cart_outlined),
-                    title: const Text('Mon panier'),
-                    onTap: () => ouvrir(const EcranPanier()),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.handyman_outlined),
-                    title: const Text('Mes demandes d\'intervention'),
-                    onTap: () => ouvrir(const EcranMesDemandes()),
-                  ), // Réservé aux partenaires : leur espace pro.
+                  // Espace client : reserve aux utilisateurs connectes.
+                  // Un visiteur ne voit que l'invitation a s'enregistrer
+                  // en bas du menu.
+                  if (user != null) ...[
+                    ListTile(
+                      leading: const Icon(Icons.receipt_long_outlined),
+                      title: const Text('Mes commandes'),
+                      onTap: () => ouvrir(const EcranCommandes()),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.shopping_cart_outlined),
+                      title: const Text('Mon panier'),
+                      onTap: () => ouvrir(const EcranPanier()),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.handyman_outlined),
+                      title: const Text('Mes demandes d\'intervention'),
+                      onTap: () => ouvrir(const EcranMesDemandes()),
+                    ),
+                  ],
+                  // Réservé aux partenaires : leur espace pro.
                   if (user?.estPartenaire ?? false) ...[
                     const Divider(),
                     ListTile(
@@ -92,27 +99,49 @@ class AppDrawer extends ConsumerWidget {
                     const Divider(),
                   ],
 
-                  ListTile(
-                    leading: const Icon(Icons.person_outline),
-                    title: const Text('Mon compte'),
-                    onTap: () => ouvrir(const EcranMonCompte()),
-                  ),
+                  if (user != null)
+                    ListTile(
+                      leading: const Icon(Icons.person_outline),
+                      title: const Text('Mon compte'),
+                      onTap: () => ouvrir(const EcranMonCompte()),
+                    ),
                 ],
               ),
             ),
 
             const Divider(height: 1),
-            ListTile(
-              leading: Icon(Icons.logout, color: theme.colorScheme.error),
-              title: Text(
-                'Déconnexion',
-                style: TextStyle(color: theme.colorScheme.error),
+            // Connecte : deconnexion. Visiteur : invitation a s'enregistrer.
+            if (user != null)
+              ListTile(
+                leading:
+                    Icon(Icons.logout, color: theme.colorScheme.error),
+                title: Text(
+                  'Déconnexion',
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await ref.read(authProvider.notifier).deconnexion();
+                },
+              )
+            else
+              ListTile(
+                leading: Icon(Icons.login,
+                    color: theme.colorScheme.primary),
+                title: Text(
+                  'Se connecter / S\'inscrire',
+                  style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600),
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (_) => const EcranConnexion()),
+                  );
+                },
               ),
-              onTap: () async {
-                Navigator.of(context).pop();
-                await ref.read(authProvider.notifier).deconnexion();
-              },
-            ),
             const SizedBox(height: 8),
           ],
         ),

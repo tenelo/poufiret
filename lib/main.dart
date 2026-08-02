@@ -98,13 +98,13 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (_, _) => const EcranConnexion(),
-      data: (user) => user == null
-          ? const EcranConnexion()
-          // L'observateur ne couvre que la partie connectee : pas
-          // d'interstitiel sur l'ecran de connexion.
-          : const ObservateurInterstitiel(
-              enfant: CouchePublicites(enfant: AppShell()),
-            ),
+      // Le visiteur non connecte accede directement a l'application :
+      // il parcourt l'accueil et les listes librement. Le mur
+      // d'inscription intervient seulement au clic sur une fiche.
+      // (Choix produit : donner envie d'abord, convertir ensuite.)
+      data: (user) => const ObservateurInterstitiel(
+        enfant: CouchePublicites(enfant: AppShell()),
+      ),
     );
   }
 }
