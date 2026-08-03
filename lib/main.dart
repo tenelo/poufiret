@@ -11,6 +11,7 @@ import 'features/auth/screens/auth_notifier.dart';
 import 'features/auth/screens/ecran_connexion.dart';
 import 'features/publicites/widgets/couche_publicites.dart';
 import 'features/publicites/widgets/observateur_interstitiel.dart';
+import 'features/version/widgets/couche_mise_a_jour.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +34,7 @@ class PoufiretApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       navigatorObservers: [observateurNavigation],
-      home: const _Racine(),
+      home: const CoucheMiseAJour(enfant: _Racine()),
     );
   }
 }
