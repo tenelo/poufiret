@@ -112,11 +112,13 @@ class PublicitesRepository {
     required String titre,
     required String description,
     required String cheminImage,
+    String portee = 'departement',
   }) async {
     final form = FormData.fromMap({
       'formule': formuleId,
       'titre': titre,
       'description': description,
+      'portee': portee,
       'image_couverture': await MultipartFile.fromFile(cheminImage),
     });
     final r = await _dio.post('$_base/mes-publicites/', data: form);

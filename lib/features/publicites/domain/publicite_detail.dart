@@ -29,10 +29,21 @@ abstract class PubliciteDetail with _$PubliciteDetail {
     @Default(<ImagePublicite>[]) List<ImagePublicite> images,
     @JsonKey(name: 'partenaire_id') int? partenaireId,
     @JsonKey(name: 'nom_partenaire') @Default('') String nomPartenaire,
+    @Default('departement') String portee,
+    @JsonKey(name: 'portee_effective')
+    @Default('departement') String porteeEffective,
   }) = _PubliciteDetail;
 
   factory PubliciteDetail.fromJson(Map<String, dynamic> json) =>
       _$PubliciteDetailFromJson(json);
 
   bool get aUneVideo => (video ?? '').isNotEmpty;
+
+  /// Libelle lisible de la portee reellement appliquee.
+  String get porteeLisible => const {
+        'departement': 'Votre département',
+        'region': 'Toute votre région',
+        'district': 'Tout le district',
+      }[porteeEffective] ??
+      porteeEffective;
 }

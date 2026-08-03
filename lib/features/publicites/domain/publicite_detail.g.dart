@@ -34,6 +34,8 @@ _PubliciteDetail _$PubliciteDetailFromJson(Map<String, dynamic> json) =>
           const <ImagePublicite>[],
       partenaireId: (json['partenaire_id'] as num?)?.toInt(),
       nomPartenaire: json['nom_partenaire'] as String? ?? '',
+      portee: json['portee'] as String? ?? 'departement',
+      porteeEffective: json['portee_effective'] as String? ?? 'departement',
     );
 
 Map<String, dynamic> _$PubliciteDetailToJson(_PubliciteDetail instance) =>
@@ -46,4 +48,6 @@ Map<String, dynamic> _$PubliciteDetailToJson(_PubliciteDetail instance) =>
       'images': instance.images,
       'partenaire_id': instance.partenaireId,
       'nom_partenaire': instance.nomPartenaire,
+      'portee': instance.portee,
+      'portee_effective': instance.porteeEffective,
     };

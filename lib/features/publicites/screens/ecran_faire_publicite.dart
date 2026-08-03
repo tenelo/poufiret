@@ -272,6 +272,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
   final _titre = TextEditingController();
   final _description = TextEditingController();
   XFile? _affiche;
+  String _portee = 'departement';
   bool _envoiEnCours = false;
 
   @override
@@ -303,6 +304,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
         titre: _titre.text.trim(),
         description: _description.text.trim(),
         cheminImage: _affiche!.path,
+        portee: _portee,
       );
       // Soumission immediate : brouillon -> en attente de paiement.
       final id = creee['id']?.toString();
@@ -450,6 +452,12 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 12),
+
+                    CartePortee(
+                      valeur: _portee,
+                      onChange: (v) => setState(() => _portee = v),
+                    ),
                     const SizedBox(height: 16),
 
                     TextFormField(
@@ -565,6 +573,84 @@ class _ZoneAffiche extends StatelessWidget {
                   ),
                 ],
               ),
+      ),
+    );
+  }
+}
+
+
+// ── Selecteur de portee geographique de la campagne ───────────────────
+
+/// Jusqu'ou le partenaire veut etre vu pour CETTE campagne.
+///
+/// La portee reellement appliquee cote serveur est le maximum entre ce
+/// choix et la portee du forfait du partenaire (une pub ne descend jamais
+/// sous le forfait). On presente donc les trois niveaux, le backend
+/// remonte automatiquement si le forfait est deja plus large.
+class CartePortee extends StatelessWidget {
+  const CartePortee({super.key, required this.valeur, required this.onChange});
+
+  final String valeur;
+  final ValueChanged<String> onChange;
+
+  static const _options = [
+    ('departement', 'Mon département', 'Vu uniquement dans votre département'),
+    ('region', 'Toute ma région', 'Vu dans tous les départements de votre région'),
+    ('district', 'Tout le district', 'Vu partout dans les Savanes'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.travel_explore_outlined,
+                    size: 18, color: Config.couleurPrimaire),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Jusqu\'où voulez-vous être vu ?',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Une publicité peut porter plus loin que votre forfait. '
+              'Élargir peut faire l\'objet d\'un supplément.',
+              style: TextStyle(
+                fontSize: 12,
+                color: Config.couleurTexteSecondaire,
+              ),
+            ),
+            const SizedBox(height: 4),
+            RadioGroup<String>(
+              groupValue: valeur,
+              onChanged: (v) => onChange(v ?? 'departement'),
+              child: Column(
+                children: [
+                  for (final (code, titre, sous) in _options)
+                    RadioListTile<String>(
+                      value: code,
+                      title: Text(titre, style: const TextStyle(fontSize: 14)),
+                      subtitle:
+                          Text(sous, style: const TextStyle(fontSize: 12)),
+                      contentPadding: EdgeInsets.zero,
+                      dense: true,
+                      activeColor: Config.couleurPrimaire,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

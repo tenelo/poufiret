@@ -284,7 +284,7 @@ as int,
 /// @nodoc
 mixin _$PubliciteDetail {
 
- String get id; String get titre; String get description;@JsonKey(name: 'image_couverture') String? get imageCouverture; String? get video; List<ImagePublicite> get images;@JsonKey(name: 'partenaire_id') int? get partenaireId;@JsonKey(name: 'nom_partenaire') String get nomPartenaire;
+ String get id; String get titre; String get description;@JsonKey(name: 'image_couverture') String? get imageCouverture; String? get video; List<ImagePublicite> get images;@JsonKey(name: 'partenaire_id') int? get partenaireId;@JsonKey(name: 'nom_partenaire') String get nomPartenaire; String get portee;@JsonKey(name: 'portee_effective') String get porteeEffective;
 /// Create a copy of PubliciteDetail
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -297,16 +297,16 @@ $PubliciteDetailCopyWith<PubliciteDetail> get copyWith => _$PubliciteDetailCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PubliciteDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageCouverture, imageCouverture) || other.imageCouverture == imageCouverture)&&(identical(other.video, video) || other.video == video)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.partenaireId, partenaireId) || other.partenaireId == partenaireId)&&(identical(other.nomPartenaire, nomPartenaire) || other.nomPartenaire == nomPartenaire));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PubliciteDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageCouverture, imageCouverture) || other.imageCouverture == imageCouverture)&&(identical(other.video, video) || other.video == video)&&const DeepCollectionEquality().equals(other.images, images)&&(identical(other.partenaireId, partenaireId) || other.partenaireId == partenaireId)&&(identical(other.nomPartenaire, nomPartenaire) || other.nomPartenaire == nomPartenaire)&&(identical(other.portee, portee) || other.portee == portee)&&(identical(other.porteeEffective, porteeEffective) || other.porteeEffective == porteeEffective));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,titre,description,imageCouverture,video,const DeepCollectionEquality().hash(images),partenaireId,nomPartenaire);
+int get hashCode => Object.hash(runtimeType,id,titre,description,imageCouverture,video,const DeepCollectionEquality().hash(images),partenaireId,nomPartenaire,portee,porteeEffective);
 
 @override
 String toString() {
-  return 'PubliciteDetail(id: $id, titre: $titre, description: $description, imageCouverture: $imageCouverture, video: $video, images: $images, partenaireId: $partenaireId, nomPartenaire: $nomPartenaire)';
+  return 'PubliciteDetail(id: $id, titre: $titre, description: $description, imageCouverture: $imageCouverture, video: $video, images: $images, partenaireId: $partenaireId, nomPartenaire: $nomPartenaire, portee: $portee, porteeEffective: $porteeEffective)';
 }
 
 
@@ -317,7 +317,7 @@ abstract mixin class $PubliciteDetailCopyWith<$Res>  {
   factory $PubliciteDetailCopyWith(PubliciteDetail value, $Res Function(PubliciteDetail) _then) = _$PubliciteDetailCopyWithImpl;
 @useResult
 $Res call({
- String id, String titre, String description,@JsonKey(name: 'image_couverture') String? imageCouverture, String? video, List<ImagePublicite> images,@JsonKey(name: 'partenaire_id') int? partenaireId,@JsonKey(name: 'nom_partenaire') String nomPartenaire
+ String id, String titre, String description,@JsonKey(name: 'image_couverture') String? imageCouverture, String? video, List<ImagePublicite> images,@JsonKey(name: 'partenaire_id') int? partenaireId,@JsonKey(name: 'nom_partenaire') String nomPartenaire, String portee,@JsonKey(name: 'portee_effective') String porteeEffective
 });
 
 
@@ -334,7 +334,7 @@ class _$PubliciteDetailCopyWithImpl<$Res>
 
 /// Create a copy of PubliciteDetail
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? titre = null,Object? description = null,Object? imageCouverture = freezed,Object? video = freezed,Object? images = null,Object? partenaireId = freezed,Object? nomPartenaire = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? titre = null,Object? description = null,Object? imageCouverture = freezed,Object? video = freezed,Object? images = null,Object? partenaireId = freezed,Object? nomPartenaire = null,Object? portee = null,Object? porteeEffective = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,titre: null == titre ? _self.titre : titre // ignore: cast_nullable_to_non_nullable
@@ -344,6 +344,8 @@ as String?,video: freezed == video ? _self.video : video // ignore: cast_nullabl
 as String?,images: null == images ? _self.images : images // ignore: cast_nullable_to_non_nullable
 as List<ImagePublicite>,partenaireId: freezed == partenaireId ? _self.partenaireId : partenaireId // ignore: cast_nullable_to_non_nullable
 as int?,nomPartenaire: null == nomPartenaire ? _self.nomPartenaire : nomPartenaire // ignore: cast_nullable_to_non_nullable
+as String,portee: null == portee ? _self.portee : portee // ignore: cast_nullable_to_non_nullable
+as String,porteeEffective: null == porteeEffective ? _self.porteeEffective : porteeEffective // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -429,10 +431,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String titre,  String description, @JsonKey(name: 'image_couverture')  String? imageCouverture,  String? video,  List<ImagePublicite> images, @JsonKey(name: 'partenaire_id')  int? partenaireId, @JsonKey(name: 'nom_partenaire')  String nomPartenaire)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String titre,  String description, @JsonKey(name: 'image_couverture')  String? imageCouverture,  String? video,  List<ImagePublicite> images, @JsonKey(name: 'partenaire_id')  int? partenaireId, @JsonKey(name: 'nom_partenaire')  String nomPartenaire,  String portee, @JsonKey(name: 'portee_effective')  String porteeEffective)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PubliciteDetail() when $default != null:
-return $default(_that.id,_that.titre,_that.description,_that.imageCouverture,_that.video,_that.images,_that.partenaireId,_that.nomPartenaire);case _:
+return $default(_that.id,_that.titre,_that.description,_that.imageCouverture,_that.video,_that.images,_that.partenaireId,_that.nomPartenaire,_that.portee,_that.porteeEffective);case _:
   return orElse();
 
 }
@@ -450,10 +452,10 @@ return $default(_that.id,_that.titre,_that.description,_that.imageCouverture,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String titre,  String description, @JsonKey(name: 'image_couverture')  String? imageCouverture,  String? video,  List<ImagePublicite> images, @JsonKey(name: 'partenaire_id')  int? partenaireId, @JsonKey(name: 'nom_partenaire')  String nomPartenaire)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String titre,  String description, @JsonKey(name: 'image_couverture')  String? imageCouverture,  String? video,  List<ImagePublicite> images, @JsonKey(name: 'partenaire_id')  int? partenaireId, @JsonKey(name: 'nom_partenaire')  String nomPartenaire,  String portee, @JsonKey(name: 'portee_effective')  String porteeEffective)  $default,) {final _that = this;
 switch (_that) {
 case _PubliciteDetail():
-return $default(_that.id,_that.titre,_that.description,_that.imageCouverture,_that.video,_that.images,_that.partenaireId,_that.nomPartenaire);case _:
+return $default(_that.id,_that.titre,_that.description,_that.imageCouverture,_that.video,_that.images,_that.partenaireId,_that.nomPartenaire,_that.portee,_that.porteeEffective);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -470,10 +472,10 @@ return $default(_that.id,_that.titre,_that.description,_that.imageCouverture,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String titre,  String description, @JsonKey(name: 'image_couverture')  String? imageCouverture,  String? video,  List<ImagePublicite> images, @JsonKey(name: 'partenaire_id')  int? partenaireId, @JsonKey(name: 'nom_partenaire')  String nomPartenaire)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String titre,  String description, @JsonKey(name: 'image_couverture')  String? imageCouverture,  String? video,  List<ImagePublicite> images, @JsonKey(name: 'partenaire_id')  int? partenaireId, @JsonKey(name: 'nom_partenaire')  String nomPartenaire,  String portee, @JsonKey(name: 'portee_effective')  String porteeEffective)?  $default,) {final _that = this;
 switch (_that) {
 case _PubliciteDetail() when $default != null:
-return $default(_that.id,_that.titre,_that.description,_that.imageCouverture,_that.video,_that.images,_that.partenaireId,_that.nomPartenaire);case _:
+return $default(_that.id,_that.titre,_that.description,_that.imageCouverture,_that.video,_that.images,_that.partenaireId,_that.nomPartenaire,_that.portee,_that.porteeEffective);case _:
   return null;
 
 }
@@ -485,7 +487,7 @@ return $default(_that.id,_that.titre,_that.description,_that.imageCouverture,_th
 @JsonSerializable()
 
 class _PubliciteDetail extends PubliciteDetail {
-  const _PubliciteDetail({required this.id, this.titre = '', this.description = '', @JsonKey(name: 'image_couverture') this.imageCouverture, this.video, final  List<ImagePublicite> images = const <ImagePublicite>[], @JsonKey(name: 'partenaire_id') this.partenaireId, @JsonKey(name: 'nom_partenaire') this.nomPartenaire = ''}): _images = images,super._();
+  const _PubliciteDetail({required this.id, this.titre = '', this.description = '', @JsonKey(name: 'image_couverture') this.imageCouverture, this.video, final  List<ImagePublicite> images = const <ImagePublicite>[], @JsonKey(name: 'partenaire_id') this.partenaireId, @JsonKey(name: 'nom_partenaire') this.nomPartenaire = '', this.portee = 'departement', @JsonKey(name: 'portee_effective') this.porteeEffective = 'departement'}): _images = images,super._();
   factory _PubliciteDetail.fromJson(Map<String, dynamic> json) => _$PubliciteDetailFromJson(json);
 
 @override final  String id;
@@ -502,6 +504,8 @@ class _PubliciteDetail extends PubliciteDetail {
 
 @override@JsonKey(name: 'partenaire_id') final  int? partenaireId;
 @override@JsonKey(name: 'nom_partenaire') final  String nomPartenaire;
+@override@JsonKey() final  String portee;
+@override@JsonKey(name: 'portee_effective') final  String porteeEffective;
 
 /// Create a copy of PubliciteDetail
 /// with the given fields replaced by the non-null parameter values.
@@ -516,16 +520,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PubliciteDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageCouverture, imageCouverture) || other.imageCouverture == imageCouverture)&&(identical(other.video, video) || other.video == video)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.partenaireId, partenaireId) || other.partenaireId == partenaireId)&&(identical(other.nomPartenaire, nomPartenaire) || other.nomPartenaire == nomPartenaire));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PubliciteDetail&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.description, description) || other.description == description)&&(identical(other.imageCouverture, imageCouverture) || other.imageCouverture == imageCouverture)&&(identical(other.video, video) || other.video == video)&&const DeepCollectionEquality().equals(other._images, _images)&&(identical(other.partenaireId, partenaireId) || other.partenaireId == partenaireId)&&(identical(other.nomPartenaire, nomPartenaire) || other.nomPartenaire == nomPartenaire)&&(identical(other.portee, portee) || other.portee == portee)&&(identical(other.porteeEffective, porteeEffective) || other.porteeEffective == porteeEffective));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,titre,description,imageCouverture,video,const DeepCollectionEquality().hash(_images),partenaireId,nomPartenaire);
+int get hashCode => Object.hash(runtimeType,id,titre,description,imageCouverture,video,const DeepCollectionEquality().hash(_images),partenaireId,nomPartenaire,portee,porteeEffective);
 
 @override
 String toString() {
-  return 'PubliciteDetail(id: $id, titre: $titre, description: $description, imageCouverture: $imageCouverture, video: $video, images: $images, partenaireId: $partenaireId, nomPartenaire: $nomPartenaire)';
+  return 'PubliciteDetail(id: $id, titre: $titre, description: $description, imageCouverture: $imageCouverture, video: $video, images: $images, partenaireId: $partenaireId, nomPartenaire: $nomPartenaire, portee: $portee, porteeEffective: $porteeEffective)';
 }
 
 
@@ -536,7 +540,7 @@ abstract mixin class _$PubliciteDetailCopyWith<$Res> implements $PubliciteDetail
   factory _$PubliciteDetailCopyWith(_PubliciteDetail value, $Res Function(_PubliciteDetail) _then) = __$PubliciteDetailCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String titre, String description,@JsonKey(name: 'image_couverture') String? imageCouverture, String? video, List<ImagePublicite> images,@JsonKey(name: 'partenaire_id') int? partenaireId,@JsonKey(name: 'nom_partenaire') String nomPartenaire
+ String id, String titre, String description,@JsonKey(name: 'image_couverture') String? imageCouverture, String? video, List<ImagePublicite> images,@JsonKey(name: 'partenaire_id') int? partenaireId,@JsonKey(name: 'nom_partenaire') String nomPartenaire, String portee,@JsonKey(name: 'portee_effective') String porteeEffective
 });
 
 
@@ -553,7 +557,7 @@ class __$PubliciteDetailCopyWithImpl<$Res>
 
 /// Create a copy of PubliciteDetail
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? titre = null,Object? description = null,Object? imageCouverture = freezed,Object? video = freezed,Object? images = null,Object? partenaireId = freezed,Object? nomPartenaire = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? titre = null,Object? description = null,Object? imageCouverture = freezed,Object? video = freezed,Object? images = null,Object? partenaireId = freezed,Object? nomPartenaire = null,Object? portee = null,Object? porteeEffective = null,}) {
   return _then(_PubliciteDetail(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,titre: null == titre ? _self.titre : titre // ignore: cast_nullable_to_non_nullable
@@ -563,6 +567,8 @@ as String?,video: freezed == video ? _self.video : video // ignore: cast_nullabl
 as String?,images: null == images ? _self._images : images // ignore: cast_nullable_to_non_nullable
 as List<ImagePublicite>,partenaireId: freezed == partenaireId ? _self.partenaireId : partenaireId // ignore: cast_nullable_to_non_nullable
 as int?,nomPartenaire: null == nomPartenaire ? _self.nomPartenaire : nomPartenaire // ignore: cast_nullable_to_non_nullable
+as String,portee: null == portee ? _self.portee : portee // ignore: cast_nullable_to_non_nullable
+as String,porteeEffective: null == porteeEffective ? _self.porteeEffective : porteeEffective // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
