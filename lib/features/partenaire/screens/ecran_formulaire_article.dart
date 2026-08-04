@@ -28,6 +28,8 @@ class _EcranFormulaireArticleState
   final _ctrlNom = TextEditingController();
   final _ctrlPrix = TextEditingController();
   final _ctrlPrixPromo = TextEditingController();
+  final _ctrlPourcentage = TextEditingController();
+  bool _syncEnCours = false; // evite la boucle prix<->pourcentage
   final _ctrlDescription = TextEditingController();
 
   int? _categorieId;
@@ -63,11 +65,42 @@ class _EcranFormulaireArticleState
 
   bool get _estEdition => widget.slug != null;
 
+  /// Le partenaire tape le PRIX PROMO -> on recalcule le pourcentage.
+  void _syncDepuisPrixPromo(String valeur) {
+    if (_syncEnCours) return;
+    _syncEnCours = true;
+    final prix = double.tryParse(_ctrlPrix.text.trim());
+    final promo = double.tryParse(valeur.trim());
+    if (prix != null && prix > 0 && promo != null && promo < prix) {
+      final pct = ((prix - promo) / prix * 100).round();
+      _ctrlPourcentage.text = pct.toString();
+    } else {
+      _ctrlPourcentage.text = '';
+    }
+    _syncEnCours = false;
+  }
+
+  /// Le partenaire tape le POURCENTAGE -> on recalcule le prix promo.
+  void _syncDepuisPourcentage(String valeur) {
+    if (_syncEnCours) return;
+    _syncEnCours = true;
+    final prix = double.tryParse(_ctrlPrix.text.trim());
+    final pct = double.tryParse(valeur.trim());
+    if (prix != null && prix > 0 && pct != null && pct > 0 && pct < 100) {
+      final promo = (prix * (1 - pct / 100)).round();
+      _ctrlPrixPromo.text = promo.toString();
+    } else {
+      _ctrlPrixPromo.text = '';
+    }
+    _syncEnCours = false;
+  }
+
   @override
   void dispose() {
     _ctrlNom.dispose();
     _ctrlPrix.dispose();
     _ctrlPrixPromo.dispose();
+    _ctrlPourcentage.dispose();
     _ctrlDescription.dispose();
     super.dispose();
   }
@@ -225,6 +258,8 @@ class _EcranFormulaireArticleState
         _enPromotion = article.estEnPromotion;
         if (article.estEnPromotion) {
           _ctrlPrixPromo.text = article.prixPromotion ?? '';
+          // Pre-remplit aussi le pourcentage a partir des deux prix.
+          _syncDepuisPrixPromo(article.prixPromotion ?? '');
         }
       }
     }
@@ -331,12 +366,16 @@ class _EcranFormulaireArticleState
                             dense: true,
                             contentPadding: EdgeInsets.zero,
                           ),
-                          if (_enPromotion)
+                          if (_enPromotion) ...[
                             TextFormField(
                               controller: _ctrlPrixPromo,
                               keyboardType: TextInputType.number,
+                              onChanged: _syncDepuisPrixPromo,
                               decoration: const InputDecoration(
-                                labelText: 'Prix promotionnel (FCFA)',
+                                labelText: 'Prix promo (FCFA)',
+                                helperText:
+                                    'Saisissez le prix OU le pourcentage : '
+                                    'l\'autre se calcule automatiquement.',
                               ),
                               validator: (v) {
                                 if (!_enPromotion) return null;
@@ -353,6 +392,25 @@ class _EcranFormulaireArticleState
                                 return null;
                               },
                             ),
+                            const SizedBox(height: 8),
+                            TextFormField(
+                              controller: _ctrlPourcentage,
+                              keyboardType: TextInputType.number,
+                              onChanged: _syncDepuisPourcentage,
+                              decoration: const InputDecoration(
+                                labelText: 'Pourcentage (%)',
+                                suffixText: '%',
+                              ),
+                              validator: (v) {
+                                if (!_enPromotion) return null;
+                                final pct = int.tryParse(v?.trim() ?? '');
+                                if (pct != null && (pct <= 0 || pct >= 100)) {
+                                  return 'Entre 1 et 99.';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
                           const SizedBox(height: 12),
                           TextFormField(
                             controller: _ctrlDescription,
