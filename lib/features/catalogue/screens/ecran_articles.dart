@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../widgets/prix_promo.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
 import 'package:poufiret/features/analytics/data/analytics_providers.dart';
@@ -312,17 +314,11 @@ class _VignetteArticle extends StatelessWidget {
                     children: [
                       if (modeTransaction != 'demande_intervention')
                         Flexible(
-                          child: Text(
-                            '${article.prixEffectif.toStringAsFixed(0)} FCFA',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                          child: PrixPromo(
+                            prixNormal: article.prixNormal,
+                            prixEffectif: article.prixEffectif,
+                            pourcentageReduction: article.pourcentageReduction,
+                            taillePrix: 15,
                           ),
                         )
                       else

@@ -26,11 +26,26 @@ abstract class ArticleListe with _$ArticleListe {
   factory ArticleListe.fromJson(Map<String, dynamic> json) =>
       _$ArticleListeFromJson(json);
 
-  /// Prix à afficher (promo si active), en nombre.
-  double get prixEffectif {
-    final source = estEnPromotion && prixPromotion != null
-        ? prixPromotion!
-        : prix;
-    return double.tryParse(source) ?? 0;
+  /// Prix normal (sans promo), en nombre.
+  double get prixNormal => double.tryParse(prix) ?? 0;
+
+  /// Prix promotionnel en nombre (0 si absent).
+  double get _prixPromoNum => double.tryParse(prixPromotion ?? '') ?? 0;
+
+  /// True si une promo cohérente est active (promo ON, prix promo < prix).
+  /// Miroir du backend : évite d'afficher une fausse promo.
+  bool get promotionValide =>
+      estEnPromotion &&
+      prixPromotion != null &&
+      prixNormal > 0 &&
+      _prixPromoNum < prixNormal;
+
+  /// Prix à afficher (promo si valide, sinon prix normal).
+  double get prixEffectif => promotionValide ? _prixPromoNum : prixNormal;
+
+  /// Pourcentage de réduction (entier), ou null si pas de promo valide.
+  int? get pourcentageReduction {
+    if (!promotionValide) return null;
+    return ((prixNormal - _prixPromoNum) / prixNormal * 100).round();
   }
 }

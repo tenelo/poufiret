@@ -571,7 +571,7 @@ as String,
 /// @nodoc
 mixin _$ArticleTrouve {
 
- int get id; String get nom; String get slug; String get prix;@JsonKey(name: 'partenaire_nom') String get partenaireNom; String get departement;@JsonKey(name: 'image_principale') String get imagePrincipale;
+ int get id; String get nom; String get slug; String get prix;@JsonKey(name: 'prix_promotion') String? get prixPromotion;@JsonKey(name: 'est_en_promotion') bool get estEnPromotion;@JsonKey(name: 'pourcentage_reduction') int? get pourcentageReductionApi;@JsonKey(name: 'partenaire_nom') String get partenaireNom; String get departement;@JsonKey(name: 'image_principale') String get imagePrincipale;
 /// Create a copy of ArticleTrouve
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -584,16 +584,16 @@ $ArticleTrouveCopyWith<ArticleTrouve> get copyWith => _$ArticleTrouveCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ArticleTrouve&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.imagePrincipale, imagePrincipale) || other.imagePrincipale == imagePrincipale));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ArticleTrouve&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixPromotion, prixPromotion) || other.prixPromotion == prixPromotion)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.pourcentageReductionApi, pourcentageReductionApi) || other.pourcentageReductionApi == pourcentageReductionApi)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.imagePrincipale, imagePrincipale) || other.imagePrincipale == imagePrincipale));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,slug,prix,partenaireNom,departement,imagePrincipale);
+int get hashCode => Object.hash(runtimeType,id,nom,slug,prix,prixPromotion,estEnPromotion,pourcentageReductionApi,partenaireNom,departement,imagePrincipale);
 
 @override
 String toString() {
-  return 'ArticleTrouve(id: $id, nom: $nom, slug: $slug, prix: $prix, partenaireNom: $partenaireNom, departement: $departement, imagePrincipale: $imagePrincipale)';
+  return 'ArticleTrouve(id: $id, nom: $nom, slug: $slug, prix: $prix, prixPromotion: $prixPromotion, estEnPromotion: $estEnPromotion, pourcentageReductionApi: $pourcentageReductionApi, partenaireNom: $partenaireNom, departement: $departement, imagePrincipale: $imagePrincipale)';
 }
 
 
@@ -604,7 +604,7 @@ abstract mixin class $ArticleTrouveCopyWith<$Res>  {
   factory $ArticleTrouveCopyWith(ArticleTrouve value, $Res Function(ArticleTrouve) _then) = _$ArticleTrouveCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom, String slug, String prix,@JsonKey(name: 'partenaire_nom') String partenaireNom, String departement,@JsonKey(name: 'image_principale') String imagePrincipale
+ int id, String nom, String slug, String prix,@JsonKey(name: 'prix_promotion') String? prixPromotion,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'pourcentage_reduction') int? pourcentageReductionApi,@JsonKey(name: 'partenaire_nom') String partenaireNom, String departement,@JsonKey(name: 'image_principale') String imagePrincipale
 });
 
 
@@ -621,13 +621,16 @@ class _$ArticleTrouveCopyWithImpl<$Res>
 
 /// Create a copy of ArticleTrouve
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? slug = null,Object? prix = null,Object? partenaireNom = null,Object? departement = null,Object? imagePrincipale = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? slug = null,Object? prix = null,Object? prixPromotion = freezed,Object? estEnPromotion = null,Object? pourcentageReductionApi = freezed,Object? partenaireNom = null,Object? departement = null,Object? imagePrincipale = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
 as String,slug: null == slug ? _self.slug : slug // ignore: cast_nullable_to_non_nullable
 as String,prix: null == prix ? _self.prix : prix // ignore: cast_nullable_to_non_nullable
-as String,partenaireNom: null == partenaireNom ? _self.partenaireNom : partenaireNom // ignore: cast_nullable_to_non_nullable
+as String,prixPromotion: freezed == prixPromotion ? _self.prixPromotion : prixPromotion // ignore: cast_nullable_to_non_nullable
+as String?,estEnPromotion: null == estEnPromotion ? _self.estEnPromotion : estEnPromotion // ignore: cast_nullable_to_non_nullable
+as bool,pourcentageReductionApi: freezed == pourcentageReductionApi ? _self.pourcentageReductionApi : pourcentageReductionApi // ignore: cast_nullable_to_non_nullable
+as int?,partenaireNom: null == partenaireNom ? _self.partenaireNom : partenaireNom // ignore: cast_nullable_to_non_nullable
 as String,departement: null == departement ? _self.departement : departement // ignore: cast_nullable_to_non_nullable
 as String,imagePrincipale: null == imagePrincipale ? _self.imagePrincipale : imagePrincipale // ignore: cast_nullable_to_non_nullable
 as String,
@@ -715,10 +718,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String slug,  String prix, @JsonKey(name: 'partenaire_nom')  String partenaireNom,  String departement, @JsonKey(name: 'image_principale')  String imagePrincipale)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String slug,  String prix, @JsonKey(name: 'prix_promotion')  String? prixPromotion, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'pourcentage_reduction')  int? pourcentageReductionApi, @JsonKey(name: 'partenaire_nom')  String partenaireNom,  String departement, @JsonKey(name: 'image_principale')  String imagePrincipale)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ArticleTrouve() when $default != null:
-return $default(_that.id,_that.nom,_that.slug,_that.prix,_that.partenaireNom,_that.departement,_that.imagePrincipale);case _:
+return $default(_that.id,_that.nom,_that.slug,_that.prix,_that.prixPromotion,_that.estEnPromotion,_that.pourcentageReductionApi,_that.partenaireNom,_that.departement,_that.imagePrincipale);case _:
   return orElse();
 
 }
@@ -736,10 +739,10 @@ return $default(_that.id,_that.nom,_that.slug,_that.prix,_that.partenaireNom,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String slug,  String prix, @JsonKey(name: 'partenaire_nom')  String partenaireNom,  String departement, @JsonKey(name: 'image_principale')  String imagePrincipale)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String slug,  String prix, @JsonKey(name: 'prix_promotion')  String? prixPromotion, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'pourcentage_reduction')  int? pourcentageReductionApi, @JsonKey(name: 'partenaire_nom')  String partenaireNom,  String departement, @JsonKey(name: 'image_principale')  String imagePrincipale)  $default,) {final _that = this;
 switch (_that) {
 case _ArticleTrouve():
-return $default(_that.id,_that.nom,_that.slug,_that.prix,_that.partenaireNom,_that.departement,_that.imagePrincipale);case _:
+return $default(_that.id,_that.nom,_that.slug,_that.prix,_that.prixPromotion,_that.estEnPromotion,_that.pourcentageReductionApi,_that.partenaireNom,_that.departement,_that.imagePrincipale);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -756,10 +759,10 @@ return $default(_that.id,_that.nom,_that.slug,_that.prix,_that.partenaireNom,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String slug,  String prix, @JsonKey(name: 'partenaire_nom')  String partenaireNom,  String departement, @JsonKey(name: 'image_principale')  String imagePrincipale)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String slug,  String prix, @JsonKey(name: 'prix_promotion')  String? prixPromotion, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'pourcentage_reduction')  int? pourcentageReductionApi, @JsonKey(name: 'partenaire_nom')  String partenaireNom,  String departement, @JsonKey(name: 'image_principale')  String imagePrincipale)?  $default,) {final _that = this;
 switch (_that) {
 case _ArticleTrouve() when $default != null:
-return $default(_that.id,_that.nom,_that.slug,_that.prix,_that.partenaireNom,_that.departement,_that.imagePrincipale);case _:
+return $default(_that.id,_that.nom,_that.slug,_that.prix,_that.prixPromotion,_that.estEnPromotion,_that.pourcentageReductionApi,_that.partenaireNom,_that.departement,_that.imagePrincipale);case _:
   return null;
 
 }
@@ -770,14 +773,17 @@ return $default(_that.id,_that.nom,_that.slug,_that.prix,_that.partenaireNom,_th
 /// @nodoc
 @JsonSerializable()
 
-class _ArticleTrouve implements ArticleTrouve {
-  const _ArticleTrouve({required this.id, this.nom = '', this.slug = '', this.prix = '0', @JsonKey(name: 'partenaire_nom') this.partenaireNom = '', this.departement = '', @JsonKey(name: 'image_principale') this.imagePrincipale = ''});
+class _ArticleTrouve extends ArticleTrouve {
+  const _ArticleTrouve({required this.id, this.nom = '', this.slug = '', this.prix = '0', @JsonKey(name: 'prix_promotion') this.prixPromotion, @JsonKey(name: 'est_en_promotion') this.estEnPromotion = false, @JsonKey(name: 'pourcentage_reduction') this.pourcentageReductionApi, @JsonKey(name: 'partenaire_nom') this.partenaireNom = '', this.departement = '', @JsonKey(name: 'image_principale') this.imagePrincipale = ''}): super._();
   factory _ArticleTrouve.fromJson(Map<String, dynamic> json) => _$ArticleTrouveFromJson(json);
 
 @override final  int id;
 @override@JsonKey() final  String nom;
 @override@JsonKey() final  String slug;
 @override@JsonKey() final  String prix;
+@override@JsonKey(name: 'prix_promotion') final  String? prixPromotion;
+@override@JsonKey(name: 'est_en_promotion') final  bool estEnPromotion;
+@override@JsonKey(name: 'pourcentage_reduction') final  int? pourcentageReductionApi;
 @override@JsonKey(name: 'partenaire_nom') final  String partenaireNom;
 @override@JsonKey() final  String departement;
 @override@JsonKey(name: 'image_principale') final  String imagePrincipale;
@@ -795,16 +801,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ArticleTrouve&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.imagePrincipale, imagePrincipale) || other.imagePrincipale == imagePrincipale));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ArticleTrouve&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixPromotion, prixPromotion) || other.prixPromotion == prixPromotion)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.pourcentageReductionApi, pourcentageReductionApi) || other.pourcentageReductionApi == pourcentageReductionApi)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.imagePrincipale, imagePrincipale) || other.imagePrincipale == imagePrincipale));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,slug,prix,partenaireNom,departement,imagePrincipale);
+int get hashCode => Object.hash(runtimeType,id,nom,slug,prix,prixPromotion,estEnPromotion,pourcentageReductionApi,partenaireNom,departement,imagePrincipale);
 
 @override
 String toString() {
-  return 'ArticleTrouve(id: $id, nom: $nom, slug: $slug, prix: $prix, partenaireNom: $partenaireNom, departement: $departement, imagePrincipale: $imagePrincipale)';
+  return 'ArticleTrouve(id: $id, nom: $nom, slug: $slug, prix: $prix, prixPromotion: $prixPromotion, estEnPromotion: $estEnPromotion, pourcentageReductionApi: $pourcentageReductionApi, partenaireNom: $partenaireNom, departement: $departement, imagePrincipale: $imagePrincipale)';
 }
 
 
@@ -815,7 +821,7 @@ abstract mixin class _$ArticleTrouveCopyWith<$Res> implements $ArticleTrouveCopy
   factory _$ArticleTrouveCopyWith(_ArticleTrouve value, $Res Function(_ArticleTrouve) _then) = __$ArticleTrouveCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom, String slug, String prix,@JsonKey(name: 'partenaire_nom') String partenaireNom, String departement,@JsonKey(name: 'image_principale') String imagePrincipale
+ int id, String nom, String slug, String prix,@JsonKey(name: 'prix_promotion') String? prixPromotion,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'pourcentage_reduction') int? pourcentageReductionApi,@JsonKey(name: 'partenaire_nom') String partenaireNom, String departement,@JsonKey(name: 'image_principale') String imagePrincipale
 });
 
 
@@ -832,13 +838,16 @@ class __$ArticleTrouveCopyWithImpl<$Res>
 
 /// Create a copy of ArticleTrouve
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? slug = null,Object? prix = null,Object? partenaireNom = null,Object? departement = null,Object? imagePrincipale = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? slug = null,Object? prix = null,Object? prixPromotion = freezed,Object? estEnPromotion = null,Object? pourcentageReductionApi = freezed,Object? partenaireNom = null,Object? departement = null,Object? imagePrincipale = null,}) {
   return _then(_ArticleTrouve(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
 as String,slug: null == slug ? _self.slug : slug // ignore: cast_nullable_to_non_nullable
 as String,prix: null == prix ? _self.prix : prix // ignore: cast_nullable_to_non_nullable
-as String,partenaireNom: null == partenaireNom ? _self.partenaireNom : partenaireNom // ignore: cast_nullable_to_non_nullable
+as String,prixPromotion: freezed == prixPromotion ? _self.prixPromotion : prixPromotion // ignore: cast_nullable_to_non_nullable
+as String?,estEnPromotion: null == estEnPromotion ? _self.estEnPromotion : estEnPromotion // ignore: cast_nullable_to_non_nullable
+as bool,pourcentageReductionApi: freezed == pourcentageReductionApi ? _self.pourcentageReductionApi : pourcentageReductionApi // ignore: cast_nullable_to_non_nullable
+as int?,partenaireNom: null == partenaireNom ? _self.partenaireNom : partenaireNom // ignore: cast_nullable_to_non_nullable
 as String,departement: null == departement ? _self.departement : departement // ignore: cast_nullable_to_non_nullable
 as String,imagePrincipale: null == imagePrincipale ? _self.imagePrincipale : imagePrincipale // ignore: cast_nullable_to_non_nullable
 as String,

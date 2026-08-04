@@ -1,6 +1,8 @@
 import '../../prestations/screens/ecran_demande_intervention.dart';
 import 'package:poufiret/core/config/config.dart';
 import 'package:flutter/material.dart';
+
+import '../widgets/prix_promo.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
@@ -211,27 +213,12 @@ class _Contenu extends ConsumerWidget {
                         const SizedBox(height: 8),
                         // Prix (+ prix barré si promo) — masqué pour les prestations.
                         if (modeTransaction != 'demande_intervention')
-                          Row(
-                          children: [
-                            Text(
-                              '${article.prixEffectif.toStringAsFixed(0)} FCFA',
-                              style: theme.textTheme.titleLarge?.copyWith(
-                                color: theme.colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            if (article.estEnPromotion) ...[
-                              const SizedBox(width: 8),
-                              Text(
-                                '${article.prix} FCFA',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  decoration: TextDecoration.lineThrough,
-                                  color: theme.colorScheme.outline,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
+                          PrixPromo(
+                            prixNormal: article.prixNormal,
+                            prixEffectif: article.prixEffectif,
+                            pourcentageReduction: article.pourcentageReduction,
+                            taillePrix: 22,
+                          ),
                         const SizedBox(height: 4),
                         if (article.partenaire != null)
                           InkWell(

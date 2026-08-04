@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
+import '../widgets/prix_promo.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/config.dart';
@@ -293,7 +295,6 @@ class _LigneArticle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return ListTile(
       leading: SizedBox(
         width: 48,
@@ -318,12 +319,12 @@ class _LigneArticle extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: Text(
-        '${article.prix} FCFA',
-        style: TextStyle(
-          color: theme.colorScheme.primary,
-          fontWeight: FontWeight.w600,
-        ),
+      trailing: PrixPromo(
+        prixNormal: article.prixNormal,
+        prixEffectif: article.prixEffectif,
+        pourcentageReduction: article.pourcentageReduction,
+        taillePrix: 14,
+        aligneADroite: true,
       ),
       onTap: () => murInscriptionSi(
         context,

@@ -37,11 +37,16 @@ abstract class PartenaireTrouve with _$PartenaireTrouve {
 /// Article trouve par la recherche.
 @freezed
 abstract class ArticleTrouve with _$ArticleTrouve {
+  const ArticleTrouve._();
+
   const factory ArticleTrouve({
     required int id,
     @Default('') String nom,
     @Default('') String slug,
     @Default('0') String prix,
+    @JsonKey(name: 'prix_promotion') String? prixPromotion,
+    @JsonKey(name: 'est_en_promotion') @Default(false) bool estEnPromotion,
+    @JsonKey(name: 'pourcentage_reduction') int? pourcentageReductionApi,
     @JsonKey(name: 'partenaire_nom') @Default('') String partenaireNom,
     @Default('') String departement,
     @JsonKey(name: 'image_principale') @Default('') String imagePrincipale,
@@ -49,6 +54,20 @@ abstract class ArticleTrouve with _$ArticleTrouve {
 
   factory ArticleTrouve.fromJson(Map<String, dynamic> json) =>
       _$ArticleTrouveFromJson(json);
+
+  double get prixNormal => double.tryParse(prix) ?? 0;
+  double get _prixPromoNum => double.tryParse(prixPromotion ?? '') ?? 0;
+
+  bool get promotionValide =>
+      estEnPromotion &&
+      prixPromotion != null &&
+      prixNormal > 0 &&
+      _prixPromoNum < prixNormal;
+
+  double get prixEffectif => promotionValide ? _prixPromoNum : prixNormal;
+
+  int? get pourcentageReduction =>
+      promotionValide ? pourcentageReductionApi : null;
 }
 
 /// Reponse complete de la recherche unifiee.
