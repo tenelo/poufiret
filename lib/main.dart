@@ -52,6 +52,13 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Cas 'deja connecte au lancement' : aucune transition auth ne se produit,
+    // donc on demarre la session apres le premier build si un user est present.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (ref.read(authProvider).value != null) {
+        ref.read(sessionAnalyticsProvider.notifier).demarrer();
+      }
+    });
   }
 
   @override
