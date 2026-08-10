@@ -30,6 +30,9 @@ class AuthRepository {
       refresh: data['refresh'] as String,
     );
 
+    // Option A : on mémorise le téléphone pour rejouer la connexion au verrou.
+    await _tokens.memoriserTelephone(telephone);
+
     return Utilisateur.fromJson(data['utilisateur'] as Map<String, dynamic>);
   }
 /// POST /auth/inscription/ → crée un compte client + renvoie tokens + profil.
@@ -121,5 +124,70 @@ class AuthRepository {
       // On efface localement même si l'appel réseau échoue.
       await _tokens.effacer();
     }
+  }
+
+  // ── Flux OTP + PIN (inscription & réinitialisation) ──────────────────────
+
+  /// POST /auth/otp/demander/ → demande un code OTP.
+  /// [but] : 'inscription' ou 'reinit_pin'.
+  /// Renvoie la map brute : {deja_verifie, compte_existe, otp_envoye}.
+  /// - inscription : si deja_verifie=true, aucun SMS n'est envoyé (numéro
+  ///   déjà prouvé) → l'appelant enchaîne directement sur la définition du PIN.
+  /// - reinit_pin  : échoue si aucun compte n'existe pour ce numéro.
+  Future<Map<String, dynamic>> demanderOtp({
+    required String telephone,
+    required String but,
+  }) async {
+    final r = await _dio.post(
+      '${Env.apiPrefix}/auth/otp/demander/',
+      data: {'telephone': telephone, 'but': but},
+    );
+    return Map<String, dynamic>.from(r.data as Map);
+  }
+
+  /// POST /auth/otp/verifier/ → vérifie le code à 4 chiffres.
+  /// Lève une ApiException si le code est incorrect/expiré.
+  Future<void> verifierOtp({
+    required String telephone,
+    required String code,
+    required String but,
+  }) async {
+    await _dio.post(
+      '${Env.apiPrefix}/auth/otp/verifier/',
+      data: {'telephone': telephone, 'code': code, 'but': but},
+    );
+  }
+
+  /// POST /auth/pin/definir/ → définit (inscription) ou réinitialise (reinit_pin)
+  /// le PIN après un OTP validé. Persiste les tokens, mémorise le téléphone
+  /// (option A) et renvoie l'utilisateur connecté.
+  Future<Utilisateur> definirPin({
+    required String telephone,
+    required String password,
+    required String but,
+    String? prenom,
+    String? nom,
+    String? username,
+  }) async {
+    final r = await _dio.post(
+      '${Env.apiPrefix}/auth/pin/definir/',
+      data: {
+        'telephone': telephone,
+        'password': password,
+        'but': but,
+        if (prenom != null && prenom.isNotEmpty) 'first_name': prenom,
+        if (nom != null && nom.isNotEmpty) 'last_name': nom,
+        if (username != null && username.isNotEmpty) 'username': username,
+      },
+    );
+    final data = r.data as Map<String, dynamic>;
+
+    await _tokens.sauvegarder(
+      access: data['access'] as String,
+      refresh: data['refresh'] as String,
+    );
+    await _tokens.memoriserTelephone(telephone);
+
+    return Utilisateur.fromJson(data['utilisateur'] as Map<String, dynamic>);
   }
 }

@@ -15,6 +15,7 @@ abstract class Utilisateur with _$Utilisateur {
     @JsonKey(name: 'last_name') @Default('') String nom,
     @Default('client') String role, // client | partenaire | admin
     @JsonKey(name: 'est_verifie') @Default(false) bool estVerifie,
+    @JsonKey(name: 'pin_par_defaut') @Default(false) bool pinParDefaut,
     @JsonKey(name: 'langue_preferee') @Default('fr') String languePreferee,
     @JsonKey(name: 'token_fcm') String? tokenFcm,
     int? departement,

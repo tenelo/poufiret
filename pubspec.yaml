@@ -45,6 +45,7 @@ dependencies:
   geolocator: ^14.0.3
   url_launcher: ^6.3.2
   image_picker: ^1.2.3
+  local_auth: ^2.3.0
   firebase_core: ^4.12.1
   firebase_messaging: ^16.4.3
   font_awesome_flutter: ^11.0.0
