@@ -1,25 +1,24 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-/// Stockage chiffré des tokens JWT et des préférences de session
-/// (Keystore Android / Keychain iOS).
+/// Stockage chiffré (Keystore Android / Keychain iOS) des tokens JWT et des
+/// éléments de reconnexion.
 ///
-/// Politique de sécurité (option A) : le PIN n'est JAMAIS stocké.
-/// Le déverrouillage local rejoue /auth/connexion/ (téléphone mémorisé
-/// + PIN saisi). Seuls sont persistés : les tokens, le téléphone du
-/// dernier compte connecté, et le flag d'activation de la biométrie.
+/// Politique retenue : le PIN est stocké chiffré pour permettre le
+/// déverrouillage par empreinte OU PIN après déconnexion volontaire ou
+/// expiration de session (l'empreinte lit le PIN stocké et rejoue
+/// /auth/connexion/). Tant que la session JWT est vivante, aucun verrou
+/// n'est demandé : l'app s'ouvre directement.
 class TokenStorage {
   static const _kAccess = 'poufiret_access';
   static const _kRefresh = 'poufiret_refresh';
   static const _kTelephone = 'poufiret_telephone';
+  static const _kPin = 'poufiret_pin';
   static const _kBiometrie = 'poufiret_biometrie';
 
   final FlutterSecureStorage _storage;
 
   TokenStorage([FlutterSecureStorage? storage])
-    : _storage =
-          storage ??
-          const FlutterSecureStorage(
-          );
+    : _storage = storage ?? const FlutterSecureStorage();
 
   Future<String?> get accessToken => _storage.read(key: _kAccess);
   Future<String?> get refreshToken => _storage.read(key: _kRefresh);
@@ -37,31 +36,43 @@ class TokenStorage {
   Future<void> majAccess(String access) =>
       _storage.write(key: _kAccess, value: access);
 
-  // ── Téléphone du dernier compte (pour rejouer la connexion au verrou) ──
+  // ── Téléphone du dernier compte (pour rejouer la connexion) ────────────
   Future<String?> get telephone => _storage.read(key: _kTelephone);
 
   Future<void> memoriserTelephone(String telephone) =>
       _storage.write(key: _kTelephone, value: telephone);
 
-  // ── Biométrie activée (empreinte) ─────────────────────────────────────
+  // ── PIN chiffré (déverrouillage empreinte/PIN) ─────────────────────────
+  Future<String?> get pin => _storage.read(key: _kPin);
+
+  Future<void> memoriserPin(String pin) =>
+      _storage.write(key: _kPin, value: pin);
+
+  Future<bool> get aPinMemorise async =>
+      (await _storage.read(key: _kPin)) != null;
+
+  // ── Biométrie activée (empreinte) ──────────────────────────────────────
   Future<bool> get biometrieActivee async =>
       (await _storage.read(key: _kBiometrie)) == 'true';
 
   Future<void> definirBiometrie(bool activee) =>
       _storage.write(key: _kBiometrie, value: activee ? 'true' : 'false');
 
-  /// Efface tokens + téléphone. Conserve volontairement le flag biométrie
-  /// pour ne pas redemander l'activation à chaque reconnexion sur le même
-  /// appareil. (Utiliser effacerTout() pour une purge complète.)
+  /// Efface les seuls TOKENS (déconnexion / expiration de session).
+  /// Conserve téléphone + PIN + biométrie pour permettre la reconnexion
+  /// par empreinte ou PIN sur le même appareil.
   Future<void> effacer() async {
     await _storage.delete(key: _kAccess);
     await _storage.delete(key: _kRefresh);
-    await _storage.delete(key: _kTelephone);
   }
 
-  /// Purge complète, y compris la préférence biométrie.
+  /// Purge complète : tokens + téléphone + PIN + biométrie.
+  /// À utiliser pour un changement de compte ou un reset total.
   Future<void> effacerTout() async {
-    await effacer();
+    await _storage.delete(key: _kAccess);
+    await _storage.delete(key: _kRefresh);
+    await _storage.delete(key: _kTelephone);
+    await _storage.delete(key: _kPin);
     await _storage.delete(key: _kBiometrie);
   }
 

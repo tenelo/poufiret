@@ -9,6 +9,7 @@ import 'core/notifications/fcm_service.dart';
 import 'features/analytics/data/analytics_providers.dart';
 import 'features/auth/screens/auth_notifier.dart';
 import 'features/auth/screens/ecran_connexion.dart';
+import 'features/auth/screens/ecran_changer_pin.dart';
 import 'features/publicites/widgets/couche_publicites.dart';
 import 'features/publicites/widgets/observateur_interstitiel.dart';
 import 'features/version/widgets/couche_mise_a_jour.dart';
@@ -110,9 +111,19 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
       // il parcourt l'accueil et les listes librement. Le mur
       // d'inscription intervient seulement au clic sur une fiche.
       // (Choix produit : donner envie d'abord, convertir ensuite.)
-      data: (user) => const ObservateurInterstitiel(
-        enfant: CouchePublicites(enfant: AppShell()),
-      ),
+      data: (user) {
+        // Compte cree par un admin (PIN provisoire) : on impose le
+        // changement de PIN avant tout acces a l'application.
+        if (user != null && user.pinParDefaut) {
+          return const EcranChangerPin(bloquant: true);
+        }
+        // Le visiteur non connecte accede directement a l'application :
+        // il parcourt l'accueil et les listes librement. Le mur
+        // d'inscription intervient seulement au clic sur une fiche.
+        return const ObservateurInterstitiel(
+          enfant: CouchePublicites(enfant: AppShell()),
+        );
+      },
     );
   }
 }

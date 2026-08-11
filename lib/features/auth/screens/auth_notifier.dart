@@ -123,4 +123,41 @@ class AuthNotifier extends _$AuthNotifier {
           );
     });
   }
+
+  /// Déverrouillage par empreinte : lit le téléphone + PIN mémorisés et
+  /// rejoue la connexion serveur (JWT frais). L'empreinte a déjà été
+  /// validée par l'appelant (ServiceBiometrie). Échoue si aucun PIN
+  /// mémorisé (ex. compte jamais connecté sur cet appareil).
+  Future<void> deverrouillerParEmpreinte() async {
+    final tokens = ref.read(tokenStorageProvider);
+    final telephone = await tokens.telephone;
+    final pin = await tokens.pin;
+    if (telephone == null || pin == null) {
+      throw StateError('Aucune identité mémorisée pour le déverrouillage.');
+    }
+    await connexion(telephone: telephone, password: pin);
+  }
+
+  /// Met à jour le profil (PATCH /auth/moi/) et rafraîchit l'état connecté.
+  /// Utilisé après inscription pour enregistrer département/tranche/sexe.
+  Future<void> modifierProfil(Map<String, dynamic> donnees) async {
+    if (donnees.isEmpty) return;
+    final maj = await ref.read(authRepositoryProvider).modifierProfil(donnees);
+    state = AsyncData(maj);
+  }
+
+  /// Change le PIN (utilisateur connecté). Met à jour l'état avec le profil
+  /// renvoyé (pin_par_defaut repassé à false).
+  Future<void> changerPin({
+    required String ancienPin,
+    required String nouveauPin,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      return ref.read(authRepositoryProvider).changerPin(
+            ancienPin: ancienPin,
+            nouveauPin: nouveauPin,
+          );
+    });
+  }
 }

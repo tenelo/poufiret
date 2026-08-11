@@ -32,6 +32,7 @@ class AuthRepository {
 
     // Option A : on mémorise le téléphone pour rejouer la connexion au verrou.
     await _tokens.memoriserTelephone(telephone);
+    await _tokens.memoriserPin(password);
 
     return Utilisateur.fromJson(data['utilisateur'] as Map<String, dynamic>);
   }
@@ -187,6 +188,29 @@ class AuthRepository {
       refresh: data['refresh'] as String,
     );
     await _tokens.memoriserTelephone(telephone);
+    await _tokens.memoriserPin(password);
+
+    return Utilisateur.fromJson(data['utilisateur'] as Map<String, dynamic>);
+  }
+
+  /// POST /auth/pin/changer/ → change le PIN d'un utilisateur connecté
+  /// (ancien + nouveau PIN, pas d'OTP). Persiste les tokens frais, met à jour
+  /// le PIN mémorisé, renvoie l'utilisateur (pin_par_defaut repassé à false).
+  Future<Utilisateur> changerPin({
+    required String ancienPin,
+    required String nouveauPin,
+  }) async {
+    final r = await _dio.post(
+      '${Env.apiPrefix}/auth/pin/changer/',
+      data: {'ancien_pin': ancienPin, 'nouveau_pin': nouveauPin},
+    );
+    final data = r.data as Map<String, dynamic>;
+
+    await _tokens.sauvegarder(
+      access: data['access'] as String,
+      refresh: data['refresh'] as String,
+    );
+    await _tokens.memoriserPin(nouveauPin);
 
     return Utilisateur.fromJson(data['utilisateur'] as Map<String, dynamic>);
   }
