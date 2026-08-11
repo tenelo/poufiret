@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'notifications_locales.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -53,6 +54,8 @@ class FcmService {
     // 4. Messages recus app ouverte (pas de banniere systeme dans ce cas).
     _subMessages = FirebaseMessaging.onMessage.listen((m) {
       dernierMessage.value = m;
+      // App au premier plan : Android n'affiche rien -> on cree la banniere.
+      NotificationsLocales.instance.afficherDepuisMessage(m);
     });
   }
 
@@ -62,6 +65,17 @@ class FcmService {
     } catch (e) {
       // Reseau indisponible : le token repartira au prochain demarrage.
     }
+  }
+
+  /// Supprime le token cote backend (DELETE) et arrete les abonnements.
+  /// A appeler a la deconnexion pour ne plus recevoir de notifications.
+  Future<void> desenregistrer() async {
+    try {
+      await _dio.delete('${Env.apiPrefix}/notifications/token/');
+    } catch (_) {
+      // Reseau indisponible : sans effet critique, on continue.
+    }
+    await disposer();
   }
 
   Future<void> disposer() async {

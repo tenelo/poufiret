@@ -100,6 +100,8 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
         ref.read(sessionAnalyticsProvider.notifier).demarrer();
       } else if (user == null && etaitConnecte) {
         ref.read(sessionAnalyticsProvider.notifier).arreter();
+        // Deconnexion : on retire le token FCM de cet appareil.
+        ref.read(fcmServiceProvider).desenregistrer();
       }
     });
 
