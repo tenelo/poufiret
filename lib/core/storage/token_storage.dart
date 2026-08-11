@@ -58,6 +58,11 @@ class TokenStorage {
   Future<void> definirBiometrie(bool activee) =>
       _storage.write(key: _kBiometrie, value: activee ? 'true' : 'false');
 
+  /// Vrai si l'utilisateur a déjà répondu à la proposition d'empreinte
+  /// (peu importe la réponse). Sert à ne proposer qu'une seule fois.
+  Future<bool> get biometrieDefinie async =>
+      (await _storage.read(key: _kBiometrie)) != null;
+
   /// Efface les seuls TOKENS (déconnexion / expiration de session).
   /// Conserve téléphone + PIN + biométrie pour permettre la reconnexion
   /// par empreinte ou PIN sur le même appareil.

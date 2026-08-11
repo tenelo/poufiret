@@ -8,6 +8,7 @@ import 'package:poufiret/features/auth/screens/auth_notifier.dart';
 import 'package:poufiret/features/auth/screens/ecran_inscription.dart';
 import 'package:poufiret/features/auth/screens/ecran_pin_oublie.dart';
 import 'package:poufiret/features/auth/widgets/clavier_numerique.dart';
+import 'package:poufiret/features/auth/widgets/dialogue_biometrie.dart';
 import 'package:poufiret/features/auth/widgets/points_pin.dart';
 import 'package:poufiret/features/auth/widgets/service_biometrie.dart';
 
@@ -91,6 +92,17 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
         );
   }
 
+  Future<void> _apresConnexion() async {
+    final tokens = ref.read(tokenStorageProvider);
+    await proposerActivationBiometrie(
+      context: context,
+      biometrieDejaChoisie: () => tokens.biometrieDefinie,
+      definirBiometrie: tokens.definirBiometrie,
+    );
+    if (!mounted) return;
+    if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+  }
+
   Future<void> _deverrouillerEmpreinte() async {
     final ok = await ServiceBiometrie().authentifier(
       raison: 'Déverrouillez Poufiret avec votre empreinte',
@@ -108,7 +120,7 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
       final connecteMaintenant = next.value != null;
       final etaitConnecte = avant?.value != null;
       if (connecteMaintenant && !etaitConnecte) {
-        if (Navigator.of(context).canPop()) Navigator.of(context).pop();
+        _apresConnexion();
         return;
       }
       if (next.hasError && !next.isLoading) {

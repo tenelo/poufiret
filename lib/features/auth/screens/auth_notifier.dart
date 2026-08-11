@@ -27,7 +27,7 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
-  /// Connexion par téléphone + mot de passe.
+  /// Connexion par téléphone + code PIN.
   Future<void> connexion({
     required String telephone,
     required String password,

@@ -6,6 +6,8 @@ import 'package:poufiret/core/responsive/conteneur_adaptatif.dart';
 import 'package:poufiret/features/auth/screens/auth_notifier.dart';
 import 'package:poufiret/features/auth/widgets/clavier_numerique.dart';
 import 'package:poufiret/features/auth/widgets/points_pin.dart';
+import 'package:poufiret/features/auth/widgets/dialogue_biometrie.dart';
+import 'package:poufiret/core/network/providers.dart';
 import 'package:poufiret/features/geo/widgets/champ_departement.dart';
 
 enum _Etape { infos, otp, nouveauPin, confirmerPin }
@@ -212,6 +214,13 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
       final connecte = next.value != null && avant?.value == null;
       if (connecte) {
         await _enregistrerBlocFacultatif();
+        if (!context.mounted) return;
+        final tokens = ref.read(tokenStorageProvider);
+        await proposerActivationBiometrie(
+          context: context,
+          biometrieDejaChoisie: () => tokens.biometrieDefinie,
+          definirBiometrie: tokens.definirBiometrie,
+        );
         if (!context.mounted) return;
         Navigator.of(context).popUntil((r) => r.isFirst);
         return;
