@@ -15,6 +15,10 @@ _PartenaireCategorie _$PartenaireCategorieFromJson(Map<String, dynamic> json) =>
       photoCouverture: json['photo_couverture'] as String? ?? '',
       departement: json['departement'] as String? ?? '',
       region: json['region'] as String? ?? '',
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      adresse: json['adresse'] as String? ?? '',
+      quartier: json['quartier'] as String? ?? '',
     );
 
 Map<String, dynamic> _$PartenaireCategorieToJson(
@@ -27,4 +31,8 @@ Map<String, dynamic> _$PartenaireCategorieToJson(
   'photo_couverture': instance.photoCouverture,
   'departement': instance.departement,
   'region': instance.region,
+  'latitude': instance.latitude,
+  'longitude': instance.longitude,
+  'adresse': instance.adresse,
+  'quartier': instance.quartier,
 };

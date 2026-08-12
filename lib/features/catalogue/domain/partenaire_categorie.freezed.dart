@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PartenaireCategorie {
 
- int get id;@JsonKey(name: 'nom_commerce') String get nomCommerce; String get description; String get logo;@JsonKey(name: 'photo_couverture') String get photoCouverture; String get departement; String get region;
+ int get id;@JsonKey(name: 'nom_commerce') String get nomCommerce; String get description; String get logo;@JsonKey(name: 'photo_couverture') String get photoCouverture; String get departement; String get region; double? get latitude; double? get longitude; String get adresse; String get quartier;
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $PartenaireCategorieCopyWith<PartenaireCategorie> get copyWith => _$PartenaireCa
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region);
+int get hashCode => Object.hash(runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region,latitude,longitude,adresse,quartier);
 
 @override
 String toString() {
-  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region)';
+  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region, latitude: $latitude, longitude: $longitude, adresse: $adresse, quartier: $quartier)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $PartenaireCategorieCopyWith<$Res>  {
   factory $PartenaireCategorieCopyWith(PartenaireCategorie value, $Res Function(PartenaireCategorie) _then) = _$PartenaireCategorieCopyWithImpl;
 @useResult
 $Res call({
- int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region
+ int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region, double? latitude, double? longitude, String adresse, String quartier
 });
 
 
@@ -65,7 +65,7 @@ class _$PartenaireCategorieCopyWithImpl<$Res>
 
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,Object? latitude = freezed,Object? longitude = freezed,Object? adresse = null,Object? quartier = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nomCommerce: null == nomCommerce ? _self.nomCommerce : nomCommerce // ignore: cast_nullable_to_non_nullable
@@ -74,6 +74,10 @@ as String,logo: null == logo ? _self.logo : logo // ignore: cast_nullable_to_non
 as String,photoCouverture: null == photoCouverture ? _self.photoCouverture : photoCouverture // ignore: cast_nullable_to_non_nullable
 as String,departement: null == departement ? _self.departement : departement // ignore: cast_nullable_to_non_nullable
 as String,region: null == region ? _self.region : region // ignore: cast_nullable_to_non_nullable
+as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,adresse: null == adresse ? _self.adresse : adresse // ignore: cast_nullable_to_non_nullable
+as String,quartier: null == quartier ? _self.quartier : quartier // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -159,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PartenaireCategorie() when $default != null:
-return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region);case _:
+return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier);case _:
   return orElse();
 
 }
@@ -180,10 +184,10 @@ return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.ph
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier)  $default,) {final _that = this;
 switch (_that) {
 case _PartenaireCategorie():
-return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region);case _:
+return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +204,10 @@ return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.ph
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier)?  $default,) {final _that = this;
 switch (_that) {
 case _PartenaireCategorie() when $default != null:
-return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region);case _:
+return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier);case _:
   return null;
 
 }
@@ -214,8 +218,8 @@ return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.ph
 /// @nodoc
 @JsonSerializable()
 
-class _PartenaireCategorie implements PartenaireCategorie {
-  const _PartenaireCategorie({required this.id, @JsonKey(name: 'nom_commerce') this.nomCommerce = '', this.description = '', this.logo = '', @JsonKey(name: 'photo_couverture') this.photoCouverture = '', this.departement = '', this.region = ''});
+class _PartenaireCategorie extends PartenaireCategorie {
+  const _PartenaireCategorie({required this.id, @JsonKey(name: 'nom_commerce') this.nomCommerce = '', this.description = '', this.logo = '', @JsonKey(name: 'photo_couverture') this.photoCouverture = '', this.departement = '', this.region = '', this.latitude, this.longitude, this.adresse = '', this.quartier = ''}): super._();
   factory _PartenaireCategorie.fromJson(Map<String, dynamic> json) => _$PartenaireCategorieFromJson(json);
 
 @override final  int id;
@@ -225,6 +229,10 @@ class _PartenaireCategorie implements PartenaireCategorie {
 @override@JsonKey(name: 'photo_couverture') final  String photoCouverture;
 @override@JsonKey() final  String departement;
 @override@JsonKey() final  String region;
+@override final  double? latitude;
+@override final  double? longitude;
+@override@JsonKey() final  String adresse;
+@override@JsonKey() final  String quartier;
 
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
@@ -239,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region);
+int get hashCode => Object.hash(runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region,latitude,longitude,adresse,quartier);
 
 @override
 String toString() {
-  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region)';
+  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region, latitude: $latitude, longitude: $longitude, adresse: $adresse, quartier: $quartier)';
 }
 
 
@@ -259,7 +267,7 @@ abstract mixin class _$PartenaireCategorieCopyWith<$Res> implements $PartenaireC
   factory _$PartenaireCategorieCopyWith(_PartenaireCategorie value, $Res Function(_PartenaireCategorie) _then) = __$PartenaireCategorieCopyWithImpl;
 @override @useResult
 $Res call({
- int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region
+ int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region, double? latitude, double? longitude, String adresse, String quartier
 });
 
 
@@ -276,7 +284,7 @@ class __$PartenaireCategorieCopyWithImpl<$Res>
 
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,Object? latitude = freezed,Object? longitude = freezed,Object? adresse = null,Object? quartier = null,}) {
   return _then(_PartenaireCategorie(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nomCommerce: null == nomCommerce ? _self.nomCommerce : nomCommerce // ignore: cast_nullable_to_non_nullable
@@ -285,6 +293,10 @@ as String,logo: null == logo ? _self.logo : logo // ignore: cast_nullable_to_non
 as String,photoCouverture: null == photoCouverture ? _self.photoCouverture : photoCouverture // ignore: cast_nullable_to_non_nullable
 as String,departement: null == departement ? _self.departement : departement // ignore: cast_nullable_to_non_nullable
 as String,region: null == region ? _self.region : region // ignore: cast_nullable_to_non_nullable
+as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,adresse: null == adresse ? _self.adresse : adresse // ignore: cast_nullable_to_non_nullable
+as String,quartier: null == quartier ? _self.quartier : quartier // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

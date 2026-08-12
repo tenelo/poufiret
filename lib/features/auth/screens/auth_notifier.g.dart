@@ -45,7 +45,7 @@ final class AuthNotifierProvider
   AuthNotifier create() => AuthNotifier();
 }
 
-String _$authNotifierHash() => r'9bc1ce415be44788edfc38c11f51300a898acc3c';
+String _$authNotifierHash() => r'774fcd4df04994cd401d6b81af6521130cb62587';
 
 /// État d'authentification de l'app.
 /// - data(null)        → déconnecté

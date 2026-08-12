@@ -14,7 +14,16 @@ abstract class PartenaireCategorie with _$PartenaireCategorie {
     @JsonKey(name: 'photo_couverture') @Default('') String photoCouverture,
     @Default('') String departement,
     @Default('') String region,
+    double? latitude,
+    double? longitude,
+    @Default('') String adresse,
+    @Default('') String quartier,
   }) = _PartenaireCategorie;
+
+  const PartenaireCategorie._();
+
+  /// Vrai si le partenaire a des coordonnees GPS exploitables sur la carte.
+  bool get aPosition => latitude != null && longitude != null;
 
   factory PartenaireCategorie.fromJson(Map<String, dynamic> json) =>
       _$PartenaireCategorieFromJson(json);

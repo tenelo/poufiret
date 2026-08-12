@@ -57,6 +57,26 @@ class CatalogueRepository {
         .toList();
   }
 
+  /// GET /catalogue/carte/partenaires/ — tous les partenaires geolocalises
+  /// de la portee (pour la carte). Filtre optionnel par [categorie] (slug).
+  /// Un seul appel : le plus proche est calcule cote client.
+  Future<List<PartenaireCategorie>> cartePartenaires({
+    String? categorie,
+    List<String>? localites,
+  }) async {
+    final r = await _dio.get(
+      '${Env.apiPrefix}/catalogue/carte/partenaires/',
+      queryParameters: {
+        if (categorie != null && categorie.isNotEmpty) 'categorie': categorie,
+        if (localites != null && localites.isNotEmpty)
+          'localites': localites.join(','),
+      },
+    );
+    return (r.data as List)
+        .map((e) => PartenaireCategorie.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   /// GET /catalogue/articles/<slug>/ — fiche détail (public).
   Future<ArticleDetail> articleDetail(String slug) async {
     final r = await _dio.get('${Env.apiPrefix}/catalogue/articles/$slug/');
