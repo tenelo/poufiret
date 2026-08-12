@@ -38,7 +38,7 @@ const List<AppDestination> kDestinations = [
   ),
   AppDestination(
     label: 'Map',
-    icon: Icons.map_outlined,
-    selectedIcon: Icons.map,
+    icon: Icons.location_on_outlined,
+    selectedIcon: Icons.location_on,
   ),
 ];
