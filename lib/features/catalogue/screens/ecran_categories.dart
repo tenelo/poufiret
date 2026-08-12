@@ -9,6 +9,7 @@ import 'package:poufiret/core/navigation/app_drawer.dart';
 import 'package:poufiret/features/orders/data/orders_providers.dart';
 import 'package:poufiret/features/publicites/widgets/carrousel_publicites.dart';
 import 'package:poufiret/features/catalogue/screens/ecran_recherche.dart';
+import 'package:poufiret/features/favoris/screens/ecran_favoris.dart';
 
 class EcranCategories extends ConsumerWidget {
   const EcranCategories({super.key});
@@ -98,33 +99,118 @@ class EcranCategories extends ConsumerWidget {
   }
 }
 
-/// Bouton flottant de recherche : ouvre l'ecran Recherche au tap.
-class _BoutonRecherche extends StatelessWidget {
+/// Bouton flottant en eventail : deroule Favoris et Recherche au tap.
+///
+/// Ferme par defaut : un seul FAB (icone menu). Ouvert : deux mini-boutons
+/// apparaissent au-dessus (Favoris, Recherche) avec une animation.
+class _BoutonRecherche extends StatefulWidget {
   const _BoutonRecherche();
+  @override
+  State<_BoutonRecherche> createState() => _BoutonRechercheState();
+}
+
+class _BoutonRechercheState extends State<_BoutonRecherche> {
+  bool _ouvert = false;
+
+  void _basculer() => setState(() => _ouvert = !_ouvert);
+
+  void _ouvrir(Widget ecran) {
+    setState(() => _ouvert = false);
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => ecran));
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Etendu sur grand ecran (place disponible), compact sur mobile.
-    final large = MediaQuery.sizeOf(context).width >= 600;
-    void ouvrir() => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const EcranRecherche()),
-        );
-
-    if (large) {
-      return FloatingActionButton.extended(
-        onPressed: ouvrir,
-        icon: const Icon(Icons.search),
-        label: const Text('Rechercher'),
-        tooltip: 'Rechercher sur Poufiret',
-      );
-    }
-    return FloatingActionButton(
-      onPressed: ouvrir,
-      tooltip: 'Rechercher sur Poufiret',
-      child: const Icon(Icons.search),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        // Actions deroulantes (visibles seulement quand ouvert).
+        _ActionEventail(
+          visible: _ouvert,
+          index: 1,
+          icone: Icons.favorite,
+          label: 'Favoris',
+          onTap: () => _ouvrir(const EcranFavoris()),
+        ),
+        _ActionEventail(
+          visible: _ouvert,
+          index: 0,
+          icone: Icons.search,
+          label: 'Rechercher',
+          onTap: () => _ouvrir(const EcranRecherche()),
+        ),
+        const SizedBox(height: 12),
+        // Bouton principal : ouvre/ferme l'eventail.
+        FloatingActionButton(
+          onPressed: _basculer,
+          tooltip: _ouvert ? 'Fermer' : 'Actions',
+          child: AnimatedRotation(
+            turns: _ouvert ? 0.125 : 0,
+            duration: const Duration(milliseconds: 200),
+            child: Icon(_ouvert ? Icons.close : Icons.add),
+          ),
+        ),
+      ],
     );
   }
 }
+
+/// Une action de l'eventail : mini-bouton + etiquette, anime en apparition.
+class _ActionEventail extends StatelessWidget {
+  const _ActionEventail({
+    required this.visible,
+    required this.index,
+    required this.icone,
+    required this.label,
+    required this.onTap,
+  });
+
+  final bool visible;
+  final int index;
+  final IconData icone;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return AnimatedSlide(
+      offset: visible ? Offset.zero : const Offset(0, 0.3),
+      duration: Duration(milliseconds: 180 + index * 40),
+      curve: Curves.easeOut,
+      child: AnimatedOpacity(
+        opacity: visible ? 1 : 0,
+        duration: Duration(milliseconds: 180 + index * 40),
+        child: IgnorePointer(
+          ignoring: !visible,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Card(
+                  color: theme.colorScheme.surface,
+                  elevation: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 6),
+                    child: Text(label, style: theme.textTheme.labelLarge),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                FloatingActionButton.small(
+                  heroTag: 'fab_$label',
+                  onPressed: onTap,
+                  child: Icon(icone),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }}
 
 class _TuileCategorie extends StatelessWidget {
   final Categorie categorie;

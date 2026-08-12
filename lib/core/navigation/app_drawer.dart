@@ -1,4 +1,5 @@
 import '../../features/account/screens/ecran_mon_compte.dart';
+import '../../features/favoris/screens/ecran_favoris.dart';
 import '../../features/partenaire/screens/ecran_espace_partenaire.dart';
 import '../../features/publicites/screens/ecran_mes_publicites.dart';
 import '../../features/prestations/screens/ecran_mes_demandes.dart';
@@ -53,6 +54,11 @@ class AppDrawer extends ConsumerWidget {
                   // Un visiteur ne voit que l'invitation a s'enregistrer
                   // en bas du menu.
                   if (user != null) ...[
+                    ListTile(
+                      leading: const Icon(Icons.favorite_outline),
+                      title: const Text('Mes favoris'),
+                      onTap: () => ouvrir(const EcranFavoris()),
+                    ),
                     ListTile(
                       leading: const Icon(Icons.receipt_long_outlined),
                       title: const Text('Mes commandes'),

@@ -27,18 +27,18 @@ const List<AppDestination> kDestinations = [
     selectedIcon: Icons.campaign,
   ),
   AppDestination(
-    label: 'Favoris',
-    icon: Icons.favorite_outline,
-    selectedIcon: Icons.favorite,
-  ),
-  AppDestination(
     label: 'Messages',
     icon: Icons.chat_bubble_outline,
     selectedIcon: Icons.chat_bubble,
   ),
   AppDestination(
-    label: 'Compte',
-    icon: Icons.person_outline,
-    selectedIcon: Icons.person,
+    label: 'Livraison',
+    icon: Icons.local_shipping_outlined,
+    selectedIcon: Icons.local_shipping,
+  ),
+  AppDestination(
+    label: 'Map',
+    icon: Icons.map_outlined,
+    selectedIcon: Icons.map,
   ),
 ];
