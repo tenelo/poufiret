@@ -6,6 +6,7 @@ import '../../auth/widgets/mur_inscription.dart';
 import '../../map/data/service_position.dart';
 import '../data/livraison_providers.dart';
 import 'ecran_commande.dart';
+import 'ecran_suivi.dart';
 
 /// Onglet Livraison — hub TeneLivr.
 ///
@@ -252,8 +253,11 @@ class _CoursesEnCours extends ConsumerWidget {
                   subtitle: Text(
                       '${libelles[c.statut] ?? c.statut} • ${c.pointB.quartier}'),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Suivi — bientôt')),
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          EcranSuivi(courseId: c.id, courseInitiale: c),
+                    ),
                   ),
                 ),
               ),

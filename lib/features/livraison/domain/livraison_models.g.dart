@@ -34,6 +34,22 @@ Map<String, dynamic> _$PointLivraisonToJson(_PointLivraison instance) =>
       'gps': instance.gps,
     };
 
+_LivreurPosition _$LivreurPositionFromJson(Map<String, dynamic> json) =>
+    _LivreurPosition(
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      typeVehicule: json['type_vehicule'] as String? ?? 'moto',
+      majLe: json['maj_le'] as String?,
+    );
+
+Map<String, dynamic> _$LivreurPositionToJson(_LivreurPosition instance) =>
+    <String, dynamic>{
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+      'type_vehicule': instance.typeVehicule,
+      'maj_le': instance.majLe,
+    };
+
 _Course _$CourseFromJson(Map<String, dynamic> json) => _Course(
   id: json['id'] as String? ?? '',
   numero: json['numero'] as String? ?? '',
@@ -44,6 +60,11 @@ _Course _$CourseFromJson(Map<String, dynamic> json) => _Course(
   pointA: PointLivraison.fromJson(json['point_a'] as Map<String, dynamic>),
   pointB: PointLivraison.fromJson(json['point_b'] as Map<String, dynamic>),
   livreur: json['livreur'] as String?,
+  livreurPosition: json['livreur_position'] == null
+      ? null
+      : LivreurPosition.fromJson(
+          json['livreur_position'] as Map<String, dynamic>,
+        ),
   creeLe: json['cree_le'] as String?,
 );
 
@@ -57,6 +78,7 @@ Map<String, dynamic> _$CourseToJson(_Course instance) => <String, dynamic>{
   'point_a': instance.pointA,
   'point_b': instance.pointB,
   'livreur': instance.livreur,
+  'livreur_position': instance.livreurPosition,
   'cree_le': instance.creeLe,
 };
 

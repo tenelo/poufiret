@@ -39,6 +39,20 @@ abstract class PointLivraison with _$PointLivraison {
       _$PointLivraisonFromJson(json);
 }
 
+/// Derniere position connue du livreur assigne (bloc livreur_position).
+@freezed
+abstract class LivreurPosition with _$LivreurPosition {
+  const factory LivreurPosition({
+    double? latitude,
+    double? longitude,
+    @JsonKey(name: 'type_vehicule') @Default('moto') String typeVehicule,
+    @JsonKey(name: 'maj_le') String? majLe,
+  }) = _LivreurPosition;
+
+  factory LivreurPosition.fromJson(Map<String, dynamic> json) =>
+      _$LivreurPositionFromJson(json);
+}
+
 /// Une course de livraison directe A -> B (miroir de _course_dict backend).
 @freezed
 abstract class Course with _$Course {
@@ -52,6 +66,7 @@ abstract class Course with _$Course {
     @JsonKey(name: 'point_a') required PointLivraison pointA,
     @JsonKey(name: 'point_b') required PointLivraison pointB,
     String? livreur,
+    @JsonKey(name: 'livreur_position') LivreurPosition? livreurPosition,
     @JsonKey(name: 'cree_le') String? creeLe,
   }) = _Course;
 

@@ -575,9 +575,281 @@ $GpsPointCopyWith<$Res>? get gps {
 
 
 /// @nodoc
+mixin _$LivreurPosition {
+
+ double? get latitude; double? get longitude;@JsonKey(name: 'type_vehicule') String get typeVehicule;@JsonKey(name: 'maj_le') String? get majLe;
+/// Create a copy of LivreurPosition
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$LivreurPositionCopyWith<LivreurPosition> get copyWith => _$LivreurPositionCopyWithImpl<LivreurPosition>(this as LivreurPosition, _$identity);
+
+  /// Serializes this LivreurPosition to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LivreurPosition&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.typeVehicule, typeVehicule) || other.typeVehicule == typeVehicule)&&(identical(other.majLe, majLe) || other.majLe == majLe));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,latitude,longitude,typeVehicule,majLe);
+
+@override
+String toString() {
+  return 'LivreurPosition(latitude: $latitude, longitude: $longitude, typeVehicule: $typeVehicule, majLe: $majLe)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $LivreurPositionCopyWith<$Res>  {
+  factory $LivreurPositionCopyWith(LivreurPosition value, $Res Function(LivreurPosition) _then) = _$LivreurPositionCopyWithImpl;
+@useResult
+$Res call({
+ double? latitude, double? longitude,@JsonKey(name: 'type_vehicule') String typeVehicule,@JsonKey(name: 'maj_le') String? majLe
+});
+
+
+
+
+}
+/// @nodoc
+class _$LivreurPositionCopyWithImpl<$Res>
+    implements $LivreurPositionCopyWith<$Res> {
+  _$LivreurPositionCopyWithImpl(this._self, this._then);
+
+  final LivreurPosition _self;
+  final $Res Function(LivreurPosition) _then;
+
+/// Create a copy of LivreurPosition
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? latitude = freezed,Object? longitude = freezed,Object? typeVehicule = null,Object? majLe = freezed,}) {
+  return _then(_self.copyWith(
+latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,typeVehicule: null == typeVehicule ? _self.typeVehicule : typeVehicule // ignore: cast_nullable_to_non_nullable
+as String,majLe: freezed == majLe ? _self.majLe : majLe // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [LivreurPosition].
+extension LivreurPositionPatterns on LivreurPosition {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _LivreurPosition value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _LivreurPosition() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _LivreurPosition value)  $default,){
+final _that = this;
+switch (_that) {
+case _LivreurPosition():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _LivreurPosition value)?  $default,){
+final _that = this;
+switch (_that) {
+case _LivreurPosition() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double? latitude,  double? longitude, @JsonKey(name: 'type_vehicule')  String typeVehicule, @JsonKey(name: 'maj_le')  String? majLe)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _LivreurPosition() when $default != null:
+return $default(_that.latitude,_that.longitude,_that.typeVehicule,_that.majLe);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double? latitude,  double? longitude, @JsonKey(name: 'type_vehicule')  String typeVehicule, @JsonKey(name: 'maj_le')  String? majLe)  $default,) {final _that = this;
+switch (_that) {
+case _LivreurPosition():
+return $default(_that.latitude,_that.longitude,_that.typeVehicule,_that.majLe);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double? latitude,  double? longitude, @JsonKey(name: 'type_vehicule')  String typeVehicule, @JsonKey(name: 'maj_le')  String? majLe)?  $default,) {final _that = this;
+switch (_that) {
+case _LivreurPosition() when $default != null:
+return $default(_that.latitude,_that.longitude,_that.typeVehicule,_that.majLe);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _LivreurPosition implements LivreurPosition {
+  const _LivreurPosition({this.latitude, this.longitude, @JsonKey(name: 'type_vehicule') this.typeVehicule = 'moto', @JsonKey(name: 'maj_le') this.majLe});
+  factory _LivreurPosition.fromJson(Map<String, dynamic> json) => _$LivreurPositionFromJson(json);
+
+@override final  double? latitude;
+@override final  double? longitude;
+@override@JsonKey(name: 'type_vehicule') final  String typeVehicule;
+@override@JsonKey(name: 'maj_le') final  String? majLe;
+
+/// Create a copy of LivreurPosition
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LivreurPositionCopyWith<_LivreurPosition> get copyWith => __$LivreurPositionCopyWithImpl<_LivreurPosition>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$LivreurPositionToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LivreurPosition&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.typeVehicule, typeVehicule) || other.typeVehicule == typeVehicule)&&(identical(other.majLe, majLe) || other.majLe == majLe));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,latitude,longitude,typeVehicule,majLe);
+
+@override
+String toString() {
+  return 'LivreurPosition(latitude: $latitude, longitude: $longitude, typeVehicule: $typeVehicule, majLe: $majLe)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$LivreurPositionCopyWith<$Res> implements $LivreurPositionCopyWith<$Res> {
+  factory _$LivreurPositionCopyWith(_LivreurPosition value, $Res Function(_LivreurPosition) _then) = __$LivreurPositionCopyWithImpl;
+@override @useResult
+$Res call({
+ double? latitude, double? longitude,@JsonKey(name: 'type_vehicule') String typeVehicule,@JsonKey(name: 'maj_le') String? majLe
+});
+
+
+
+
+}
+/// @nodoc
+class __$LivreurPositionCopyWithImpl<$Res>
+    implements _$LivreurPositionCopyWith<$Res> {
+  __$LivreurPositionCopyWithImpl(this._self, this._then);
+
+  final _LivreurPosition _self;
+  final $Res Function(_LivreurPosition) _then;
+
+/// Create a copy of LivreurPosition
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? latitude = freezed,Object? longitude = freezed,Object? typeVehicule = null,Object? majLe = freezed,}) {
+  return _then(_LivreurPosition(
+latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
+as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
+as double?,typeVehicule: null == typeVehicule ? _self.typeVehicule : typeVehicule // ignore: cast_nullable_to_non_nullable
+as String,majLe: freezed == majLe ? _self.majLe : majLe // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$Course {
 
- String get id; String get numero; String get statut; String get ville;@JsonKey(name: 'description_colis') String get descriptionColis;@JsonKey(fromJson: _versInt) int get prix;@JsonKey(name: 'point_a') PointLivraison get pointA;@JsonKey(name: 'point_b') PointLivraison get pointB; String? get livreur;@JsonKey(name: 'cree_le') String? get creeLe;
+ String get id; String get numero; String get statut; String get ville;@JsonKey(name: 'description_colis') String get descriptionColis;@JsonKey(fromJson: _versInt) int get prix;@JsonKey(name: 'point_a') PointLivraison get pointA;@JsonKey(name: 'point_b') PointLivraison get pointB; String? get livreur;@JsonKey(name: 'livreur_position') LivreurPosition? get livreurPosition;@JsonKey(name: 'cree_le') String? get creeLe;
 /// Create a copy of Course
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -590,16 +862,16 @@ $CourseCopyWith<Course> get copyWith => _$CourseCopyWithImpl<Course>(this as Cou
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Course&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.descriptionColis, descriptionColis) || other.descriptionColis == descriptionColis)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.pointA, pointA) || other.pointA == pointA)&&(identical(other.pointB, pointB) || other.pointB == pointB)&&(identical(other.livreur, livreur) || other.livreur == livreur)&&(identical(other.creeLe, creeLe) || other.creeLe == creeLe));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Course&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.descriptionColis, descriptionColis) || other.descriptionColis == descriptionColis)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.pointA, pointA) || other.pointA == pointA)&&(identical(other.pointB, pointB) || other.pointB == pointB)&&(identical(other.livreur, livreur) || other.livreur == livreur)&&(identical(other.livreurPosition, livreurPosition) || other.livreurPosition == livreurPosition)&&(identical(other.creeLe, creeLe) || other.creeLe == creeLe));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,numero,statut,ville,descriptionColis,prix,pointA,pointB,livreur,creeLe);
+int get hashCode => Object.hash(runtimeType,id,numero,statut,ville,descriptionColis,prix,pointA,pointB,livreur,livreurPosition,creeLe);
 
 @override
 String toString() {
-  return 'Course(id: $id, numero: $numero, statut: $statut, ville: $ville, descriptionColis: $descriptionColis, prix: $prix, pointA: $pointA, pointB: $pointB, livreur: $livreur, creeLe: $creeLe)';
+  return 'Course(id: $id, numero: $numero, statut: $statut, ville: $ville, descriptionColis: $descriptionColis, prix: $prix, pointA: $pointA, pointB: $pointB, livreur: $livreur, livreurPosition: $livreurPosition, creeLe: $creeLe)';
 }
 
 
@@ -610,11 +882,11 @@ abstract mixin class $CourseCopyWith<$Res>  {
   factory $CourseCopyWith(Course value, $Res Function(Course) _then) = _$CourseCopyWithImpl;
 @useResult
 $Res call({
- String id, String numero, String statut, String ville,@JsonKey(name: 'description_colis') String descriptionColis,@JsonKey(fromJson: _versInt) int prix,@JsonKey(name: 'point_a') PointLivraison pointA,@JsonKey(name: 'point_b') PointLivraison pointB, String? livreur,@JsonKey(name: 'cree_le') String? creeLe
+ String id, String numero, String statut, String ville,@JsonKey(name: 'description_colis') String descriptionColis,@JsonKey(fromJson: _versInt) int prix,@JsonKey(name: 'point_a') PointLivraison pointA,@JsonKey(name: 'point_b') PointLivraison pointB, String? livreur,@JsonKey(name: 'livreur_position') LivreurPosition? livreurPosition,@JsonKey(name: 'cree_le') String? creeLe
 });
 
 
-$PointLivraisonCopyWith<$Res> get pointA;$PointLivraisonCopyWith<$Res> get pointB;
+$PointLivraisonCopyWith<$Res> get pointA;$PointLivraisonCopyWith<$Res> get pointB;$LivreurPositionCopyWith<$Res>? get livreurPosition;
 
 }
 /// @nodoc
@@ -627,7 +899,7 @@ class _$CourseCopyWithImpl<$Res>
 
 /// Create a copy of Course
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? numero = null,Object? statut = null,Object? ville = null,Object? descriptionColis = null,Object? prix = null,Object? pointA = null,Object? pointB = null,Object? livreur = freezed,Object? creeLe = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? numero = null,Object? statut = null,Object? ville = null,Object? descriptionColis = null,Object? prix = null,Object? pointA = null,Object? pointB = null,Object? livreur = freezed,Object? livreurPosition = freezed,Object? creeLe = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,numero: null == numero ? _self.numero : numero // ignore: cast_nullable_to_non_nullable
@@ -638,7 +910,8 @@ as String,prix: null == prix ? _self.prix : prix // ignore: cast_nullable_to_non
 as int,pointA: null == pointA ? _self.pointA : pointA // ignore: cast_nullable_to_non_nullable
 as PointLivraison,pointB: null == pointB ? _self.pointB : pointB // ignore: cast_nullable_to_non_nullable
 as PointLivraison,livreur: freezed == livreur ? _self.livreur : livreur // ignore: cast_nullable_to_non_nullable
-as String?,creeLe: freezed == creeLe ? _self.creeLe : creeLe // ignore: cast_nullable_to_non_nullable
+as String?,livreurPosition: freezed == livreurPosition ? _self.livreurPosition : livreurPosition // ignore: cast_nullable_to_non_nullable
+as LivreurPosition?,creeLe: freezed == creeLe ? _self.creeLe : creeLe // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -659,6 +932,18 @@ $PointLivraisonCopyWith<$Res> get pointB {
   
   return $PointLivraisonCopyWith<$Res>(_self.pointB, (value) {
     return _then(_self.copyWith(pointB: value));
+  });
+}/// Create a copy of Course
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$LivreurPositionCopyWith<$Res>? get livreurPosition {
+    if (_self.livreurPosition == null) {
+    return null;
+  }
+
+  return $LivreurPositionCopyWith<$Res>(_self.livreurPosition!, (value) {
+    return _then(_self.copyWith(livreurPosition: value));
   });
 }
 }
@@ -742,10 +1027,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String numero,  String statut,  String ville, @JsonKey(name: 'description_colis')  String descriptionColis, @JsonKey(fromJson: _versInt)  int prix, @JsonKey(name: 'point_a')  PointLivraison pointA, @JsonKey(name: 'point_b')  PointLivraison pointB,  String? livreur, @JsonKey(name: 'cree_le')  String? creeLe)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String numero,  String statut,  String ville, @JsonKey(name: 'description_colis')  String descriptionColis, @JsonKey(fromJson: _versInt)  int prix, @JsonKey(name: 'point_a')  PointLivraison pointA, @JsonKey(name: 'point_b')  PointLivraison pointB,  String? livreur, @JsonKey(name: 'livreur_position')  LivreurPosition? livreurPosition, @JsonKey(name: 'cree_le')  String? creeLe)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Course() when $default != null:
-return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.descriptionColis,_that.prix,_that.pointA,_that.pointB,_that.livreur,_that.creeLe);case _:
+return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.descriptionColis,_that.prix,_that.pointA,_that.pointB,_that.livreur,_that.livreurPosition,_that.creeLe);case _:
   return orElse();
 
 }
@@ -763,10 +1048,10 @@ return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.description
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String numero,  String statut,  String ville, @JsonKey(name: 'description_colis')  String descriptionColis, @JsonKey(fromJson: _versInt)  int prix, @JsonKey(name: 'point_a')  PointLivraison pointA, @JsonKey(name: 'point_b')  PointLivraison pointB,  String? livreur, @JsonKey(name: 'cree_le')  String? creeLe)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String numero,  String statut,  String ville, @JsonKey(name: 'description_colis')  String descriptionColis, @JsonKey(fromJson: _versInt)  int prix, @JsonKey(name: 'point_a')  PointLivraison pointA, @JsonKey(name: 'point_b')  PointLivraison pointB,  String? livreur, @JsonKey(name: 'livreur_position')  LivreurPosition? livreurPosition, @JsonKey(name: 'cree_le')  String? creeLe)  $default,) {final _that = this;
 switch (_that) {
 case _Course():
-return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.descriptionColis,_that.prix,_that.pointA,_that.pointB,_that.livreur,_that.creeLe);case _:
+return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.descriptionColis,_that.prix,_that.pointA,_that.pointB,_that.livreur,_that.livreurPosition,_that.creeLe);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -783,10 +1068,10 @@ return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.description
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String numero,  String statut,  String ville, @JsonKey(name: 'description_colis')  String descriptionColis, @JsonKey(fromJson: _versInt)  int prix, @JsonKey(name: 'point_a')  PointLivraison pointA, @JsonKey(name: 'point_b')  PointLivraison pointB,  String? livreur, @JsonKey(name: 'cree_le')  String? creeLe)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String numero,  String statut,  String ville, @JsonKey(name: 'description_colis')  String descriptionColis, @JsonKey(fromJson: _versInt)  int prix, @JsonKey(name: 'point_a')  PointLivraison pointA, @JsonKey(name: 'point_b')  PointLivraison pointB,  String? livreur, @JsonKey(name: 'livreur_position')  LivreurPosition? livreurPosition, @JsonKey(name: 'cree_le')  String? creeLe)?  $default,) {final _that = this;
 switch (_that) {
 case _Course() when $default != null:
-return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.descriptionColis,_that.prix,_that.pointA,_that.pointB,_that.livreur,_that.creeLe);case _:
+return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.descriptionColis,_that.prix,_that.pointA,_that.pointB,_that.livreur,_that.livreurPosition,_that.creeLe);case _:
   return null;
 
 }
@@ -798,7 +1083,7 @@ return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.description
 @JsonSerializable()
 
 class _Course implements Course {
-  const _Course({this.id = '', this.numero = '', this.statut = 'demandee', this.ville = '', @JsonKey(name: 'description_colis') this.descriptionColis = '', @JsonKey(fromJson: _versInt) this.prix = 0, @JsonKey(name: 'point_a') required this.pointA, @JsonKey(name: 'point_b') required this.pointB, this.livreur, @JsonKey(name: 'cree_le') this.creeLe});
+  const _Course({this.id = '', this.numero = '', this.statut = 'demandee', this.ville = '', @JsonKey(name: 'description_colis') this.descriptionColis = '', @JsonKey(fromJson: _versInt) this.prix = 0, @JsonKey(name: 'point_a') required this.pointA, @JsonKey(name: 'point_b') required this.pointB, this.livreur, @JsonKey(name: 'livreur_position') this.livreurPosition, @JsonKey(name: 'cree_le') this.creeLe});
   factory _Course.fromJson(Map<String, dynamic> json) => _$CourseFromJson(json);
 
 @override@JsonKey() final  String id;
@@ -810,6 +1095,7 @@ class _Course implements Course {
 @override@JsonKey(name: 'point_a') final  PointLivraison pointA;
 @override@JsonKey(name: 'point_b') final  PointLivraison pointB;
 @override final  String? livreur;
+@override@JsonKey(name: 'livreur_position') final  LivreurPosition? livreurPosition;
 @override@JsonKey(name: 'cree_le') final  String? creeLe;
 
 /// Create a copy of Course
@@ -825,16 +1111,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Course&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.descriptionColis, descriptionColis) || other.descriptionColis == descriptionColis)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.pointA, pointA) || other.pointA == pointA)&&(identical(other.pointB, pointB) || other.pointB == pointB)&&(identical(other.livreur, livreur) || other.livreur == livreur)&&(identical(other.creeLe, creeLe) || other.creeLe == creeLe));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Course&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.descriptionColis, descriptionColis) || other.descriptionColis == descriptionColis)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.pointA, pointA) || other.pointA == pointA)&&(identical(other.pointB, pointB) || other.pointB == pointB)&&(identical(other.livreur, livreur) || other.livreur == livreur)&&(identical(other.livreurPosition, livreurPosition) || other.livreurPosition == livreurPosition)&&(identical(other.creeLe, creeLe) || other.creeLe == creeLe));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,numero,statut,ville,descriptionColis,prix,pointA,pointB,livreur,creeLe);
+int get hashCode => Object.hash(runtimeType,id,numero,statut,ville,descriptionColis,prix,pointA,pointB,livreur,livreurPosition,creeLe);
 
 @override
 String toString() {
-  return 'Course(id: $id, numero: $numero, statut: $statut, ville: $ville, descriptionColis: $descriptionColis, prix: $prix, pointA: $pointA, pointB: $pointB, livreur: $livreur, creeLe: $creeLe)';
+  return 'Course(id: $id, numero: $numero, statut: $statut, ville: $ville, descriptionColis: $descriptionColis, prix: $prix, pointA: $pointA, pointB: $pointB, livreur: $livreur, livreurPosition: $livreurPosition, creeLe: $creeLe)';
 }
 
 
@@ -845,11 +1131,11 @@ abstract mixin class _$CourseCopyWith<$Res> implements $CourseCopyWith<$Res> {
   factory _$CourseCopyWith(_Course value, $Res Function(_Course) _then) = __$CourseCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String numero, String statut, String ville,@JsonKey(name: 'description_colis') String descriptionColis,@JsonKey(fromJson: _versInt) int prix,@JsonKey(name: 'point_a') PointLivraison pointA,@JsonKey(name: 'point_b') PointLivraison pointB, String? livreur,@JsonKey(name: 'cree_le') String? creeLe
+ String id, String numero, String statut, String ville,@JsonKey(name: 'description_colis') String descriptionColis,@JsonKey(fromJson: _versInt) int prix,@JsonKey(name: 'point_a') PointLivraison pointA,@JsonKey(name: 'point_b') PointLivraison pointB, String? livreur,@JsonKey(name: 'livreur_position') LivreurPosition? livreurPosition,@JsonKey(name: 'cree_le') String? creeLe
 });
 
 
-@override $PointLivraisonCopyWith<$Res> get pointA;@override $PointLivraisonCopyWith<$Res> get pointB;
+@override $PointLivraisonCopyWith<$Res> get pointA;@override $PointLivraisonCopyWith<$Res> get pointB;@override $LivreurPositionCopyWith<$Res>? get livreurPosition;
 
 }
 /// @nodoc
@@ -862,7 +1148,7 @@ class __$CourseCopyWithImpl<$Res>
 
 /// Create a copy of Course
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? numero = null,Object? statut = null,Object? ville = null,Object? descriptionColis = null,Object? prix = null,Object? pointA = null,Object? pointB = null,Object? livreur = freezed,Object? creeLe = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? numero = null,Object? statut = null,Object? ville = null,Object? descriptionColis = null,Object? prix = null,Object? pointA = null,Object? pointB = null,Object? livreur = freezed,Object? livreurPosition = freezed,Object? creeLe = freezed,}) {
   return _then(_Course(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,numero: null == numero ? _self.numero : numero // ignore: cast_nullable_to_non_nullable
@@ -873,7 +1159,8 @@ as String,prix: null == prix ? _self.prix : prix // ignore: cast_nullable_to_non
 as int,pointA: null == pointA ? _self.pointA : pointA // ignore: cast_nullable_to_non_nullable
 as PointLivraison,pointB: null == pointB ? _self.pointB : pointB // ignore: cast_nullable_to_non_nullable
 as PointLivraison,livreur: freezed == livreur ? _self.livreur : livreur // ignore: cast_nullable_to_non_nullable
-as String?,creeLe: freezed == creeLe ? _self.creeLe : creeLe // ignore: cast_nullable_to_non_nullable
+as String?,livreurPosition: freezed == livreurPosition ? _self.livreurPosition : livreurPosition // ignore: cast_nullable_to_non_nullable
+as LivreurPosition?,creeLe: freezed == creeLe ? _self.creeLe : creeLe // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -895,6 +1182,18 @@ $PointLivraisonCopyWith<$Res> get pointB {
   
   return $PointLivraisonCopyWith<$Res>(_self.pointB, (value) {
     return _then(_self.copyWith(pointB: value));
+  });
+}/// Create a copy of Course
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$LivreurPositionCopyWith<$Res>? get livreurPosition {
+    if (_self.livreurPosition == null) {
+    return null;
+  }
+
+  return $LivreurPositionCopyWith<$Res>(_self.livreurPosition!, (value) {
+    return _then(_self.copyWith(livreurPosition: value));
   });
 }
 }
