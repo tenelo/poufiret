@@ -6,6 +6,7 @@ import '../../auth/widgets/mur_inscription.dart';
 import '../../map/data/service_position.dart';
 import '../data/livraison_providers.dart';
 import 'ecran_commande.dart';
+import 'ecran_historique.dart';
 import 'ecran_suivi.dart';
 
 /// Onglet Livraison — hub TeneLivr.
@@ -89,9 +90,11 @@ class EcranLivraison extends ConsumerWidget {
                             style: Theme.of(context).textTheme.titleMedium),
                         const Spacer(),
                         TextButton.icon(
-                          onPressed: () => ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                                  content: Text('Historique — bientôt'))),
+                          onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const EcranHistorique(),
+                          ),
+                        ),
                           icon: const Icon(Icons.history, size: 18),
                           label: const Text('Historique'),
                         ),
