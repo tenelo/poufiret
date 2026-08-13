@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../core/network/providers.dart';
 import '../domain/departement.dart';
+import '../domain/quartier.dart';
 import 'geo_repository.dart';
 
 part 'geo_providers.g.dart';
@@ -16,4 +17,11 @@ GeoRepository geoRepository(Ref ref) {
 @Riverpod(keepAlive: true)
 Future<List<Departement>> departements(Ref ref) {
   return ref.watch(geoRepositoryProvider).departements();
+}
+
+/// Quartiers d'un departement (autocompletion livraison). Non keepAlive :
+/// depend du departement choisi.
+@riverpod
+Future<List<Quartier>> quartiers(Ref ref, {required int departementId}) {
+  return ref.watch(geoRepositoryProvider).quartiers(departementId);
 }

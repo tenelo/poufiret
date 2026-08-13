@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../core/config/env.dart';
 import '../domain/departement.dart';
+import '../domain/quartier.dart';
 
 class GeoRepository {
   GeoRepository({required Dio dio}) : _dio = dio;
@@ -16,6 +17,21 @@ class GeoRepository {
     return brut
         .whereType<Map>()
         .map((e) => Departement.fromJson(Map<String, dynamic>.from(e)))
+        .toList();
+  }
+
+  /// Quartiers actifs d'un departement (autocompletion livraison).
+  Future<List<Quartier>> quartiers(int departementId) async {
+    final r = await _dio.get(
+      '${Env.apiPrefix}/geo/quartiers/',
+      queryParameters: {'departement': departementId},
+    );
+    final data = r.data;
+    final brut = data is Map<String, dynamic> ? data['results'] : data;
+    if (brut is! List) return const [];
+    return brut
+        .whereType<Map>()
+        .map((e) => Quartier.fromJson(Map<String, dynamic>.from(e)))
         .toList();
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/domain/utilisateur.dart';
 import '../../auth/screens/auth_notifier.dart';
 import '../../geo/widgets/champ_departement.dart';
+import '../../geo/widgets/champ_quartier.dart';
 import '../../map/data/service_position.dart';
 import '../data/livraison_providers.dart';
 
@@ -268,15 +269,9 @@ class _EcranCommandeState extends ConsumerState<EcranCommande> {
             Text(titre, style: theme.textTheme.titleMedium),
             Text(sousTitre, style: theme.textTheme.bodySmall),
             const SizedBox(height: 12),
-            TextFormField(
+            ChampQuartier(
               controller: quartier,
-              decoration: const InputDecoration(
-                labelText: 'Quartier *',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.map_outlined),
-              ),
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Quartier requis.' : null,
+              departementId: _ville,
             ),
             const SizedBox(height: 12),
             _champVerrouille(
@@ -317,15 +312,9 @@ class _EcranCommandeState extends ConsumerState<EcranCommande> {
             Text(titre, style: theme.textTheme.titleMedium),
             Text(sousTitre, style: theme.textTheme.bodySmall),
             const SizedBox(height: 12),
-            TextFormField(
+            ChampQuartier(
               controller: quartier,
-              decoration: const InputDecoration(
-                labelText: 'Quartier *',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.map_outlined),
-              ),
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Quartier requis.' : null,
+              departementId: _ville,
             ),
             const SizedBox(height: 12),
             TextFormField(
