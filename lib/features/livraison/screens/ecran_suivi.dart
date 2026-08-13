@@ -6,10 +6,17 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../data/livraison_providers.dart';
+import '../data/marqueur_icone.dart';
 import '../domain/livraison_models.dart';
 
 const _ordreStatuts = [
-  'demandee', 'assignee', 'acceptee', 'vers_a', 'colis_pris', 'vers_b', 'livree',
+  'demandee',
+  'assignee',
+  'acceptee',
+  'vers_a',
+  'colis_pris',
+  'vers_b',
+  'livree',
 ];
 
 const _libelleStatut = {
@@ -42,6 +49,8 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
 
   Timer? _timer;
   Course? _course;
+  BitmapDescriptor? _iconeMoto;
+  bool _iconeDemandee = false;
   LatLng? _posLivreur;
   GoogleMapController? _controller;
   bool _annulation = false;
@@ -50,14 +59,34 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
   void initState() {
     super.initState();
     _course = widget.courseInitiale;
+    _chargerIconeMoto();
     _poll();
     _timer = Timer.periodic(const Duration(seconds: 10), (_) => _poll());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_iconeDemandee) {
+      _iconeDemandee = true;
+      _chargerIconeMoto();
+    }
   }
 
   @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+
+  Future<void> _chargerIconeMoto() async {
+    final ic = await bitmapDepuisIcone(
+      Icons.two_wheeler,
+      couleur: Theme.of(context).colorScheme.primary,
+      taille: 70,
+    );
+    if (!mounted) return;
+    setState(() => _iconeMoto = ic);
   }
 
   Future<void> _poll() async {
@@ -68,7 +97,8 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
       final lp = c.livreurPosition;
       setState(() {
         _course = c;
-        _posLivreur = (lp != null && lp.latitude != null && lp.longitude != null)
+        _posLivreur =
+            (lp != null && lp.latitude != null && lp.longitude != null)
             ? LatLng(lp.latitude!, lp.longitude!)
             : null;
       });
@@ -95,31 +125,45 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
     final m = <Marker>{};
     final a = _posA;
     if (a != null) {
-      m.add(Marker(
-        markerId: const MarkerId('A'),
-        position: a,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        infoWindow: InfoWindow(
-            title: 'Retrait (A)', snippet: _course?.pointA.quartier),
-      ));
+      m.add(
+        Marker(
+          markerId: const MarkerId('A'),
+          position: a,
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueGreen,
+          ),
+          infoWindow: InfoWindow(
+            title: 'Retrait (A)',
+            snippet: _course?.pointA.quartier,
+          ),
+        ),
+      );
     }
     final b = _posB;
     if (b != null) {
-      m.add(Marker(
-        markerId: const MarkerId('B'),
-        position: b,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        infoWindow: InfoWindow(
-            title: 'Livraison (B)', snippet: _course?.pointB.quartier),
-      ));
+      m.add(
+        Marker(
+          markerId: const MarkerId('B'),
+          position: b,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          infoWindow: InfoWindow(
+            title: 'Livraison (B)',
+            snippet: _course?.pointB.quartier,
+          ),
+        ),
+      );
     }
     if (_posLivreur != null) {
-      m.add(Marker(
-        markerId: const MarkerId('livreur'),
-        position: _posLivreur!,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-        infoWindow: const InfoWindow(title: 'Livreur'),
-      ));
+      m.add(
+        Marker(
+          markerId: const MarkerId('livreur'),
+          position: _posLivreur!,
+          icon:
+              _iconeMoto ??
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          infoWindow: const InfoWindow(title: 'Livreur'),
+        ),
+      );
     }
     return m;
   }
@@ -141,18 +185,22 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
       minLng = p.longitude < minLng ? p.longitude : minLng;
       maxLng = p.longitude > maxLng ? p.longitude : maxLng;
     }
-    ctrl.animateCamera(CameraUpdate.newLatLngBounds(
-      LatLngBounds(
-        southwest: LatLng(minLat, minLng),
-        northeast: LatLng(maxLat, maxLng),
+    ctrl.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(minLat, minLng),
+          northeast: LatLng(maxLat, maxLng),
+        ),
+        60,
       ),
-      60,
-    ));
+    );
   }
 
   bool get _peutAnnuler {
     final s = _course?.statut;
-    return s == 'demandee' || s == 'assignee' || s == 'acceptee' ||
+    return s == 'demandee' ||
+        s == 'assignee' ||
+        s == 'acceptee' ||
         s == 'vers_a';
   }
 
@@ -164,28 +212,30 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
         content: const Text('Cette action est définitive.'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Non')),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Non'),
+          ),
           FilledButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Oui, annuler')),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Oui, annuler'),
+          ),
         ],
       ),
     );
     if (ok != true) return;
     setState(() => _annulation = true);
     try {
-      final c = await ref.read(livraisonRepositoryProvider).transition(
-            courseId: widget.courseId,
-            statut: 'annulee',
-          );
+      final c = await ref
+          .read(livraisonRepositoryProvider)
+          .transition(courseId: widget.courseId, statut: 'annulee');
       if (!mounted) return;
       setState(() => _course = c);
       _timer?.cancel();
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Échec de l\'annulation.')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Échec de l\'annulation.')));
     } finally {
       if (mounted) setState(() => _annulation = false);
     }
@@ -198,7 +248,8 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Impossible de lancer l\'appel.')));
+        const SnackBar(content: Text('Impossible de lancer l\'appel.')),
+      );
     }
   }
 
@@ -230,9 +281,13 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
         Icon(icone, color: couleur, size: 28),
         const SizedBox(width: 12),
         Expanded(
-          child: Text(texte,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(color: couleur, fontWeight: FontWeight.bold)),
+          child: Text(
+            texte,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: couleur,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ],
     );
@@ -261,11 +316,10 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
         Column(
           children: [
             Icon(
-                atteint
-                    ? Icons.check_circle
-                    : Icons.radio_button_unchecked,
-                color: couleur,
-                size: 22),
+              atteint ? Icons.check_circle : Icons.radio_button_unchecked,
+              color: couleur,
+              size: 22,
+            ),
             if (!dernier) Container(width: 2, height: 22, color: couleur),
           ],
         ),
@@ -275,10 +329,12 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
           child: Text(
             _libelleStatut[_ordreStatuts[i]] ?? _ordreStatuts[i],
             style: actif
-                ? theme.textTheme.bodyLarge
-                    ?.copyWith(fontWeight: FontWeight.bold)
+                ? theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  )
                 : theme.textTheme.bodyMedium?.copyWith(
-                    color: atteint ? null : theme.disabledColor),
+                    color: atteint ? null : theme.disabledColor,
+                  ),
           ),
         ),
       ],
@@ -316,23 +372,38 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
                     padding: const EdgeInsets.all(16),
                     children: [
                       if (aGps)
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: SizedBox(
-                            height: 240,
-                            child: GoogleMap(
-                              initialCameraPosition: CameraPosition(
-                                target: _posB ?? _posA ?? _posLivreur!,
-                                zoom: 14,
+                        GestureDetector(
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => _CartePleinEcran(
+                                posA: _posA,
+                                posB: _posB,
+                                posLivreur: _posLivreur,
+                                quartierA: c.pointA.quartier,
+                                quartierB: c.pointB.quartier,
+                                titre: c.numero,
                               ),
-                              markers: _marqueurs(),
-                              zoomControlsEnabled: false,
-                              myLocationEnabled: false,
-                              myLocationButtonEnabled: false,
-                              onMapCreated: (ctrl) {
-                                _controller = ctrl;
-                                _ajusterCamera();
-                              },
+                            ),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: SizedBox(
+                              height: 300,
+                              child: GoogleMap(
+                                initialCameraPosition: CameraPosition(
+                                  target: _posB ?? _posA ?? _posLivreur!,
+                                  zoom: 14,
+                                ),
+                                markers: _marqueurs(),
+                                zoomControlsEnabled: true,
+                                zoomGesturesEnabled: true,
+                                myLocationEnabled: false,
+                                myLocationButtonEnabled: false,
+                                onMapCreated: (ctrl) {
+                                  _controller = ctrl;
+                                  _ajusterCamera();
+                                },
+                              ),
                             ),
                           ),
                         ),
@@ -349,22 +420,32 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
                       Card(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 4),
+                            horizontal: 16,
+                            vertical: 4,
+                          ),
                           child: Column(
                             children: [
-                              _ligneContact('Retrait', c.pointA.nomContact,
-                                  c.pointA.telephoneContact),
+                              _ligneContact(
+                                'Expédié par',
+                                c.pointA.nomContact,
+                                c.pointA.telephoneContact,
+                              ),
                               const Divider(height: 1),
-                              _ligneContact('Livraison', c.pointB.nomContact,
-                                  c.pointB.telephoneContact),
+                              _ligneContact(
+                                'A remettre à',
+                                c.pointB.nomContact,
+                                c.pointB.telephoneContact,
+                              ),
                             ],
                           ),
                         ),
                       ),
                       if (c.descriptionColis.isNotEmpty) ...[
                         const SizedBox(height: 8),
-                        Text('Colis : ${c.descriptionColis}',
-                            style: Theme.of(context).textTheme.bodySmall),
+                        Text(
+                          'Colis : ${c.descriptionColis}',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                       ],
                       const SizedBox(height: 16),
                       if (_peutAnnuler)
@@ -372,13 +453,160 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
                           onPressed: _annulation ? null : _annuler,
                           icon: const Icon(Icons.cancel_outlined),
                           label: Text(
-                              _annulation ? 'Annulation…' : 'Annuler la course'),
+                            _annulation ? 'Annulation…' : 'Annuler la course',
+                          ),
                         ),
                       const SizedBox(height: 24),
                     ],
                   ),
                 ),
               ),
+            ),
+    );
+  }
+}
+
+/// Carte en plein ecran : suivi detaille (A, B, moto), zoom complet.
+class _CartePleinEcran extends StatefulWidget {
+  const _CartePleinEcran({
+    required this.posA,
+    required this.posB,
+    required this.posLivreur,
+    required this.quartierA,
+    required this.quartierB,
+    required this.titre,
+  });
+
+  final LatLng? posA;
+  final LatLng? posB;
+  final LatLng? posLivreur;
+  final String quartierA;
+  final String quartierB;
+  final String titre;
+
+  @override
+  State<_CartePleinEcran> createState() => _CartePleinEcranState();
+}
+
+class _CartePleinEcranState extends State<_CartePleinEcran> {
+  GoogleMapController? _controller;
+  BitmapDescriptor? _iconeMoto;
+  bool _iconeDemandee = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_iconeDemandee) {
+      _iconeDemandee = true;
+      _chargerIconeMoto();
+    }
+  }
+
+  Future<void> _chargerIconeMoto() async {
+    final ic = await bitmapDepuisIcone(
+      Icons.two_wheeler,
+      couleur: Theme.of(context).colorScheme.primary,
+      taille: 70,
+    );
+    if (!mounted) return;
+    setState(() => _iconeMoto = ic);
+  }
+
+  Set<Marker> _marqueurs() {
+    final m = <Marker>{};
+    if (widget.posA != null) {
+      m.add(
+        Marker(
+          markerId: const MarkerId('A'),
+          position: widget.posA!,
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueGreen,
+          ),
+          infoWindow: InfoWindow(
+            title: 'Retrait (A)',
+            snippet: widget.quartierA,
+          ),
+        ),
+      );
+    }
+    if (widget.posB != null) {
+      m.add(
+        Marker(
+          markerId: const MarkerId('B'),
+          position: widget.posB!,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          infoWindow: InfoWindow(
+            title: 'Livraison (B)',
+            snippet: widget.quartierB,
+          ),
+        ),
+      );
+    }
+    if (widget.posLivreur != null) {
+      m.add(
+        Marker(
+          markerId: const MarkerId('livreur'),
+          position: widget.posLivreur!,
+          icon:
+              _iconeMoto ??
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          infoWindow: const InfoWindow(title: 'Livreur'),
+        ),
+      );
+    }
+    return m;
+  }
+
+  void _ajusterCamera() {
+    final ctrl = _controller;
+    if (ctrl == null) return;
+    final pts = [
+      widget.posA,
+      widget.posB,
+      widget.posLivreur,
+    ].whereType<LatLng>().toList();
+    if (pts.isEmpty) return;
+    if (pts.length == 1) {
+      ctrl.animateCamera(CameraUpdate.newLatLngZoom(pts.first, 15));
+      return;
+    }
+    var minLat = pts.first.latitude, maxLat = pts.first.latitude;
+    var minLng = pts.first.longitude, maxLng = pts.first.longitude;
+    for (final p in pts) {
+      minLat = p.latitude < minLat ? p.latitude : minLat;
+      maxLat = p.latitude > maxLat ? p.latitude : maxLat;
+      minLng = p.longitude < minLng ? p.longitude : minLng;
+      maxLng = p.longitude > maxLng ? p.longitude : maxLng;
+    }
+    ctrl.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(minLat, minLng),
+          northeast: LatLng(maxLat, maxLng),
+        ),
+        80,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final premier = widget.posB ?? widget.posA ?? widget.posLivreur;
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.titre)),
+      body: premier == null
+          ? const Center(child: Text('Aucune position à afficher.'))
+          : GoogleMap(
+              initialCameraPosition: CameraPosition(target: premier, zoom: 14),
+              markers: _marqueurs(),
+              zoomControlsEnabled: true,
+              zoomGesturesEnabled: true,
+              myLocationEnabled: false,
+              myLocationButtonEnabled: false,
+              onMapCreated: (ctrl) {
+                _controller = ctrl;
+                _ajusterCamera();
+              },
             ),
     );
   }
