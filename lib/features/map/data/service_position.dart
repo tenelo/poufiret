@@ -31,6 +31,11 @@ class ErreurPosition extends ResultatPosition {
 
 /// Encapsule geolocator : permissions + récupération de la position.
 class ServicePosition {
+  /// Le service de localisation (GPS) de l'appareil est-il activé ?
+  /// Ne demande PAS la permission applicative : sert juste de garde a l'entree
+  /// de l'onglet Livraison.
+  Future<bool> serviceActive() => Geolocator.isLocationServiceEnabled();
+
   /// Demande la position courante, en gérant permissions et service GPS.
   Future<ResultatPosition> positionActuelle() async {
     // 1. Le service de localisation est-il activé sur l'appareil ?

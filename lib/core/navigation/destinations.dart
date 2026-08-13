@@ -33,8 +33,8 @@ const List<AppDestination> kDestinations = [
   ),
   AppDestination(
     label: 'Livraison',
-    icon: Icons.local_shipping_outlined,
-    selectedIcon: Icons.local_shipping,
+    icon: Icons.two_wheeler,
+    selectedIcon: Icons.two_wheeler_sharp,
   ),
   AppDestination(
     label: 'Map',
