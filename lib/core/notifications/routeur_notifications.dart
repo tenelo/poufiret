@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../features/prestations/screens/ecran_demande_detail.dart';
 import '../../features/chat/screens/ecran_discussion.dart';
 import '../../features/livraison/screens/ecran_suivi.dart';
 
@@ -50,6 +51,20 @@ class RouteurNotifications {
           ),
         );
 
+
+      // ── Intervention : ouvre le detail de la demande ──
+      case 'intervention':
+        final did = int.tryParse((data['id'] ?? '').toString());
+        if (did == null) return;
+        final estArtisan = (data['est_artisan'] ?? '0').toString() == '1';
+        await nav.push(
+          MaterialPageRoute(
+            builder: (_) => EcranDemandeDetail(
+              demandeId: did,
+              estArtisan: estArtisan,
+            ),
+          ),
+        );
 
       default:
         // Type inconnu : on ne fait rien (l'app s'ouvre normalement).
