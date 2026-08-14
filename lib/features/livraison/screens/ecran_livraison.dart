@@ -36,6 +36,8 @@ class EcranLivraison extends ConsumerWidget {
   };
 
   Future<void> _ouvrirCommande(BuildContext context, WidgetRef ref) async {
+    // Tarif frais a chaque ouverture du formulaire.
+    ref.invalidate(tarifCourseProvider);
     await Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const EcranCommande()),
     );

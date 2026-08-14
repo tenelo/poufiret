@@ -29,6 +29,12 @@ Future<List<Course>> coursesRecues(Ref ref, {String? statut}) {
   return ref.watch(livraisonRepositoryProvider).coursesRecues(statut: statut);
 }
 
+/// Prix de course courant (lu depuis l'admin via l'endpoint public).
+@riverpod
+Future<int> tarifCourse(Ref ref) {
+  return ref.watch(livraisonRepositoryProvider).tarifCourse();
+}
+
 /// Livreurs en ligne proches, pour la carte. Rafraichi par polling cote UI.
 @riverpod
 Future<List<LivreurProche>> livreursProches(

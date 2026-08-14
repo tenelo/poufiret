@@ -112,6 +112,17 @@ class LivraisonRepository {
     return Course.fromJson(r.data as Map<String, dynamic>);
   }
 
+  /// GET /livraison/tarif/ — prix de course courant (public). Repli 500
+  /// si l'appel echoue (jamais de blocage cote formulaire).
+  Future<int> tarifCourse() async {
+    final r = await _dio.get('${Env.apiPrefix}/livraison/tarif/');
+    final data = r.data as Map<String, dynamic>;
+    final v = data['prix_course'];
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    return int.tryParse('$v') ?? 500;
+  }
+
   // ── Livreurs (carte) ─────────────────────────────────────────────
 
   /// GET /livreurs/proches/?lat=&lng= — livreurs EN LIGNE de ma ville,

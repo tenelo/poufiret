@@ -303,6 +303,44 @@ final class CoursesRecuesFamily extends $Family
   String toString() => r'coursesRecuesProvider';
 }
 
+/// Prix de course courant (lu depuis l'admin via l'endpoint public).
+
+@ProviderFor(tarifCourse)
+final tarifCourseProvider = TarifCourseProvider._();
+
+/// Prix de course courant (lu depuis l'admin via l'endpoint public).
+
+final class TarifCourseProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  /// Prix de course courant (lu depuis l'admin via l'endpoint public).
+  TarifCourseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'tarifCourseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$tarifCourseHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    return tarifCourse(ref);
+  }
+}
+
+String _$tarifCourseHash() => r'cda2d1fa757ba7aae0c4c85982cc885f9c9d048c';
+
 /// Livreurs en ligne proches, pour la carte. Rafraichi par polling cote UI.
 
 @ProviderFor(livreursProches)

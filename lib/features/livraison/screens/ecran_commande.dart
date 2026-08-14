@@ -49,6 +49,7 @@ class _EcranCommandeState extends ConsumerState<EcranCommande> {
   double? _maLat, _maLng; // position du demandeur (cas 1 et 2)
   bool _posEnCours = false;
   bool _envoi = false;
+  int _prix = 500; // derniere valeur connue du tarif (maj a chaque build, repli 500)
 
   @override
   void initState() {
@@ -174,7 +175,7 @@ class _EcranCommandeState extends ConsumerState<EcranCommande> {
             bLatitude: estB ? _maLat : null,
             bLongitude: estB ? _maLng : null,
             descriptionColis: _description.text.trim(),
-            prix: 500,
+            prix: _prix,
           );
       if (!mounted) return;
       final msg = res.assigne
@@ -358,6 +359,10 @@ class _EcranCommandeState extends ConsumerState<EcranCommande> {
 
   @override
   Widget build(BuildContext context) {
+    // Tarif reactif : la derniere valeur du provider met _prix a jour
+    // (repli 500 tant que ca charge ou en cas d'erreur). Reactif a une
+    // invalidation du provider, sans quitter l'ecran.
+    _prix = ref.watch(tarifCourseProvider).value ?? _prix;
     final user = ref.watch(authProvider).whenOrNull(data: (u) => u);
     if (user == null) {
       return Scaffold(
@@ -483,7 +488,7 @@ class _EcranCommandeState extends ConsumerState<EcranCommande> {
                     _champVerrouille(
                       icone: Icons.payments_outlined,
                       libelle: 'Prix de la livraison',
-                      valeur: '500 FCFA',
+                      valeur: '$_prix FCFA',
                     ),
                     const SizedBox(height: 24),
                     FilledButton.icon(
