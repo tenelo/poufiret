@@ -5,6 +5,7 @@ import '../../auth/screens/auth_notifier.dart';
 import '../../auth/widgets/mur_inscription.dart';
 import '../../map/data/service_position.dart';
 import '../data/livraison_providers.dart';
+import 'ecran_colis_recus.dart';
 import 'ecran_commande.dart';
 import 'ecran_historique.dart';
 import 'ecran_suivi.dart';
@@ -104,6 +105,21 @@ class EcranLivraison extends ConsumerWidget {
                     _CoursesEnCours(
                         statutsActifs: _statutsActifs,
                         libelles: _libellesStatut),
+                    const SizedBox(height: 24),
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.inventory_2),
+                        title: const Text('Colis qui m\'arrivent'),
+                        subtitle: const Text(
+                            'Déposez votre position, suivez vos réceptions.'),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const EcranColisRecus(),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ],
               ),

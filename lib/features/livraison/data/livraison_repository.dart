@@ -85,6 +85,33 @@ class LivraisonRepository {
     return Course.fromJson(r.data as Map<String, dynamic>);
   }
 
+  /// GET /livraison/courses/recues/ — courses ou je suis le destinataire
+  /// (contact_user). Alimente la surface "colis qui m'arrivent".
+  Future<List<Course>> coursesRecues({String? statut}) async {
+    final r = await _dio.get(
+      '${Env.apiPrefix}/livraison/courses/recues/',
+      queryParameters: {if (statut != null) 'statut': statut},
+    );
+    return (r.data as List)
+        .cast<Map<String, dynamic>>()
+        .map(Course.fromJson)
+        .toList();
+  }
+
+  /// POST /livraison/courses/<id>/position-contact/ — le destinataire depose
+  /// sa position GPS reelle sur son point (B). N'affecte pas le statut.
+  Future<Course> deposerPositionContact({
+    required String courseId,
+    required double latitude,
+    required double longitude,
+  }) async {
+    final r = await _dio.post(
+      '${Env.apiPrefix}/livraison/courses/$courseId/position-contact/',
+      data: {'latitude': latitude, 'longitude': longitude},
+    );
+    return Course.fromJson(r.data as Map<String, dynamic>);
+  }
+
   // ── Livreurs (carte) ─────────────────────────────────────────────
 
   /// GET /livreurs/proches/?lat=&lng= — livreurs EN LIGNE de ma ville,

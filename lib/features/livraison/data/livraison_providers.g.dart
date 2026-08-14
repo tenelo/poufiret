@@ -219,6 +219,90 @@ final class CourseDetailFamily extends $Family
   String toString() => r'courseDetailProvider';
 }
 
+/// Courses ou je suis le destinataire (colis qui m'arrivent).
+
+@ProviderFor(coursesRecues)
+final coursesRecuesProvider = CoursesRecuesFamily._();
+
+/// Courses ou je suis le destinataire (colis qui m'arrivent).
+
+final class CoursesRecuesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Course>>,
+          List<Course>,
+          FutureOr<List<Course>>
+        >
+    with $FutureModifier<List<Course>>, $FutureProvider<List<Course>> {
+  /// Courses ou je suis le destinataire (colis qui m'arrivent).
+  CoursesRecuesProvider._({
+    required CoursesRecuesFamily super.from,
+    required String? super.argument,
+  }) : super(
+         retry: null,
+         name: r'coursesRecuesProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$coursesRecuesHash();
+
+  @override
+  String toString() {
+    return r'coursesRecuesProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Course>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Course>> create(Ref ref) {
+    final argument = this.argument as String?;
+    return coursesRecues(ref, statut: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CoursesRecuesProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$coursesRecuesHash() => r'004085e0810709e82a6c91b8097049008c8df7b0';
+
+/// Courses ou je suis le destinataire (colis qui m'arrivent).
+
+final class CoursesRecuesFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<Course>>, String?> {
+  CoursesRecuesFamily._()
+    : super(
+        retry: null,
+        name: r'coursesRecuesProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Courses ou je suis le destinataire (colis qui m'arrivent).
+
+  CoursesRecuesProvider call({String? statut}) =>
+      CoursesRecuesProvider._(argument: statut, from: this);
+
+  @override
+  String toString() => r'coursesRecuesProvider';
+}
+
 /// Livreurs en ligne proches, pour la carte. Rafraichi par polling cote UI.
 
 @ProviderFor(livreursProches)

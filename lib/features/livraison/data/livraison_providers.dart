@@ -23,6 +23,12 @@ Future<Course> courseDetail(Ref ref, {required String id}) {
   return ref.watch(livraisonRepositoryProvider).courseDetail(id);
 }
 
+/// Courses ou je suis le destinataire (colis qui m'arrivent).
+@riverpod
+Future<List<Course>> coursesRecues(Ref ref, {String? statut}) {
+  return ref.watch(livraisonRepositoryProvider).coursesRecues(statut: statut);
+}
+
 /// Livreurs en ligne proches, pour la carte. Rafraichi par polling cote UI.
 @riverpod
 Future<List<LivreurProche>> livreursProches(
