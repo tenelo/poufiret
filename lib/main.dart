@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/config/config.dart';
 import 'core/navigation/app_shell.dart';
 import 'core/notifications/fcm_service.dart';
+import 'core/notifications/routeur_notifications.dart';
 import 'features/analytics/data/analytics_providers.dart';
 import 'features/auth/screens/auth_notifier.dart';
 import 'features/auth/screens/ecran_connexion.dart';
@@ -28,6 +29,7 @@ class PoufiretApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Poufiret',
+      navigatorKey: navigatorNotifications,
       theme: ThemeData(
         colorScheme: Config.schemaCouleurs,
         scaffoldBackgroundColor: Config.couleurFond,

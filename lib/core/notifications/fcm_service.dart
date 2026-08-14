@@ -4,7 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'notifications_locales.dart';
-import 'package:flutter/foundation.dart';
+import 'routeur_notifications.dart';
+import 'package:flutter/widgets.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../config/env.dart';
@@ -57,6 +58,22 @@ class FcmService {
       // App au premier plan : Android n'affiche rien -> on cree la banniere.
       NotificationsLocales.instance.afficherDepuisMessage(m);
     });
+
+    // 5. Tap sur une notif alors que l'app etait EN FOND -> navigation.
+    FirebaseMessaging.onMessageOpenedApp.listen((m) {
+      RouteurNotifications.ouvrirDepuisData(
+          RouteurNotifications.normaliser(m.data));
+    });
+
+    // 6. App ouverte DEPUIS une notif alors qu'elle etait FERMEE.
+    final initial = await FirebaseMessaging.instance.getInitialMessage();
+    if (initial != null) {
+      // Laisse le premier frame se construire (navigator pret) avant de router.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        RouteurNotifications.ouvrirDepuisData(
+            RouteurNotifications.normaliser(initial.data));
+      });
+    }
   }
 
   Future<void> _envoyerToken(String token) async {

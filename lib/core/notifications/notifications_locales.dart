@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'routeur_notifications.dart';
 
 /// Affiche une banniere systeme quand un message FCM arrive alors que
 /// l'app est au PREMIER PLAN (Android n'affiche rien automatiquement dans
@@ -27,7 +30,19 @@ class NotificationsLocales {
     const paramAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
     const params = InitializationSettings(android: paramAndroid);
-    await _plugin.initialize(params);
+    await _plugin.initialize(
+      params,
+      onDidReceiveNotificationResponse: (reponse) {
+        final payload = reponse.payload;
+        if (payload == null || payload.isEmpty) return;
+        try {
+          final data = jsonDecode(payload) as Map<String, dynamic>;
+          RouteurNotifications.ouvrirDepuisData(data);
+        } catch (_) {
+          // Payload illisible : on ignore.
+        }
+      },
+    );
 
     const canal = AndroidNotificationChannel(
       _canalId,
@@ -62,6 +77,7 @@ class NotificationsLocales {
     );
 
     final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    await _plugin.show(id, titre, corps, details);
+    final payload = message.data.isNotEmpty ? jsonEncode(message.data) : null;
+    await _plugin.show(id, titre, corps, details, payload: payload);
   }
 }
