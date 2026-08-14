@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../features/chat/screens/ecran_discussion.dart';
 import '../../features/livraison/screens/ecran_suivi.dart';
 
 /// Cle de navigation globale : permet de naviguer depuis un tap de
@@ -35,7 +36,20 @@ class RouteurNotifications {
           ),
         );
 
-      // ── Chat : a brancher ensuite (case 'message' -> conversation) ──
+      // ── Chat : ouvre la conversation exacte ──
+      case 'message':
+        final cid = int.tryParse((data['conversation_id'] ?? '').toString());
+        if (cid == null) return;
+        final titre = (data['expediteur_nom'] ?? 'Conversation').toString();
+        await nav.push(
+          MaterialPageRoute(
+            builder: (_) => EcranDiscussion(
+              conversationId: cid,
+              titre: titre,
+            ),
+          ),
+        );
+
 
       default:
         // Type inconnu : on ne fait rien (l'app s'ouvre normalement).
