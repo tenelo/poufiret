@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/orders_providers.dart';
 import '../domain/orders_models.dart';
 import '../../publicites/widgets/couche_publicites.dart';
+import '../../map/data/map_providers.dart';
+import '../../map/data/service_position.dart';
 
 /// Écran panier : regroupe les paniers par catégorie (option A).
 /// Chaque ligne indique le commerçant. Un bouton "Commander" par catégorie.
@@ -97,6 +99,33 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
     if (_envoiEnCours) return;
     setState(() => _envoiEnCours = true);
     final messenger = ScaffoldMessenger.of(context);
+
+    double? lat;
+    double? lng;
+    if (_livraison) {
+      final res = await ref.read(servicePositionProvider).positionActuelle();
+      switch (res) {
+        case PositionObtenue(:final latitude, :final longitude):
+          lat = latitude;
+          lng = longitude;
+        case ServiceDesactive():
+          messenger.showSnackBar(const SnackBar(
+              content: Text('Activez la localisation pour etre livre.')));
+          if (mounted) setState(() => _envoiEnCours = false);
+          return;
+        case PermissionRefusee():
+          messenger.showSnackBar(const SnackBar(
+              content: Text('Autorisez la localisation pour etre livre, ou choisissez Je viens chercher.')));
+          if (mounted) setState(() => _envoiEnCours = false);
+          return;
+        case ErreurPosition():
+          messenger.showSnackBar(const SnackBar(
+              content: Text('Position introuvable. Reessayez.')));
+          if (mounted) setState(() => _envoiEnCours = false);
+          return;
+      }
+    }
+
     try {
       final repo = ref.read(ordersRepositoryProvider);
       final numeros = <String>[];
@@ -107,6 +136,8 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
           modeLivraison: _livraison ? 'livraison' : 'emporter',
           // Paiement à la remise : le client règle comme il veut.
           modePaiement: 'cash',
+          latitude: lat,
+          longitude: lng,
         );
         numeros.add(commande.numero);
       }

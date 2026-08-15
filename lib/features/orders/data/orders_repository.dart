@@ -86,6 +86,8 @@ class OrdersRepository {
     String modePaiement = 'cash',
     String? notesClient,
     int fraisLivraison = 0,
+    double? latitude,
+    double? longitude,
   }) async {
     final r = await _dio.post(
       '${Env.apiPrefix}/orders/paniers/$panierId/valider/',
@@ -95,6 +97,8 @@ class OrdersRepository {
         'mode_paiement': modePaiement,
         if (notesClient != null) 'notes_client': notesClient,
         'frais_livraison': fraisLivraison,
+        if (latitude != null) 'latitude': latitude,
+        if (longitude != null) 'longitude': longitude,
       },
     );
     return Commande.fromJson(r.data as Map<String, dynamic>);
