@@ -1,7 +1,6 @@
-import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -52,16 +51,22 @@ Future<BitmapDescriptor> bitmapDepuisIcone(
   return BitmapDescriptor.bytes(bytes!.buffer.asUint8List());
 }
 
+/// Cache memoire des marqueurs deja decodes (cle = url|taille).
+/// Instantane pour toute reouverture dans la meme session.
+final Map<String, BitmapDescriptor> _cacheMarqueurs = {};
+
 /// Telecharge un PNG depuis une URL et le convertit en marqueur Google Maps.
-/// Redimensionne a `taille` px (cote). Retourne null si le telechargement
-/// ou le decodage echoue (l'appelant garde alors son icone de repli).
+/// Deux niveaux de cache : memoire (session) puis disque (persistant, via
+/// flutter_cache_manager). Le reseau n'est sollicite qu'a la 1re rencontre.
+/// Redimensionne a `taille` px. Retourne null si tout echoue.
 Future<BitmapDescriptor?> bitmapDepuisUrl(String url, {int taille = 110}) async {
+  final cle = '$url|$taille';
+  final enMemoire = _cacheMarqueurs[cle];
+  if (enMemoire != null) return enMemoire;
   try {
-    final client = HttpClient();
-    final req = await client.getUrl(Uri.parse(url));
-    final resp = await req.close();
-    if (resp.statusCode != 200) return null;
-    final octets = await consolidateHttpClientResponseBytes(resp);
+    // Cache disque : telecharge si absent, sinon lit le fichier local.
+    final fichier = await DefaultCacheManager().getSingleFile(url);
+    final octets = await fichier.readAsBytes();
     final codec = await ui.instantiateImageCodec(
       octets,
       targetWidth: taille,
@@ -70,7 +75,9 @@ Future<BitmapDescriptor?> bitmapDepuisUrl(String url, {int taille = 110}) async 
     final frame = await codec.getNextFrame();
     final data = await frame.image.toByteData(format: ui.ImageByteFormat.png);
     if (data == null) return null;
-    return BitmapDescriptor.bytes(data.buffer.asUint8List());
+    final marqueur = BitmapDescriptor.bytes(data.buffer.asUint8List());
+    _cacheMarqueurs[cle] = marqueur;
+    return marqueur;
   } catch (_) {
     return null;
   }
