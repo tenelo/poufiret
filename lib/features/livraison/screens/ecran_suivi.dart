@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../data/livraison_providers.dart';
@@ -58,6 +59,8 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
   GoogleMapController? _controller;
   bool _annulation = false;
   PositionSocket? _positionSocket;
+  StreamSubscription<Position>? _fluxPosition;
+  bool _emissionDemarree = false;
 
   @override
   void initState() {
@@ -95,8 +98,27 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
   @override
   void dispose() {
     _timer?.cancel();
+    _fluxPosition?.cancel();
     _positionSocket?.fermer();
     super.dispose();
+  }
+
+  void _demarrerEmissionPosition() {
+    _emissionDemarree = true;
+    // Emet la position du livreur a chaque deplacement de ~10 m.
+    const settings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10,
+    );
+    _fluxPosition = Geolocator.getPositionStream(locationSettings: settings)
+        .listen((pos) {
+      _positionSocket?.envoyerPosition(pos.latitude, pos.longitude);
+    });
+  }
+
+  void _arreterEmissionPosition() {
+    _fluxPosition?.cancel();
+    _fluxPosition = null;
   }
 
   Future<void> _chargerIconeMoto() async {
@@ -133,6 +155,9 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
       });
       if (_terminaux.contains(c.statut)) {
         _timer?.cancel();
+        _arreterEmissionPosition();
+      } else if (c.jeSuisLivreur && !_emissionDemarree) {
+        _demarrerEmissionPosition();
       }
       _ajusterCamera();
     } catch (_) {

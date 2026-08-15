@@ -65,6 +65,7 @@ _Course _$CourseFromJson(Map<String, dynamic> json) => _Course(
       : LivreurPosition.fromJson(
           json['livreur_position'] as Map<String, dynamic>,
         ),
+  jeSuisLivreur: json['je_suis_livreur'] as bool? ?? false,
   creeLe: json['cree_le'] as String?,
 );
 
@@ -79,6 +80,7 @@ Map<String, dynamic> _$CourseToJson(_Course instance) => <String, dynamic>{
   'point_b': instance.pointB,
   'livreur': instance.livreur,
   'livreur_position': instance.livreurPosition,
+  'je_suis_livreur': instance.jeSuisLivreur,
   'cree_le': instance.creeLe,
 };
 

@@ -849,7 +849,7 @@ as String?,
 /// @nodoc
 mixin _$Course {
 
- String get id; String get numero; String get statut; String get ville;@JsonKey(name: 'description_colis') String get descriptionColis;@JsonKey(fromJson: _versInt) int get prix;@JsonKey(name: 'point_a') PointLivraison get pointA;@JsonKey(name: 'point_b') PointLivraison get pointB; String? get livreur;@JsonKey(name: 'livreur_position') LivreurPosition? get livreurPosition;@JsonKey(name: 'cree_le') String? get creeLe;
+ String get id; String get numero; String get statut; String get ville;@JsonKey(name: 'description_colis') String get descriptionColis;@JsonKey(fromJson: _versInt) int get prix;@JsonKey(name: 'point_a') PointLivraison get pointA;@JsonKey(name: 'point_b') PointLivraison get pointB; String? get livreur;@JsonKey(name: 'livreur_position') LivreurPosition? get livreurPosition;@JsonKey(name: 'je_suis_livreur') bool get jeSuisLivreur;@JsonKey(name: 'cree_le') String? get creeLe;
 /// Create a copy of Course
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -862,16 +862,16 @@ $CourseCopyWith<Course> get copyWith => _$CourseCopyWithImpl<Course>(this as Cou
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Course&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.descriptionColis, descriptionColis) || other.descriptionColis == descriptionColis)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.pointA, pointA) || other.pointA == pointA)&&(identical(other.pointB, pointB) || other.pointB == pointB)&&(identical(other.livreur, livreur) || other.livreur == livreur)&&(identical(other.livreurPosition, livreurPosition) || other.livreurPosition == livreurPosition)&&(identical(other.creeLe, creeLe) || other.creeLe == creeLe));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Course&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.descriptionColis, descriptionColis) || other.descriptionColis == descriptionColis)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.pointA, pointA) || other.pointA == pointA)&&(identical(other.pointB, pointB) || other.pointB == pointB)&&(identical(other.livreur, livreur) || other.livreur == livreur)&&(identical(other.livreurPosition, livreurPosition) || other.livreurPosition == livreurPosition)&&(identical(other.jeSuisLivreur, jeSuisLivreur) || other.jeSuisLivreur == jeSuisLivreur)&&(identical(other.creeLe, creeLe) || other.creeLe == creeLe));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,numero,statut,ville,descriptionColis,prix,pointA,pointB,livreur,livreurPosition,creeLe);
+int get hashCode => Object.hash(runtimeType,id,numero,statut,ville,descriptionColis,prix,pointA,pointB,livreur,livreurPosition,jeSuisLivreur,creeLe);
 
 @override
 String toString() {
-  return 'Course(id: $id, numero: $numero, statut: $statut, ville: $ville, descriptionColis: $descriptionColis, prix: $prix, pointA: $pointA, pointB: $pointB, livreur: $livreur, livreurPosition: $livreurPosition, creeLe: $creeLe)';
+  return 'Course(id: $id, numero: $numero, statut: $statut, ville: $ville, descriptionColis: $descriptionColis, prix: $prix, pointA: $pointA, pointB: $pointB, livreur: $livreur, livreurPosition: $livreurPosition, jeSuisLivreur: $jeSuisLivreur, creeLe: $creeLe)';
 }
 
 
@@ -882,7 +882,7 @@ abstract mixin class $CourseCopyWith<$Res>  {
   factory $CourseCopyWith(Course value, $Res Function(Course) _then) = _$CourseCopyWithImpl;
 @useResult
 $Res call({
- String id, String numero, String statut, String ville,@JsonKey(name: 'description_colis') String descriptionColis,@JsonKey(fromJson: _versInt) int prix,@JsonKey(name: 'point_a') PointLivraison pointA,@JsonKey(name: 'point_b') PointLivraison pointB, String? livreur,@JsonKey(name: 'livreur_position') LivreurPosition? livreurPosition,@JsonKey(name: 'cree_le') String? creeLe
+ String id, String numero, String statut, String ville,@JsonKey(name: 'description_colis') String descriptionColis,@JsonKey(fromJson: _versInt) int prix,@JsonKey(name: 'point_a') PointLivraison pointA,@JsonKey(name: 'point_b') PointLivraison pointB, String? livreur,@JsonKey(name: 'livreur_position') LivreurPosition? livreurPosition,@JsonKey(name: 'je_suis_livreur') bool jeSuisLivreur,@JsonKey(name: 'cree_le') String? creeLe
 });
 
 
@@ -899,7 +899,7 @@ class _$CourseCopyWithImpl<$Res>
 
 /// Create a copy of Course
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? numero = null,Object? statut = null,Object? ville = null,Object? descriptionColis = null,Object? prix = null,Object? pointA = null,Object? pointB = null,Object? livreur = freezed,Object? livreurPosition = freezed,Object? creeLe = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? numero = null,Object? statut = null,Object? ville = null,Object? descriptionColis = null,Object? prix = null,Object? pointA = null,Object? pointB = null,Object? livreur = freezed,Object? livreurPosition = freezed,Object? jeSuisLivreur = null,Object? creeLe = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,numero: null == numero ? _self.numero : numero // ignore: cast_nullable_to_non_nullable
@@ -911,7 +911,8 @@ as int,pointA: null == pointA ? _self.pointA : pointA // ignore: cast_nullable_t
 as PointLivraison,pointB: null == pointB ? _self.pointB : pointB // ignore: cast_nullable_to_non_nullable
 as PointLivraison,livreur: freezed == livreur ? _self.livreur : livreur // ignore: cast_nullable_to_non_nullable
 as String?,livreurPosition: freezed == livreurPosition ? _self.livreurPosition : livreurPosition // ignore: cast_nullable_to_non_nullable
-as LivreurPosition?,creeLe: freezed == creeLe ? _self.creeLe : creeLe // ignore: cast_nullable_to_non_nullable
+as LivreurPosition?,jeSuisLivreur: null == jeSuisLivreur ? _self.jeSuisLivreur : jeSuisLivreur // ignore: cast_nullable_to_non_nullable
+as bool,creeLe: freezed == creeLe ? _self.creeLe : creeLe // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -1027,10 +1028,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String numero,  String statut,  String ville, @JsonKey(name: 'description_colis')  String descriptionColis, @JsonKey(fromJson: _versInt)  int prix, @JsonKey(name: 'point_a')  PointLivraison pointA, @JsonKey(name: 'point_b')  PointLivraison pointB,  String? livreur, @JsonKey(name: 'livreur_position')  LivreurPosition? livreurPosition, @JsonKey(name: 'cree_le')  String? creeLe)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String numero,  String statut,  String ville, @JsonKey(name: 'description_colis')  String descriptionColis, @JsonKey(fromJson: _versInt)  int prix, @JsonKey(name: 'point_a')  PointLivraison pointA, @JsonKey(name: 'point_b')  PointLivraison pointB,  String? livreur, @JsonKey(name: 'livreur_position')  LivreurPosition? livreurPosition, @JsonKey(name: 'je_suis_livreur')  bool jeSuisLivreur, @JsonKey(name: 'cree_le')  String? creeLe)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Course() when $default != null:
-return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.descriptionColis,_that.prix,_that.pointA,_that.pointB,_that.livreur,_that.livreurPosition,_that.creeLe);case _:
+return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.descriptionColis,_that.prix,_that.pointA,_that.pointB,_that.livreur,_that.livreurPosition,_that.jeSuisLivreur,_that.creeLe);case _:
   return orElse();
 
 }
@@ -1048,10 +1049,10 @@ return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.description
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String numero,  String statut,  String ville, @JsonKey(name: 'description_colis')  String descriptionColis, @JsonKey(fromJson: _versInt)  int prix, @JsonKey(name: 'point_a')  PointLivraison pointA, @JsonKey(name: 'point_b')  PointLivraison pointB,  String? livreur, @JsonKey(name: 'livreur_position')  LivreurPosition? livreurPosition, @JsonKey(name: 'cree_le')  String? creeLe)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String numero,  String statut,  String ville, @JsonKey(name: 'description_colis')  String descriptionColis, @JsonKey(fromJson: _versInt)  int prix, @JsonKey(name: 'point_a')  PointLivraison pointA, @JsonKey(name: 'point_b')  PointLivraison pointB,  String? livreur, @JsonKey(name: 'livreur_position')  LivreurPosition? livreurPosition, @JsonKey(name: 'je_suis_livreur')  bool jeSuisLivreur, @JsonKey(name: 'cree_le')  String? creeLe)  $default,) {final _that = this;
 switch (_that) {
 case _Course():
-return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.descriptionColis,_that.prix,_that.pointA,_that.pointB,_that.livreur,_that.livreurPosition,_that.creeLe);case _:
+return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.descriptionColis,_that.prix,_that.pointA,_that.pointB,_that.livreur,_that.livreurPosition,_that.jeSuisLivreur,_that.creeLe);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1068,10 +1069,10 @@ return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.description
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String numero,  String statut,  String ville, @JsonKey(name: 'description_colis')  String descriptionColis, @JsonKey(fromJson: _versInt)  int prix, @JsonKey(name: 'point_a')  PointLivraison pointA, @JsonKey(name: 'point_b')  PointLivraison pointB,  String? livreur, @JsonKey(name: 'livreur_position')  LivreurPosition? livreurPosition, @JsonKey(name: 'cree_le')  String? creeLe)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String numero,  String statut,  String ville, @JsonKey(name: 'description_colis')  String descriptionColis, @JsonKey(fromJson: _versInt)  int prix, @JsonKey(name: 'point_a')  PointLivraison pointA, @JsonKey(name: 'point_b')  PointLivraison pointB,  String? livreur, @JsonKey(name: 'livreur_position')  LivreurPosition? livreurPosition, @JsonKey(name: 'je_suis_livreur')  bool jeSuisLivreur, @JsonKey(name: 'cree_le')  String? creeLe)?  $default,) {final _that = this;
 switch (_that) {
 case _Course() when $default != null:
-return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.descriptionColis,_that.prix,_that.pointA,_that.pointB,_that.livreur,_that.livreurPosition,_that.creeLe);case _:
+return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.descriptionColis,_that.prix,_that.pointA,_that.pointB,_that.livreur,_that.livreurPosition,_that.jeSuisLivreur,_that.creeLe);case _:
   return null;
 
 }
@@ -1083,7 +1084,7 @@ return $default(_that.id,_that.numero,_that.statut,_that.ville,_that.description
 @JsonSerializable()
 
 class _Course implements Course {
-  const _Course({this.id = '', this.numero = '', this.statut = 'demandee', this.ville = '', @JsonKey(name: 'description_colis') this.descriptionColis = '', @JsonKey(fromJson: _versInt) this.prix = 0, @JsonKey(name: 'point_a') required this.pointA, @JsonKey(name: 'point_b') required this.pointB, this.livreur, @JsonKey(name: 'livreur_position') this.livreurPosition, @JsonKey(name: 'cree_le') this.creeLe});
+  const _Course({this.id = '', this.numero = '', this.statut = 'demandee', this.ville = '', @JsonKey(name: 'description_colis') this.descriptionColis = '', @JsonKey(fromJson: _versInt) this.prix = 0, @JsonKey(name: 'point_a') required this.pointA, @JsonKey(name: 'point_b') required this.pointB, this.livreur, @JsonKey(name: 'livreur_position') this.livreurPosition, @JsonKey(name: 'je_suis_livreur') this.jeSuisLivreur = false, @JsonKey(name: 'cree_le') this.creeLe});
   factory _Course.fromJson(Map<String, dynamic> json) => _$CourseFromJson(json);
 
 @override@JsonKey() final  String id;
@@ -1096,6 +1097,7 @@ class _Course implements Course {
 @override@JsonKey(name: 'point_b') final  PointLivraison pointB;
 @override final  String? livreur;
 @override@JsonKey(name: 'livreur_position') final  LivreurPosition? livreurPosition;
+@override@JsonKey(name: 'je_suis_livreur') final  bool jeSuisLivreur;
 @override@JsonKey(name: 'cree_le') final  String? creeLe;
 
 /// Create a copy of Course
@@ -1111,16 +1113,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Course&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.descriptionColis, descriptionColis) || other.descriptionColis == descriptionColis)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.pointA, pointA) || other.pointA == pointA)&&(identical(other.pointB, pointB) || other.pointB == pointB)&&(identical(other.livreur, livreur) || other.livreur == livreur)&&(identical(other.livreurPosition, livreurPosition) || other.livreurPosition == livreurPosition)&&(identical(other.creeLe, creeLe) || other.creeLe == creeLe));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Course&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.descriptionColis, descriptionColis) || other.descriptionColis == descriptionColis)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.pointA, pointA) || other.pointA == pointA)&&(identical(other.pointB, pointB) || other.pointB == pointB)&&(identical(other.livreur, livreur) || other.livreur == livreur)&&(identical(other.livreurPosition, livreurPosition) || other.livreurPosition == livreurPosition)&&(identical(other.jeSuisLivreur, jeSuisLivreur) || other.jeSuisLivreur == jeSuisLivreur)&&(identical(other.creeLe, creeLe) || other.creeLe == creeLe));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,numero,statut,ville,descriptionColis,prix,pointA,pointB,livreur,livreurPosition,creeLe);
+int get hashCode => Object.hash(runtimeType,id,numero,statut,ville,descriptionColis,prix,pointA,pointB,livreur,livreurPosition,jeSuisLivreur,creeLe);
 
 @override
 String toString() {
-  return 'Course(id: $id, numero: $numero, statut: $statut, ville: $ville, descriptionColis: $descriptionColis, prix: $prix, pointA: $pointA, pointB: $pointB, livreur: $livreur, livreurPosition: $livreurPosition, creeLe: $creeLe)';
+  return 'Course(id: $id, numero: $numero, statut: $statut, ville: $ville, descriptionColis: $descriptionColis, prix: $prix, pointA: $pointA, pointB: $pointB, livreur: $livreur, livreurPosition: $livreurPosition, jeSuisLivreur: $jeSuisLivreur, creeLe: $creeLe)';
 }
 
 
@@ -1131,7 +1133,7 @@ abstract mixin class _$CourseCopyWith<$Res> implements $CourseCopyWith<$Res> {
   factory _$CourseCopyWith(_Course value, $Res Function(_Course) _then) = __$CourseCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String numero, String statut, String ville,@JsonKey(name: 'description_colis') String descriptionColis,@JsonKey(fromJson: _versInt) int prix,@JsonKey(name: 'point_a') PointLivraison pointA,@JsonKey(name: 'point_b') PointLivraison pointB, String? livreur,@JsonKey(name: 'livreur_position') LivreurPosition? livreurPosition,@JsonKey(name: 'cree_le') String? creeLe
+ String id, String numero, String statut, String ville,@JsonKey(name: 'description_colis') String descriptionColis,@JsonKey(fromJson: _versInt) int prix,@JsonKey(name: 'point_a') PointLivraison pointA,@JsonKey(name: 'point_b') PointLivraison pointB, String? livreur,@JsonKey(name: 'livreur_position') LivreurPosition? livreurPosition,@JsonKey(name: 'je_suis_livreur') bool jeSuisLivreur,@JsonKey(name: 'cree_le') String? creeLe
 });
 
 
@@ -1148,7 +1150,7 @@ class __$CourseCopyWithImpl<$Res>
 
 /// Create a copy of Course
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? numero = null,Object? statut = null,Object? ville = null,Object? descriptionColis = null,Object? prix = null,Object? pointA = null,Object? pointB = null,Object? livreur = freezed,Object? livreurPosition = freezed,Object? creeLe = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? numero = null,Object? statut = null,Object? ville = null,Object? descriptionColis = null,Object? prix = null,Object? pointA = null,Object? pointB = null,Object? livreur = freezed,Object? livreurPosition = freezed,Object? jeSuisLivreur = null,Object? creeLe = freezed,}) {
   return _then(_Course(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,numero: null == numero ? _self.numero : numero // ignore: cast_nullable_to_non_nullable
@@ -1160,7 +1162,8 @@ as int,pointA: null == pointA ? _self.pointA : pointA // ignore: cast_nullable_t
 as PointLivraison,pointB: null == pointB ? _self.pointB : pointB // ignore: cast_nullable_to_non_nullable
 as PointLivraison,livreur: freezed == livreur ? _self.livreur : livreur // ignore: cast_nullable_to_non_nullable
 as String?,livreurPosition: freezed == livreurPosition ? _self.livreurPosition : livreurPosition // ignore: cast_nullable_to_non_nullable
-as LivreurPosition?,creeLe: freezed == creeLe ? _self.creeLe : creeLe // ignore: cast_nullable_to_non_nullable
+as LivreurPosition?,jeSuisLivreur: null == jeSuisLivreur ? _self.jeSuisLivreur : jeSuisLivreur // ignore: cast_nullable_to_non_nullable
+as bool,creeLe: freezed == creeLe ? _self.creeLe : creeLe // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
