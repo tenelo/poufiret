@@ -94,6 +94,7 @@ abstract class Commande with _$Commande {
     int? partenaire,
     @JsonKey(name: 'partenaire_nom') @Default('') String partenaireNom,
     @JsonKey(name: 'client_nom') @Default('') String clientNom,
+    @JsonKey(name: 'client_telephone') @Default('') String clientTelephone,
     @JsonKey(name: 'mode_livraison') @Default('emporter') String modeLivraison,
     @JsonKey(name: 'adresse_snapshot') @Default('') String adresseSnapshot,
     @Default('nouvelle') String statut,

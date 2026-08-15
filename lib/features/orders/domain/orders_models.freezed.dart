@@ -1157,7 +1157,7 @@ as String,
 /// @nodoc
 mixin _$Commande {
 
- int get id; String get numero; int? get partenaire;@JsonKey(name: 'partenaire_nom') String get partenaireNom;@JsonKey(name: 'client_nom') String get clientNom;@JsonKey(name: 'mode_livraison') String get modeLivraison;@JsonKey(name: 'adresse_snapshot') String get adresseSnapshot; String get statut;@JsonKey(name: 'raison_refus') String get raisonRefus;@JsonKey(name: 'sous_total', fromJson: _versInt) int get sousTotal;@JsonKey(name: 'frais_livraison', fromJson: _versInt) int get fraisLivraison;@JsonKey(fromJson: _versInt) int get total;@JsonKey(name: 'mode_paiement') String get modePaiement;@JsonKey(name: 'notes_client') String get notesClient; List<LigneCommande> get lignes;@JsonKey(name: 'created_at') String? get createdAt;
+ int get id; String get numero; int? get partenaire;@JsonKey(name: 'partenaire_nom') String get partenaireNom;@JsonKey(name: 'client_nom') String get clientNom;@JsonKey(name: 'client_telephone') String get clientTelephone;@JsonKey(name: 'mode_livraison') String get modeLivraison;@JsonKey(name: 'adresse_snapshot') String get adresseSnapshot; String get statut;@JsonKey(name: 'raison_refus') String get raisonRefus;@JsonKey(name: 'sous_total', fromJson: _versInt) int get sousTotal;@JsonKey(name: 'frais_livraison', fromJson: _versInt) int get fraisLivraison;@JsonKey(fromJson: _versInt) int get total;@JsonKey(name: 'mode_paiement') String get modePaiement;@JsonKey(name: 'notes_client') String get notesClient; List<LigneCommande> get lignes;@JsonKey(name: 'created_at') String? get createdAt;
 /// Create a copy of Commande
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1170,16 +1170,16 @@ $CommandeCopyWith<Commande> get copyWith => _$CommandeCopyWithImpl<Commande>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Commande&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.partenaire, partenaire) || other.partenaire == partenaire)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.clientNom, clientNom) || other.clientNom == clientNom)&&(identical(other.modeLivraison, modeLivraison) || other.modeLivraison == modeLivraison)&&(identical(other.adresseSnapshot, adresseSnapshot) || other.adresseSnapshot == adresseSnapshot)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.raisonRefus, raisonRefus) || other.raisonRefus == raisonRefus)&&(identical(other.sousTotal, sousTotal) || other.sousTotal == sousTotal)&&(identical(other.fraisLivraison, fraisLivraison) || other.fraisLivraison == fraisLivraison)&&(identical(other.total, total) || other.total == total)&&(identical(other.modePaiement, modePaiement) || other.modePaiement == modePaiement)&&(identical(other.notesClient, notesClient) || other.notesClient == notesClient)&&const DeepCollectionEquality().equals(other.lignes, lignes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Commande&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.partenaire, partenaire) || other.partenaire == partenaire)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.clientNom, clientNom) || other.clientNom == clientNom)&&(identical(other.clientTelephone, clientTelephone) || other.clientTelephone == clientTelephone)&&(identical(other.modeLivraison, modeLivraison) || other.modeLivraison == modeLivraison)&&(identical(other.adresseSnapshot, adresseSnapshot) || other.adresseSnapshot == adresseSnapshot)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.raisonRefus, raisonRefus) || other.raisonRefus == raisonRefus)&&(identical(other.sousTotal, sousTotal) || other.sousTotal == sousTotal)&&(identical(other.fraisLivraison, fraisLivraison) || other.fraisLivraison == fraisLivraison)&&(identical(other.total, total) || other.total == total)&&(identical(other.modePaiement, modePaiement) || other.modePaiement == modePaiement)&&(identical(other.notesClient, notesClient) || other.notesClient == notesClient)&&const DeepCollectionEquality().equals(other.lignes, lignes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,numero,partenaire,partenaireNom,clientNom,modeLivraison,adresseSnapshot,statut,raisonRefus,sousTotal,fraisLivraison,total,modePaiement,notesClient,const DeepCollectionEquality().hash(lignes),createdAt);
+int get hashCode => Object.hash(runtimeType,id,numero,partenaire,partenaireNom,clientNom,clientTelephone,modeLivraison,adresseSnapshot,statut,raisonRefus,sousTotal,fraisLivraison,total,modePaiement,notesClient,const DeepCollectionEquality().hash(lignes),createdAt);
 
 @override
 String toString() {
-  return 'Commande(id: $id, numero: $numero, partenaire: $partenaire, partenaireNom: $partenaireNom, clientNom: $clientNom, modeLivraison: $modeLivraison, adresseSnapshot: $adresseSnapshot, statut: $statut, raisonRefus: $raisonRefus, sousTotal: $sousTotal, fraisLivraison: $fraisLivraison, total: $total, modePaiement: $modePaiement, notesClient: $notesClient, lignes: $lignes, createdAt: $createdAt)';
+  return 'Commande(id: $id, numero: $numero, partenaire: $partenaire, partenaireNom: $partenaireNom, clientNom: $clientNom, clientTelephone: $clientTelephone, modeLivraison: $modeLivraison, adresseSnapshot: $adresseSnapshot, statut: $statut, raisonRefus: $raisonRefus, sousTotal: $sousTotal, fraisLivraison: $fraisLivraison, total: $total, modePaiement: $modePaiement, notesClient: $notesClient, lignes: $lignes, createdAt: $createdAt)';
 }
 
 
@@ -1190,7 +1190,7 @@ abstract mixin class $CommandeCopyWith<$Res>  {
   factory $CommandeCopyWith(Commande value, $Res Function(Commande) _then) = _$CommandeCopyWithImpl;
 @useResult
 $Res call({
- int id, String numero, int? partenaire,@JsonKey(name: 'partenaire_nom') String partenaireNom,@JsonKey(name: 'client_nom') String clientNom,@JsonKey(name: 'mode_livraison') String modeLivraison,@JsonKey(name: 'adresse_snapshot') String adresseSnapshot, String statut,@JsonKey(name: 'raison_refus') String raisonRefus,@JsonKey(name: 'sous_total', fromJson: _versInt) int sousTotal,@JsonKey(name: 'frais_livraison', fromJson: _versInt) int fraisLivraison,@JsonKey(fromJson: _versInt) int total,@JsonKey(name: 'mode_paiement') String modePaiement,@JsonKey(name: 'notes_client') String notesClient, List<LigneCommande> lignes,@JsonKey(name: 'created_at') String? createdAt
+ int id, String numero, int? partenaire,@JsonKey(name: 'partenaire_nom') String partenaireNom,@JsonKey(name: 'client_nom') String clientNom,@JsonKey(name: 'client_telephone') String clientTelephone,@JsonKey(name: 'mode_livraison') String modeLivraison,@JsonKey(name: 'adresse_snapshot') String adresseSnapshot, String statut,@JsonKey(name: 'raison_refus') String raisonRefus,@JsonKey(name: 'sous_total', fromJson: _versInt) int sousTotal,@JsonKey(name: 'frais_livraison', fromJson: _versInt) int fraisLivraison,@JsonKey(fromJson: _versInt) int total,@JsonKey(name: 'mode_paiement') String modePaiement,@JsonKey(name: 'notes_client') String notesClient, List<LigneCommande> lignes,@JsonKey(name: 'created_at') String? createdAt
 });
 
 
@@ -1207,13 +1207,14 @@ class _$CommandeCopyWithImpl<$Res>
 
 /// Create a copy of Commande
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? numero = null,Object? partenaire = freezed,Object? partenaireNom = null,Object? clientNom = null,Object? modeLivraison = null,Object? adresseSnapshot = null,Object? statut = null,Object? raisonRefus = null,Object? sousTotal = null,Object? fraisLivraison = null,Object? total = null,Object? modePaiement = null,Object? notesClient = null,Object? lignes = null,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? numero = null,Object? partenaire = freezed,Object? partenaireNom = null,Object? clientNom = null,Object? clientTelephone = null,Object? modeLivraison = null,Object? adresseSnapshot = null,Object? statut = null,Object? raisonRefus = null,Object? sousTotal = null,Object? fraisLivraison = null,Object? total = null,Object? modePaiement = null,Object? notesClient = null,Object? lignes = null,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,numero: null == numero ? _self.numero : numero // ignore: cast_nullable_to_non_nullable
 as String,partenaire: freezed == partenaire ? _self.partenaire : partenaire // ignore: cast_nullable_to_non_nullable
 as int?,partenaireNom: null == partenaireNom ? _self.partenaireNom : partenaireNom // ignore: cast_nullable_to_non_nullable
 as String,clientNom: null == clientNom ? _self.clientNom : clientNom // ignore: cast_nullable_to_non_nullable
+as String,clientTelephone: null == clientTelephone ? _self.clientTelephone : clientTelephone // ignore: cast_nullable_to_non_nullable
 as String,modeLivraison: null == modeLivraison ? _self.modeLivraison : modeLivraison // ignore: cast_nullable_to_non_nullable
 as String,adresseSnapshot: null == adresseSnapshot ? _self.adresseSnapshot : adresseSnapshot // ignore: cast_nullable_to_non_nullable
 as String,statut: null == statut ? _self.statut : statut // ignore: cast_nullable_to_non_nullable
@@ -1310,10 +1311,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String numero,  int? partenaire, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'client_nom')  String clientNom, @JsonKey(name: 'mode_livraison')  String modeLivraison, @JsonKey(name: 'adresse_snapshot')  String adresseSnapshot,  String statut, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'sous_total', fromJson: _versInt)  int sousTotal, @JsonKey(name: 'frais_livraison', fromJson: _versInt)  int fraisLivraison, @JsonKey(fromJson: _versInt)  int total, @JsonKey(name: 'mode_paiement')  String modePaiement, @JsonKey(name: 'notes_client')  String notesClient,  List<LigneCommande> lignes, @JsonKey(name: 'created_at')  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String numero,  int? partenaire, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'client_nom')  String clientNom, @JsonKey(name: 'client_telephone')  String clientTelephone, @JsonKey(name: 'mode_livraison')  String modeLivraison, @JsonKey(name: 'adresse_snapshot')  String adresseSnapshot,  String statut, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'sous_total', fromJson: _versInt)  int sousTotal, @JsonKey(name: 'frais_livraison', fromJson: _versInt)  int fraisLivraison, @JsonKey(fromJson: _versInt)  int total, @JsonKey(name: 'mode_paiement')  String modePaiement, @JsonKey(name: 'notes_client')  String notesClient,  List<LigneCommande> lignes, @JsonKey(name: 'created_at')  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Commande() when $default != null:
-return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that.clientNom,_that.modeLivraison,_that.adresseSnapshot,_that.statut,_that.raisonRefus,_that.sousTotal,_that.fraisLivraison,_that.total,_that.modePaiement,_that.notesClient,_that.lignes,_that.createdAt);case _:
+return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that.clientNom,_that.clientTelephone,_that.modeLivraison,_that.adresseSnapshot,_that.statut,_that.raisonRefus,_that.sousTotal,_that.fraisLivraison,_that.total,_that.modePaiement,_that.notesClient,_that.lignes,_that.createdAt);case _:
   return orElse();
 
 }
@@ -1331,10 +1332,10 @@ return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String numero,  int? partenaire, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'client_nom')  String clientNom, @JsonKey(name: 'mode_livraison')  String modeLivraison, @JsonKey(name: 'adresse_snapshot')  String adresseSnapshot,  String statut, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'sous_total', fromJson: _versInt)  int sousTotal, @JsonKey(name: 'frais_livraison', fromJson: _versInt)  int fraisLivraison, @JsonKey(fromJson: _versInt)  int total, @JsonKey(name: 'mode_paiement')  String modePaiement, @JsonKey(name: 'notes_client')  String notesClient,  List<LigneCommande> lignes, @JsonKey(name: 'created_at')  String? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String numero,  int? partenaire, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'client_nom')  String clientNom, @JsonKey(name: 'client_telephone')  String clientTelephone, @JsonKey(name: 'mode_livraison')  String modeLivraison, @JsonKey(name: 'adresse_snapshot')  String adresseSnapshot,  String statut, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'sous_total', fromJson: _versInt)  int sousTotal, @JsonKey(name: 'frais_livraison', fromJson: _versInt)  int fraisLivraison, @JsonKey(fromJson: _versInt)  int total, @JsonKey(name: 'mode_paiement')  String modePaiement, @JsonKey(name: 'notes_client')  String notesClient,  List<LigneCommande> lignes, @JsonKey(name: 'created_at')  String? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _Commande():
-return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that.clientNom,_that.modeLivraison,_that.adresseSnapshot,_that.statut,_that.raisonRefus,_that.sousTotal,_that.fraisLivraison,_that.total,_that.modePaiement,_that.notesClient,_that.lignes,_that.createdAt);case _:
+return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that.clientNom,_that.clientTelephone,_that.modeLivraison,_that.adresseSnapshot,_that.statut,_that.raisonRefus,_that.sousTotal,_that.fraisLivraison,_that.total,_that.modePaiement,_that.notesClient,_that.lignes,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1351,10 +1352,10 @@ return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String numero,  int? partenaire, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'client_nom')  String clientNom, @JsonKey(name: 'mode_livraison')  String modeLivraison, @JsonKey(name: 'adresse_snapshot')  String adresseSnapshot,  String statut, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'sous_total', fromJson: _versInt)  int sousTotal, @JsonKey(name: 'frais_livraison', fromJson: _versInt)  int fraisLivraison, @JsonKey(fromJson: _versInt)  int total, @JsonKey(name: 'mode_paiement')  String modePaiement, @JsonKey(name: 'notes_client')  String notesClient,  List<LigneCommande> lignes, @JsonKey(name: 'created_at')  String? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String numero,  int? partenaire, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'client_nom')  String clientNom, @JsonKey(name: 'client_telephone')  String clientTelephone, @JsonKey(name: 'mode_livraison')  String modeLivraison, @JsonKey(name: 'adresse_snapshot')  String adresseSnapshot,  String statut, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'sous_total', fromJson: _versInt)  int sousTotal, @JsonKey(name: 'frais_livraison', fromJson: _versInt)  int fraisLivraison, @JsonKey(fromJson: _versInt)  int total, @JsonKey(name: 'mode_paiement')  String modePaiement, @JsonKey(name: 'notes_client')  String notesClient,  List<LigneCommande> lignes, @JsonKey(name: 'created_at')  String? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Commande() when $default != null:
-return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that.clientNom,_that.modeLivraison,_that.adresseSnapshot,_that.statut,_that.raisonRefus,_that.sousTotal,_that.fraisLivraison,_that.total,_that.modePaiement,_that.notesClient,_that.lignes,_that.createdAt);case _:
+return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that.clientNom,_that.clientTelephone,_that.modeLivraison,_that.adresseSnapshot,_that.statut,_that.raisonRefus,_that.sousTotal,_that.fraisLivraison,_that.total,_that.modePaiement,_that.notesClient,_that.lignes,_that.createdAt);case _:
   return null;
 
 }
@@ -1366,7 +1367,7 @@ return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that
 @JsonSerializable()
 
 class _Commande extends Commande {
-  const _Commande({required this.id, this.numero = '', this.partenaire, @JsonKey(name: 'partenaire_nom') this.partenaireNom = '', @JsonKey(name: 'client_nom') this.clientNom = '', @JsonKey(name: 'mode_livraison') this.modeLivraison = 'emporter', @JsonKey(name: 'adresse_snapshot') this.adresseSnapshot = '', this.statut = 'nouvelle', @JsonKey(name: 'raison_refus') this.raisonRefus = '', @JsonKey(name: 'sous_total', fromJson: _versInt) this.sousTotal = 0, @JsonKey(name: 'frais_livraison', fromJson: _versInt) this.fraisLivraison = 0, @JsonKey(fromJson: _versInt) this.total = 0, @JsonKey(name: 'mode_paiement') this.modePaiement = 'cash', @JsonKey(name: 'notes_client') this.notesClient = '', final  List<LigneCommande> lignes = const <LigneCommande>[], @JsonKey(name: 'created_at') this.createdAt}): _lignes = lignes,super._();
+  const _Commande({required this.id, this.numero = '', this.partenaire, @JsonKey(name: 'partenaire_nom') this.partenaireNom = '', @JsonKey(name: 'client_nom') this.clientNom = '', @JsonKey(name: 'client_telephone') this.clientTelephone = '', @JsonKey(name: 'mode_livraison') this.modeLivraison = 'emporter', @JsonKey(name: 'adresse_snapshot') this.adresseSnapshot = '', this.statut = 'nouvelle', @JsonKey(name: 'raison_refus') this.raisonRefus = '', @JsonKey(name: 'sous_total', fromJson: _versInt) this.sousTotal = 0, @JsonKey(name: 'frais_livraison', fromJson: _versInt) this.fraisLivraison = 0, @JsonKey(fromJson: _versInt) this.total = 0, @JsonKey(name: 'mode_paiement') this.modePaiement = 'cash', @JsonKey(name: 'notes_client') this.notesClient = '', final  List<LigneCommande> lignes = const <LigneCommande>[], @JsonKey(name: 'created_at') this.createdAt}): _lignes = lignes,super._();
   factory _Commande.fromJson(Map<String, dynamic> json) => _$CommandeFromJson(json);
 
 @override final  int id;
@@ -1374,6 +1375,7 @@ class _Commande extends Commande {
 @override final  int? partenaire;
 @override@JsonKey(name: 'partenaire_nom') final  String partenaireNom;
 @override@JsonKey(name: 'client_nom') final  String clientNom;
+@override@JsonKey(name: 'client_telephone') final  String clientTelephone;
 @override@JsonKey(name: 'mode_livraison') final  String modeLivraison;
 @override@JsonKey(name: 'adresse_snapshot') final  String adresseSnapshot;
 @override@JsonKey() final  String statut;
@@ -1405,16 +1407,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Commande&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.partenaire, partenaire) || other.partenaire == partenaire)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.clientNom, clientNom) || other.clientNom == clientNom)&&(identical(other.modeLivraison, modeLivraison) || other.modeLivraison == modeLivraison)&&(identical(other.adresseSnapshot, adresseSnapshot) || other.adresseSnapshot == adresseSnapshot)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.raisonRefus, raisonRefus) || other.raisonRefus == raisonRefus)&&(identical(other.sousTotal, sousTotal) || other.sousTotal == sousTotal)&&(identical(other.fraisLivraison, fraisLivraison) || other.fraisLivraison == fraisLivraison)&&(identical(other.total, total) || other.total == total)&&(identical(other.modePaiement, modePaiement) || other.modePaiement == modePaiement)&&(identical(other.notesClient, notesClient) || other.notesClient == notesClient)&&const DeepCollectionEquality().equals(other._lignes, _lignes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Commande&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.partenaire, partenaire) || other.partenaire == partenaire)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.clientNom, clientNom) || other.clientNom == clientNom)&&(identical(other.clientTelephone, clientTelephone) || other.clientTelephone == clientTelephone)&&(identical(other.modeLivraison, modeLivraison) || other.modeLivraison == modeLivraison)&&(identical(other.adresseSnapshot, adresseSnapshot) || other.adresseSnapshot == adresseSnapshot)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.raisonRefus, raisonRefus) || other.raisonRefus == raisonRefus)&&(identical(other.sousTotal, sousTotal) || other.sousTotal == sousTotal)&&(identical(other.fraisLivraison, fraisLivraison) || other.fraisLivraison == fraisLivraison)&&(identical(other.total, total) || other.total == total)&&(identical(other.modePaiement, modePaiement) || other.modePaiement == modePaiement)&&(identical(other.notesClient, notesClient) || other.notesClient == notesClient)&&const DeepCollectionEquality().equals(other._lignes, _lignes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,numero,partenaire,partenaireNom,clientNom,modeLivraison,adresseSnapshot,statut,raisonRefus,sousTotal,fraisLivraison,total,modePaiement,notesClient,const DeepCollectionEquality().hash(_lignes),createdAt);
+int get hashCode => Object.hash(runtimeType,id,numero,partenaire,partenaireNom,clientNom,clientTelephone,modeLivraison,adresseSnapshot,statut,raisonRefus,sousTotal,fraisLivraison,total,modePaiement,notesClient,const DeepCollectionEquality().hash(_lignes),createdAt);
 
 @override
 String toString() {
-  return 'Commande(id: $id, numero: $numero, partenaire: $partenaire, partenaireNom: $partenaireNom, clientNom: $clientNom, modeLivraison: $modeLivraison, adresseSnapshot: $adresseSnapshot, statut: $statut, raisonRefus: $raisonRefus, sousTotal: $sousTotal, fraisLivraison: $fraisLivraison, total: $total, modePaiement: $modePaiement, notesClient: $notesClient, lignes: $lignes, createdAt: $createdAt)';
+  return 'Commande(id: $id, numero: $numero, partenaire: $partenaire, partenaireNom: $partenaireNom, clientNom: $clientNom, clientTelephone: $clientTelephone, modeLivraison: $modeLivraison, adresseSnapshot: $adresseSnapshot, statut: $statut, raisonRefus: $raisonRefus, sousTotal: $sousTotal, fraisLivraison: $fraisLivraison, total: $total, modePaiement: $modePaiement, notesClient: $notesClient, lignes: $lignes, createdAt: $createdAt)';
 }
 
 
@@ -1425,7 +1427,7 @@ abstract mixin class _$CommandeCopyWith<$Res> implements $CommandeCopyWith<$Res>
   factory _$CommandeCopyWith(_Commande value, $Res Function(_Commande) _then) = __$CommandeCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String numero, int? partenaire,@JsonKey(name: 'partenaire_nom') String partenaireNom,@JsonKey(name: 'client_nom') String clientNom,@JsonKey(name: 'mode_livraison') String modeLivraison,@JsonKey(name: 'adresse_snapshot') String adresseSnapshot, String statut,@JsonKey(name: 'raison_refus') String raisonRefus,@JsonKey(name: 'sous_total', fromJson: _versInt) int sousTotal,@JsonKey(name: 'frais_livraison', fromJson: _versInt) int fraisLivraison,@JsonKey(fromJson: _versInt) int total,@JsonKey(name: 'mode_paiement') String modePaiement,@JsonKey(name: 'notes_client') String notesClient, List<LigneCommande> lignes,@JsonKey(name: 'created_at') String? createdAt
+ int id, String numero, int? partenaire,@JsonKey(name: 'partenaire_nom') String partenaireNom,@JsonKey(name: 'client_nom') String clientNom,@JsonKey(name: 'client_telephone') String clientTelephone,@JsonKey(name: 'mode_livraison') String modeLivraison,@JsonKey(name: 'adresse_snapshot') String adresseSnapshot, String statut,@JsonKey(name: 'raison_refus') String raisonRefus,@JsonKey(name: 'sous_total', fromJson: _versInt) int sousTotal,@JsonKey(name: 'frais_livraison', fromJson: _versInt) int fraisLivraison,@JsonKey(fromJson: _versInt) int total,@JsonKey(name: 'mode_paiement') String modePaiement,@JsonKey(name: 'notes_client') String notesClient, List<LigneCommande> lignes,@JsonKey(name: 'created_at') String? createdAt
 });
 
 
@@ -1442,13 +1444,14 @@ class __$CommandeCopyWithImpl<$Res>
 
 /// Create a copy of Commande
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? numero = null,Object? partenaire = freezed,Object? partenaireNom = null,Object? clientNom = null,Object? modeLivraison = null,Object? adresseSnapshot = null,Object? statut = null,Object? raisonRefus = null,Object? sousTotal = null,Object? fraisLivraison = null,Object? total = null,Object? modePaiement = null,Object? notesClient = null,Object? lignes = null,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? numero = null,Object? partenaire = freezed,Object? partenaireNom = null,Object? clientNom = null,Object? clientTelephone = null,Object? modeLivraison = null,Object? adresseSnapshot = null,Object? statut = null,Object? raisonRefus = null,Object? sousTotal = null,Object? fraisLivraison = null,Object? total = null,Object? modePaiement = null,Object? notesClient = null,Object? lignes = null,Object? createdAt = freezed,}) {
   return _then(_Commande(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,numero: null == numero ? _self.numero : numero // ignore: cast_nullable_to_non_nullable
 as String,partenaire: freezed == partenaire ? _self.partenaire : partenaire // ignore: cast_nullable_to_non_nullable
 as int?,partenaireNom: null == partenaireNom ? _self.partenaireNom : partenaireNom // ignore: cast_nullable_to_non_nullable
 as String,clientNom: null == clientNom ? _self.clientNom : clientNom // ignore: cast_nullable_to_non_nullable
+as String,clientTelephone: null == clientTelephone ? _self.clientTelephone : clientTelephone // ignore: cast_nullable_to_non_nullable
 as String,modeLivraison: null == modeLivraison ? _self.modeLivraison : modeLivraison // ignore: cast_nullable_to_non_nullable
 as String,adresseSnapshot: null == adresseSnapshot ? _self.adresseSnapshot : adresseSnapshot // ignore: cast_nullable_to_non_nullable
 as String,statut: null == statut ? _self.statut : statut // ignore: cast_nullable_to_non_nullable

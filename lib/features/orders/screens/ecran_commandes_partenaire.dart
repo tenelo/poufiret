@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/orders_providers.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../domain/orders_models.dart';
 
 /// Transitions autorisées côté partenaire, calquées sur le backend.
@@ -112,18 +113,57 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
           .commanderLivreur(widget.commande.id);
       ref.invalidate(commandesPartenaireProvider());
       final assigne = reponse['assigne'] == true;
-      messenger.showSnackBar(SnackBar(
-        content: Text(assigne
-            ? 'Livreur trouve, en route vers vous.'
-            : (reponse['message'] as String?) ??
-                'Aucun livreur disponible pour l\'instant.'), 
-      ));
+      if (assigne) {
+        messenger.showSnackBar(const SnackBar(
+          content: Text('Livreur trouve, en route vers vous.'),
+        ));
+      } else if (mounted) {
+        final msg = (reponse['message'] as String?) ??
+            'Aucun livreur disponible pour l\'instant.';
+        await _dialogueAucunLivreur(msg);
+      }
     } catch (_) {
       messenger.showSnackBar(
         const SnackBar(content: Text('Impossible de commander un livreur.')),
       );
     } finally {
       if (mounted) setState(() => _occupe = false);
+    }
+  }
+
+  Future<void> _dialogueAucunLivreur(String message) async {
+    final tel = widget.commande.clientTelephone;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Aucun livreur'),
+        content: Text('$message\n\nVous pouvez appeler le client en attendant.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Fermer'),
+          ),
+          if (tel.isNotEmpty)
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.pop(ctx);
+                _appelerClient(tel);
+              },
+              icon: const Icon(Icons.phone),
+              label: const Text('Appeler le client'),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _appelerClient(String numero) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final uri = Uri(scheme: 'tel', path: numero);
+    if (!await launchUrl(uri)) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Impossible de lancer l\'appel.')),
+      );
     }
   }
 
