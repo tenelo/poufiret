@@ -272,7 +272,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
           markerId: const MarkerId('A'),
           position: a,
           icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueGreen,
+            BitmapDescriptor.hueBlue,
           ),
           infoWindow: InfoWindow(
             title: 'Retrait (A)',
@@ -287,7 +287,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
         Marker(
           markerId: const MarkerId('B'),
           position: b,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
           infoWindow: InfoWindow(
             title: 'Livraison (B)',
             snippet: _course?.pointB.quartier,
@@ -648,7 +648,7 @@ class _CartePleinEcranState extends State<_CartePleinEcran> {
           markerId: const MarkerId('A'),
           position: widget.posA!,
           icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueGreen,
+            BitmapDescriptor.hueBlue,
           ),
           infoWindow: InfoWindow(
             title: 'Retrait (A)',
@@ -662,7 +662,7 @@ class _CartePleinEcranState extends State<_CartePleinEcran> {
         Marker(
           markerId: const MarkerId('B'),
           position: widget.posB!,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
           infoWindow: InfoWindow(
             title: 'Livraison (B)',
             snippet: widget.quartierB,
