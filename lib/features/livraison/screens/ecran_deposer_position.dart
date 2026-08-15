@@ -114,8 +114,8 @@ class _EcranDeposerPositionState extends ConsumerState<EcranDeposerPosition> {
                         Icon(Icons.check_circle, color: Colors.green),
                         SizedBox(width: 12),
                         Expanded(
-                          child: Text('Position enregistrée. '
-                              'Vous pouvez suivre la livraison.'),
+                          child: Text('Localisation envoyée. '
+                              'Le livreur pourra vous localiser.'),
                         ),
                       ],
                     ),

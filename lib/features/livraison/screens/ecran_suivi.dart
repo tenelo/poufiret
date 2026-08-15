@@ -9,6 +9,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../data/livraison_providers.dart';
 import '../data/marqueur_icone.dart';
 import '../data/position_socket.dart';
+import '../../map/data/map_providers.dart';
+import '../../map/data/service_position.dart';
 import '../../../core/network/providers.dart';
 import '../domain/livraison_models.dart';
 
@@ -61,6 +63,8 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
   PositionSocket? _positionSocket;
   StreamSubscription<Position>? _fluxPosition;
   bool _emissionDemarree = false;
+  bool _positionDeposee = false;
+  bool _depotEnCours = false;
 
   @override
   void initState() {
@@ -121,6 +125,76 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
     _fluxPosition = null;
   }
 
+  Future<void> _deposerPosition() async {
+    if (_depotEnCours) return;
+    setState(() => _depotEnCours = true);
+    final messenger = ScaffoldMessenger.of(context);
+    final res = await ref.read(servicePositionProvider).positionActuelle();
+    if (!mounted) return;
+    switch (res) {
+      case PositionObtenue(:final latitude, :final longitude):
+        try {
+          await ref.read(livraisonRepositoryProvider).deposerPositionContact(
+                courseId: widget.courseId,
+                latitude: latitude,
+                longitude: longitude,
+              );
+          if (!mounted) return;
+          setState(() => _positionDeposee = true);
+          messenger.showSnackBar(const SnackBar(
+              content: Text('Localisation envoyée.')));
+        } catch (_) {
+          messenger.showSnackBar(const SnackBar(
+              content: Text('Échec de l\'envoi. Réessayez.')));
+        }
+      case ServiceDesactive():
+        messenger.showSnackBar(const SnackBar(
+            content: Text('Activez la localisation (GPS) de votre téléphone.')));
+        await ref.read(servicePositionProvider).ouvrirParametresLocalisation();
+      case PermissionRefusee(:final definitif):
+        if (definitif) {
+          messenger.showSnackBar(const SnackBar(
+              content: Text('Permission refusée. Ouvrez les réglages.')));
+          await ref.read(servicePositionProvider).ouvrirParametresApp();
+        } else {
+          messenger.showSnackBar(const SnackBar(
+              content: Text('La position est nécessaire pour être localisé.')));
+        }
+      case ErreurPosition(:final message):
+        messenger.showSnackBar(SnackBar(content: Text('Erreur GPS : $message')));
+    }
+    if (mounted) setState(() => _depotEnCours = false);
+  }
+
+  Widget _blocPositionDestinataire(Course c) {
+    if (!c.jeSuisDestinataire) return const SizedBox.shrink();
+    final envoyee = _positionDeposee || c.positionBDeposee;
+    if (envoyee) {
+      return Card(
+        color: Colors.green.withValues(alpha: 0.12),
+        child: const Padding(
+          padding: EdgeInsets.all(16),
+          child: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.green),
+              SizedBox(width: 12),
+              Expanded(child: Text('Localisation envoyée.')),
+            ],
+          ),
+        ),
+      );
+    }
+    return FilledButton.icon(
+      onPressed: _depotEnCours ? null : _deposerPosition,
+      icon: _depotEnCours
+          ? const SizedBox(
+              width: 18, height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2))
+          : const Icon(Icons.my_location),
+      label: Text(_depotEnCours ? 'Envoi…' : 'Déposer ma localisation'),
+    );
+  }
+
   Future<void> _chargerIconeMoto() async {
     // Icones du marqueur livreur : uniquement les PNG definis dans l'admin.
     try {
@@ -165,6 +239,13 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
         _arreterEmissionPosition();
       } else if (c.jeSuisLivreur && !_emissionDemarree) {
         _demarrerEmissionPosition();
+      }
+      // Destinataire : depot automatique de la position a l'ouverture.
+      if (c.jeSuisDestinataire &&
+          !c.positionBDeposee &&
+          !_positionDeposee &&
+          !_depotEnCours) {
+        _deposerPosition();
       }
       _ajusterCamera();
     } catch (_) {
@@ -481,6 +562,8 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
                         ),
                       ),
                       const SizedBox(height: 16),
+                      _blocPositionDestinataire(c),
+                      if (c.jeSuisDestinataire) const SizedBox(height: 16),
                       Card(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(

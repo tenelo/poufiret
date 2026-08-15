@@ -66,6 +66,8 @@ _Course _$CourseFromJson(Map<String, dynamic> json) => _Course(
           json['livreur_position'] as Map<String, dynamic>,
         ),
   jeSuisLivreur: json['je_suis_livreur'] as bool? ?? false,
+  jeSuisDestinataire: json['je_suis_destinataire'] as bool? ?? false,
+  positionBDeposee: json['position_b_deposee'] as bool? ?? false,
   creeLe: json['cree_le'] as String?,
 );
 
@@ -81,6 +83,8 @@ Map<String, dynamic> _$CourseToJson(_Course instance) => <String, dynamic>{
   'livreur': instance.livreur,
   'livreur_position': instance.livreurPosition,
   'je_suis_livreur': instance.jeSuisLivreur,
+  'je_suis_destinataire': instance.jeSuisDestinataire,
+  'position_b_deposee': instance.positionBDeposee,
   'cree_le': instance.creeLe,
 };
 

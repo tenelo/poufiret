@@ -68,6 +68,8 @@ abstract class Course with _$Course {
     String? livreur,
     @JsonKey(name: 'livreur_position') LivreurPosition? livreurPosition,
     @JsonKey(name: 'je_suis_livreur') @Default(false) bool jeSuisLivreur,
+    @JsonKey(name: 'je_suis_destinataire') @Default(false) bool jeSuisDestinataire,
+    @JsonKey(name: 'position_b_deposee') @Default(false) bool positionBDeposee,
     @JsonKey(name: 'cree_le') String? creeLe,
   }) = _Course;
 
