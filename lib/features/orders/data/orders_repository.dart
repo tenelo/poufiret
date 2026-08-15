@@ -150,4 +150,14 @@ class OrdersRepository {
     );
     return Commande.fromJson(r.data as Map<String, dynamic>);
   }
+
+  /// POST /orders/commandes/<id>/livreur/ — le partenaire commande un
+  /// livreur pour une commande prete en mode livraison.
+  /// Retourne {course, commande_statut, assigne, message?}.
+  Future<Map<String, dynamic>> commanderLivreur(int commandeId) async {
+    final r = await _dio.post(
+      '${Env.apiPrefix}/orders/commandes/$commandeId/livreur/',
+    );
+    return r.data as Map<String, dynamic>;
+  }
 }

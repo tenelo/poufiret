@@ -102,6 +102,31 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
     }
   }
 
+  Future<void> _commanderLivreur() async {
+    if (_occupe) return;
+    setState(() => _occupe = true);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final reponse = await ref
+          .read(ordersRepositoryProvider)
+          .commanderLivreur(widget.commande.id);
+      ref.invalidate(commandesPartenaireProvider());
+      final assigne = reponse['assigne'] == true;
+      messenger.showSnackBar(SnackBar(
+        content: Text(assigne
+            ? 'Livreur trouve, en route vers vous.'
+            : (reponse['message'] as String?) ??
+                'Aucun livreur disponible pour l\'instant.'), 
+      ));
+    } catch (_) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Impossible de commander un livreur.')),
+      );
+    } finally {
+      if (mounted) setState(() => _occupe = false);
+    }
+  }
+
   Future<String?> _demanderMotif() {
     final controleur = TextEditingController();
     return showDialog<String>(
@@ -133,7 +158,14 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final c = widget.commande;
-    final actions = _actionsPartenaire[c.statut] ?? const [];
+    var actions = _actionsPartenaire[c.statut] ?? const <(String, String)>[];
+    // Commande en livraison + prete : le pont livreur remplace les
+    // transitions manuelles (en_livraison / livree sont pilotes par la course).
+    final bool proposerLivreur =
+        c.statut == 'prete' && c.modeLivraison == 'livraison';
+    if (proposerLivreur) {
+      actions = const <(String, String)>[];
+    }
 
     return Card(
       child: Padding(
@@ -212,6 +244,26 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
               ],
             ),
 
+            if (proposerLivreur) ...[
+              const SizedBox(height: 12),
+              if (_occupe)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+                )
+              else
+                FilledButton.icon(
+                  onPressed: _commanderLivreur,
+                  icon: const Icon(Icons.delivery_dining),
+                  label: const Text('Commander un livreur'),
+                ),
+            ],
             if (actions.isNotEmpty) ...[
               const SizedBox(height: 12),
               if (_occupe)
