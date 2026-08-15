@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -48,4 +50,28 @@ Future<BitmapDescriptor> bitmapDepuisIcone(
       .toImage(taille.toInt(), taille.toInt());
   final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
   return BitmapDescriptor.bytes(bytes!.buffer.asUint8List());
+}
+
+/// Telecharge un PNG depuis une URL et le convertit en marqueur Google Maps.
+/// Redimensionne a `taille` px (cote). Retourne null si le telechargement
+/// ou le decodage echoue (l'appelant garde alors son icone de repli).
+Future<BitmapDescriptor?> bitmapDepuisUrl(String url, {int taille = 110}) async {
+  try {
+    final client = HttpClient();
+    final req = await client.getUrl(Uri.parse(url));
+    final resp = await req.close();
+    if (resp.statusCode != 200) return null;
+    final octets = await consolidateHttpClientResponseBytes(resp);
+    final codec = await ui.instantiateImageCodec(
+      octets,
+      targetWidth: taille,
+      targetHeight: taille,
+    );
+    final frame = await codec.getNextFrame();
+    final data = await frame.image.toByteData(format: ui.ImageByteFormat.png);
+    if (data == null) return null;
+    return BitmapDescriptor.bytes(data.buffer.asUint8List());
+  } catch (_) {
+    return null;
+  }
 }

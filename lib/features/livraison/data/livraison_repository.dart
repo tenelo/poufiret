@@ -114,6 +114,17 @@ class LivraisonRepository {
 
   /// GET /livraison/tarif/ — prix de course courant (public). Repli 500
   /// si l'appel echoue (jamais de blocage cote formulaire).
+  /// GET /livraison/icones-motard/ — URLs des icones actives du marqueur.
+  /// Retourne (standard, terminee) ; l'une ou l'autre peut etre null.
+  Future<({String? standard, String? terminee})> iconesMotard() async {
+    final r = await _dio.get('${Env.apiPrefix}/livraison/icones-motard/');
+    final data = r.data as Map<String, dynamic>;
+    return (
+      standard: data['standard'] as String?,
+      terminee: data['terminee'] as String?,
+    );
+  }
+
   Future<int> tarifCourse() async {
     final r = await _dio.get('${Env.apiPrefix}/livraison/tarif/');
     final data = r.data as Map<String, dynamic>;

@@ -50,6 +50,8 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
   Timer? _timer;
   Course? _course;
   BitmapDescriptor? _iconeMoto;
+  BitmapDescriptor? _iconeStandard;
+  BitmapDescriptor? _iconeTerminee;
   bool _iconeDemandee = false;
   LatLng? _posLivreur;
   GoogleMapController? _controller;
@@ -80,13 +82,28 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
   }
 
   Future<void> _chargerIconeMoto() async {
+    // Repli : icone peinte au runtime (si les PNG ne chargent pas).
     final ic = await bitmapDepuisIcone(
       Icons.two_wheeler,
       couleur: Theme.of(context).colorScheme.primary,
       taille: 70,
     );
-    if (!mounted) return;
-    setState(() => _iconeMoto = ic);
+    if (mounted) setState(() => _iconeMoto = ic);
+    // PNG custom depuis l'admin (standard + terminee).
+    try {
+      final urls = await ref.read(livraisonRepositoryProvider).iconesMotard();
+      BitmapDescriptor? std;
+      BitmapDescriptor? term;
+      if (urls.standard != null) std = await bitmapDepuisUrl(urls.standard!);
+      if (urls.terminee != null) term = await bitmapDepuisUrl(urls.terminee!);
+      if (!mounted) return;
+      setState(() {
+        _iconeStandard = std;
+        _iconeTerminee = term;
+      });
+    } catch (_) {
+      // On garde le repli peint.
+    }
   }
 
   Future<void> _poll() async {
@@ -159,8 +176,13 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
           markerId: const MarkerId('livreur'),
           position: _posLivreur!,
           icon:
-              _iconeMoto ??
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+              (_course?.statut == 'livree'
+                      ? _iconeTerminee
+                      : _iconeStandard) ??
+                  _iconeMoto ??
+                  BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueAzure,
+                  ),
           infoWindow: const InfoWindow(title: 'Livreur'),
         ),
       );
