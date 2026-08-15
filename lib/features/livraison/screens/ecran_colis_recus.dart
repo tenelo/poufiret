@@ -102,7 +102,22 @@ class EcranColisRecus extends ConsumerWidget {
                                     ),
                                   ),
                                 ),
-                                if (actif)
+                                if (actif && c.positionBDeposee)
+                                  const Padding(
+                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 12),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.check_circle,
+                                            color: Colors.green, size: 18),
+                                        SizedBox(width: 8),
+                                        Text('Localisation envoyée',
+                                            style: TextStyle(
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.w600)),
+                                      ],
+                                    ),
+                                  )
+                                else if (actif)
                                   Padding(
                                     padding: const EdgeInsets.fromLTRB(
                                         12, 0, 12, 12),
