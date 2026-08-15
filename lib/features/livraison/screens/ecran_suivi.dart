@@ -49,7 +49,6 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
 
   Timer? _timer;
   Course? _course;
-  BitmapDescriptor? _iconeMoto;
   BitmapDescriptor? _iconeStandard;
   BitmapDescriptor? _iconeTerminee;
   bool _iconeDemandee = false;
@@ -82,14 +81,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
   }
 
   Future<void> _chargerIconeMoto() async {
-    // Repli : icone peinte au runtime (si les PNG ne chargent pas).
-    final ic = await bitmapDepuisIcone(
-      Icons.two_wheeler,
-      couleur: Theme.of(context).colorScheme.primary,
-      taille: 70,
-    );
-    if (mounted) setState(() => _iconeMoto = ic);
-    // PNG custom depuis l'admin (standard + terminee).
+    // Icones du marqueur livreur : uniquement les PNG definis dans l'admin.
     try {
       final urls = await ref.read(livraisonRepositoryProvider).iconesMotard();
       BitmapDescriptor? std;
@@ -102,7 +94,8 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
         _iconeTerminee = term;
       });
     } catch (_) {
-      // On garde le repli peint.
+      // Pas d'icone : le marqueur livreur n'apparaitra pas tant que
+      // le PNG n'est pas disponible (choix assume : aucune icone de repli).
     }
   }
 
@@ -170,19 +163,14 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
         ),
       );
     }
-    if (_posLivreur != null) {
+    final iconeLivreur =
+        _course?.statut == 'livree' ? _iconeTerminee : _iconeStandard;
+    if (_posLivreur != null && iconeLivreur != null) {
       m.add(
         Marker(
           markerId: const MarkerId('livreur'),
           position: _posLivreur!,
-          icon:
-              (_course?.statut == 'livree'
-                      ? _iconeTerminee
-                      : _iconeStandard) ??
-                  _iconeMoto ??
-                  BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueAzure,
-                  ),
+          icon: iconeLivreur,
           infoWindow: const InfoWindow(title: 'Livreur'),
         ),
       );
@@ -404,6 +392,9 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
                                 quartierA: c.pointA.quartier,
                                 quartierB: c.pointB.quartier,
                                 titre: c.numero,
+                                iconeLivreur: c.statut == 'livree'
+                                    ? _iconeTerminee
+                                    : _iconeStandard,
                               ),
                             ),
                           ),
@@ -497,8 +488,10 @@ class _CartePleinEcran extends StatefulWidget {
     required this.quartierA,
     required this.quartierB,
     required this.titre,
+    required this.iconeLivreur,
   });
 
+  final BitmapDescriptor? iconeLivreur;
   final LatLng? posA;
   final LatLng? posB;
   final LatLng? posLivreur;
@@ -512,27 +505,6 @@ class _CartePleinEcran extends StatefulWidget {
 
 class _CartePleinEcranState extends State<_CartePleinEcran> {
   GoogleMapController? _controller;
-  BitmapDescriptor? _iconeMoto;
-  bool _iconeDemandee = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_iconeDemandee) {
-      _iconeDemandee = true;
-      _chargerIconeMoto();
-    }
-  }
-
-  Future<void> _chargerIconeMoto() async {
-    final ic = await bitmapDepuisIcone(
-      Icons.two_wheeler,
-      couleur: Theme.of(context).colorScheme.primary,
-      taille: 70,
-    );
-    if (!mounted) return;
-    setState(() => _iconeMoto = ic);
-  }
 
   Set<Marker> _marqueurs() {
     final m = <Marker>{};
@@ -564,14 +536,12 @@ class _CartePleinEcranState extends State<_CartePleinEcran> {
         ),
       );
     }
-    if (widget.posLivreur != null) {
+    if (widget.posLivreur != null && widget.iconeLivreur != null) {
       m.add(
         Marker(
           markerId: const MarkerId('livreur'),
           position: widget.posLivreur!,
-          icon:
-              _iconeMoto ??
-              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+          icon: widget.iconeLivreur!,
           infoWindow: const InfoWindow(title: 'Livreur'),
         ),
       );
