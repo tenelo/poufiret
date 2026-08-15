@@ -7,6 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../data/livraison_providers.dart';
 import '../data/marqueur_icone.dart';
+import '../data/position_socket.dart';
+import '../../../core/network/providers.dart';
 import '../domain/livraison_models.dart';
 
 const _ordreStatuts = [
@@ -55,6 +57,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
   LatLng? _posLivreur;
   GoogleMapController? _controller;
   bool _annulation = false;
+  PositionSocket? _positionSocket;
 
   @override
   void initState() {
@@ -63,6 +66,21 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
     _chargerIconeMoto();
     _poll();
     _timer = Timer.periodic(const Duration(seconds: 10), (_) => _poll());
+    _connecterPosition();
+  }
+
+  void _connecterPosition() {
+    final socket = PositionSocket(
+      courseId: widget.courseId,
+      tokens: ref.read(tokenStorageProvider),
+    );
+    _positionSocket = socket;
+    socket.positions.listen((p) {
+      if (!mounted) return;
+      setState(() => _posLivreur = LatLng(p.latitude, p.longitude));
+      _ajusterCamera();
+    });
+    socket.connecter();
   }
 
   @override
@@ -77,6 +95,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
   @override
   void dispose() {
     _timer?.cancel();
+    _positionSocket?.fermer();
     super.dispose();
   }
 
