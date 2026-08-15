@@ -124,11 +124,18 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
   Future<void> _chargerIconeMoto() async {
     // Icones du marqueur livreur : uniquement les PNG definis dans l'admin.
     try {
+      // Taille adaptee a la densite d'ecran pour un rendu net partout.
+      final dpr = MediaQuery.of(context).devicePixelRatio;
+      final taille = (40 * dpr).round().clamp(60, 180);
       final urls = await ref.read(livraisonRepositoryProvider).iconesMotard();
       BitmapDescriptor? std;
       BitmapDescriptor? term;
-      if (urls.standard != null) std = await bitmapDepuisUrl(urls.standard!);
-      if (urls.terminee != null) term = await bitmapDepuisUrl(urls.terminee!);
+      if (urls.standard != null) {
+        std = await bitmapDepuisUrl(urls.standard!, taille: taille);
+      }
+      if (urls.terminee != null) {
+        term = await bitmapDepuisUrl(urls.terminee!, taille: taille);
+      }
       if (!mounted) return;
       setState(() {
         _iconeStandard = std;
