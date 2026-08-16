@@ -28,8 +28,8 @@ const List<AppDestination> kDestinations = [
   ),
   AppDestination(
     label: 'Messages',
-    icon: Icons.chat_bubble_outline,
-    selectedIcon: Icons.chat_bubble,
+    icon: Icons.chat_outlined,
+    selectedIcon: Icons.chat_sharp,
   ),
   AppDestination(
     label: 'Livraison',

@@ -48,49 +48,49 @@ class EcranCategories extends ConsumerWidget {
       floatingActionButton: const _BoutonRecherche(),
       body: Column(
         children: [
-          const SizedBox(height: 12),
+          const SizedBox(height: 4),
           const CarrouselPublicites(),
-          const SizedBox(height: 12),
+          const SizedBox(height: 4),
           Expanded(
             child: categoriesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) {
-          final message = err is ApiException
-              ? err.messageLisible
-              : 'Erreur de chargement.';
-          return _MessageErreur(
-            message: message,
-            onReessayer: () => ref.invalidate(categoriesProvider),
-          );
-        },
-        data: (categories) {
-          if (categories.isEmpty) {
-            return const Center(
-              child: Text('Aucune catégorie pour le moment.'),
-            );
-          }
-          // Grille responsive : largeur cible par tuile, le nb de colonnes
-          // s'ajuste automatiquement selon la largeur disponible.
-          return LayoutBuilder(
-            builder: (context, contraintes) {
-              final largeur = contraintes.maxWidth;
-              // ~180px par tuile : 2 colonnes sur petit tel, plus sur grand écran.
-              final nbColonnes = (largeur / 180).floor().clamp(2, 5);
-              return GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: nbColonnes,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 1,
-                ),
-                itemCount: categories.length,
-                itemBuilder: (context, i) =>
-                    _TuileCategorie(categorie: categories[i]),
-              );
-            },
-          );
-        },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, _) {
+                final message = err is ApiException
+                    ? err.messageLisible
+                    : 'Erreur de chargement.';
+                return _MessageErreur(
+                  message: message,
+                  onReessayer: () => ref.invalidate(categoriesProvider),
+                );
+              },
+              data: (categories) {
+                if (categories.isEmpty) {
+                  return const Center(
+                    child: Text('Aucune catégorie pour le moment.'),
+                  );
+                }
+                // Grille responsive : largeur cible par tuile, le nb de colonnes
+                // s'ajuste automatiquement selon la largeur disponible.
+                return LayoutBuilder(
+                  builder: (context, contraintes) {
+                    final largeur = contraintes.maxWidth;
+                    // ~180px par tuile : 2 colonnes sur petit tel, plus sur grand écran.
+                    final nbColonnes = (largeur / 180).floor().clamp(2, 5);
+                    return GridView.builder(
+                      padding: const EdgeInsets.all(16),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: nbColonnes,
+                        mainAxisSpacing: 16,
+                        crossAxisSpacing: 16,
+                        childAspectRatio: 1,
+                      ),
+                      itemCount: categories.length,
+                      itemBuilder: (context, i) =>
+                          _TuileCategorie(categorie: categories[i]),
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],
@@ -194,7 +194,9 @@ class _ActionEventail extends StatelessWidget {
                   elevation: 3,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     child: Text(label, style: theme.textTheme.labelLarge),
                   ),
                 ),
@@ -210,7 +212,8 @@ class _ActionEventail extends StatelessWidget {
         ),
       ),
     );
-  }}
+  }
+}
 
 class _TuileCategorie extends StatelessWidget {
   final Categorie categorie;
@@ -230,47 +233,47 @@ class _TuileCategorie extends StatelessWidget {
         onTap: bientot
             ? null
             : () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => EcranPrestataires(
-                categorieId: categorie.id,
-                categorieNom: categorie.nom,
-                categorieSlug: categorie.slug,
-                modeTransaction: categorie.modeTransaction,
-                afficheCatalogue: categorie.afficheCatalogue,
-              ),
-            ),
-          );
-        },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => EcranPrestataires(
+                      categorieId: categorie.id,
+                      categorieNom: categorie.nom,
+                      categorieSlug: categorie.slug,
+                      modeTransaction: categorie.modeTransaction,
+                      afficheCatalogue: categorie.afficheCatalogue,
+                    ),
+                  ),
+                );
+              },
         child: Opacity(
           opacity: bientot ? 0.45 : 1.0,
           child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Flexible(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text(
-                    categorie.icone.isNotEmpty ? categorie.icone : '📦',
-                    style: const TextStyle(fontSize: 48),
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      categorie.icone.isNotEmpty ? categorie.icone : '📦',
+                      style: const TextStyle(fontSize: 48),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                bientot
-                    ? '${categorie.nom}\nBientôt disponible'
-                    : categorie.nom,
-                textAlign: TextAlign.center,
-                maxLines: bientot ? 3 : 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ],
-          ),
+                const SizedBox(height: 8),
+                Text(
+                  bientot
+                      ? '${categorie.nom}\nBientôt disponible'
+                      : categorie.nom,
+                  textAlign: TextAlign.center,
+                  maxLines: bientot ? 3 : 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ],
+            ),
           ),
         ),
       ),

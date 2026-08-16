@@ -54,7 +54,9 @@ class _CarrouselPublicitesState extends ConsumerState<CarrouselPublicites> {
   /// Trace une impression une seule fois par pub et par session d'ecran.
   void _tracerImpression(PubliciteListe pub) {
     if (!_tracees.add(pub.id)) return;
-    ref.read(publicitesRepositoryProvider).enregistrerImpression(
+    ref
+        .read(publicitesRepositoryProvider)
+        .enregistrerImpression(
           pub.id,
           typeAffichage: TypeAffichage.carrousel,
           sessionId: ref.read(sessionAnalyticsProvider).sessionId,
@@ -80,7 +82,7 @@ class _CarrouselPublicitesState extends ConsumerState<CarrouselPublicites> {
           builder: (context, contraintes) {
             // Hauteur proportionnelle a la largeur (ratio ~16/9 borne).
             final largeur = contraintes.maxWidth;
-            final hauteur = (largeur * 0.52).clamp(140.0, 260.0);
+            final hauteur = (largeur * 0.30).clamp(140.0, 260.0);
 
             return Column(
               mainAxisSize: MainAxisSize.min,
@@ -94,12 +96,11 @@ class _CarrouselPublicitesState extends ConsumerState<CarrouselPublicites> {
                       setState(() => _index = i);
                       _tracerImpression(pubs[i]);
                     },
-                    itemBuilder: (context, i) =>
-                        _Diapositive(pub: pubs[i]),
+                    itemBuilder: (context, i) => _Diapositive(pub: pubs[i]),
                   ),
                 ),
                 if (pubs.length > 1) ...[
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
                   _Indicateurs(nombre: pubs.length, actif: _index),
                 ],
               ],
@@ -142,8 +143,10 @@ class _Diapositive extends StatelessWidget {
                     url,
                     fit: BoxFit.cover,
                     errorBuilder: (_, e, s) => const Center(
-                      child: Icon(Icons.image_not_supported_outlined,
-                          color: Config.couleurTexteSecondaire),
+                      child: Icon(
+                        Icons.image_not_supported_outlined,
+                        color: Config.couleurTexteSecondaire,
+                      ),
                     ),
                   ),
                 // Degrade bas pour la lisibilite du titre.
@@ -201,9 +204,7 @@ class _Indicateurs extends StatelessWidget {
             width: i == actif ? 18 : 6,
             height: 6,
             decoration: BoxDecoration(
-              color: i == actif
-                  ? Config.couleurPrimaire
-                  : Config.couleurClaire,
+              color: i == actif ? Config.couleurPrimaire : Config.couleurClaire,
               borderRadius: BorderRadius.circular(3),
             ),
           ),

@@ -69,6 +69,7 @@ static const _pages = [
         return Scaffold(
           body: body,
           bottomNavigationBar: NavigationBar(
+            height: 64,
             selectedIndex: _index,
             onDestinationSelected: _onTap,
             destinations: [
