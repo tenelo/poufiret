@@ -3,17 +3,17 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'core/config/config.dart';
-import 'core/navigation/app_shell.dart';
-import 'core/notifications/fcm_service.dart';
-import 'core/notifications/routeur_notifications.dart';
-import 'features/analytics/data/analytics_providers.dart';
-import 'features/auth/screens/auth_notifier.dart';
-import 'features/auth/screens/ecran_connexion.dart';
-import 'features/auth/screens/ecran_changer_pin.dart';
-import 'features/publicites/widgets/couche_publicites.dart';
-import 'features/publicites/widgets/observateur_interstitiel.dart';
-import 'features/version/widgets/couche_mise_a_jour.dart';
+import 'global/config/config.dart';
+import 'global/navigation/app_shell.dart';
+import 'global/notifications/fcm_service.dart';
+import 'global/notifications/routeur_notifications.dart';
+import 'fonctionnalites/analytics/donnees/analytics_providers.dart';
+import 'fonctionnalites/auth/screens/auth_notifier.dart';
+import 'fonctionnalites/auth/screens/ecran_connexion.dart';
+import 'fonctionnalites/auth/screens/ecran_changer_pin.dart';
+import 'fonctionnalites/publicites/widgets/couche_publicites.dart';
+import 'fonctionnalites/publicites/widgets/observateur_interstitiel.dart';
+import 'fonctionnalites/version/widgets/couche_mise_a_jour.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

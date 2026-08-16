@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git mv *)",
+      "Bash(cd \"d:/App/Bloc/poufiret\" && rmdir lib/fonctionnalites/analytics/domain && echo \"removed empty domain dir\" && find lib/fonctionnalites -maxdepth 2 -type d -name \"data\" -o -maxdepth 2 -type d -name \"domain\")",
+      "Bash(grep -vE \"^\\\\S+:import '[^']*'\\( as \\\\w+| show [^;]+| hide [^;]+\\)?;\\\\s*$\")",
+      "Bash(xargs -0 perl -i -pe ' *)"
+    ],
+    "additionalDirectories": [
+      "d:\\App\\Bloc\\poufiret\\lib\\fonctionnalites\\analytics\\domain"
+    ]
+  }
+}
