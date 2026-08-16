@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/core/errors/api_exception.dart';
@@ -29,6 +30,7 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
   String _confirmation = '';
   bool _erreur = false;
   bool _enCours = false;
+  String? _messageErr;
 
   void _snack(String message) {
     if (!mounted) return;
@@ -36,8 +38,14 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
-  String _messageErreur(Object? e) =>
-      e is ApiException ? e.messageLisible : 'Une erreur est survenue.';
+  String _messageErreur(Object? e) {
+    // L'intercepteur Dio rejette une DioException qui enveloppe l'ApiException.
+    if (e is DioException && e.error is ApiException) {
+      return (e.error as ApiException).messageLisible;
+    }
+    if (e is ApiException) return e.messageLisible;
+    return 'Une erreur est survenue.';
+  }
 
   void _onChiffre(String c) {
     switch (_etape) {
@@ -45,6 +53,7 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
         if (_ancien.length >= 4) return;
         setState(() {
           _erreur = false;
+          _messageErr = null;
           _ancien += c;
         });
         if (_ancien.length == 4) setState(() => _etape = _Etape.nouveau);
@@ -52,6 +61,7 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
         if (_nouveau.length >= 4) return;
         setState(() {
           _erreur = false;
+          _messageErr = null;
           _nouveau += c;
         });
         if (_nouveau.length == 4) setState(() => _etape = _Etape.confirmer);
@@ -59,6 +69,7 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
         if (_confirmation.length >= 4) return;
         setState(() {
           _erreur = false;
+          _messageErr = null;
           _confirmation += c;
         });
         if (_confirmation.length == 4) _valider();
@@ -102,42 +113,44 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
       _snack('Le nouveau code ne correspond pas. Recommencez.');
       return;
     }
-    setState(() => _enCours = true);
+    setState(() {
+      _enCours = true;
+      _messageErr = null;
+    });
     await ref.read(authProvider.notifier).changerPin(
           ancienPin: _ancien,
           nouveauPin: _nouveau,
         );
+    if (!mounted) return;
+
+    final etat = ref.read(authProvider);
+    if (etat.hasError) {
+      // Echec (PIN refuse, etc.) : on affiche le message et on reste
+      // a l'etape 'nouveau' pour ressaisir.
+      _reinitialiser(message: _messageErreur(etat.error));
+      return;
+    }
+    // Succes : le profil a pin_par_defaut=false. On sort de l'ecran.
+    setState(() => _enCours = false);
+    _snack('Code PIN mis a jour.');
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
   }
 
-  void _reinitialiser() {
+  void _reinitialiser({String? message}) {
     setState(() {
-      _ancien = '';
       _nouveau = '';
       _confirmation = '';
-      _etape = _Etape.ancien;
+      _etape = _Etape.nouveau;
       _erreur = true;
       _enCours = false;
+      _messageErr = message;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    ref.listen(authProvider, (avant, next) {
-      // Succès : le profil renvoyé a pin_par_defaut=false.
-      if (next.value != null &&
-          next.value!.pinParDefaut == false &&
-          _enCours) {
-        _snack('Code PIN mis à jour.');
-        if (Navigator.of(context).canPop()) {
-          Navigator.of(context).pop();
-        }
-        return;
-      }
-      if (next.hasError && !next.isLoading && _enCours) {
-        _reinitialiser();
-        _snack(_messageErreur(next.error));
-      }
-    });
 
     return PopScope(
       canPop: !widget.bloquant,
@@ -215,6 +228,20 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
             style: Theme.of(context).textTheme.bodyMedium),
         const SizedBox(height: 32),
         PointsPin(remplis: courant.length, erreur: _erreur),
+        if (_messageErr != null) ...[
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              _messageErr!,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
         const SizedBox(height: 32),
         if (_enCours)
           const CircularProgressIndicator()

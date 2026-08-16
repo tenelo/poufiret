@@ -1,5 +1,7 @@
-/// Exception applicative, calée sur le format d'erreur uniforme du backend :
-/// { "erreur": true, "code": 401, "message": "...", "details": {...} }
+/// Exception applicative. Gère trois formats d'erreur backend :
+/// 1. Format maison  : { "erreur": true, "code": .., "message": .., "details": {..} }
+/// 2. Format DRF par champ : { "nouveau_pin": ["..."], "telephone": ["..."] }
+/// 3. Format DRF simple    : { "detail": "..." }
 class ApiException implements Exception {
   final int code;
   final String message;
@@ -13,16 +15,40 @@ class ApiException implements Exception {
 
   /// Construit depuis le corps JSON renvoyé par le backend.
   factory ApiException.fromResponse(int? statusCode, dynamic data) {
-    if (data is Map<String, dynamic> && data['erreur'] == true) {
-      return ApiException(
-        code: data['code'] as int? ?? statusCode ?? 0,
-        message: data['message'] as String? ?? 'Erreur inconnue',
-        details: (data['details'] as Map<String, dynamic>?) ?? const {},
-      );
+    final statut = statusCode ?? 0;
+
+    if (data is Map<String, dynamic>) {
+      // 1. Format maison explicite.
+      if (data['erreur'] == true) {
+        return ApiException(
+          code: data['code'] as int? ?? statut,
+          message: data['message'] as String? ?? 'Erreur inconnue',
+          details: (data['details'] as Map<String, dynamic>?) ?? const {},
+        );
+      }
+
+      // 3. Format DRF simple { "detail": "..." }.
+      if (data['detail'] is String) {
+        return ApiException(
+          code: statut,
+          message: data['detail'] as String,
+        );
+      }
+
+      // 2. Format DRF par champ { "champ": ["msg"], ... }.
+      // On garde toute la map dans details ; messageLisible la concatène.
+      if (data.isNotEmpty) {
+        return ApiException(
+          code: statut,
+          message: 'Erreur de validation.',
+          details: data,
+        );
+      }
     }
-    // Réponse hors format (timeout, 502, pas de connexion…)
+
+    // Réponse hors format (502, HTML, corps vide…).
     return ApiException(
-      code: statusCode ?? 0,
+      code: statut,
       message: 'Une erreur est survenue. Réessaie.',
     );
   }

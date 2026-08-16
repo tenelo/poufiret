@@ -116,8 +116,8 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
     );
     _fluxPosition = Geolocator.getPositionStream(locationSettings: settings)
         .listen((pos) {
-      _positionSocket?.envoyerPosition(pos.latitude, pos.longitude);
-    });
+          _positionSocket?.envoyerPosition(pos.latitude, pos.longitude);
+        });
   }
 
   void _arreterEmissionPosition() {
@@ -134,34 +134,49 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
     switch (res) {
       case PositionObtenue(:final latitude, :final longitude):
         try {
-          await ref.read(livraisonRepositoryProvider).deposerPositionContact(
+          await ref
+              .read(livraisonRepositoryProvider)
+              .deposerPositionContact(
                 courseId: widget.courseId,
                 latitude: latitude,
                 longitude: longitude,
               );
           if (!mounted) return;
           setState(() => _positionDeposee = true);
-          messenger.showSnackBar(const SnackBar(
-              content: Text('Localisation envoyée.')));
+          messenger.showSnackBar(
+            const SnackBar(content: Text('Localisation envoyée.')),
+          );
         } catch (_) {
-          messenger.showSnackBar(const SnackBar(
-              content: Text('Échec de l\'envoi. Réessayez.')));
+          messenger.showSnackBar(
+            const SnackBar(content: Text('Échec de l\'envoi. Réessayez.')),
+          );
         }
       case ServiceDesactive():
-        messenger.showSnackBar(const SnackBar(
-            content: Text('Activez la localisation (GPS) de votre téléphone.')));
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text('Activez la localisation (GPS) de votre téléphone.'),
+          ),
+        );
         await ref.read(servicePositionProvider).ouvrirParametresLocalisation();
       case PermissionRefusee(:final definitif):
         if (definitif) {
-          messenger.showSnackBar(const SnackBar(
-              content: Text('Permission refusée. Ouvrez les réglages.')));
+          messenger.showSnackBar(
+            const SnackBar(
+              content: Text('Permission refusée. Ouvrez les réglages.'),
+            ),
+          );
           await ref.read(servicePositionProvider).ouvrirParametresApp();
         } else {
-          messenger.showSnackBar(const SnackBar(
-              content: Text('La position est nécessaire pour être localisé.')));
+          messenger.showSnackBar(
+            const SnackBar(
+              content: Text('La position est nécessaire pour être localisé.'),
+            ),
+          );
         }
       case ErreurPosition(:final message):
-        messenger.showSnackBar(SnackBar(content: Text('Erreur GPS : $message')));
+        messenger.showSnackBar(
+          SnackBar(content: Text('Erreur GPS : $message')),
+        );
     }
     if (mounted) setState(() => _depotEnCours = false);
   }
@@ -188,8 +203,10 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
       onPressed: _depotEnCours ? null : _deposerPosition,
       icon: _depotEnCours
           ? const SizedBox(
-              width: 18, height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2))
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
           : const Icon(Icons.my_location),
       label: Text(_depotEnCours ? 'Envoi…' : 'Déposer ma localisation'),
     );
@@ -200,7 +217,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
     try {
       // Taille adaptee a la densite d'ecran pour un rendu net partout.
       final dpr = MediaQuery.of(context).devicePixelRatio;
-      final taille = (40 * dpr).round().clamp(60, 180);
+      final taille = (30 * dpr).round().clamp(60, 180);
       final urls = await ref.read(livraisonRepositoryProvider).iconesMotard();
       BitmapDescriptor? std;
       BitmapDescriptor? term;
@@ -271,9 +288,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
         Marker(
           markerId: const MarkerId('A'),
           position: a,
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueBlue,
-          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
           infoWindow: InfoWindow(
             title: 'Retrait (A)',
             snippet: _course?.pointA.quartier,
@@ -287,7 +302,9 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
         Marker(
           markerId: const MarkerId('B'),
           position: b,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueGreen,
+          ),
           infoWindow: InfoWindow(
             title: 'Livraison (B)',
             snippet: _course?.pointB.quartier,
@@ -295,8 +312,9 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
         ),
       );
     }
-    final iconeLivreur =
-        _course?.statut == 'livree' ? _iconeTerminee : _iconeStandard;
+    final iconeLivreur = _course?.statut == 'livree'
+        ? _iconeTerminee
+        : _iconeStandard;
     if (_posLivreur != null && iconeLivreur != null) {
       m.add(
         Marker(
@@ -647,9 +665,7 @@ class _CartePleinEcranState extends State<_CartePleinEcran> {
         Marker(
           markerId: const MarkerId('A'),
           position: widget.posA!,
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueBlue,
-          ),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
           infoWindow: InfoWindow(
             title: 'Retrait (A)',
             snippet: widget.quartierA,
@@ -662,7 +678,9 @@ class _CartePleinEcranState extends State<_CartePleinEcran> {
         Marker(
           markerId: const MarkerId('B'),
           position: widget.posB!,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueGreen,
+          ),
           infoWindow: InfoWindow(
             title: 'Livraison (B)',
             snippet: widget.quartierB,

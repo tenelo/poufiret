@@ -107,27 +107,22 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
       }
     });
 
-    return auth.when(
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (_, _) => const EcranConnexion(),
-      // Le visiteur non connecte accede directement a l'application :
-      // il parcourt l'accueil et les listes librement. Le mur
-      // d'inscription intervient seulement au clic sur une fiche.
-      // (Choix produit : donner envie d'abord, convertir ensuite.)
-      data: (user) {
-        // Compte cree par un admin (PIN provisoire) : on impose le
-        // changement de PIN avant tout acces a l'application.
-        if (user != null && user.pinParDefaut) {
-          return const EcranChangerPin(bloquant: true);
-        }
-        // Le visiteur non connecte accede directement a l'application :
-        // il parcourt l'accueil et les listes librement. Le mur
-        // d'inscription intervient seulement au clic sur une fiche.
-        return const ObservateurInterstitiel(
-          enfant: CouchePublicites(enfant: AppShell()),
-        );
-      },
+    // Premier chargement uniquement (aucune valeur encore) : spinner.
+    if (auth.isLoading && !auth.hasValue) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    // Erreur au tout premier chargement (jamais eu de valeur) : login.
+    if (auth.hasError && !auth.hasValue) {
+      return const EcranConnexion();
+    }
+    // On s'appuie sur la valeur (preservee pendant loading/error transitoires),
+    // pour ne PAS demonter l'ecran courant pendant un changement de PIN.
+    final user = auth.value;
+    if (user != null && user.pinParDefaut) {
+      return const EcranChangerPin(bloquant: true);
+    }
+    return const ObservateurInterstitiel(
+      enfant: CouchePublicites(enfant: AppShell()),
     );
   }
 }
