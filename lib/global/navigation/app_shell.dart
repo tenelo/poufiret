@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../fonctionnalites/analytics/donnees/analytics_providers.dart';
 import 'package:poufiret/fonctionnalites/chat/screens/ecran_conversations.dart';
 
 import 'destinations.dart';
@@ -10,14 +12,14 @@ import '../../fonctionnalites/map/screens/ecran_map.dart';
 
 /// Coquille principale : héberge les onglets et bascule entre
 /// barre basse (mobile) et rail latéral (tablette / web) selon la largeur.
-class AppShell extends StatefulWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key});
 
   @override
-  State<AppShell> createState() => _AppShellState();
+  ConsumerState<AppShell> createState() => _AppShellState();
 }
 
-class _AppShellState extends State<AppShell> {
+class _AppShellState extends ConsumerState<AppShell> {
   int _index = 0;
 
 static const _pages = [
@@ -28,7 +30,15 @@ static const _pages = [
     EcranMap(),
   ];
 
-  void _onTap(int i) => setState(() => _index = i);
+  static const int _indexLivraison = 3;
+
+  void _onTap(int i) {
+    // Trace la consultation du service livraison (fire-and-forget, silencieux).
+    if (i == _indexLivraison && i != _index) {
+      ref.read(analyticsRepositoryProvider).enregistrerVueServiceLivraison();
+    }
+    setState(() => _index = i);
+  }
 
   @override
   Widget build(BuildContext context) {

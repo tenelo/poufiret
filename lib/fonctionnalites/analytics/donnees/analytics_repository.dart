@@ -55,6 +55,18 @@ class AnalyticsRepository {
     }
   }
 
+  /// Enregistre la consultation du service livraison (ouverture de l'onglet).
+  Future<void> enregistrerVueServiceLivraison({String source = 'onglet'}) async {
+    try {
+      await _dio.post<void>(
+        '${Env.apiPrefix}/analytics/livraison/vue/',
+        data: {'source': source},
+      );
+    } catch (_) {
+      // Silencieux : le tracking ne bloque jamais la navigation.
+    }
+  }
+
   /// Enregistre la consultation de la vitrine d'un partenaire.
   ///
   /// Seul signal disponible pour les metiers de service, ou le client
