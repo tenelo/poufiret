@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../donnees/publicites_providers.dart';
+import '../metier_domaine/credit_formule.dart';
 import '../metier_domaine/formule_publicite.dart';
 
 /// Parcours partenaire : choisir un forfait, puis deposer son affiche.
@@ -20,6 +21,7 @@ class EcranFairePublicite extends ConsumerStatefulWidget {
 
 class _EcranFairePubliciteState extends ConsumerState<EcranFairePublicite> {
   FormulePublicite? _formule;
+  String? _creditId;
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +29,18 @@ class _EcranFairePubliciteState extends ConsumerState<EcranFairePublicite> {
     if (_formule != null) {
       return _EtapeFormulaire(
         formule: _formule!,
-        onRetour: () => setState(() => _formule = null),
+        creditId: _creditId,
+        onRetour: () => setState(() {
+          _formule = null;
+          _creditId = null;
+        }),
       );
     }
     return _EtapeForfaits(
-      onChoisir: (f) => setState(() => _formule = f),
+      onChoisir: (f, creditId) => setState(() {
+        _formule = f;
+        _creditId = creditId;
+      }),
     );
   }
 }
@@ -40,11 +49,17 @@ class _EcranFairePubliciteState extends ConsumerState<EcranFairePublicite> {
 
 class _EtapeForfaits extends ConsumerWidget {
   const _EtapeForfaits({required this.onChoisir});
-  final void Function(FormulePublicite) onChoisir;
+  final void Function(FormulePublicite formule, String? creditId) onChoisir;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final async = ref.watch(formulesPubliciteProvider);
+    // Best-effort : si les credits ne chargent pas, les forfaits restent
+    // utilisables normalement (parcours payant inchange).
+    final credits = ref.watch(mesCreditsDisponiblesProvider).maybeWhen(
+          data: (v) => v,
+          orElse: () => const <CreditFormule>[],
+        );
 
     return Scaffold(
       appBar: AppBar(title: const Text('Faire une publicité')),
@@ -99,7 +114,11 @@ class _EtapeForfaits extends ConsumerWidget {
                       ),
                       const SizedBox(height: 16),
                       for (final f in formules) ...[
-                        _CarteForfait(formule: f, onChoisir: onChoisir),
+                        _CarteForfait(
+                          formule: f,
+                          onChoisir: onChoisir,
+                          credit: _creditPour(credits, f.id),
+                        ),
                         const SizedBox(height: 12),
                       ],
                     ],
@@ -112,6 +131,14 @@ class _EtapeForfaits extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Cherche un credit disponible correspondant a la formule donnee.
+CreditFormule? _creditPour(List<CreditFormule> credits, String formuleId) {
+  for (final c in credits) {
+    if (c.formuleId == formuleId && c.estDisponible) return c;
+  }
+  return null;
 }
 
 /// Libelles lisibles des emplacements autorises par un forfait.
@@ -134,9 +161,14 @@ const Map<String, String> _detailEmplacements = {
 };
 
 class _CarteForfait extends StatelessWidget {
-  const _CarteForfait({required this.formule, required this.onChoisir});
+  const _CarteForfait({
+    required this.formule,
+    required this.onChoisir,
+    this.credit,
+  });
   final FormulePublicite formule;
-  final void Function(FormulePublicite) onChoisir;
+  final void Function(FormulePublicite formule, String? creditId) onChoisir;
+  final CreditFormule? credit;
 
   List<String> get _emplacements => emplacementsLisibles(formule);
 
@@ -147,12 +179,40 @@ class _CarteForfait extends StatelessWidget {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => onChoisir(formule),
+        onTap: () => onChoisir(formule, null),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (credit != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Config.couleurSucces.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.card_giftcard,
+                            size: 13, color: Config.couleurSucces),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Crédit disponible — offert',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: Config.couleurSucces,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               Row(
                 children: [
                   Expanded(
@@ -220,12 +280,25 @@ class _CarteForfait extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.centerRight,
-                child: FilledButton(
-                  onPressed: () => onChoisir(formule),
-                  child: const Text('Choisir'),
-                ),
+              Wrap(
+                alignment: WrapAlignment.end,
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  if (credit != null)
+                    OutlinedButton(
+                      onPressed: () => onChoisir(formule, credit!.id),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Config.couleurSucces,
+                        side: const BorderSide(color: Config.couleurSucces),
+                      ),
+                      child: const Text('Utiliser mon crédit (gratuit)'),
+                    ),
+                  FilledButton(
+                    onPressed: () => onChoisir(formule, null),
+                    child: const Text('Choisir'),
+                  ),
+                ],
               ),
             ],
           ),
@@ -259,9 +332,14 @@ class _Ligne extends StatelessWidget {
 // ── Etape 2 : le formulaire ───────────────────────────────────────────
 
 class _EtapeFormulaire extends ConsumerStatefulWidget {
-  const _EtapeFormulaire({required this.formule, required this.onRetour});
+  const _EtapeFormulaire({
+    required this.formule,
+    required this.onRetour,
+    this.creditId,
+  });
   final FormulePublicite formule;
   final VoidCallback onRetour;
+  final String? creditId;
 
   @override
   ConsumerState<_EtapeFormulaire> createState() => _EtapeFormulaireState();
@@ -274,6 +352,13 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
   XFile? _affiche;
   String _portee = 'departement';
   bool _envoiEnCours = false;
+  String? _creditId;
+
+  @override
+  void initState() {
+    super.initState();
+    _creditId = widget.creditId;
+  }
 
   @override
   void dispose() {
@@ -297,6 +382,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
       return;
     }
     setState(() => _envoiEnCours = true);
+    final creditUtilise = _creditId;
     try {
       final depot = ref.read(publicitesRepositoryProvider);
       final creee = await depot.creerPublicite(
@@ -305,17 +391,29 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
         description: _description.text.trim(),
         cheminImage: _affiche!.path,
         portee: _portee,
+        creditId: creditUtilise,
       );
-      // Soumission immediate : brouillon -> en attente de paiement.
-      final id = creee['id']?.toString();
-      if (id != null && id.isNotEmpty) {
-        await depot.transition(id, 'soumettre');
+      if (creditUtilise == null) {
+        // Parcours payant : soumission -> en attente de paiement.
+        final id = creee['id']?.toString();
+        if (id != null && id.isNotEmpty) {
+          await depot.transition(id, 'soumettre');
+        }
+      } else {
+        // Parcours credit : le backend active la pub immediatement.
+        ref.invalidate(mesCreditsDisponiblesProvider);
       }
       ref.invalidate(mesPublicitesProvider);
       if (!mounted) return;
-      await _confirmation();
+      await _confirmation(offerte: creditUtilise != null);
     } on ApiException catch (e) {
       _message(e.messageLisible);
+      if (creditUtilise != null) {
+        // Le credit a pu devenir invalide/consomme entre-temps : on
+        // repasse au parcours payant normal pour permettre de reessayer.
+        ref.invalidate(mesCreditsDisponiblesProvider);
+        if (mounted) setState(() => _creditId = null);
+      }
     } catch (_) {
       _message('Envoi impossible. Réessayez.');
     } finally {
@@ -329,17 +427,21 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
         .showSnackBar(SnackBar(content: Text(texte)));
   }
 
-  Future<void> _confirmation() async {
+  Future<void> _confirmation({required bool offerte}) async {
     await showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Demande envoyée'),
+        title: Text(offerte ? 'Publicité activée !' : 'Demande envoyée'),
         content: Text(
-          'Votre publicité a été transmise.\n\n'
-          'Réglez ${widget.formule.prix} FCFA auprès de l\'administration '
-          'Poufiret. Dès le paiement confirmé et la publicité validée, '
-          'elle sera diffusée pendant ${widget.formule.dureeJours} jour'
-          '${widget.formule.dureeJours > 1 ? 's' : ''}.',
+          offerte
+              ? 'Votre publicité est déjà active grâce à votre crédit '
+                  '"${widget.formule.nom}" : elle est diffusée '
+                  'immédiatement, sans paiement.'
+              : 'Votre publicité a été transmise.\n\n'
+                  'Réglez ${widget.formule.prix} FCFA auprès de l\'administration '
+                  'Poufiret. Dès le paiement confirmé et la publicité validée, '
+                  'elle sera diffusée pendant ${widget.formule.dureeJours} jour'
+                  '${widget.formule.dureeJours > 1 ? 's' : ''}.',
         ),
         actions: [
           FilledButton(
@@ -382,7 +484,9 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Forfait ${f.nom} — ${f.prix} FCFA',
+                              _creditId != null
+                                  ? 'Forfait ${f.nom} — Offert'
+                                  : 'Forfait ${f.nom} — ${f.prix} FCFA',
                               style: const TextStyle(
                                   fontWeight: FontWeight.w700),
                             ),
@@ -405,6 +509,49 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                       ),
                     ),
                     const SizedBox(height: 12),
+
+                    // Message positif si une publicite est utilisee, a la
+                    // place du rappel de paiement du parcours normal.
+                    if (_creditId != null) ...[
+                      Card(
+                        color: Config.couleurSucces.withValues(alpha: 0.08),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(Icons.card_giftcard,
+                                  color: Config.couleurSucces),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Publicité offerte',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        color: Config.couleurSucces,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Cette publicité vous est offerte grâce '
+                                      'à votre crédit "${f.nom}" : elle sera '
+                                      'diffusée immédiatement, sans '
+                                      'paiement.',
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
 
                     // Ou la publicite sera diffusee, explicitement.
                     Card(
@@ -503,10 +650,14 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                               height: 18,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Icon(Icons.send_outlined),
+                          : Icon(_creditId != null
+                              ? Icons.card_giftcard
+                              : Icons.send_outlined),
                       label: Text(_envoiEnCours
                           ? 'Envoi…'
-                          : 'Envoyer ma demande'),
+                          : (_creditId != null
+                              ? 'Publier gratuitement'
+                              : 'Envoyer ma demande')),
                     ),
                     const SizedBox(height: 24),
                   ],

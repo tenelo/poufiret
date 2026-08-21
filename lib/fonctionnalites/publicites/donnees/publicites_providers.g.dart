@@ -432,3 +432,50 @@ final class MesStatsPublicitesProvider
 
 String _$mesStatsPublicitesHash() =>
     r'869059ffe66a0bb5034dc21e6219dda0104369c9';
+
+/// Credits de formule disponibles du partenaire connecte.
+
+@ProviderFor(mesCreditsDisponibles)
+final mesCreditsDisponiblesProvider = MesCreditsDisponiblesProvider._();
+
+/// Credits de formule disponibles du partenaire connecte.
+
+final class MesCreditsDisponiblesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<CreditFormule>>,
+          List<CreditFormule>,
+          FutureOr<List<CreditFormule>>
+        >
+    with
+        $FutureModifier<List<CreditFormule>>,
+        $FutureProvider<List<CreditFormule>> {
+  /// Credits de formule disponibles du partenaire connecte.
+  MesCreditsDisponiblesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'mesCreditsDisponiblesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$mesCreditsDisponiblesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<CreditFormule>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<CreditFormule>> create(Ref ref) {
+    return mesCreditsDisponibles(ref);
+  }
+}
+
+String _$mesCreditsDisponiblesHash() =>
+    r'17638033320d768907d68e346a8485e81fcae0ee';

@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../global/network/providers.dart';
+import '../metier_domaine/credit_formule.dart';
 import '../metier_domaine/formule_publicite.dart';
 import '../metier_domaine/publicite_detail.dart';
 import '../metier_domaine/publicite_liste.dart';
@@ -59,4 +60,10 @@ Future<List<Map<String, dynamic>>> mesPublicites(Ref ref) {
 @riverpod
 Future<List<StatsPublicite>> mesStatsPublicites(Ref ref) {
   return ref.watch(publicitesRepositoryProvider).mesStats();
+}
+
+/// Credits de formule disponibles du partenaire connecte.
+@riverpod
+Future<List<CreditFormule>> mesCreditsDisponibles(Ref ref) {
+  return ref.watch(publicitesRepositoryProvider).mesCredits(statut: 'disponible');
 }

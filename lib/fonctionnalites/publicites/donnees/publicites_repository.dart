@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../../../global/config/env.dart';
+import '../metier_domaine/credit_formule.dart';
 import '../metier_domaine/formule_publicite.dart';
 import '../metier_domaine/publicite_detail.dart';
 import '../metier_domaine/stats_publicite.dart';
@@ -107,12 +108,15 @@ class PublicitesRepository {
   /// POST /publicites/mes-publicites/ — cree une campagne (brouillon).
   ///
   /// [cheminImage] est le chemin local du flyer choisi par le partenaire.
+  /// [creditId] : si fourni, active la pub immediatement via un credit de
+  /// formule (gratuit) au lieu du cycle de paiement.
   Future<Map<String, dynamic>> creerPublicite({
     required String formuleId,
     required String titre,
     required String description,
     required String cheminImage,
     String portee = 'departement',
+    String? creditId,
   }) async {
     final form = FormData.fromMap({
       'formule': formuleId,
@@ -120,6 +124,7 @@ class PublicitesRepository {
       'description': description,
       'portee': portee,
       'image_couverture': await MultipartFile.fromFile(cheminImage),
+      'credit_id': ?creditId,
     });
     final r = await _dio.post('$_base/mes-publicites/', data: form);
     return Map<String, dynamic>.from(r.data as Map);
@@ -152,5 +157,14 @@ class PublicitesRepository {
       queryParameters: {'page_size': 100},
     );
     return _liste(r.data, 'results').map(FormulePublicite.fromJson).toList();
+  }
+
+  /// GET /publicites/mes-credits/ — credits de formule du partenaire.
+  Future<List<CreditFormule>> mesCredits({String? statut}) async {
+    final r = await _dio.get(
+      '$_base/mes-credits/',
+      queryParameters: {'statut': ?statut},
+    );
+    return _liste(r.data, 'resultats').map(CreditFormule.fromJson).toList();
   }
 }
