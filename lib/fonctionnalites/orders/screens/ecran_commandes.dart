@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../donnees/orders_providers.dart';
+import '../../../global/config/config.dart';
+import '../../../global/ui/notificateur.dart';
 import '../metier_domaine/orders_models.dart';
 
 /// Liste des commandes du client.
@@ -53,7 +55,7 @@ Color _couleurStatut(BuildContext context, String statut) {
   final scheme = Theme.of(context).colorScheme;
   switch (statut) {
     case 'livree':
-      return Colors.green;
+      return Config.couleurSucces;
     case 'refusee':
     case 'annulee':
     case 'expiree':
@@ -61,7 +63,7 @@ Color _couleurStatut(BuildContext context, String statut) {
     case 'nouvelle':
       return scheme.primary;
     default:
-      return Colors.orange;
+      return Config.couleurAvertissement;
   }
 }
 
@@ -169,11 +171,11 @@ class _EcranCommandeDetailState extends ConsumerState<EcranCommandeDetail> {
       ref.invalidate(commandeDetailProvider(id: widget.commandeId));
       ref.invalidate(commandesProvider());
       messenger.showSnackBar(
-        const SnackBar(content: Text('Commande annulée.')),
+        Notificateur.snackSucces('Commande annulée.'),
       );
     } catch (_) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Impossible d\'annuler.')),
+        Notificateur.snackErreur('Impossible d\'annuler.'),
       );
     } finally {
       if (mounted) setState(() => _occupe = false);
@@ -340,7 +342,8 @@ class _LigneInfo extends StatelessWidget {
             child: Text(
               label,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.outline,
+                //color: theme.colorScheme.outline,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),

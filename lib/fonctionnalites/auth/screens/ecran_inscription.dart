@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
 import 'package:poufiret/global/responsive/conteneur_adaptatif.dart';
+import 'package:poufiret/global/ui/notificateur.dart';
+import 'package:poufiret/fonctionnalites/auth/donnees/service_auth_firebase.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
 import 'package:poufiret/fonctionnalites/auth/widgets/clavier_numerique.dart';
 import 'package:poufiret/fonctionnalites/auth/widgets/points_pin.dart';
@@ -11,6 +13,9 @@ import 'package:poufiret/global/network/providers.dart';
 import 'package:poufiret/fonctionnalites/geo/widgets/champ_departement.dart';
 
 enum _Etape { infos, otp, nouveauPin, confirmerPin }
+
+/// Longueur d'un code SMS Firebase (standard, distincte du PIN a 4 chiffres).
+const _longueurCodeSms = 6;
 
 class EcranInscription extends ConsumerStatefulWidget {
   const EcranInscription({super.key});
@@ -37,7 +42,11 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
   bool _erreur = false;
   bool _enCours = false;
 
-  static const _but = 'inscription';
+  // Firebase Phone Auth : une instance par tentative de vérification, et
+  // l'idToken obtenu une fois le numéro prouvé (saisie manuelle ou
+  // vérification automatique Android), consommé à l'étape finale.
+  final _serviceFirebase = ServiceAuthFirebase();
+  String? _idToken;
 
   @override
   void dispose() {
@@ -49,83 +58,102 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
 
   String get _telephoneComplet => '+225${_telephone.text.trim()}';
 
-  void _snack(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-  }
-
   String _messageErreur(Object? e) =>
       e is ApiException ? e.messageLisible : 'Une erreur est survenue.';
 
-  // ── Étape 1 : valider les infos + demander l'OTP ────────────────────────
+  // ── Étape 1 : valider les infos + envoyer le code SMS (Firebase) ────────
   Future<void> _demarrer() async {
     if (!_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     setState(() => _enCours = true);
-    try {
-      final res = await ref.read(authProvider.notifier).demanderOtp(
-            telephone: _telephoneComplet,
-            but: _but,
-          );
-      if (!mounted) return;
-
-      // Un compte existe déjà → on redirige vers la connexion.
-      if (res['compte_existe'] == true) {
-        _snack('Un compte existe déjà pour ce numéro. Connectez-vous.');
-        Navigator.of(context).pop();
-        return;
-      }
-
-      // Numéro déjà vérifié → pas de SMS, on saute l'OTP.
-      if (res['deja_verifie'] == true || res['otp_envoye'] != true) {
+    await _serviceFirebase.demanderCode(
+      telephone: _telephoneComplet,
+      onCodeEnvoye: () {
+        if (!mounted) return;
         setState(() {
-          _etape = _Etape.nouveauPin;
-          _erreur = false;
-        });
-      } else {
-        setState(() {
+          _enCours = false;
           _etape = _Etape.otp;
           _otp = '';
           _erreur = false;
         });
-      }
-    } catch (e) {
-      _snack(_messageErreur(e));
-    } finally {
-      if (mounted) setState(() => _enCours = false);
-    }
+      },
+      onVerifieAuto: (idToken) {
+        // Vérification automatique (auto-retrieval Android) : le numéro est
+        // déjà prouvé, on saute directement à la création du PIN.
+        if (!mounted) return;
+        setState(() {
+          _enCours = false;
+          _idToken = idToken;
+          _etape = _Etape.nouveauPin;
+          _erreur = false;
+        });
+      },
+      onErreur: (message) {
+        if (!mounted) return;
+        setState(() => _enCours = false);
+        Notificateur.erreur(context, message);
+      },
+    );
   }
 
-  // ── Étape 2 : OTP ───────────────────────────────────────────────────────
+  Future<void> _renvoyerCode() async {
+    if (_enCours) return;
+    setState(() => _enCours = true);
+    await _serviceFirebase.demanderCode(
+      telephone: _telephoneComplet,
+      renvoi: true,
+      onCodeEnvoye: () {
+        if (!mounted) return;
+        setState(() {
+          _enCours = false;
+          _otp = '';
+          _erreur = false;
+        });
+        Notificateur.succes(context, 'Un nouveau code a été envoyé.');
+      },
+      onVerifieAuto: (idToken) {
+        if (!mounted) return;
+        setState(() {
+          _enCours = false;
+          _idToken = idToken;
+          _etape = _Etape.nouveauPin;
+          _erreur = false;
+        });
+      },
+      onErreur: (message) {
+        if (!mounted) return;
+        setState(() => _enCours = false);
+        Notificateur.erreur(context, message);
+      },
+    );
+  }
+
+  // ── Étape 2 : code SMS (Firebase) ────────────────────────────────────────
   void _onOtp(String c) {
-    if (_otp.length >= 4) return;
+    if (_otp.length >= _longueurCodeSms) return;
     setState(() {
       _erreur = false;
       _otp += c;
     });
-    if (_otp.length == 4) _verifierOtp();
+    if (_otp.length == _longueurCodeSms) _verifierOtp();
   }
 
   Future<void> _verifierOtp() async {
     setState(() => _enCours = true);
     try {
-      await ref.read(authProvider.notifier).verifierOtp(
-            telephone: _telephoneComplet,
-            code: _otp,
-            but: _but,
-          );
+      final idToken = await _serviceFirebase.confirmerCode(_otp);
       if (!mounted) return;
       setState(() {
+        _idToken = idToken;
         _etape = _Etape.nouveauPin;
         _erreur = false;
       });
-    } catch (e) {
+    } on ServiceAuthFirebaseException catch (e) {
       setState(() {
         _erreur = true;
         _otp = '';
       });
-      _snack(_messageErreur(e));
+      if (mounted) Notificateur.erreur(context, e.message);
     } finally {
       if (mounted) setState(() => _enCours = false);
     }
@@ -160,8 +188,7 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
           _etape = _Etape.nouveauPin;
           _nouveauPin = '';
         } else {
-          _confirmation =
-              _confirmation.substring(0, _confirmation.length - 1);
+          _confirmation = _confirmation.substring(0, _confirmation.length - 1);
         }
       } else if (_nouveauPin.isNotEmpty) {
         _nouveauPin = _nouveauPin.substring(0, _nouveauPin.length - 1);
@@ -177,15 +204,33 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
         _confirmation = '';
         _etape = _Etape.nouveauPin;
       });
-      _snack('Le code PIN ne correspond pas. Recommencez.');
+      Notificateur.erreur(
+        context,
+        'Le code PIN ne correspond pas. Recommencez.',
+      );
+      return;
+    }
+    final idToken = _idToken;
+    if (idToken == null) {
+      // Ne devrait pas arriver (numéro pas encore prouvé), garde-fou.
+      Notificateur.erreur(
+        context,
+        'Vérification du numéro expirée. Recommencez.',
+      );
+      setState(() {
+        _etape = _Etape.infos;
+        _nouveauPin = '';
+        _confirmation = '';
+      });
       return;
     }
     setState(() => _enCours = true);
-    // definirPin(inscription) connecte directement (tokens renvoyés).
-    await ref.read(authProvider.notifier).definirPin(
-          telephone: _telephoneComplet,
+    // inscriptionFirebase(...) connecte directement (tokens renvoyés).
+    await ref
+        .read(authProvider.notifier)
+        .inscriptionFirebase(
+          idToken: idToken,
           password: _nouveauPin,
-          but: _but,
           prenom: _prenom.text.trim(),
           nom: _nom.text.trim(),
         );
@@ -226,6 +271,18 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
         return;
       }
       if (next.hasError && !next.isLoading && _etape == _Etape.confirmerPin) {
+        final err = next.error;
+        // 400 sur /auth/firebase/inscription/ : le contrat backend le
+        // reserve au cas "un compte existe deja pour ce numero" — le
+        // numero venait pourtant d'etre prouve par Firebase, donc on
+        // redirige simplement vers la connexion plutot que de laisser
+        // l'utilisateur recommencer une inscription qui echouera toujours.
+        if (err is ApiException && err.code == 400) {
+          setState(() => _enCours = false);
+          Notificateur.avertissement(context, err.messageLisible);
+          Navigator.of(context).pop();
+          return;
+        }
         setState(() {
           _enCours = false;
           _erreur = true;
@@ -233,19 +290,18 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
           _confirmation = '';
           _etape = _Etape.nouveauPin;
         });
-        _snack(_messageErreur(next.error));
+        Notificateur.erreur(context, _messageErreur(err));
       }
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Créer un compte')),
+      appBar: AppBar(title: const Text('Créer un compte'), centerTitle: true),
       body: SafeArea(
         child: ConteneurAdaptatif(
           child: switch (_etape) {
             _Etape.infos => _buildInfos(),
             _Etape.otp => _buildOtp(),
-            _Etape.nouveauPin ||
-            _Etape.confirmerPin => _buildPin(),
+            _Etape.nouveauPin || _Etape.confirmerPin => _buildPin(),
           },
         ),
       ),
@@ -259,25 +315,25 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           TextFormField(
-            controller: _prenom,
-            textCapitalization: TextCapitalization.words,
-            decoration: const InputDecoration(
-              labelText: 'Prénom',
-              border: OutlineInputBorder(),
-            ),
-            validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Entre ton prénom' : null,
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
             controller: _nom,
             textCapitalization: TextCapitalization.words,
             decoration: const InputDecoration(
-              labelText: 'Nom',
+              labelText: 'Nom *',
               border: OutlineInputBorder(),
             ),
             validator: (v) =>
                 (v == null || v.trim().isEmpty) ? 'Entre ton nom' : null,
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            controller: _prenom,
+            textCapitalization: TextCapitalization.words,
+            decoration: const InputDecoration(
+              labelText: 'Prénoms *',
+              border: OutlineInputBorder(),
+            ),
+            validator: (v) =>
+                (v == null || v.trim().isEmpty) ? 'Entre ton prénom' : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
@@ -286,7 +342,7 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
             maxLength: 10,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             decoration: const InputDecoration(
-              labelText: 'Téléphone',
+              labelText: 'Téléphone *',
               prefixText: '+225 ',
               counterText: '',
               border: OutlineInputBorder(),
@@ -295,12 +351,17 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
                 ? 'Entre tes 10 chiffres'
                 : null,
           ),
+          const SizedBox(height: 16),
+          ChampDepartement(
+            valeur: _departement,
+            libelle: 'Votre département',
+            obligatoire: true,
+            onChange: (v) => setState(() => _departement = v),
+          ),
           const SizedBox(height: 20),
           _BlocFacultatif(
-            departement: _departement,
             trancheAge: _trancheAge,
             sexe: _sexe,
-            onDepartement: (v) => setState(() => _departement = v),
             onTrancheAge: (v) => setState(() => _trancheAge = v),
             onSexe: (v) => setState(() => _sexe = v),
           ),
@@ -311,7 +372,8 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
                 ? const SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2))
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
                 : const Text('Continuer'),
           ),
         ],
@@ -323,28 +385,48 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.sms_outlined,
-            size: 56, color: Theme.of(context).colorScheme.primary),
+        Icon(
+          Icons.sms_outlined,
+          size: 56,
+          color: Theme.of(context).colorScheme.primary,
+        ),
         const SizedBox(height: 24),
-        Text('Code de vérification',
-            style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          'Code de vérification',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 8),
-        Text('Code envoyé au $_telephoneComplet',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                )),
+        Text(
+          'Code envoyé au $_telephoneComplet',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 32),
-        PointsPin(remplis: _otp.length, erreur: _erreur),
+        PointsPin(
+          remplis: _otp.length,
+          total: _longueurCodeSms,
+          erreur: _erreur,
+        ),
         const SizedBox(height: 32),
         if (_enCours)
           const CircularProgressIndicator()
-        else
-          ClavierNumerique(onChiffre: _onOtp, onSupprimer: () {
-            if (_otp.isNotEmpty) {
-              setState(() => _otp = _otp.substring(0, _otp.length - 1));
-            }
-          }),
+        else ...[
+          ClavierNumerique(
+            onChiffre: _onOtp,
+            onSupprimer: () {
+              if (_otp.isNotEmpty) {
+                setState(() => _otp = _otp.substring(0, _otp.length - 1));
+              }
+            },
+          ),
+          const SizedBox(height: 8),
+          TextButton(
+            onPressed: _renvoyerCode,
+            child: const Text('Renvoyer le code'),
+          ),
+        ],
       ],
     );
   }
@@ -355,8 +437,11 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.lock_outline,
-            size: 56, color: Theme.of(context).colorScheme.primary),
+        Icon(
+          Icons.lock_outline,
+          size: 56,
+          color: Theme.of(context).colorScheme.primary,
+        ),
         const SizedBox(height: 24),
         Text(
           enConfirmation ? 'Confirmez votre PIN' : 'Créez votre code PIN',
@@ -382,7 +467,7 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
   }
 }
 
-/// Bloc separe, non obligatoire : departement, tranche d'age, sexe.
+/// Bloc separe, non obligatoire : tranche d'age, sexe.
 ///
 /// Volontairement mis a l'ecart du reste du formulaire et introduit par
 /// un rappel qu'il n'est pas obligatoire — mais utile pour proposer un
@@ -390,18 +475,14 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
 /// fuir a l'inscription.
 class _BlocFacultatif extends StatelessWidget {
   const _BlocFacultatif({
-    required this.departement,
     required this.trancheAge,
     required this.sexe,
-    required this.onDepartement,
     required this.onTrancheAge,
     required this.onSexe,
   });
 
-  final int? departement;
   final String? trancheAge;
   final String? sexe;
-  final ValueChanged<int?> onDepartement;
   final ValueChanged<String?> onTrancheAge;
   final ValueChanged<String?> onSexe;
 
@@ -437,8 +518,10 @@ class _BlocFacultatif extends StatelessWidget {
               Icon(Icons.tune, size: 18, color: theme.colorScheme.primary),
               const SizedBox(width: 8),
               Expanded(
-                child: Text('Pour mieux vous servir (facultatif)',
-                    style: theme.textTheme.titleSmall),
+                child: Text(
+                  'Pour mieux vous servir (facultatif)',
+                  style: theme.textTheme.titleSmall,
+                ),
               ),
             ],
           ),
@@ -447,16 +530,9 @@ class _BlocFacultatif extends StatelessWidget {
             'Ces informations ne sont pas obligatoires, mais elles nous '
             'aident à vous proposer les commerces les plus pertinents près '
             'de chez vous.',
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: theme.colorScheme.outline),
+            style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[700]),
           ),
           const SizedBox(height: 14),
-          ChampDepartement(
-            valeur: departement,
-            libelle: 'Votre département',
-            onChange: onDepartement,
-          ),
-          const SizedBox(height: 12),
           DropdownButtonFormField<String>(
             initialValue: trancheAge,
             isExpanded: true,

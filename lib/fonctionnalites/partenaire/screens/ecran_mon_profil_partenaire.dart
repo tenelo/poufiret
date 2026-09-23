@@ -1,11 +1,16 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
+import '../../../global/ui/notificateur.dart';
+import '../../map/donnees/map_providers.dart';
+import '../../map/donnees/service_position.dart';
 import '../donnees/espace_partenaire_providers.dart';
 import '../../../global/widgets/image_reseau.dart';
 
@@ -120,20 +125,16 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
         _logo = null;
         _couverture = null;
       });
-      _message('Vitrine mise à jour.');
+      Notificateur.succes(context, 'Vitrine mise à jour.');
     } on ApiException catch (e) {
-      _message(e.messageLisible);
+      if (mounted) Notificateur.erreur(context, e.messageLisible);
     } catch (_) {
-      _message('Enregistrement impossible. Réessayez.');
+      if (mounted) {
+        Notificateur.erreur(context, 'Enregistrement impossible. Réessayez.');
+      }
     } finally {
       if (mounted) setState(() => _envoi = false);
     }
-  }
-
-  void _message(String texte) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(texte)));
   }
 
   @override
@@ -207,7 +208,12 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
                     const SizedBox(height: 12),
                   ],
 
-                  const SizedBox(height: 8),
+                  _SectionLocalisation(
+                    latitude: (p['latitude'] as num?)?.toDouble(),
+                    longitude: (p['longitude'] as num?)?.toDouble(),
+                  ),
+                  const SizedBox(height: 20),
+
                   FilledButton.icon(
                     onPressed: _envoi ? null : _enregistrer,
                     icon: _envoi
@@ -226,6 +232,257 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
           ),
         );
       },
+    );
+  }
+}
+
+/// Section « Localisation (point GPS) » du profil partenaire.
+///
+/// Independante du formulaire textuel : elle envoie ses propres PATCH
+/// (latitude+longitude ensemble, jamais un seul) sans toucher aux autres
+/// champs du profil (le PATCH backend est partiel).
+class _SectionLocalisation extends ConsumerStatefulWidget {
+  const _SectionLocalisation({this.latitude, this.longitude});
+  final double? latitude;
+  final double? longitude;
+
+  @override
+  ConsumerState<_SectionLocalisation> createState() =>
+      _SectionLocalisationState();
+}
+
+class _SectionLocalisationState extends ConsumerState<_SectionLocalisation> {
+  late double? _lat = widget.latitude;
+  late double? _lng = widget.longitude;
+  bool _envoi = false;
+  bool _localisationEnCours = false;
+  GoogleMapController? _controller;
+
+  bool get _aUnPoint => _lat != null && _lng != null;
+  bool get _modifie => _lat != widget.latitude || _lng != widget.longitude;
+
+  String _messageErreur(Object e) {
+    if (e is DioException && e.error is ApiException) {
+      return (e.error as ApiException).messageLisible;
+    }
+    if (e is ApiException) return e.messageLisible;
+    return 'Enregistrement impossible. Réessayez.';
+  }
+
+  /// Utilise la mecanique GPS partagee (TeneLivr) : permission + service.
+  /// Ne fait que mettre a jour le marqueur/les coordonnees localement ;
+  /// l'enregistrement se fait via le bouton dedie.
+  Future<void> _utiliserPositionActuelle() async {
+    if (_localisationEnCours) return;
+    setState(() => _localisationEnCours = true);
+    final res = await ref.read(servicePositionProvider).positionActuelle();
+    if (!mounted) return;
+    setState(() => _localisationEnCours = false);
+
+    switch (res) {
+      case PositionObtenue(:final latitude, :final longitude):
+        setState(() {
+          _lat = latitude;
+          _lng = longitude;
+        });
+        if (_controller != null) {
+          _controller!.animateCamera(
+            CameraUpdate.newLatLng(LatLng(latitude, longitude)),
+          );
+        }
+      case ServiceDesactive():
+        Notificateur.avertissement(
+            context, 'Activez la localisation (GPS) de votre téléphone.');
+      case PermissionRefusee(:final definitif):
+        Notificateur.avertissement(
+          context,
+          definitif
+              ? 'Permission de localisation refusée. Ouvrez les réglages '
+                  'pour l\'autoriser.'
+              : 'Autorisez la localisation pour définir le point GPS de '
+                  'votre commerce.',
+        );
+      case ErreurPosition(:final message):
+        Notificateur.avertissement(context, 'Position indisponible : $message');
+    }
+  }
+
+  /// Ajustement fin : deplace le marqueur au point tape sur la carte.
+  void _ajusterPoint(LatLng point) {
+    setState(() {
+      _lat = point.latitude;
+      _lng = point.longitude;
+    });
+  }
+
+  Future<void> _enregistrerPoint() async {
+    await _envoyer(_lat, _lng);
+  }
+
+  Future<void> _retirerPoint() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        content: const Text('Retirer le point GPS de votre commerce ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Annuler'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Retirer'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await _envoyer(null, null);
+  }
+
+  /// Envoie TOUJOURS latitude et longitude ensemble (jamais un seul), pour
+  /// respecter le contrat backend (un seul des deux -> 400).
+  Future<void> _envoyer(double? lat, double? lng) async {
+    if (_envoi) return;
+    setState(() => _envoi = true);
+    try {
+      await ref.read(espacePartenaireRepositoryProvider).modifierProfil({
+        'latitude': lat,
+        'longitude': lng,
+      });
+      ref.invalidate(monProfilPartenaireProvider);
+      if (!mounted) return;
+      setState(() {
+        _lat = lat;
+        _lng = lng;
+      });
+      Notificateur.succes(
+        context,
+        lat == null ? 'Point GPS retiré.' : 'Point GPS enregistré.',
+      );
+    } catch (e) {
+      if (mounted) Notificateur.erreur(context, _messageErreur(e));
+    } finally {
+      if (mounted) setState(() => _envoi = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.place_outlined, size: 18, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text('Localisation (point GPS)',
+                    style: theme.textTheme.titleSmall),
+              ],
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Ce point precis aide les clients a vous trouver sur la carte.',
+              style: TextStyle(
+                fontSize: 12,
+                color: Config.couleurTexteSecondaire,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              _aUnPoint
+                  ? '${_lat!.toStringAsFixed(5)}, ${_lng!.toStringAsFixed(5)}'
+                  : 'Non renseigné',
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            if (_aUnPoint) ...[
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: SizedBox(
+                  height: 200,
+                  child: GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(_lat!, _lng!),
+                      zoom: 15,
+                    ),
+                    markers: {
+                      Marker(
+                        markerId: const MarkerId('commerce'),
+                        position: LatLng(_lat!, _lng!),
+                      ),
+                    },
+                    onMapCreated: (c) => _controller = c,
+                    onTap: _ajusterPoint,
+                    zoomControlsEnabled: false,
+                    myLocationButtonEnabled: false,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Touchez la carte pour ajuster précisément l\'emplacement.',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: Config.couleurTexteSecondaire,
+                ),
+              ),
+            ],
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                OutlinedButton.icon(
+                  onPressed: _localisationEnCours
+                      ? null
+                      : _utiliserPositionActuelle,
+                  icon: _localisationEnCours
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.my_location, size: 18),
+                  label: const Text('Utiliser ma position actuelle'),
+                ),
+                if (_aUnPoint)
+                  OutlinedButton.icon(
+                    onPressed: _envoi ? null : _retirerPoint,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Config.couleurErreur,
+                      side: const BorderSide(color: Config.couleurErreur),
+                    ),
+                    icon: const Icon(Icons.delete_outline, size: 18),
+                    label: const Text('Retirer le point GPS'),
+                  ),
+              ],
+            ),
+            if (_modifie) ...[
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: _envoi ? null : _enregistrerPoint,
+                  icon: _envoi
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.check),
+                  label: Text(_envoi ? 'Enregistrement…' : 'Enregistrer le point'),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../global/config/config.dart';
+import '../../../global/ui/notificateur.dart';
 import '../metier_domaine/info_version.dart';
 
 /// Écran plein bloquant affiché quand une mise à jour est OBLIGATOIRE.
@@ -14,16 +15,18 @@ class EcranMiseAJour extends StatelessWidget {
 
   final InfoVersion info;
 
-  Future<void> _ouvrirStore(BuildContext context) async {
+  /// Ouvre la fiche store (`info.lienStore`) dans une app externe.
+  ///
+  /// Partagée avec le rappel ignorable de [CoucheMiseAJour] (cas
+  /// « conseillée ») pour ne pas dupliquer cette logique.
+  static Future<void> ouvrirStore(BuildContext context, InfoVersion info) async {
     final lien = info.lienStore;
     if (lien.isEmpty) return;
     final uri = Uri.tryParse(lien);
     if (uri == null) return;
     final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Impossible d\'ouvrir le store.')),
-      );
+      Notificateur.erreur(context, 'Impossible d\'ouvrir le store.');
     }
   }
 
@@ -78,7 +81,7 @@ class EcranMiseAJour extends StatelessWidget {
                           child: FilledButton.icon(
                             onPressed: info.lienStore.isEmpty
                                 ? null
-                                : () => _ouvrirStore(context),
+                                : () => ouvrirStore(context, info),
                             icon: const Icon(Icons.download),
                             label: const Padding(
                               padding: EdgeInsets.symmetric(vertical: 4),

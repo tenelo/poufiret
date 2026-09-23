@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../global/config/config.dart';
 import '../../../global/network/providers.dart';
 import '../donnees/chat_providers.dart';
 import '../donnees/chat_socket.dart';
@@ -125,9 +126,8 @@ class _EcranDiscussionState extends ConsumerState<EcranDiscussion> {
       body: Column(
         children: [
           if (_etat == EtatSocket.refuse)
-            _Bandeau(
+            const _Bandeau(
               texte: 'Connexion impossible à cette conversation.',
-              couleur: Colors.red.shade100,
             ),
           Expanded(
             child: !_historiqueCharge
@@ -211,7 +211,7 @@ class _Bulle extends StatelessWidget {
                   message.statut == 'lu' ? Icons.done_all : Icons.done,
                   size: 14,
                   color: message.statut == 'lu'
-                      ? Colors.blue
+                      ? theme.colorScheme.primary
                       : theme.colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -248,11 +248,6 @@ class _Saisie extends StatelessWidget {
                 onSubmitted: (_) => actif ? onEnvoyer() : null,
                 decoration: InputDecoration(
                   hintText: actif ? 'Votre message…' : 'Connexion…',
-                  border: const OutlineInputBorder(),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
                 ),
               ),
             ),
@@ -269,17 +264,23 @@ class _Saisie extends StatelessWidget {
 }
 
 class _Bandeau extends StatelessWidget {
-  const _Bandeau({required this.texte, required this.couleur});
+  const _Bandeau({required this.texte});
   final String texte;
-  final Color couleur;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      color: couleur,
+      color: Config.couleurErreur.withValues(alpha: 0.12),
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-      child: Text(texte, textAlign: TextAlign.center),
+      child: Text(
+        texte,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: Config.couleurErreur,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }

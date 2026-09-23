@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
 import 'package:poufiret/global/responsive/conteneur_adaptatif.dart';
+import 'package:poufiret/global/ui/notificateur.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
 import 'package:poufiret/fonctionnalites/auth/widgets/clavier_numerique.dart';
 import 'package:poufiret/fonctionnalites/auth/widgets/points_pin.dart';
@@ -31,12 +32,6 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
   bool _erreur = false;
   bool _enCours = false;
   String? _messageErr;
-
-  void _snack(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-  }
 
   String _messageErreur(Object? e) {
     // L'intercepteur Dio rejette une DioException qui enveloppe l'ApiException.
@@ -110,7 +105,7 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
         _confirmation = '';
         _etape = _Etape.nouveau;
       });
-      _snack('Le nouveau code ne correspond pas. Recommencez.');
+      Notificateur.erreur(context, 'Le nouveau code ne correspond pas. Recommencez.');
       return;
     }
     setState(() {
@@ -132,7 +127,7 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
     }
     // Succes : le profil a pin_par_defaut=false. On sort de l'ecran.
     setState(() => _enCours = false);
-    _snack('Code PIN mis a jour.');
+    Notificateur.succes(context, 'Code PIN mis a jour.');
     if (Navigator.of(context).canPop()) {
       Navigator.of(context).pop();
     }

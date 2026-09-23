@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../auth/screens/auth_notifier.dart';
 import '../../auth/widgets/mur_inscription.dart';
 import '../../catalogue/donnees/catalogue_providers.dart';
+import '../../../global/ui/notificateur.dart';
 import '../donnees/geo_providers.dart';
 import '../metier_domaine/departement.dart';
 
@@ -101,16 +102,12 @@ class FiltreLocalites extends ConsumerWidget {
 
     final async = ref.read(departementsProvider);
     if (async.isLoading) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Chargement des régions…')),
-      );
+      Notificateur.info(context, 'Chargement des régions…');
       return;
     }
     final parRegion = _regionsDisponibles(ref);
     if (parRegion.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Régions indisponibles.')),
-      );
+      Notificateur.erreur(context, 'Régions indisponibles.');
       return;
     }
 

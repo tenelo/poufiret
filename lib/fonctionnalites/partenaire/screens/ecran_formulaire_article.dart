@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../global/errors/api_exception.dart';
+import '../../../global/ui/notificateur.dart';
 import '../../catalogue/donnees/catalogue_providers.dart';
 import '../../catalogue/metier_domaine/categorie.dart';
 import '../donnees/espace_partenaire_providers.dart';
@@ -105,11 +106,6 @@ class _EcranFormulaireArticleState
     super.dispose();
   }
 
-  void _message(String texte) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(texte)));
-  }
-
   /// Nombre de photos encore acceptees, selon le plan du partenaire.
   int get _placesRestantes {
     final max = ref.read(monProfilPartenaireProvider).maybeWhen(
@@ -122,7 +118,8 @@ class _EcranFormulaireArticleState
   Future<void> _choisirPhotos() async {
     final restantes = _placesRestantes;
     if (restantes <= 0) {
-      _message('Votre plan ne permet pas plus de photos pour cet article.');
+      Notificateur.avertissement(
+          context, 'Votre plan ne permet pas plus de photos pour cet article.');
       return;
     }
     final images = await ImagePicker().pickMultiImage(
@@ -134,9 +131,12 @@ class _EcranFormulaireArticleState
     // On tronque aussi cote app : selon les galeries, `limit` n'est
     // qu'une indication et l'utilisateur peut en choisir davantage.
     final retenues = images.take(restantes).toList();
-    if (images.length > retenues.length) {
-      _message('Seules $restantes photo(s) ont été retenues '
-          '(limite de votre plan).');
+    if (images.length > retenues.length && mounted) {
+      Notificateur.avertissement(
+        context,
+        'Seules $restantes photo(s) ont été retenues '
+        '(limite de votre plan).',
+      );
     }
     setState(() => _nouvellesPhotos.addAll(retenues));
   }
@@ -144,7 +144,7 @@ class _EcranFormulaireArticleState
   Future<void> _enregistrer() async {
     if (!_cleFormulaire.currentState!.validate()) return;
     if (_categorieId == null) {
-      _message('Choisissez une catégorie.');
+      Notificateur.avertissement(context, 'Choisissez une catégorie.');
       return;
     }
     setState(() => _envoiEnCours = true);
@@ -184,18 +184,25 @@ class _EcranFormulaireArticleState
         }
       }
       if (!mounted) return;
-      _message(
-        echecs == 0
-            ? (_estEdition ? 'Article modifié.' : 'Article créé.')
-            : 'Enregistré, mais $echecs photo(s) refusée(s) (quota du plan ?).',
-      );
+      if (echecs == 0) {
+        Notificateur.succes(
+            context, _estEdition ? 'Article modifié.' : 'Article créé.');
+      } else {
+        Notificateur.avertissement(
+          context,
+          'Enregistré, mais $echecs photo(s) refusée(s) (quota du plan ?).',
+        );
+      }
       Navigator.of(context).pop(true);
     } catch (e) {
-      _message(
-        e is ApiException
-            ? e.messageLisible
-            : 'Enregistrement impossible. Réessayez.',
-      );
+      if (mounted) {
+        Notificateur.erreur(
+          context,
+          e is ApiException
+              ? e.messageLisible
+              : 'Enregistrement impossible. Réessayez.',
+        );
+      }
     } finally {
       if (mounted) setState(() => _envoiEnCours = false);
     }
@@ -227,13 +234,16 @@ class _EcranFormulaireArticleState
           .read(espacePartenaireRepositoryProvider)
           .supprimerArticle(widget.slug!);
       if (!mounted) return;
-      _message('Article supprimé.');
+      Notificateur.succes(context, 'Article supprimé.');
       Navigator.of(context).pop(true);
     } catch (e) {
-      _message(
-        e is ApiException ? e.messageLisible : 'Suppression impossible.',
-      );
-      if (mounted) setState(() => _envoiEnCours = false);
+      if (mounted) {
+        Notificateur.erreur(
+          context,
+          e is ApiException ? e.messageLisible : 'Suppression impossible.',
+        );
+        setState(() => _envoiEnCours = false);
+      }
     }
   }
 
@@ -307,7 +317,9 @@ class _EcranFormulaireArticleState
                             loading: () => const LinearProgressIndicator(),
                             error: (e, s) =>
                                 const Text('Catégories indisponibles.'),
-                            data: (cats) {
+                            data: (toutes) {
+                              // Categories terminales uniquement (pas les groupes).
+                              final cats = toutes.feuilles;
                               _categories = cats;
                               return DropdownButtonFormField<int>(
                                 initialValue: _categorieId,

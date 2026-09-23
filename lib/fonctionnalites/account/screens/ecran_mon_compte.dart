@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../global/errors/api_exception.dart';
+import '../../../global/ui/notificateur.dart';
 import '../../auth/donnees/auth_providers.dart';
 import '../../auth/screens/auth_notifier.dart';
 import 'ecran_appareils.dart';
@@ -30,11 +31,6 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
     super.dispose();
   }
 
-  void _message(String texte) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(texte)));
-  }
-
   Future<void> _enregistrer() async {
     setState(() => _envoiEnCours = true);
     try {
@@ -44,11 +40,14 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
         'username': _ctrlUsername.text.trim(),
       });
       ref.invalidate(authProvider);
-      _message('Profil mis à jour.');
+      if (mounted) Notificateur.succes(context, 'Profil mis à jour.');
     } catch (e) {
-      _message(e is ApiException
-          ? e.messageLisible
-          : 'Mise à jour impossible.');
+      if (mounted) {
+        Notificateur.erreur(
+          context,
+          e is ApiException ? e.messageLisible : 'Mise à jour impossible.',
+        );
+      }
     } finally {
       if (mounted) setState(() => _envoiEnCours = false);
     }
@@ -82,71 +81,96 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
                       padding: const EdgeInsets.all(16),
                       children: [
                         // ── Identité ─────────────────────────────────
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const CircleAvatar(
-                              child: Icon(Icons.person)),
-                          title: Text(utilisateur.telephone),
-                          subtitle: Text(utilisateur.estPartenaire
-                              ? 'Compte partenaire'
-                              : 'Compte client'),
-                        ),
-                        const Divider(height: 24),
-                        TextFormField(
-                          controller: _ctrlPrenom,
-                          decoration: const InputDecoration(
-                              labelText: 'Prénom'),
-                        ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          controller: _ctrlNom,
-                          decoration:
-                              const InputDecoration(labelText: 'Nom'),
-                        ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          controller: _ctrlUsername,
-                          decoration: const InputDecoration(
-                              labelText: 'Nom d\'utilisateur'),
+                        Card(
+                          child: ListTile(
+                            leading: const CircleAvatar(
+                                child: Icon(Icons.person)),
+                            title: Text(utilisateur.telephone),
+                            subtitle: Text(utilisateur.estPartenaire
+                                ? 'Compte partenaire'
+                                : 'Compte client'),
+                          ),
                         ),
                         const SizedBox(height: 16),
-                        FilledButton.icon(
-                          onPressed: _envoiEnCours ? null : _enregistrer,
-                          icon: _envoiEnCours
-                              ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                      strokeWidth: 2))
-                              : const Icon(Icons.save),
-                          label: const Text('Enregistrer'),
-                        ),
-                        const Divider(height: 32),
-                        // ── Sécurité et partenaire ───────────────────
-                        ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.devices),
-                          title: const Text('Appareils connectés'),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (_) => const EcranAppareils()),
-                          ),
-                        ),
-                        if (!utilisateur.estPartenaire)
-                          ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: const Icon(Icons.storefront),
-                            title: const Text('Devenir partenaire'),
-                            subtitle: const Text(
-                                'Vendez vos produits ou services sur Poufiret.'),
-                            trailing: const Icon(Icons.chevron_right),
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (_) =>
-                                      const EcranDevenirPartenaire()),
+
+                        // ── Profil éditable ───────────────────────────
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TextFormField(
+                                  controller: _ctrlPrenom,
+                                  decoration: const InputDecoration(
+                                      labelText: 'Prénom'),
+                                ),
+                                const SizedBox(height: 12),
+                                TextFormField(
+                                  controller: _ctrlNom,
+                                  decoration:
+                                      const InputDecoration(labelText: 'Nom'),
+                                ),
+                                const SizedBox(height: 12),
+                                TextFormField(
+                                  controller: _ctrlUsername,
+                                  decoration: const InputDecoration(
+                                      labelText: 'Nom d\'utilisateur'),
+                                ),
+                                const SizedBox(height: 16),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: FilledButton.icon(
+                                    onPressed:
+                                        _envoiEnCours ? null : _enregistrer,
+                                    icon: _envoiEnCours
+                                        ? const SizedBox(
+                                            width: 18,
+                                            height: 18,
+                                            child: CircularProgressIndicator(
+                                                strokeWidth: 2))
+                                        : const Icon(Icons.save),
+                                    label: const Text('Enregistrer'),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // ── Sécurité et partenaire ───────────────────
+                        Card(
+                          clipBehavior: Clip.antiAlias,
+                          child: Column(
+                            children: [
+                              ListTile(
+                                leading: const Icon(Icons.devices),
+                                title: const Text('Appareils connectés'),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (_) => const EcranAppareils()),
+                                ),
+                              ),
+                              if (!utilisateur.estPartenaire) ...[
+                                const Divider(height: 1),
+                                ListTile(
+                                  leading: const Icon(Icons.storefront),
+                                  title: const Text('Devenir partenaire'),
+                                  subtitle: const Text(
+                                      'Vendez vos produits ou services sur Poufiret.'),
+                                  trailing: const Icon(Icons.chevron_right),
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                        builder: (_) =>
+                                            const EcranDevenirPartenaire()),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),

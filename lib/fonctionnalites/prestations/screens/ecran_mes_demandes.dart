@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../donnees/prestations_providers.dart';
 import '../metier_domaine/demande_intervention.dart';
@@ -8,10 +9,10 @@ import 'ecran_demande_detail.dart';
 
 /// Couleur associée à un statut de demande.
 Color couleurStatut(String statut, ColorScheme couleurs) => switch (statut) {
-      'en_attente' => couleurs.tertiary,
-      'acceptee' => Colors.green,
+      'en_attente' => Config.couleurAvertissement,
+      'acceptee' => Config.couleurSucces,
       'en_cours' => couleurs.primary,
-      'terminee' => Colors.teal,
+      'terminee' => Config.couleurTexteSecondaire,
       'refusee' => couleurs.error,
       'annulee' => couleurs.outline,
       _ => couleurs.outline,

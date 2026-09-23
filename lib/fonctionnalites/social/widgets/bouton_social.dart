@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../global/ui/notificateur.dart';
+
 /// Bouton social réutilisable (like ❤️ ou favori 🔖) avec état optimiste.
 /// - bascule l'affichage immédiatement au tap
 /// - appelle le serveur en arrière-plan
@@ -70,9 +72,7 @@ class _BoutonSocialState extends State<BoutonSocial> {
         _enCours = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Action impossible. Réessaie.')),
-        );
+        Notificateur.erreur(context, 'Action impossible. Réessaie.');
       }
     }
   }

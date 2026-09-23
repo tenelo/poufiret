@@ -20,13 +20,20 @@ class Config {
   /// Variante claire (fonds de survol, badges doux).
   static const Color couleurClaire = Color(0xFFD9A184);
 
-  /// Fond général de l'application.
-  static const Color couleurFond = Color(0xFFFBEDE6);
+  /// Fond général de l'application : blanc cassé très clair, style « feed ».
+  static const Color couleurFond = Color(0xFFF5F6F7);
+
+  /// Surfaces (cartes, feuilles, champs) : blanc pur, pour trancher sur
+  /// le fond légèrement gris de [couleurFond].
+  static const Color couleurSurface = Color(0xFFFFFFFF);
+
+  /// Bordure/séparateur neutre et discret (cartes, champs, listes).
+  static const Color couleurBordure = Color(0xFFE4E6EB);
 
   // ── Texte ────────────────────────────────────────────────────────
-  static const Color couleurTexte = Color(0xFF2A211D);
-  static const Color couleurTexteSecondaire = Color(0xFF7A6A62);
-  static const Color couleurTitre = Color(0xFF2A211D);
+  static const Color couleurTexte = Color(0xFF1C1E21);
+  static const Color couleurTexteSecondaire = Color(0xFF65676B);
+  static const Color couleurTitre = Color(0xFF1C1E21);
 
   // ── Actions sociales ─────────────────────────────────────────────
   /// Cœur de like (articles, partenaires, commentaires).
@@ -39,12 +46,4 @@ class Config {
   static const Color couleurSucces = Color(0xFF2E7D32);
   static const Color couleurErreur = Color(0xFFC62828);
   static const Color couleurAvertissement = Color(0xFFF9A825);
-
-  // ── Thème global ─────────────────────────────────────────────────
-  /// ColorScheme dérivé de la couleur primaire, pour MaterialApp.
-  static ColorScheme get schemaCouleurs => ColorScheme.fromSeed(
-        seedColor: couleurPrimaire,
-        primary: couleurPrimaire,
-        secondary: couleurSecondaire,
-      );
 }

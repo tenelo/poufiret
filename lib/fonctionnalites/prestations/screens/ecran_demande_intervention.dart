@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../global/ui/notificateur.dart';
 import '../donnees/prestations_providers.dart';
 
 /// Formulaire de création d'une demande d'intervention (artisans).
@@ -108,7 +109,10 @@ class _EcranDemandeInterventionState
   Future<Position?> _obtenirPosition() async {
     final serviceActif = await Geolocator.isLocationServiceEnabled();
     if (!serviceActif) {
-      _message('Activez la localisation (GPS) de votre téléphone.');
+      if (mounted) {
+        Notificateur.avertissement(
+            context, 'Activez la localisation (GPS) de votre téléphone.');
+      }
       return null;
     }
     var permission = await Geolocator.checkPermission();
@@ -117,17 +121,14 @@ class _EcranDemandeInterventionState
     }
     if (permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
-      _message('Autorisation de localisation refusée.');
+      if (mounted) {
+        Notificateur.avertissement(context, 'Autorisation de localisation refusée.');
+      }
       return null;
     }
     return Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
     );
-  }
-
-  void _message(String texte) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(texte)));
   }
 
   Future<void> _envoyer() async {
@@ -172,18 +173,17 @@ class _EcranDemandeInterventionState
       }
       ref.invalidate(mesDemandesInterventionProvider);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            photosEchouees == 0
-                ? 'Demande ${demande.numero} envoyée.'
-                : 'Demande ${demande.numero} envoyée ($photosEchouees photo(s) non transmise(s)).',
-          ),
-        ),
+      Notificateur.succes(
+        context,
+        photosEchouees == 0
+            ? 'Demande ${demande.numero} envoyée.'
+            : 'Demande ${demande.numero} envoyée ($photosEchouees photo(s) non transmise(s)).',
       );
       Navigator.of(context).pop(demande);
     } catch (_) {
-      _message('Impossible d\'envoyer la demande. Réessayez.');
+      if (mounted) {
+        Notificateur.erreur(context, 'Impossible d\'envoyer la demande. Réessayez.');
+      }
     } finally {
       if (mounted) setState(() => _envoiEnCours = false);
     }

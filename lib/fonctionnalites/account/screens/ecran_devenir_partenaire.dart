@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../global/errors/api_exception.dart';
+import '../../../global/ui/notificateur.dart';
 import '../../auth/donnees/auth_providers.dart';
 import '../../auth/screens/auth_notifier.dart';
 import '../../catalogue/donnees/catalogue_providers.dart';
+import '../../catalogue/metier_domaine/categorie.dart';
 import '../../geo/widgets/champ_departement.dart';
 
 /// Formulaire « Devenir partenaire » : crée le ProfilPartenaire
@@ -104,10 +106,10 @@ class _EcranDevenirPartenaireState
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(e is ApiException
-              ? e.messageLisible
-              : 'Envoi impossible. Réessayez.')));
+      Notificateur.erreur(
+        context,
+        e is ApiException ? e.messageLisible : 'Envoi impossible. Réessayez.',
+      );
     } finally {
       if (mounted) setState(() => _envoiEnCours = false);
     }
@@ -277,7 +279,10 @@ class _ChoixCategoriesState extends ConsumerState<_ChoixCategories> {
         child: Center(child: CircularProgressIndicator()),
       ),
       error: (_, _) => const SizedBox.shrink(),
-      data: (categories) {
+      data: (toutes) {
+        // Seules les categories terminales sont selectionnables (les
+        // groupes de l'accueil ne sont pas des categories de partenaire).
+        final categories = toutes.feuilles;
         // Pre-selection : la categorie qui declare ce type d'activite.
         if (widget.selection.isEmpty) {
           final auto = categories

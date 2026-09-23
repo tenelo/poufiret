@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
+import '../../../global/ui/notificateur.dart';
 import '../donnees/publicites_providers.dart';
 import '../metier_domaine/credit_formule.dart';
 import '../metier_domaine/formule_publicite.dart';
@@ -378,7 +379,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
   Future<void> _envoyer() async {
     if (!_cleForm.currentState!.validate()) return;
     if (_affiche == null) {
-      _message('Ajoutez l\'affiche de votre publicité.');
+      Notificateur.avertissement(context, 'Ajoutez l\'affiche de votre publicité.');
       return;
     }
     setState(() => _envoiEnCours = true);
@@ -405,9 +406,18 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
       }
       ref.invalidate(mesPublicitesProvider);
       if (!mounted) return;
-      await _confirmation(offerte: creditUtilise != null);
+      if (creditUtilise != null) {
+        // Parcours credit : confirmation immediate, pas de blocage.
+        Notificateur.succes(
+          context,
+          'Publicité offerte activée ! Elle est déjà diffusée, sans paiement.',
+        );
+        Navigator.of(context).pop();
+      } else {
+        await _confirmation();
+      }
     } on ApiException catch (e) {
-      _message(e.messageLisible);
+      if (mounted) Notificateur.erreur(context, e.messageLisible);
       if (creditUtilise != null) {
         // Le credit a pu devenir invalide/consomme entre-temps : on
         // repasse au parcours payant normal pour permettre de reessayer.
@@ -415,33 +425,23 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
         if (mounted) setState(() => _creditId = null);
       }
     } catch (_) {
-      _message('Envoi impossible. Réessayez.');
+      if (mounted) Notificateur.erreur(context, 'Envoi impossible. Réessayez.');
     } finally {
       if (mounted) setState(() => _envoiEnCours = false);
     }
   }
 
-  void _message(String texte) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(texte)));
-  }
-
-  Future<void> _confirmation({required bool offerte}) async {
+  Future<void> _confirmation() async {
     await showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text(offerte ? 'Publicité activée !' : 'Demande envoyée'),
+        title: const Text('Demande envoyée'),
         content: Text(
-          offerte
-              ? 'Votre publicité est déjà active grâce à votre crédit '
-                  '"${widget.formule.nom}" : elle est diffusée '
-                  'immédiatement, sans paiement.'
-              : 'Votre publicité a été transmise.\n\n'
-                  'Réglez ${widget.formule.prix} FCFA auprès de l\'administration '
-                  'Poufiret. Dès le paiement confirmé et la publicité validée, '
-                  'elle sera diffusée pendant ${widget.formule.dureeJours} jour'
-                  '${widget.formule.dureeJours > 1 ? 's' : ''}.',
+          'Votre publicité a été transmise.\n\n'
+          'Réglez ${widget.formule.prix} FCFA auprès de l\'administration '
+          'Poufiret. Dès le paiement confirmé et la publicité validée, '
+          'elle sera diffusée pendant ${widget.formule.dureeJours} jour'
+          '${widget.formule.dureeJours > 1 ? 's' : ''}.',
         ),
         actions: [
           FilledButton(

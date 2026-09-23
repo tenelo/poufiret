@@ -17,6 +17,7 @@ import 'package:poufiret/fonctionnalites/social/donnees/social_providers.dart';
 import 'package:poufiret/fonctionnalites/social/widgets/bouton_social.dart';
 import 'package:poufiret/fonctionnalites/social/widgets/section_commentaires.dart';
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
+import '../../../global/ui/notificateur.dart';
 import '../../../global/widgets/carrousel_images.dart';
 
 class EcranArticleDetail extends ConsumerWidget {
@@ -120,13 +121,12 @@ class _Contenu extends ConsumerWidget {
                             .ajouterLigne(articleId: article.id, quantite: 1);
                         ref.invalidate(paniersProvider);
                         messenger.showSnackBar(
-                          const SnackBar(content: Text('Ajouté au panier.')),
+                          Notificateur.snackSucces('Ajouté au panier.'),
                         );
                       } catch (_) {
                         messenger.showSnackBar(
-                          const SnackBar(
-                            content: Text('Impossible d\'ajouter au panier.'),
-                          ),
+                          Notificateur.snackErreur(
+                              'Impossible d\'ajouter au panier.'),
                         );
                       }
                       return;
@@ -136,9 +136,7 @@ class _Contenu extends ConsumerWidget {
                     if (modeTransaction == 'demande_intervention') {
                       if (article.partenaire == null) {
                         messenger.showSnackBar(
-                          const SnackBar(
-                            content: Text('Prestataire indisponible.'),
-                          ),
+                          Notificateur.snackErreur('Prestataire indisponible.'),
                         );
                         return;
                       }
@@ -169,10 +167,8 @@ class _Contenu extends ConsumerWidget {
                       );
                     } catch (_) {
                       messenger.showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Impossible de démarrer la conversation.',
-                          ),
+                        Notificateur.snackErreur(
+                          'Impossible de démarrer la conversation.',
                         ),
                       );
                     }
@@ -196,208 +192,252 @@ class _Contenu extends ConsumerWidget {
                   // Images : carrousel automatique s'il y en a
                   // plusieurs, sinon simple photo. Le clic ouvre la
                   // visionneuse zoomable sur l'image courante.
-                  AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: CarrouselImages(
-                      images: article.images,
-                      titre: article.nom,
-                      constructeurVide: (_) => _placeholder(theme),
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      bottom: Radius.circular(16),
+                    ),
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: CarrouselImages(
+                        images: article.images,
+                        titre: article.nom,
+                        constructeurVide: (_) => _placeholder(theme),
+                      ),
                     ),
                   ),
+                  const SizedBox(height: 16),
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(article.nom, style: theme.textTheme.headlineSmall),
-                        const SizedBox(height: 8),
-                        // Prix (+ prix barré si promo) — masqué pour les prestations.
-                        if (modeTransaction != 'demande_intervention')
-                          PrixPromo(
-                            prixNormal: article.prixNormal,
-                            prixEffectif: article.prixEffectif,
-                            pourcentageReduction: article.pourcentageReduction,
-                            taillePrix: 22,
-                          ),
-                        const SizedBox(height: 4),
-                        if (article.partenaire != null)
-                          InkWell(
-                            onTap: () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => EcranVitrinePartenaire(
-                                  partenaireId: article.partenaire!,
+                        // ── Carte principale : nom, prix, vendeur, reactions ──
+                        _CarteSection(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(article.nom,
+                                  style: theme.textTheme.headlineSmall),
+                              const SizedBox(height: 8),
+                              // Prix (+ prix barré si promo) — masqué pour les prestations.
+                              if (modeTransaction != 'demande_intervention')
+                                PrixPromo(
+                                  prixNormal: article.prixNormal,
+                                  prixEffectif: article.prixEffectif,
+                                  pourcentageReduction:
+                                      article.pourcentageReduction,
+                                  taillePrix: 22,
                                 ),
-                              ),
-                            ),
-                            child: Text.rich(
-                              TextSpan(
-                                children: [
-                                  const TextSpan(text: 'Vendu par '),
-                                  TextSpan(
-                                    text: article.partenaireNom,
-                                    style: TextStyle(
-                                      color: theme.colorScheme.primary,
-                                      fontWeight: FontWeight.w600,
+                              const SizedBox(height: 4),
+                              if (article.partenaire != null)
+                                InkWell(
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => EcranVitrinePartenaire(
+                                        partenaireId: article.partenaire!,
+                                      ),
                                     ),
+                                  ),
+                                  child: Text.rich(
+                                    TextSpan(
+                                      children: [
+                                        const TextSpan(text: 'Vendu par '),
+                                        TextSpan(
+                                          text: article.partenaireNom,
+                                          style: TextStyle(
+                                            color: theme.colorScheme.primary,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    style: theme.textTheme.bodyMedium,
+                                  ),
+                                )
+                              else
+                                Text(
+                                  'Vendu par ${article.partenaireNom}',
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              const SizedBox(height: 16),
+                              // Compteurs.
+                              // Réactions : like ❤️ et favori 🔖 cliquables ;
+                              // vues et commentaires en simple affichage.
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: Wrap(
+                                      spacing: 16,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      children: [
+                                        _Compteur(
+                                          icone: Icons.visibility,
+                                          valeur: article.nbVues,
+                                        ),
+                                        BoutonSocial(
+                                          actifInitial: article.estLikeParMoi,
+                                          totalInitial: article.nbLikes,
+                                          iconeActive: Icons.favorite,
+                                          iconeInactive:
+                                              Icons.favorite_border,
+                                          couleurActive: Config.couleurLike,
+                                          onToggle: () async {
+                                            final res = await ref
+                                                .read(socialRepositoryProvider)
+                                                .toggleLikeArticle(
+                                                    article.id);
+                                            return (
+                                              actif: res.actif,
+                                              total: res.total
+                                            );
+                                          },
+                                        ),
+                                        BoutonSocial(
+                                          actifInitial:
+                                              article.estFavoriParMoi,
+                                          totalInitial: article.nbFavoris,
+                                          iconeActive: Icons.bookmark,
+                                          iconeInactive:
+                                              Icons.bookmark_border,
+                                          couleurActive: Config.couleurFavori,
+                                          afficherTotal: false,
+                                          onToggle: () async {
+                                            final res = await ref
+                                                .read(socialRepositoryProvider)
+                                                .toggleFavoriArticle(
+                                                    article.id);
+                                            return (
+                                              actif: res.actif,
+                                              total: res.total
+                                            );
+                                          },
+                                        ),
+                                        // Compteur de commentaires calculé depuis la liste réelle.
+                                        ref
+                                            .watch(
+                                              commentairesArticleProvider(
+                                                articleId: article.id,
+                                              ),
+                                            )
+                                            .maybeWhen(
+                                              data: (liste) {
+                                                final total = liste.length +
+                                                    liste.fold<int>(
+                                                      0,
+                                                      (s, c) =>
+                                                          s + c.reponses.length,
+                                                    );
+                                                return _Compteur(
+                                                  icone: Icons.comment,
+                                                  valeur: total,
+                                                );
+                                              },
+                                              orElse: () => const _Compteur(
+                                                icone: Icons.comment,
+                                                valeur: 0,
+                                              ),
+                                            ),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: FaIcon(FontAwesomeIcons.whatsapp,
+                                        color: theme.colorScheme.primary),
+                                    tooltip: 'Discuter',
+                                    onPressed: () async {
+                                      final messenger =
+                                          ScaffoldMessenger.of(context);
+                                      final navigator = Navigator.of(context);
+                                      try {
+                                        final conv = await ref
+                                            .read(chatRepositoryProvider)
+                                            .contacter(articleId: article.id);
+                                        navigator.push(
+                                          MaterialPageRoute(
+                                            builder: (_) => EcranDiscussion(
+                                              conversationId: conv.id,
+                                              titre: conv.partenaireNom.isEmpty
+                                                  ? 'Conversation'
+                                                  : conv.partenaireNom,
+                                            ),
+                                          ),
+                                        );
+                                      } catch (_) {
+                                        messenger.showSnackBar(
+                                            Notificateur.snackAvertissement(
+                                                'Connexion requise pour discuter.'));
+                                      }
+                                    },
                                   ),
                                 ],
                               ),
-                              style: theme.textTheme.bodyMedium,
-                            ),
-                          )
-                        else
-                          Text(
-                            'Vendu par ${article.partenaireNom}',
-                            style: theme.textTheme.bodyMedium,
+                            ],
                           ),
-                        const SizedBox(height: 16),
-                        // Compteurs.
-                        // Réactions : like ❤️ et favori 🔖 cliquables ;
-                        // vues et commentaires en simple affichage.
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Wrap(
-                          spacing: 16,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          children: [
-                            _Compteur(
-                              icone: Icons.visibility,
-                              valeur: article.nbVues,
-                            ),
-                            BoutonSocial(
-                              actifInitial: article.estLikeParMoi,
-                              totalInitial: article.nbLikes,
-                              iconeActive: Icons.favorite,
-                              iconeInactive: Icons.favorite_border,
-                              couleurActive: Config.couleurLike,
-                              onToggle: () async {
-                                final res = await ref
-                                    .read(socialRepositoryProvider)
-                                    .toggleLikeArticle(article.id);
-                                return (actif: res.actif, total: res.total);
-                              },
-                            ),
-                            BoutonSocial(
-                              actifInitial: article.estFavoriParMoi,
-                              totalInitial: article.nbFavoris,
-                              iconeActive: Icons.bookmark,
-                              iconeInactive: Icons.bookmark_border,
-                              couleurActive: Config.couleurFavori,
-                              afficherTotal: false,
-                              onToggle: () async {
-                                final res = await ref
-                                    .read(socialRepositoryProvider)
-                                    .toggleFavoriArticle(article.id);
-                                return (actif: res.actif, total: res.total);
-                              },
-                            ),
-                            // Compteur de commentaires calculé depuis la liste réelle.
-                            ref
-                                .watch(
-                                  commentairesArticleProvider(
-                                    articleId: article.id,
-                                  ),
-                                )
-                                .maybeWhen(
-                                  data: (liste) {
-                                    final total =
-                                        liste.length +
-                                        liste.fold<int>(
-                                          0,
-                                          (s, c) => s + c.reponses.length,
-                                        );
-                                    return _Compteur(
-                                      icone: Icons.comment,
-                                      valeur: total,
-                                    );
-                                  },
-                                  orElse: () => const _Compteur(
-                                    icone: Icons.comment,
-                                    valeur: 0,
-                                  ),
+                        ),
+
+                        if (article.description.isNotEmpty)
+                          _CarteSection(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Description',
+                                  style: theme.textTheme.titleMedium,
                                 ),
-                          ],
-                              ),
+                                const SizedBox(height: 6),
+                                Text(article.description,
+                                    style: theme.textTheme.bodyMedium),
+                              ],
                             ),
-                            IconButton(
-                              icon: FaIcon(FontAwesomeIcons.whatsapp,
-                                  color: theme.colorScheme.primary),
-                              tooltip: 'Discuter',
-                              onPressed: () async {
-                                final messenger =
-                                    ScaffoldMessenger.of(context);
-                                final navigator = Navigator.of(context);
-                                try {
-                                  final conv = await ref
-                                      .read(chatRepositoryProvider)
-                                      .contacter(articleId: article.id);
-                                  navigator.push(
-                                    MaterialPageRoute(
-                                      builder: (_) => EcranDiscussion(
-                                        conversationId: conv.id,
-                                        titre: conv.partenaireNom.isEmpty
-                                            ? 'Conversation'
-                                            : conv.partenaireNom,
+                          ),
+
+                        // Variantes + suppléments regroupés dans une carte.
+                        if (article.variantes.isNotEmpty ||
+                            article.supplements.isNotEmpty)
+                          _CarteSection(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (article.variantes.isNotEmpty) ...[
+                                  Text('Options',
+                                      style: theme.textTheme.titleMedium),
+                                  ...article.variantes.map(
+                                    (v) => ListTile(
+                                      dense: true,
+                                      contentPadding: EdgeInsets.zero,
+                                      title: Text(v.nom),
+                                      trailing: Text(
+                                        '+${v.supplement.toStringAsFixed(0)} FCFA',
                                       ),
                                     ),
-                                  );
-                                } catch (_) {
-                                  messenger.showSnackBar(const SnackBar(
-                                      content: Text(
-                                          'Connexion requise pour discuter.')));
-                                }
-                              },
+                                  ),
+                                ],
+                                if (article.supplements.isNotEmpty) ...[
+                                  if (article.variantes.isNotEmpty)
+                                    const SizedBox(height: 8),
+                                  Text('Suppléments',
+                                      style: theme.textTheme.titleMedium),
+                                  ...article.supplements.map(
+                                    (s) => ListTile(
+                                      dense: true,
+                                      contentPadding: EdgeInsets.zero,
+                                      title: Text(s.nom),
+                                      trailing: Text(
+                                        '+${s.montant.toStringAsFixed(0)} FCFA',
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
-                          ],
+                          ),
+
+                        _CarteSection(
+                          child: SectionCommentaires(articleId: article.id),
                         ),
-                        if (article.description.isNotEmpty) ...[
-                          const SizedBox(height: 16),
-                          Text(
-                            'Description',
-                            style: theme.textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(article.description),
-                        ],
-                        // Variantes.
-                        if (article.variantes.isNotEmpty) ...[
-                          const SizedBox(height: 16),
-                          Text('Options', style: theme.textTheme.titleMedium),
-                          const SizedBox(height: 4),
-                          ...article.variantes.map(
-                            (v) => ListTile(
-                              dense: true,
-                              contentPadding: EdgeInsets.zero,
-                              title: Text(v.nom),
-                              trailing: Text(
-                                '+${v.supplement.toStringAsFixed(0)} FCFA',
-                              ),
-                            ),
-                          ),
-                        ],
-                        // Suppléments.
-                        if (article.supplements.isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            'Suppléments',
-                            style: theme.textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 4),
-                          ...article.supplements.map(
-                            (s) => ListTile(
-                              dense: true,
-                              contentPadding: EdgeInsets.zero,
-                              title: Text(s.nom),
-                              trailing: Text(
-                                '+${s.montant.toStringAsFixed(0)} FCFA',
-                              ),
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 24),
-                        SectionCommentaires(articleId: article.id),
+                        const SizedBox(height: 8),
                       ],
                     ),
                   ),
@@ -436,4 +476,22 @@ class _Compteur extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Bloc « carte » de la fiche article : fond blanc, coins arrondis, espace
+/// genereux, separe du bloc suivant — l'essence du style « feed ».
+class _CarteSection extends StatelessWidget {
+  const _CarteSection({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: child,
+          ),
+        ),
+      );
 }

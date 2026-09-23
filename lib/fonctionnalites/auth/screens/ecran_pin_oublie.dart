@@ -3,11 +3,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
 import 'package:poufiret/global/responsive/conteneur_adaptatif.dart';
+import 'package:poufiret/global/ui/notificateur.dart';
+import 'package:poufiret/fonctionnalites/auth/donnees/service_auth_firebase.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
 import 'package:poufiret/fonctionnalites/auth/widgets/clavier_numerique.dart';
 import 'package:poufiret/fonctionnalites/auth/widgets/points_pin.dart';
 
 enum _Etape { telephone, otp, nouveauPin, confirmerPin }
+
+/// Longueur d'un code SMS Firebase (standard, distincte du PIN a 4 chiffres).
+const _longueurCodeSms = 6;
 
 class EcranPinOublie extends ConsumerStatefulWidget {
   const EcranPinOublie({super.key});
@@ -27,7 +32,10 @@ class _EcranPinOublieState extends ConsumerState<EcranPinOublie> {
   bool _erreur = false;
   bool _enCours = false;
 
-  static const _but = 'reinit_pin';
+  // Firebase Phone Auth : une instance par tentative de vérification, et
+  // l'idToken obtenu une fois le numéro prouvé, consommé à l'étape finale.
+  final _serviceFirebase = ServiceAuthFirebase();
+  String? _idToken;
 
   @override
   void dispose() {
@@ -37,67 +45,102 @@ class _EcranPinOublieState extends ConsumerState<EcranPinOublie> {
 
   String get _telephoneComplet => '+225${_telephone.text.trim()}';
 
-  void _snack(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-  }
-
   String _messageErreur(Object? e) =>
       e is ApiException ? e.messageLisible : 'Une erreur est survenue.';
 
-  // ── Étape 1 : demander l'OTP ────────────────────────────────────────────
+  // ── Étape 1 : envoyer le code SMS (Firebase) ────────────────────────────
   Future<void> _demanderOtp() async {
     if (!_formKey.currentState!.validate()) return;
     FocusScope.of(context).unfocus();
     setState(() => _enCours = true);
-    try {
-      await ref.read(authProvider.notifier).demanderOtp(
-            telephone: _telephoneComplet,
-            but: _but,
-          );
-      if (!mounted) return;
-      setState(() {
-        _etape = _Etape.otp;
-        _otp = '';
-        _erreur = false;
-      });
-    } catch (e) {
-      _snack(_messageErreur(e));
-    } finally {
-      if (mounted) setState(() => _enCours = false);
-    }
+    await _serviceFirebase.demanderCode(
+      telephone: _telephoneComplet,
+      onCodeEnvoye: () {
+        if (!mounted) return;
+        setState(() {
+          _enCours = false;
+          _etape = _Etape.otp;
+          _otp = '';
+          _erreur = false;
+        });
+      },
+      onVerifieAuto: (idToken) {
+        // Vérification automatique (auto-retrieval Android) : le numéro est
+        // déjà prouvé, on saute directement à la saisie du nouveau PIN.
+        if (!mounted) return;
+        setState(() {
+          _enCours = false;
+          _idToken = idToken;
+          _etape = _Etape.nouveauPin;
+          _erreur = false;
+        });
+      },
+      onErreur: (message) {
+        if (!mounted) return;
+        setState(() => _enCours = false);
+        Notificateur.erreur(context, message);
+      },
+    );
   }
 
-  // ── Étape 2 : vérifier l'OTP ────────────────────────────────────────────
+  Future<void> _renvoyerCode() async {
+    if (_enCours) return;
+    setState(() => _enCours = true);
+    await _serviceFirebase.demanderCode(
+      telephone: _telephoneComplet,
+      renvoi: true,
+      onCodeEnvoye: () {
+        if (!mounted) return;
+        setState(() {
+          _enCours = false;
+          _otp = '';
+          _erreur = false;
+        });
+        Notificateur.succes(context, 'Un nouveau code a été envoyé.');
+      },
+      onVerifieAuto: (idToken) {
+        if (!mounted) return;
+        setState(() {
+          _enCours = false;
+          _idToken = idToken;
+          _etape = _Etape.nouveauPin;
+          _erreur = false;
+        });
+      },
+      onErreur: (message) {
+        if (!mounted) return;
+        setState(() => _enCours = false);
+        Notificateur.erreur(context, message);
+      },
+    );
+  }
+
+  // ── Étape 2 : code SMS (Firebase) ────────────────────────────────────────
   void _onOtp(String c) {
-    if (_otp.length >= 4) return;
+    if (_otp.length >= _longueurCodeSms) return;
     setState(() {
       _erreur = false;
       _otp += c;
     });
-    if (_otp.length == 4) _verifierOtp();
+    if (_otp.length == _longueurCodeSms) _verifierOtp();
   }
 
   Future<void> _verifierOtp() async {
     setState(() => _enCours = true);
     try {
-      await ref.read(authProvider.notifier).verifierOtp(
-            telephone: _telephoneComplet,
-            code: _otp,
-            but: _but,
-          );
+      final idToken = await _serviceFirebase.confirmerCode(_otp);
       if (!mounted) return;
       setState(() {
+        _idToken = idToken;
         _etape = _Etape.nouveauPin;
         _erreur = false;
       });
-    } catch (e) {
+    } on ServiceAuthFirebaseException catch (e) {
       setState(() {
         _erreur = true;
         _otp = '';
       });
-      _snack(_messageErreur(e));
+      if (mounted) Notificateur.erreur(context, e.message);
     } finally {
       if (mounted) setState(() => _enCours = false);
     }
@@ -149,21 +192,31 @@ class _EcranPinOublieState extends ConsumerState<EcranPinOublie> {
         _confirmation = '';
         _etape = _Etape.nouveauPin;
       });
-      _snack('Le code PIN ne correspond pas. Recommencez.');
+      Notificateur.erreur(context, 'Le code PIN ne correspond pas. Recommencez.');
+      return;
+    }
+    final idToken = _idToken;
+    if (idToken == null) {
+      // Ne devrait pas arriver (numéro pas encore prouvé), garde-fou.
+      Notificateur.erreur(context, 'Vérification du numéro expirée. Recommencez.');
+      setState(() {
+        _etape = _Etape.telephone;
+        _nouveauPin = '';
+        _confirmation = '';
+      });
       return;
     }
     setState(() => _enCours = true);
-    // definirPin(reinit_pin) reconnecte directement (tokens renvoyés).
-    await ref.read(authProvider.notifier).definirPin(
-          telephone: _telephoneComplet,
+    // reinitPinFirebase(...) reconnecte directement (tokens renvoyés).
+    await ref.read(authProvider.notifier).reinitPinFirebase(
+          idToken: idToken,
           password: _nouveauPin,
-          but: _but,
         );
   }
 
   @override
   Widget build(BuildContext context) {
-    // Réagit au succès/échec de definirPin (dernière étape).
+    // Réagit au succès/échec de reinitPinFirebase (dernière étape).
     ref.listen(authProvider, (avant, next) {
       final connecte = next.value != null && avant?.value == null;
       if (connecte) {
@@ -179,7 +232,7 @@ class _EcranPinOublieState extends ConsumerState<EcranPinOublie> {
           _confirmation = '';
           _etape = _Etape.nouveauPin;
         });
-        _snack(_messageErreur(next.error));
+        Notificateur.erreur(context, _messageErreur(next.error));
       }
     });
 
@@ -262,16 +315,26 @@ class _EcranPinOublieState extends ConsumerState<EcranPinOublie> {
                   fontWeight: FontWeight.bold,
                 )),
         const SizedBox(height: 32),
-        PointsPin(remplis: _otp.length, erreur: _erreur),
+        PointsPin(
+          remplis: _otp.length,
+          total: _longueurCodeSms,
+          erreur: _erreur,
+        ),
         const SizedBox(height: 32),
         if (_enCours)
           const CircularProgressIndicator()
-        else
+        else ...[
           ClavierNumerique(onChiffre: _onOtp, onSupprimer: () {
             if (_otp.isNotEmpty) {
               setState(() => _otp = _otp.substring(0, _otp.length - 1));
             }
           }),
+          const SizedBox(height: 8),
+          TextButton(
+            onPressed: _renvoyerCode,
+            child: const Text('Renvoyer le code'),
+          ),
+        ],
       ],
     );
   }

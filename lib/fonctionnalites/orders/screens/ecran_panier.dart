@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../donnees/orders_providers.dart';
 import '../metier_domaine/orders_models.dart';
+import '../../../global/ui/notificateur.dart';
 import '../../publicites/widgets/couche_publicites.dart';
 import '../../map/donnees/map_providers.dart';
 import '../../map/donnees/service_position.dart';
@@ -109,18 +110,18 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
           lat = latitude;
           lng = longitude;
         case ServiceDesactive():
-          messenger.showSnackBar(const SnackBar(
-              content: Text('Activez la localisation pour etre livre.')));
+          messenger.showSnackBar(Notificateur.snackAvertissement(
+              'Activez la localisation pour etre livre.'));
           if (mounted) setState(() => _envoiEnCours = false);
           return;
         case PermissionRefusee():
-          messenger.showSnackBar(const SnackBar(
-              content: Text('Autorisez la localisation pour etre livre, ou choisissez Je viens chercher.')));
+          messenger.showSnackBar(Notificateur.snackAvertissement(
+              'Autorisez la localisation pour etre livre, ou choisissez Je viens chercher.'));
           if (mounted) setState(() => _envoiEnCours = false);
           return;
         case ErreurPosition():
-          messenger.showSnackBar(const SnackBar(
-              content: Text('Position introuvable. Reessayez.')));
+          messenger.showSnackBar(
+              Notificateur.snackErreur('Position introuvable. Reessayez.'));
           if (mounted) setState(() => _envoiEnCours = false);
           return;
       }
@@ -143,17 +144,15 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
       }
       ref.invalidate(paniersProvider);
       messenger.showSnackBar(
-        SnackBar(
-          content: Text(
-            numeros.length == 1
-                ? 'Commande ${numeros.first} envoyée.'
-                : '${numeros.length} commandes envoyées.',
-          ),
+        Notificateur.snackSucces(
+          numeros.length == 1
+              ? 'Commande ${numeros.first} envoyée.'
+              : '${numeros.length} commandes envoyées.',
         ),
       );
     } catch (_) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Impossible de valider la commande.')),
+        Notificateur.snackErreur('Impossible de valider la commande.'),
       );
     } finally {
       if (mounted) setState(() => _envoiEnCours = false);
@@ -300,11 +299,7 @@ class _LigneTuileState extends ConsumerState<_LigneTuile> {
           .modifierLigne(ligneId: widget.ligne.id, quantite: nouvelle);
       ref.invalidate(paniersProvider);
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Erreur, réessayez.')));
-      }
+      if (mounted) Notificateur.erreur(context, 'Erreur, réessayez.');
     } finally {
       if (mounted) setState(() => _occupe = false);
     }
@@ -317,11 +312,7 @@ class _LigneTuileState extends ConsumerState<_LigneTuile> {
       await ref.read(ordersRepositoryProvider).supprimerLigne(widget.ligne.id);
       ref.invalidate(paniersProvider);
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Erreur, réessayez.')));
-      }
+      if (mounted) Notificateur.erreur(context, 'Erreur, réessayez.');
     } finally {
       if (mounted) setState(() => _occupe = false);
     }

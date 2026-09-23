@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../global/errors/api_exception.dart';
+import '../../../global/ui/notificateur.dart';
 import '../donnees/prestations_providers.dart';
 import '../metier_domaine/demande_intervention.dart';
 import 'ecran_mes_demandes.dart' show couleurStatut;
@@ -27,11 +28,6 @@ class EcranDemandeDetail extends ConsumerStatefulWidget {
 class _EcranDemandeDetailState extends ConsumerState<EcranDemandeDetail> {
   bool _actionEnCours = false;
 
-  void _message(String texte) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(texte)));
-  }
-
   void _rafraichir() {
     ref.invalidate(demandeInterventionDetailProvider(id: widget.demandeId));
     ref.invalidate(mesDemandesInterventionProvider);
@@ -40,7 +36,10 @@ class _EcranDemandeDetailState extends ConsumerState<EcranDemandeDetail> {
 
   Future<void> _appeler(String numero) async {
     final uri = Uri(scheme: 'tel', path: numero);
-    if (!await launchUrl(uri)) _message('Impossible de lancer l\'appel.');
+    final ok = await launchUrl(uri);
+    if (!ok && mounted) {
+      Notificateur.erreur(context, 'Impossible de lancer l\'appel.');
+    }
   }
 
   Future<void> _itineraire(double lat, double lng) async {
@@ -52,8 +51,9 @@ class _EcranDemandeDetailState extends ConsumerState<EcranDemandeDetail> {
     }
     final web = Uri.parse(
         'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng');
-    if (!await launchUrl(web, mode: LaunchMode.externalApplication)) {
-      _message('Impossible d\'ouvrir l\'itinéraire.');
+    final ok = await launchUrl(web, mode: LaunchMode.externalApplication);
+    if (!ok && mounted) {
+      Notificateur.erreur(context, 'Impossible d\'ouvrir l\'itinéraire.');
     }
   }
 
@@ -73,11 +73,14 @@ class _EcranDemandeDetailState extends ConsumerState<EcranDemandeDetail> {
             raisonRefus: raisonRefus,
           );
       _rafraichir();
-      _message('Demande mise à jour.');
+      if (mounted) Notificateur.succes(context, 'Demande mise à jour.');
     } catch (e) {
-      _message(e is ApiException
-          ? e.messageLisible
-          : 'Action impossible. Réessayez.');
+      if (mounted) {
+        Notificateur.erreur(
+          context,
+          e is ApiException ? e.messageLisible : 'Action impossible. Réessayez.',
+        );
+      }
     } finally {
       if (mounted) setState(() => _actionEnCours = false);
     }

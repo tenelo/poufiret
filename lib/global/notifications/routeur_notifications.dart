@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../fonctionnalites/prestations/screens/ecran_demande_detail.dart';
 import '../../fonctionnalites/chat/screens/ecran_discussion.dart';
 import '../../fonctionnalites/livraison/screens/ecran_suivi.dart';
+import '../../fonctionnalites/orders/screens/ecran_commandes.dart';
 
 /// Cle de navigation globale : permet de naviguer depuis un tap de
 /// notification, hors de l'arbre de widgets (handlers FCM top-level).
@@ -26,6 +27,19 @@ class RouteurNotifications {
     final type = (data['type'] ?? '').toString();
 
     switch (type) {
+      // ── Commande : ouvre le detail de la commande ──
+      // Certaines notifs plus anciennes envoient encore 'id' au lieu de
+      // 'commande_id' : on lit l'un avec repli sur l'autre.
+      case 'commande':
+        final idRaw = (data['commande_id'] ?? data['id'] ?? '').toString();
+        final id = int.tryParse(idRaw);
+        if (id == null) return;
+        await nav.push(
+          MaterialPageRoute(
+            builder: (_) => EcranCommandeDetail(commandeId: id),
+          ),
+        );
+
       // ── Livraison : notifs de course (transition ou destinataire) ──
       case 'course_transition':
       case 'course_destinataire':

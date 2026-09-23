@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:poufiret/global/config/config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
+import 'package:poufiret/global/ui/notificateur.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
 import 'package:poufiret/fonctionnalites/social/donnees/social_providers.dart';
 import 'package:poufiret/fonctionnalites/social/metier_domaine/commentaire.dart';
@@ -80,11 +81,7 @@ class _SectionCommentairesState extends ConsumerState<SectionCommentaires> {
       });
       _recharger();
     } on ApiException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.messageLisible)));
-      }
+      if (mounted) Notificateur.erreur(context, e.messageLisible);
     } finally {
       if (mounted) setState(() => _envoiEnCours = false);
     }
@@ -100,11 +97,7 @@ class _SectionCommentairesState extends ConsumerState<SectionCommentaires> {
       }
       _recharger();
     } on ApiException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(e.messageLisible)));
-      }
+      if (mounted) Notificateur.erreur(context, e.messageLisible);
     }
   }
 

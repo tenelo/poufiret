@@ -7,9 +7,18 @@ import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/categorie.dart
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/partenaire_categorie.dart';
 import 'package:poufiret/fonctionnalites/map/donnees/map_providers.dart';
 import 'package:poufiret/fonctionnalites/map/donnees/service_position.dart';
+import 'package:poufiret/global/config/config.dart';
 
 /// Centre par defaut : Ferkessedougou (si la position n'est pas dispo).
 const _centreDefaut = LatLng(9.5928, -5.1942);
+
+/// Ombre douce et unique pour les encarts flottants au-dessus de la carte
+/// (chrome d'UI, pas les elements de la carte elle-meme).
+final _ombreEncart = BoxShadow(
+  color: Config.couleurTexte.withValues(alpha: 0.12),
+  blurRadius: 6,
+  offset: const Offset(0, 2),
+);
 
 class EcranMap extends ConsumerStatefulWidget {
   const EcranMap({super.key});
@@ -214,7 +223,7 @@ class _EcranMapState extends ConsumerState<EcranMap>
           right: 8,
           child: categoriesAsync.maybeWhen(
             data: (cats) => _BarreFiltres(
-              categories: cats,
+              categories: cats.feuilles,
               active: categorieActive,
               onChoisir: (slug) =>
                   ref.read(categorieCarteProvider.notifier).choisir(slug),
@@ -380,7 +389,7 @@ class _BoutonTypeCarte extends StatelessWidget {
       style: ButtonStyle(
         backgroundColor: WidgetStateProperty.resolveWith((states) {
           return states.contains(WidgetState.selected)
-              ? Colors.white.withOpacity(0.6)
+              ? Config.couleurSurface.withValues(alpha: 0.85)
               : Theme.of(context).colorScheme.surfaceContainer;
         }),
       ),
@@ -492,11 +501,9 @@ class _EncartPlusProche extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: 220),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFFDDF3DD),
+        color: Config.couleurSucces.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(10),
-        boxShadow: const [
-          BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
-        ],
+        boxShadow: [_ombreEncart],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -546,9 +553,7 @@ class _ListeBasse extends StatelessWidget {
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 2)),
-        ],
+        boxShadow: [_ombreEncart],
       ),
       // Material (au lieu d'une simple decoration) fournit un ancêtre
       // opaque pour ListTile : évite l'avertissement "background color

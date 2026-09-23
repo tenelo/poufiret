@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
 import 'package:poufiret/global/network/providers.dart';
 import 'package:poufiret/global/responsive/conteneur_adaptatif.dart';
+import 'package:poufiret/global/ui/notificateur.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/ecran_inscription.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/ecran_pin_oublie.dart';
@@ -28,7 +29,10 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
   _Etape _etape = _Etape.telephone;
   String _pin = '';
   bool _erreurPin = false;
-  bool _empreinteDispo = false; // matériel + biométrie activée + PIN mémorisé
+  // Matériel biométrique dispo + numéro saisi == compte mémorisé + PIN
+  // mémorisé. NE dépend PAS de biometrieActivee : le bouton est proposé dès
+  // la première fois, l'activation se fait au premier tap réussi.
+  bool _empreinteVisible = false;
 
   @override
   void dispose() {
@@ -43,27 +47,31 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
     FocusScope.of(context).unfocus();
 
     // Le bouton empreinte n'apparaît que si le numéro saisi correspond au
-    // compte mémorisé sur cet appareil (sinon on reconnecterait un autre compte).
+    // compte mémorisé sur cet appareil (sinon on reconnecterait un autre
+    // compte) ET qu'un PIN est mémorisé (au moins une connexion déjà faite).
+    // Il est proposé MÊME SI la préférence biometrieActivee est encore
+    // fausse : le premier tap réussi vaut activation (voir
+    // _deverrouillerEmpreinte).
     final tokens = ref.read(tokenStorageProvider);
     final telMemorise = await tokens.telephone;
     final aPin = await tokens.aPinMemorise;
     final bioActivee = await tokens.biometrieActivee;
     final bioMaterielle = await ServiceBiometrie().estDisponible();
+    final memeCompte = telMemorise == _telephoneComplet;
 
-    final empreinteOk = aPin &&
-        bioActivee &&
-        bioMaterielle &&
-        telMemorise == _telephoneComplet;
+    final empreinteVisible = aPin && bioMaterielle && memeCompte;
+    // L'invite automatique à l'arrivée sur l'étape PIN reste réservée aux
+    // comptes ayant déjà explicitement activé la biométrie.
+    final declencherAuto = empreinteVisible && bioActivee;
 
     setState(() {
       _etape = _Etape.pin;
       _pin = '';
       _erreurPin = false;
-      _empreinteDispo = empreinteOk;
+      _empreinteVisible = empreinteVisible;
     });
 
-    if (empreinteOk) {
-      // Invite biométrique automatique à l'arrivée sur l'étape PIN.
+    if (declencherAuto) {
       _deverrouillerEmpreinte();
     }
   }
@@ -86,10 +94,9 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
   }
 
   Future<void> _connecterAvecPin() async {
-    await ref.read(authProvider.notifier).connexion(
-          telephone: _telephoneComplet,
-          password: _pin,
-        );
+    await ref
+        .read(authProvider.notifier)
+        .connexion(telephone: _telephoneComplet, password: _pin);
   }
 
   Future<void> _apresConnexion() async {
@@ -107,7 +114,17 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
     final ok = await ServiceBiometrie().authentifier(
       raison: 'Déverrouillez Poufiret avec votre empreinte',
     );
-    if (!ok) return; // annulation → l'utilisateur peut taper son PIN
+    if (!ok) return; // annulation/échec → l'utilisateur peut taper son PIN
+
+    final tokens = ref.read(tokenStorageProvider);
+    if (!await tokens.biometrieDefinie) {
+      // Aucun choix encore enregistré (ni "Activer", ni "Non merci") : le
+      // tap reussi ici vaut activation, pour ne plus reproposer la popup
+      // apres une prochaine connexion. Un refus explicite anterieur
+      // (biometrieDefinie deja vrai) n'est en revanche jamais ecrase.
+      await tokens.definirBiometrie(true);
+    }
+    if (!mounted) return;
     await ref.read(authProvider.notifier).deverrouillerParEmpreinte();
   }
 
@@ -129,10 +146,10 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
           _pin = '';
         });
         final err = next.error;
-        final message =
-            err is ApiException ? err.messageLisible : 'Connexion impossible.';
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(message)));
+        final message = err is ApiException
+            ? err.messageLisible
+            : 'Connexion impossible.';
+        Notificateur.erreur(context, message);
       }
     });
 
@@ -191,11 +208,9 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
             onPressed: enCours
                 ? null
                 : () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const EcranInscription(),
-                      ),
-                    ),
+                    context,
+                    MaterialPageRoute(builder: (_) => const EcranInscription()),
+                  ),
             child: const Text('Pas de compte ? Créer un compte'),
           ),
         ],
@@ -214,10 +229,10 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
             onPressed: enCours
                 ? null
                 : () => setState(() {
-                      _etape = _Etape.telephone;
-                      _pin = '';
-                      _erreurPin = false;
-                    }),
+                    _etape = _Etape.telephone;
+                    _pin = '';
+                    _erreurPin = false;
+                  }),
           ),
         ),
         const SizedBox(height: 8),
@@ -230,9 +245,9 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
         Text(
           _telephoneComplet,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 32),
         PointsPin(remplis: _pin.length, erreur: _erreurPin),
@@ -245,11 +260,11 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
         else ...[
           ClavierNumerique(onChiffre: _onChiffre, onSupprimer: _onSupprimer),
           const SizedBox(height: 16),
-          if (_empreinteDispo)
-            TextButton.icon(
+          if (_empreinteVisible)
+            FilledButton.icon(
               onPressed: _deverrouillerEmpreinte,
               icon: const Icon(Icons.fingerprint),
-              label: const Text('Utiliser l\'empreinte'),
+              label: const Text('Se connecter avec l\'empreinte'),
             ),
           TextButton(
             onPressed: () => Navigator.push(

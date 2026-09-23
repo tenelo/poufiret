@@ -193,6 +193,67 @@ class AuthRepository {
     return Utilisateur.fromJson(data['utilisateur'] as Map<String, dynamic>);
   }
 
+  // ── Firebase Phone Auth (Option A) : un seul appel avec l'id_token ──────
+
+  /// POST /auth/firebase/inscription/ → crée le compte à partir d'un
+  /// idToken Firebase (numéro déjà prouvé côté Firebase) + PIN. Persiste
+  /// les tokens, mémorise téléphone + PIN (Option A) et renvoie l'utilisateur
+  /// connecté. Lève une ApiException (code 400) si un compte existe déjà.
+  Future<Utilisateur> inscriptionFirebase({
+    required String idToken,
+    required String password,
+    String? prenom,
+    String? nom,
+  }) async {
+    final r = await _dio.post(
+      '${Env.apiPrefix}/auth/firebase/inscription/',
+      data: {
+        'id_token': idToken,
+        'password': password,
+        if (prenom != null && prenom.isNotEmpty) 'prenom': prenom,
+        if (nom != null && nom.isNotEmpty) 'nom': nom,
+      },
+    );
+    final data = r.data as Map<String, dynamic>;
+    final utilisateur =
+        Utilisateur.fromJson(data['utilisateur'] as Map<String, dynamic>);
+
+    await _tokens.sauvegarder(
+      access: data['access'] as String,
+      refresh: data['refresh'] as String,
+    );
+    await _tokens.memoriserTelephone(utilisateur.telephone);
+    await _tokens.memoriserPin(password);
+
+    return utilisateur;
+  }
+
+  /// POST /auth/firebase/reinit-pin/ → réinitialise le PIN à partir d'un
+  /// idToken Firebase (numéro déjà prouvé côté Firebase) + nouveau PIN.
+  /// Persiste les tokens, remémorise téléphone + PIN, renvoie l'utilisateur
+  /// connecté. Lève une ApiException (code 400) si aucun compte n'existe.
+  Future<Utilisateur> reinitPinFirebase({
+    required String idToken,
+    required String password,
+  }) async {
+    final r = await _dio.post(
+      '${Env.apiPrefix}/auth/firebase/reinit-pin/',
+      data: {'id_token': idToken, 'password': password},
+    );
+    final data = r.data as Map<String, dynamic>;
+    final utilisateur =
+        Utilisateur.fromJson(data['utilisateur'] as Map<String, dynamic>);
+
+    await _tokens.sauvegarder(
+      access: data['access'] as String,
+      refresh: data['refresh'] as String,
+    );
+    await _tokens.memoriserTelephone(utilisateur.telephone);
+    await _tokens.memoriserPin(password);
+
+    return utilisateur;
+  }
+
   /// POST /auth/pin/changer/ → change le PIN d'un utilisateur connecté
   /// (ancien + nouveau PIN, pas d'OTP). Persiste les tokens frais, met à jour
   /// le PIN mémorisé, renvoie l'utilisateur (pin_par_defaut repassé à false).

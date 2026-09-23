@@ -29,12 +29,19 @@ class FcmService {
   final Dio _dio;
   StreamSubscription<String>? _subToken;
   StreamSubscription<RemoteMessage>? _subMessages;
+  StreamSubscription<RemoteMessage>? _subMessageOuvert;
 
   /// Notifications recues app OUVERTE (a ecouter dans l'UI si besoin).
   final ValueNotifier<RemoteMessage?> dernierMessage = ValueNotifier(null);
 
-  /// A appeler apres connexion de l'utilisateur.
+  bool _initialise = false;
+
+  /// A appeler apres connexion de l'utilisateur (et au demarrage si une
+  /// session est deja active). Idempotent : un second appel sans
+  /// deconnexion entre-temps ne recree pas les abonnements.
   Future<void> initialiser() async {
+    if (_initialise) return;
+    _initialise = true;
     final fcm = FirebaseMessaging.instance;
 
     // 1. Permission (Android 13+ affiche une vraie boite de dialogue).
@@ -60,7 +67,7 @@ class FcmService {
     });
 
     // 5. Tap sur une notif alors que l'app etait EN FOND -> navigation.
-    FirebaseMessaging.onMessageOpenedApp.listen((m) {
+    _subMessageOuvert = FirebaseMessaging.onMessageOpenedApp.listen((m) {
       RouteurNotifications.ouvrirDepuisData(
           RouteurNotifications.normaliser(m.data));
     });
@@ -98,6 +105,8 @@ class FcmService {
   Future<void> disposer() async {
     await _subToken?.cancel();
     await _subMessages?.cancel();
+    await _subMessageOuvert?.cancel();
+    _initialise = false;
   }
 }
 

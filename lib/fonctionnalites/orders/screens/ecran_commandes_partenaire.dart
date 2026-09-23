@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../donnees/orders_providers.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../global/ui/notificateur.dart';
 import '../metier_domaine/orders_models.dart';
 
 /// Transitions autorisées côté partenaire, calquées sur le backend.
@@ -92,11 +93,11 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
           );
       ref.invalidate(commandesPartenaireProvider());
       messenger.showSnackBar(
-        SnackBar(content: Text('Commande mise à jour : $libelle.')),
+        Notificateur.snackSucces('Commande mise à jour : $libelle.'),
       );
     } catch (_) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Action impossible.')),
+        Notificateur.snackErreur('Action impossible.'),
       );
     } finally {
       if (mounted) setState(() => _occupe = false);
@@ -114,9 +115,9 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
       ref.invalidate(commandesPartenaireProvider());
       final assigne = reponse['assigne'] == true;
       if (assigne) {
-        messenger.showSnackBar(const SnackBar(
-          content: Text('Livreur trouve, en route vers vous.'),
-        ));
+        messenger.showSnackBar(
+          Notificateur.snackSucces('Livreur trouve, en route vers vous.'),
+        );
       } else if (mounted) {
         final msg = (reponse['message'] as String?) ??
             'Aucun livreur disponible pour l\'instant.';
@@ -124,7 +125,7 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
       }
     } catch (_) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Impossible de commander un livreur.')),
+        Notificateur.snackErreur('Impossible de commander un livreur.'),
       );
     } finally {
       if (mounted) setState(() => _occupe = false);
@@ -162,7 +163,7 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
     final uri = Uri(scheme: 'tel', path: numero);
     if (!await launchUrl(uri)) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Impossible de lancer l\'appel.')),
+        Notificateur.snackErreur('Impossible de lancer l\'appel.'),
       );
     }
   }

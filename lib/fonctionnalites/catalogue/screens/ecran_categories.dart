@@ -11,11 +11,41 @@ import 'package:poufiret/fonctionnalites/publicites/widgets/carrousel_publicites
 import 'package:poufiret/fonctionnalites/catalogue/screens/ecran_recherche.dart';
 import 'package:poufiret/fonctionnalites/favoris/screens/ecran_favoris.dart';
 
-class EcranCategories extends ConsumerWidget {
+class EcranCategories extends ConsumerStatefulWidget {
   const EcranCategories({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<EcranCategories> createState() => _EcranCategoriesState();
+}
+
+class _EcranCategoriesState extends ConsumerState<EcranCategories> {
+  /// Onglet courant : 0 = « Tous », puis une catégorie non grisée par onglet.
+  int _index = 0;
+  final _pages = PageController();
+
+  /// Vrai pendant une animation déclenchée par un tap sur un onglet : évite
+  /// que les pages traversées fassent « sauter » la sélection.
+  bool _defilementParTap = false;
+
+  @override
+  void dispose() {
+    _pages.dispose();
+    super.dispose();
+  }
+
+  Future<void> _allerA(int index) async {
+    setState(() => _index = index);
+    _defilementParTap = true;
+    await _pages.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
+    _defilementParTap = false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoriesProvider);
     // Nombre d'articles dans tous les paniers, pour le badge.
     final nbPanier = ref
@@ -48,9 +78,15 @@ class EcranCategories extends ConsumerWidget {
       floatingActionButton: const _BoutonRecherche(),
       body: Column(
         children: [
-          const SizedBox(height: 4),
-          const CarrouselPublicites(),
-          const SizedBox(height: 2),
+          const SizedBox(height: 12),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: ClipRRect(
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+              child: CarrouselPublicites(),
+            ),
+          ),
+          const SizedBox(height: 20),
           Expanded(
             child: categoriesAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -69,31 +105,186 @@ class EcranCategories extends ConsumerWidget {
                     child: Text('Aucune catégorie pour le moment.'),
                   );
                 }
-                // Grille responsive : largeur cible par tuile, le nb de colonnes
-                // s'ajuste automatiquement selon la largeur disponible.
-                return LayoutBuilder(
-                  builder: (context, contraintes) {
-                    final largeur = contraintes.maxWidth;
-                    // ~180px par tuile : 2 colonnes sur petit tel, plus sur grand écran.
-                    final nbColonnes = (largeur / 180).floor().clamp(2, 5);
-                    return GridView.builder(
-                      padding: const EdgeInsets.only(left: 16, right: 16),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: nbColonnes,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: 1,
+                // « Tous » = toutes les catégories (les vides restent
+                // grisées). Les autres onglets = uniquement les catégories
+                // NON grisées (actives avec au moins un partenaire).
+                final toutes = categories.feuilles;
+                final actives =
+                    toutes.where((c) => c.aDesPartenaires).toList();
+                final nbOnglets = actives.length + 1;
+                final index = _index.clamp(0, nbOnglets - 1);
+                return Column(
+                  children: [
+                    if (actives.isNotEmpty) ...[
+                      _BarreOnglets(
+                        categories: actives,
+                        selectionIndex: index,
+                        onChoisir: _allerA,
                       ),
-                      itemCount: categories.length,
-                      itemBuilder: (context, i) =>
-                          _TuileCategorie(categorie: categories[i]),
-                    );
-                  },
+                      const SizedBox(height: 8),
+                    ],
+                    // Glisser à gauche/droite change d'onglet.
+                    Expanded(
+                      child: PageView.builder(
+                        controller: _pages,
+                        itemCount: nbOnglets,
+                        onPageChanged: (i) {
+                          if (_defilementParTap) return;
+                          setState(() => _index = i);
+                        },
+                        itemBuilder: (context, i) => _GrilleCategories(
+                          categories: i == 0 ? toutes : [actives[i - 1]],
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               },
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Barre d'onglets horizontale : « Tous » + un onglet par catégorie non
+/// grisée. L'onglet actif est en couleur d'accent avec un court trait
+/// dessous ; les autres sont en gris.
+class _BarreOnglets extends StatefulWidget {
+  const _BarreOnglets({
+    required this.categories,
+    required this.selectionIndex,
+    required this.onChoisir,
+  });
+
+  final List<Categorie> categories;
+
+  /// 0 = « Tous », puis 1..n = categories[index - 1].
+  final int selectionIndex;
+  final ValueChanged<int> onChoisir;
+
+  @override
+  State<_BarreOnglets> createState() => _BarreOngletsState();
+}
+
+class _BarreOngletsState extends State<_BarreOnglets> {
+  final _cles = <int, GlobalKey>{};
+
+  GlobalKey _cle(int i) => _cles.putIfAbsent(i, GlobalKey.new);
+
+  @override
+  void didUpdateWidget(_BarreOnglets ancien) {
+    super.didUpdateWidget(ancien);
+    // Quand on glisse la grille, l'onglet actif doit rester visible.
+    if (ancien.selectionIndex != widget.selectionIndex) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final ctx = _cle(widget.selectionIndex).currentContext;
+        if (ctx == null) return;
+        Scrollable.ensureVisible(
+          ctx,
+          alignment: 0.5,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final libelles = ['Tous', ...widget.categories.map((c) => c.nom)];
+    return SizedBox(
+      height: 44,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        children: [
+          for (var i = 0; i < libelles.length; i++)
+            _Onglet(
+              key: _cle(i),
+              libelle: libelles[i],
+              actif: widget.selectionIndex == i,
+              onTap: () => widget.onChoisir(i),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Grille responsive de tuiles : le nombre de colonnes s'ajuste selon la
+/// largeur disponible (~180 px par tuile).
+class _GrilleCategories extends StatelessWidget {
+  const _GrilleCategories({required this.categories});
+  final List<Categorie> categories;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, contraintes) {
+        final nbColonnes = (contraintes.maxWidth / 180).floor().clamp(2, 5);
+        return GridView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: nbColonnes,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            childAspectRatio: 1,
+          ),
+          itemCount: categories.length,
+          itemBuilder: (context, i) =>
+              _TuileCategorie(categorie: categories[i]),
+        );
+      },
+    );
+  }
+}
+
+class _Onglet extends StatelessWidget {
+  const _Onglet({
+    super.key,
+    required this.libelle,
+    required this.actif,
+    required this.onTap,
+  });
+
+  final String libelle;
+  final bool actif;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final couleur =
+        actif ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              libelle,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: couleur,
+                fontWeight: actif ? FontWeight.w700 : FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 4),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              height: 2,
+              width: 28,
+              decoration: BoxDecoration(
+                color: actif ? theme.colorScheme.primary : Colors.transparent,
+                borderRadius: BorderRadius.circular(1),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../global/config/config.dart';
 import '../donnees/livraison_providers.dart';
 import 'ecran_deposer_position.dart';
 import 'ecran_suivi.dart';
@@ -33,7 +34,7 @@ class EcranColisRecus extends ConsumerWidget {
   }
 
   Color _couleur(String statut, ThemeData theme) {
-    if (statut == 'livree') return Colors.green;
+    if (statut == 'livree') return Config.couleurSucces;
     if (statut == 'annulee' || statut == 'refusee') {
       return theme.colorScheme.error;
     }
@@ -108,11 +109,12 @@ class EcranColisRecus extends ConsumerWidget {
                                     child: Row(
                                       children: [
                                         Icon(Icons.check_circle,
-                                            color: Colors.green, size: 18),
+                                            color: Config.couleurSucces,
+                                            size: 18),
                                         SizedBox(width: 8),
                                         Text('Localisation envoyée',
                                             style: TextStyle(
-                                                color: Colors.green,
+                                                color: Config.couleurSucces,
                                                 fontWeight: FontWeight.w600)),
                                       ],
                                     ),

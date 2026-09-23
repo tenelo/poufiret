@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../global/ui/notificateur.dart';
 import '../../auth/metier_domaine/utilisateur.dart';
 import '../../auth/screens/auth_notifier.dart';
 import '../../geo/widgets/champ_departement.dart';
@@ -76,15 +77,15 @@ class _EcranCommandeState extends ConsumerState<EcranCommande> {
     super.dispose();
   }
 
-  void _snack(String m) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
-  }
-
-  void _snackAction(String m, String label, Future<void> Function() onTap) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(m),
-        action: SnackBarAction(label: label, onPressed: () => onTap()),
+  void _snackAvertissementAction(
+      String m, String label, Future<void> Function() onTap) {
+    Notificateur.avertissement(
+      context,
+      m,
+      action: SnackBarAction(
+        label: label,
+        textColor: Colors.white,
+        onPressed: () => onTap(),
       ),
     );
   }
@@ -113,42 +114,45 @@ class _EcranCommandeState extends ConsumerState<EcranCommande> {
           _maLng = longitude;
         });
       case ServiceDesactive():
-        _snackAction(
+        _snackAvertissementAction(
           'Activez la localisation.',
           'Activer',
           _service.ouvrirParametresLocalisation,
         );
       case PermissionRefusee(:final definitif):
         if (definitif) {
-          _snackAction(
+          _snackAvertissementAction(
             'Permission refusée. Ouvrez les réglages.',
             'Réglages',
             _service.ouvrirParametresApp,
           );
         } else {
-          _snack('Position refusée. Elle est obligatoire pour ce cas.');
+          Notificateur.avertissement(
+              context, 'Position refusée. Elle est obligatoire pour ce cas.');
         }
       case ErreurPosition(:final message):
-        _snack('Échec localisation : $message');
+        Notificateur.erreur(context, 'Échec localisation : $message');
     }
   }
 
   Future<void> _envoyer() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     if (_ville == null) {
-      _snack('Choisissez la ville.');
+      Notificateur.avertissement(context, 'Choisissez la ville.');
       return;
     }
     final user = ref.read(authProvider).whenOrNull(data: (u) => u);
     if (user == null) {
-      _snack('Connectez-vous pour demander une livraison.');
+      Notificateur.avertissement(
+          context, 'Connectez-vous pour demander une livraison.');
       return;
     }
 
     final estA = _role == RoleDemandeur.envoie;
     final estB = _role == RoleDemandeur.recoit;
     if ((estA || estB) && (_maLat == null || _maLng == null)) {
-      _snack('Votre position est obligatoire pour ce cas.');
+      Notificateur.avertissement(
+          context, 'Votre position est obligatoire pour ce cas.');
       return;
     }
 
@@ -178,16 +182,21 @@ class _EcranCommandeState extends ConsumerState<EcranCommande> {
             prix: _prix,
           );
       if (!mounted) return;
-      final msg = res.assigne
-          ? 'Livreur trouvé ! Course ${res.course.numero} assignée.'
-          : (res.message.isNotEmpty
-                ? res.message
-                : 'Aucun livreur disponible pour l\'instant.');
-      _snack(msg);
+      if (res.assigne) {
+        Notificateur.succes(
+            context, 'Livreur trouvé ! Course ${res.course.numero} assignée.');
+      } else {
+        Notificateur.avertissement(
+          context,
+          res.message.isNotEmpty
+              ? res.message
+              : 'Aucun livreur disponible pour l\'instant.',
+        );
+      }
       Navigator.of(context).pop(res.course);
     } catch (_) {
       if (!mounted) return;
-      _snack('Échec de la demande. Réessayez.');
+      Notificateur.erreur(context, 'Échec de la demande. Réessayez.');
     } finally {
       if (mounted) setState(() => _envoi = false);
     }

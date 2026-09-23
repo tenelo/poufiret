@@ -67,3 +67,10 @@ Future<List<StatsPublicite>> mesStatsPublicites(Ref ref) {
 Future<List<CreditFormule>> mesCreditsDisponibles(Ref ref) {
   return ref.watch(publicitesRepositoryProvider).mesCredits(statut: 'disponible');
 }
+
+/// Toutes les faveurs publicitaires du partenaire connecte (disponibles et
+/// consommees), pour l'ecran recapitulatif "Mes faveurs pub".
+@riverpod
+Future<List<CreditFormule>> mesCredits(Ref ref) {
+  return ref.watch(publicitesRepositoryProvider).mesCredits();
+}

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../global/config/config.dart';
+import '../../../global/ui/notificateur.dart';
 import '../../map/donnees/service_position.dart';
 import '../donnees/livraison_providers.dart';
 import '../metier_domaine/livraison_models.dart';
@@ -25,12 +27,6 @@ class _EcranDeposerPositionState extends ConsumerState<EcranDeposerPosition> {
   bool _envoi = false;
   bool _depose = false;
 
-  void _snack(String msg) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
-  }
-
   Future<void> _deposer() async {
     setState(() => _envoi = true);
     final res = await _service.positionActuelle();
@@ -49,22 +45,26 @@ class _EcranDeposerPositionState extends ConsumerState<EcranDeposerPosition> {
           // Rafraichit les surfaces qui affichent cette course.
           ref.invalidate(coursesRecuesProvider);
           ref.invalidate(courseDetailProvider(id: widget.course.id));
-          _snack('Position enregistrée. Le livreur pourra vous localiser.');
+          Notificateur.succes(
+              context, 'Position enregistrée. Le livreur pourra vous localiser.');
         } catch (_) {
-          _snack('Échec de l\'envoi. Réessayez.');
+          if (mounted) Notificateur.erreur(context, 'Échec de l\'envoi. Réessayez.');
         }
       case ServiceDesactive():
-        _snack('Activez la localisation (GPS) de votre téléphone.');
+        Notificateur.avertissement(
+            context, 'Activez la localisation (GPS) de votre téléphone.');
         await _service.ouvrirParametresLocalisation();
       case PermissionRefusee(:final definitif):
         if (definitif) {
-          _snack('Permission refusée. Ouvrez les réglages pour l\'autoriser.');
+          Notificateur.avertissement(context,
+              'Permission refusée. Ouvrez les réglages pour l\'autoriser.');
           await _service.ouvrirParametresApp();
         } else {
-          _snack('La position est nécessaire pour être localisé.');
+          Notificateur.avertissement(
+              context, 'La position est nécessaire pour être localisé.');
         }
       case ErreurPosition(:final message):
-        _snack('Erreur GPS : $message');
+        Notificateur.erreur(context, 'Erreur GPS : $message');
     }
 
     if (mounted) setState(() => _envoi = false);
@@ -106,12 +106,12 @@ class _EcranDeposerPositionState extends ConsumerState<EcranDeposerPosition> {
               const SizedBox(height: 24),
               if (_depose)
                 Card(
-                  color: Colors.green.withValues(alpha: 0.12),
+                  color: Config.couleurSucces.withValues(alpha: 0.12),
                   child: const Padding(
                     padding: EdgeInsets.all(16),
                     child: Row(
                       children: [
-                        Icon(Icons.check_circle, color: Colors.green),
+                        Icon(Icons.check_circle, color: Config.couleurSucces),
                         SizedBox(width: 12),
                         Expanded(
                           child: Text('Localisation envoyée. '

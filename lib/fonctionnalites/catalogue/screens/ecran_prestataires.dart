@@ -10,6 +10,7 @@ import 'package:poufiret/fonctionnalites/analytics/donnees/analytics_providers.d
 import 'package:poufiret/fonctionnalites/chat/donnees/chat_providers.dart';
 import 'package:poufiret/fonctionnalites/chat/screens/ecran_discussion.dart';
 import '../../../global/widgets/image_reseau.dart';
+import '../../../global/ui/notificateur.dart';
 import '../../auth/widgets/mur_inscription.dart';
 import '../../geo/widgets/filtre_localites.dart';
 
@@ -184,13 +185,14 @@ class _CartePrestataire extends ConsumerWidget {
                           style: theme.textTheme.titleMedium,
                         ),
                         if (prestataire.departement.isNotEmpty)
+                          // Departement (ex: "Ferké") sous le nom du commerce.
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(
                                 Icons.place_outlined,
                                 size: 13,
-                                color: theme.colorScheme.outline,
+                                color: theme.colorScheme.primary,
                               ),
                               const SizedBox(width: 2),
                               Flexible(
@@ -199,7 +201,7 @@ class _CartePrestataire extends ConsumerWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.outline,
+                                    color: theme.colorScheme.primary,
                                   ),
                                 ),
                               ),
@@ -231,8 +233,8 @@ class _CartePrestataire extends ConsumerWidget {
                         );
                       } catch (_) {
                         messenger.showSnackBar(
-                          const SnackBar(
-                            content: Text('Connexion requise pour discuter.'),
+                          Notificateur.snackAvertissement(
+                            'Connexion requise pour discuter.',
                           ),
                         );
                       }

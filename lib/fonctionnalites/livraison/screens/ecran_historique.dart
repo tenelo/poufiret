@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../global/config/config.dart';
 import '../donnees/livraison_providers.dart';
 import '../metier_domaine/livraison_models.dart';
 import 'ecran_suivi.dart';
@@ -63,7 +64,7 @@ class _EcranHistoriqueState extends ConsumerState<EcranHistorique> {
   }
 
   Color _couleur(String statut, ThemeData theme) {
-    if (statut == 'livree') return Colors.green;
+    if (statut == 'livree') return Config.couleurSucces;
     if (statut == 'annulee' || statut == 'refusee') {
       return theme.colorScheme.error;
     }

@@ -11,7 +11,9 @@ import '../donnees/marqueur_icone.dart';
 import '../donnees/position_socket.dart';
 import '../../map/donnees/map_providers.dart';
 import '../../map/donnees/service_position.dart';
+import '../../../global/config/config.dart';
 import '../../../global/network/providers.dart';
+import '../../../global/ui/notificateur.dart';
 import '../metier_domaine/livraison_models.dart';
 
 const _ordreStatuts = [
@@ -144,38 +146,35 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
           if (!mounted) return;
           setState(() => _positionDeposee = true);
           messenger.showSnackBar(
-            const SnackBar(content: Text('Localisation envoyée.')),
+            Notificateur.snackSucces('Localisation envoyée.'),
           );
         } catch (_) {
           messenger.showSnackBar(
-            const SnackBar(content: Text('Échec de l\'envoi. Réessayez.')),
+            Notificateur.snackErreur('Échec de l\'envoi. Réessayez.'),
           );
         }
       case ServiceDesactive():
         messenger.showSnackBar(
-          const SnackBar(
-            content: Text('Activez la localisation (GPS) de votre téléphone.'),
-          ),
+          Notificateur.snackAvertissement(
+              'Activez la localisation (GPS) de votre téléphone.'),
         );
         await ref.read(servicePositionProvider).ouvrirParametresLocalisation();
       case PermissionRefusee(:final definitif):
         if (definitif) {
           messenger.showSnackBar(
-            const SnackBar(
-              content: Text('Permission refusée. Ouvrez les réglages.'),
-            ),
+            Notificateur.snackAvertissement(
+                'Permission refusée. Ouvrez les réglages.'),
           );
           await ref.read(servicePositionProvider).ouvrirParametresApp();
         } else {
           messenger.showSnackBar(
-            const SnackBar(
-              content: Text('La position est nécessaire pour être localisé.'),
-            ),
+            Notificateur.snackAvertissement(
+                'La position est nécessaire pour être localisé.'),
           );
         }
       case ErreurPosition(:final message):
         messenger.showSnackBar(
-          SnackBar(content: Text('Erreur GPS : $message')),
+          Notificateur.snackErreur('Erreur GPS : $message'),
         );
     }
     if (mounted) setState(() => _depotEnCours = false);
@@ -186,12 +185,12 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
     final envoyee = _positionDeposee || c.positionBDeposee;
     if (envoyee) {
       return Card(
-        color: Colors.green.withValues(alpha: 0.12),
+        color: Config.couleurSucces.withValues(alpha: 0.12),
         child: const Padding(
           padding: EdgeInsets.all(16),
           child: Row(
             children: [
-              Icon(Icons.check_circle, color: Colors.green),
+              Icon(Icons.check_circle, color: Config.couleurSucces),
               SizedBox(width: 12),
               Expanded(child: Text('Localisation envoyée.')),
             ],
@@ -393,9 +392,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
       _timer?.cancel();
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Échec de l\'annulation.')));
+      Notificateur.erreur(context, 'Échec de l\'annulation.');
     } finally {
       if (mounted) setState(() => _annulation = false);
     }
@@ -407,9 +404,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
       await launchUrl(Uri(scheme: 'tel', path: numero.trim()));
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Impossible de lancer l\'appel.')),
-      );
+      Notificateur.erreur(context, 'Impossible de lancer l\'appel.');
     }
   }
 
@@ -420,7 +415,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
     late final String texte;
     switch (c.statut) {
       case 'livree':
-        couleur = Colors.green;
+        couleur = Config.couleurSucces;
         icone = Icons.check_circle;
         texte = 'Livrée';
       case 'annulee':

@@ -28,3 +28,20 @@ abstract class Categorie with _$Categorie {
   factory Categorie.fromJson(Map<String, dynamic> json) =>
       _$CategorieFromJson(json);
 }
+
+extension CategorieAffichage on Categorie {
+  /// Active ET avec au moins un partenaire (ou effectif inconnu).
+  /// Exactement l'inverse de « Bientôt disponible » sur l'accueil.
+  bool get aDesPartenaires =>
+      estActive && (nbPartenaires == null || nbPartenaires! > 0);
+}
+
+extension ListeCategories on List<Categorie> {
+  /// Categories terminales : un parent qui a des enfants est remplacé par
+  /// ses enfants (récursif). Sans hiérarchie, renvoie la liste telle quelle.
+  /// À utiliser partout où l'on doit CHOISIR une catégorie réelle.
+  List<Categorie> get feuilles => [
+        for (final c in this)
+          if (c.enfants.isEmpty) c else ...c.enfants.feuilles,
+      ];
+}

@@ -479,3 +479,52 @@ final class MesCreditsDisponiblesProvider
 
 String _$mesCreditsDisponiblesHash() =>
     r'17638033320d768907d68e346a8485e81fcae0ee';
+
+/// Toutes les faveurs publicitaires du partenaire connecte (disponibles et
+/// consommees), pour l'ecran recapitulatif "Mes faveurs pub".
+
+@ProviderFor(mesCredits)
+final mesCreditsProvider = MesCreditsProvider._();
+
+/// Toutes les faveurs publicitaires du partenaire connecte (disponibles et
+/// consommees), pour l'ecran recapitulatif "Mes faveurs pub".
+
+final class MesCreditsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<CreditFormule>>,
+          List<CreditFormule>,
+          FutureOr<List<CreditFormule>>
+        >
+    with
+        $FutureModifier<List<CreditFormule>>,
+        $FutureProvider<List<CreditFormule>> {
+  /// Toutes les faveurs publicitaires du partenaire connecte (disponibles et
+  /// consommees), pour l'ecran recapitulatif "Mes faveurs pub".
+  MesCreditsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'mesCreditsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$mesCreditsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<CreditFormule>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<CreditFormule>> create(Ref ref) {
+    return mesCredits(ref);
+  }
+}
+
+String _$mesCreditsHash() => r'63c113369920e3f3ba70834117855a976ba3c6fd';

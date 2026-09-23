@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../global/errors/api_exception.dart';
+import '../../../global/ui/notificateur.dart';
 import '../../auth/donnees/auth_providers.dart';
 
 part 'ecran_appareils.g.dart';
@@ -84,10 +85,8 @@ class EcranAppareils extends ConsumerWidget {
                                       ref.invalidate(mesAppareilsProvider);
                                     } catch (_) {
                                       if (context.mounted) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                                content: Text(
-                                                    'Révocation impossible.')));
+                                        Notificateur.erreur(
+                                            context, 'Révocation impossible.');
                                       }
                                     }
                                   },

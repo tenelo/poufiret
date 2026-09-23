@@ -124,6 +124,45 @@ class AuthNotifier extends _$AuthNotifier {
     });
   }
 
+  // ── Firebase Phone Auth (Option A) ──────────────────────────────────────
+
+  /// Étape finale (inscription via Firebase Phone Auth) : crée le compte à
+  /// partir de l'idToken Firebase (numéro déjà prouvé) + PIN, et CONNECTE
+  /// l'utilisateur. Fait basculer l'état en connecté (comme connexion()).
+  Future<void> inscriptionFirebase({
+    required String idToken,
+    required String password,
+    String? prenom,
+    String? nom,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      return ref
+          .read(authRepositoryProvider)
+          .inscriptionFirebase(
+            idToken: idToken,
+            password: password,
+            prenom: prenom,
+            nom: nom,
+          );
+    });
+  }
+
+  /// Étape finale (réinitialisation de PIN via Firebase Phone Auth) :
+  /// réinitialise le PIN à partir de l'idToken Firebase + nouveau PIN, et
+  /// RECONNECTE l'utilisateur.
+  Future<void> reinitPinFirebase({
+    required String idToken,
+    required String password,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      return ref
+          .read(authRepositoryProvider)
+          .reinitPinFirebase(idToken: idToken, password: password);
+    });
+  }
+
   /// Déverrouillage par empreinte : lit le téléphone + PIN mémorisés et
   /// rejoue la connexion serveur (JWT frais). L'empreinte a déjà été
   /// validée par l'appelant (ServiceBiometrie). Échoue si aucun PIN

@@ -6,6 +6,7 @@ import '../../../global/errors/api_exception.dart';
 import '../donnees/publicites_providers.dart';
 import '../metier_domaine/stats_publicite.dart';
 import 'ecran_faire_publicite.dart';
+import 'ecran_mes_faveurs_pub.dart';
 
 /// Campagnes du partenaire et leurs resultats.
 class EcranMesPublicites extends ConsumerWidget {
@@ -16,7 +17,18 @@ class EcranMesPublicites extends ConsumerWidget {
     final async = ref.watch(mesStatsPublicitesProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Mes publicités')),
+      appBar: AppBar(
+        title: const Text('Mes publicités'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.card_giftcard),
+            tooltip: 'Mes faveurs pub',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const EcranMesFaveursPub()),
+            ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () async {
           await Navigator.of(context).push(

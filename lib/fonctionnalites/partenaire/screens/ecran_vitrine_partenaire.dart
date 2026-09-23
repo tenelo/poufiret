@@ -12,6 +12,7 @@ import 'package:poufiret/fonctionnalites/prestations/screens/ecran_demande_inter
 
 import '../donnees/partenaire_providers.dart';
 import '../metier_domaine/partenaire_vitrine.dart';
+import '../../../global/ui/notificateur.dart';
 import '../../../global/widgets/image_reseau.dart';
 
 /// Vitrine publique d'un partenaire (côté client).
@@ -58,7 +59,7 @@ class EcranVitrinePartenaire extends ConsumerWidget {
       ));
     } catch (_) {
       messenger.showSnackBar(
-        const SnackBar(content: Text('Connexion requise pour discuter.')),
+        Notificateur.snackAvertissement('Connexion requise pour discuter.'),
       );
     }
   }
@@ -187,162 +188,211 @@ class _Infos extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final p = partenaire;
+    // Style « feed » : chaque bloc est sa propre carte blanche, espacee
+    // sur le fond clair, plutot qu'un long bloc de texte continu.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // En-tête : logo + nom + type.
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _Logo(logo: p.logo, theme: theme),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
+        _CarteSection(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // En-tête : logo + nom + type.
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(p.nomCommerce,
-                      style: theme.textTheme.headlineSmall),
-                  if (p.typeLibelle.isNotEmpty)
-                    Text(p.typeLibelle,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                        )),
+                  _Logo(logo: p.logo, theme: theme),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(p.nomCommerce,
+                            style: theme.textTheme.headlineSmall),
+                        if (p.typeLibelle.isNotEmpty)
+                          Text(p.typeLibelle,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.primary,
+                              )),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
-        // Stats sociales.
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _Compteur(icone: Icons.visibility, valeur: p.nbVues),
-            const SizedBox(width: 16),
-            BoutonSocial(
-              actifInitial: p.estLikeParMoi,
-              totalInitial: p.nombreLikes,
-              iconeActive: Icons.favorite,
-              iconeInactive: Icons.favorite_border,
-              couleurActive: Config.couleurLike,
-              onToggle: () async {
-                final res = await ref
-                    .read(socialRepositoryProvider)
-                    .toggleLikePartenaire(p.id);
-                return (actif: res.actif, total: res.total);
-              },
-            ),
-            BoutonSocial(
-              actifInitial: p.estFavoriParMoi,
-              totalInitial: 0,
-              iconeActive: Icons.bookmark,
-              iconeInactive: Icons.bookmark_border,
-              couleurActive: Config.couleurFavori,
-              afficherTotal: false,
-              onToggle: () async {
-                final res = await ref
-                    .read(socialRepositoryProvider)
-                    .toggleFavoriPartenaire(p.id);
-                return (actif: res.actif, total: res.total);
-              },
-            ),
-            const Spacer(),
-            IconButton(
-              icon: FaIcon(FontAwesomeIcons.whatsapp,
-                  color: theme.colorScheme.primary),
-              tooltip: 'Discuter',
-              onPressed: () async {
-                final messenger = ScaffoldMessenger.of(context);
-                final nav = Navigator.of(context);
-                try {
-                  final conv = await ref
-                      .read(chatRepositoryProvider)
-                      .contacter(partenaireId: p.id);
-                  nav.push(MaterialPageRoute(
-                    builder: (_) => EcranDiscussion(
-                      conversationId: conv.id,
-                      titre: p.nomCommerce,
-                    ),
-                  ));
-                } catch (_) {
-                  messenger.showSnackBar(const SnackBar(
-                      content: Text('Connexion requise pour discuter.')));
-                }
-              },
-            ),
-          ],
-        ),
-
-        if (p.description.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Text('À propos', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 4),
-          Text(p.description),
-        ],
-
-        if (p.localisationGeo.isNotEmpty ||
-            p.localisationLisible.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Text('Localisation', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 4),
-          // Ancrage administratif (Departement (Region)), mis en avant.
-          if (p.localisationGeo.isNotEmpty)
-            Row(
-              children: [
-                Icon(Icons.place, size: 18, color: theme.colorScheme.primary),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    p.localisationGeo,
-                    style: theme.textTheme.bodyMedium
-                        ?.copyWith(fontWeight: FontWeight.w600),
+              // Stats sociales.
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _Compteur(icone: Icons.visibility, valeur: p.nbVues),
+                  const SizedBox(width: 16),
+                  BoutonSocial(
+                    actifInitial: p.estLikeParMoi,
+                    totalInitial: p.nombreLikes,
+                    iconeActive: Icons.favorite,
+                    iconeInactive: Icons.favorite_border,
+                    couleurActive: Config.couleurLike,
+                    onToggle: () async {
+                      final res = await ref
+                          .read(socialRepositoryProvider)
+                          .toggleLikePartenaire(p.id);
+                      return (actif: res.actif, total: res.total);
+                    },
                   ),
-                ),
-              ],
-            ),
-          // Adresse fine (quartier / secteur / ville), en complement.
-          if (p.localisationLisible.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Row(
+                  BoutonSocial(
+                    actifInitial: p.estFavoriParMoi,
+                    totalInitial: 0,
+                    iconeActive: Icons.bookmark,
+                    iconeInactive: Icons.bookmark_border,
+                    couleurActive: Config.couleurFavori,
+                    afficherTotal: false,
+                    onToggle: () async {
+                      final res = await ref
+                          .read(socialRepositoryProvider)
+                          .toggleFavoriPartenaire(p.id);
+                      return (actif: res.actif, total: res.total);
+                    },
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: FaIcon(FontAwesomeIcons.whatsapp,
+                        color: theme.colorScheme.primary),
+                    tooltip: 'Discuter',
+                    onPressed: () async {
+                      final messenger = ScaffoldMessenger.of(context);
+                      final nav = Navigator.of(context);
+                      try {
+                        final conv = await ref
+                            .read(chatRepositoryProvider)
+                            .contacter(partenaireId: p.id);
+                        nav.push(MaterialPageRoute(
+                          builder: (_) => EcranDiscussion(
+                            conversationId: conv.id,
+                            titre: p.nomCommerce,
+                          ),
+                        ));
+                      } catch (_) {
+                        messenger.showSnackBar(Notificateur.snackAvertissement(
+                            'Connexion requise pour discuter.'));
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+
+        if (p.description.isNotEmpty)
+          _CarteSection(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.place_outlined, size: 18),
-                const SizedBox(width: 4),
-                Expanded(child: Text(p.localisationLisible)),
+                Text('À propos', style: theme.textTheme.titleMedium),
+                const SizedBox(height: 6),
+                Text(p.description, style: theme.textTheme.bodyMedium),
               ],
             ),
-          ],
-          if (p.descriptionAcces.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(p.descriptionAcces,
-                style: theme.textTheme.bodySmall),
-          ],
-        ],
+          ),
 
-        if (p.telephonePro.isNotEmpty || p.whatsapp.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Text('Contact', style: theme.textTheme.titleMedium),
-          const SizedBox(height: 4),
-          if (p.telephonePro.isNotEmpty)
-            Row(children: [
-              const Icon(Icons.phone_outlined, size: 18),
-              const SizedBox(width: 4),
-              Text(p.telephonePro),
-            ]),
-          if (p.whatsapp.isNotEmpty)
-            Row(children: [
-              const Icon(Icons.chat_outlined, size: 18),
-              const SizedBox(width: 4),
-              Text(p.whatsapp),
-            ]),
-        ],
+        if (p.localisationGeo.isNotEmpty || p.localisationLisible.isNotEmpty)
+          _CarteSection(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Localisation', style: theme.textTheme.titleMedium),
+                const SizedBox(height: 8),
+                // Ancrage administratif (Departement (Region)), mis en avant.
+                if (p.localisationGeo.isNotEmpty)
+                  Row(
+                    children: [
+                      Icon(Icons.place,
+                          size: 18, color: theme.colorScheme.primary),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          p.localisationGeo,
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ],
+                  ),
+                // Adresse fine (quartier / secteur / ville), en complement.
+                if (p.localisationLisible.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      Icon(Icons.place_outlined,
+                          size: 18, color: theme.colorScheme.onSurfaceVariant),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(p.localisationLisible,
+                            style: theme.textTheme.bodyMedium),
+                      ),
+                    ],
+                  ),
+                ],
+                if (p.descriptionAcces.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(p.descriptionAcces, style: theme.textTheme.bodySmall),
+                ],
+              ],
+            ),
+          ),
 
-        const SizedBox(height: 24),
-        SectionCommentaires(partenaireId: p.id),
-        const SizedBox(height: 80), // espace sous le bouton Contacter
+        if (p.telephonePro.isNotEmpty || p.whatsapp.isNotEmpty)
+          _CarteSection(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Contact', style: theme.textTheme.titleMedium),
+                const SizedBox(height: 8),
+                if (p.telephonePro.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(children: [
+                      Icon(Icons.phone_outlined,
+                          size: 18, color: theme.colorScheme.onSurfaceVariant),
+                      const SizedBox(width: 6),
+                      Text(p.telephonePro, style: theme.textTheme.bodyMedium),
+                    ]),
+                  ),
+                if (p.whatsapp.isNotEmpty)
+                  Row(children: [
+                    Icon(Icons.chat_outlined,
+                        size: 18, color: theme.colorScheme.onSurfaceVariant),
+                    const SizedBox(width: 6),
+                    Text(p.whatsapp, style: theme.textTheme.bodyMedium),
+                  ]),
+              ],
+            ),
+          ),
+
+        _CarteSection(child: SectionCommentaires(partenaireId: p.id)),
+        const SizedBox(height: 72), // espace sous le bouton Contacter
       ],
     );
   }
+}
+
+/// Bloc « carte » de la vitrine : fond blanc, coins arrondis, espace
+/// genereux, separe du bloc suivant — l'essence du style « feed ».
+class _CarteSection extends StatelessWidget {
+  const _CarteSection({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: child,
+          ),
+        ),
+      );
 }
 
 class _Logo extends StatelessWidget {

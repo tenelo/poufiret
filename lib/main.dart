@@ -3,10 +3,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'global/config/config.dart';
 import 'global/navigation/app_shell.dart';
 import 'global/notifications/fcm_service.dart';
 import 'global/notifications/routeur_notifications.dart';
+import 'global/ui/theme_poufiret.dart';
 import 'fonctionnalites/analytics/donnees/analytics_providers.dart';
 import 'fonctionnalites/auth/screens/auth_notifier.dart';
 import 'fonctionnalites/auth/screens/ecran_connexion.dart';
@@ -30,11 +30,7 @@ class PoufiretApp extends StatelessWidget {
     return MaterialApp(
       title: 'Poufiret',
       navigatorKey: navigatorNotifications,
-      theme: ThemeData(
-        colorScheme: Config.schemaCouleurs,
-        scaffoldBackgroundColor: Config.couleurFond,
-        useMaterial3: true,
-      ),
+      theme: ThemePoufiret.clair,
       debugShowCheckedModeBanner: false,
       navigatorObservers: [observateurNavigation],
       home: const CoucheMiseAJour(enfant: _Racine()),
@@ -56,10 +52,12 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     // Cas 'deja connecte au lancement' : aucune transition auth ne se produit,
-    // donc on demarre la session apres le premier build si un user est present.
+    // donc on demarre la session et les notifications push apres le premier
+    // build si un user est present.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (ref.read(authProvider).value != null) {
         ref.read(sessionAnalyticsProvider.notifier).demarrer();
+        ref.read(fcmServiceProvider).initialiser();
       }
     });
   }
