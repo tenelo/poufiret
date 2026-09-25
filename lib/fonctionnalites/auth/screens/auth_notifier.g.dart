@@ -12,6 +12,11 @@ part of 'auth_notifier.dart';
 /// - data(null)        → déconnecté
 /// - data(Utilisateur) → connecté
 /// - loading           → vérification/connexion en cours
+///
+/// Session robuste : seul un VRAI échec d'authentification (refresh refusé,
+/// 401/403 après renouvellement) déconnecte. Un timeout, une coupure réseau
+/// ou un 5xx gardent la session : l'app démarre avec le dernier utilisateur
+/// connu (cache disque) et `moi` est revalidé en arrière-plan.
 
 @ProviderFor(AuthNotifier)
 final authProvider = AuthNotifierProvider._();
@@ -20,12 +25,22 @@ final authProvider = AuthNotifierProvider._();
 /// - data(null)        → déconnecté
 /// - data(Utilisateur) → connecté
 /// - loading           → vérification/connexion en cours
+///
+/// Session robuste : seul un VRAI échec d'authentification (refresh refusé,
+/// 401/403 après renouvellement) déconnecte. Un timeout, une coupure réseau
+/// ou un 5xx gardent la session : l'app démarre avec le dernier utilisateur
+/// connu (cache disque) et `moi` est revalidé en arrière-plan.
 final class AuthNotifierProvider
     extends $AsyncNotifierProvider<AuthNotifier, Utilisateur?> {
   /// État d'authentification de l'app.
   /// - data(null)        → déconnecté
   /// - data(Utilisateur) → connecté
   /// - loading           → vérification/connexion en cours
+  ///
+  /// Session robuste : seul un VRAI échec d'authentification (refresh refusé,
+  /// 401/403 après renouvellement) déconnecte. Un timeout, une coupure réseau
+  /// ou un 5xx gardent la session : l'app démarre avec le dernier utilisateur
+  /// connu (cache disque) et `moi` est revalidé en arrière-plan.
   AuthNotifierProvider._()
     : super(
         from: null,
@@ -45,12 +60,17 @@ final class AuthNotifierProvider
   AuthNotifier create() => AuthNotifier();
 }
 
-String _$authNotifierHash() => r'774fcd4df04994cd401d6b81af6521130cb62587';
+String _$authNotifierHash() => r'dc4e052c140366899b0fc379810ede72c4991e41';
 
 /// État d'authentification de l'app.
 /// - data(null)        → déconnecté
 /// - data(Utilisateur) → connecté
 /// - loading           → vérification/connexion en cours
+///
+/// Session robuste : seul un VRAI échec d'authentification (refresh refusé,
+/// 401/403 après renouvellement) déconnecte. Un timeout, une coupure réseau
+/// ou un 5xx gardent la session : l'app démarre avec le dernier utilisateur
+/// connu (cache disque) et `moi` est revalidé en arrière-plan.
 
 abstract class _$AuthNotifier extends $AsyncNotifier<Utilisateur?> {
   FutureOr<Utilisateur?> build();

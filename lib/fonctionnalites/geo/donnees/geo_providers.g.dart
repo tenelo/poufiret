@@ -50,27 +50,30 @@ final class GeoRepositoryProvider
 
 String _$geoRepositoryHash() => r'e1fa90b359457fc316208a21f32519d2472ab849';
 
-/// Departements disponibles. keepAlive : la liste est stable, on evite
-/// de la recharger a chaque ouverture d'un formulaire.
+/// Departements disponibles. Liste quasi statique : cache disque 7 jours,
+/// gardee en memoire pour la session (pas de rechargement a chaque
+/// ouverture d'un formulaire).
 
 @ProviderFor(departements)
 final departementsProvider = DepartementsProvider._();
 
-/// Departements disponibles. keepAlive : la liste est stable, on evite
-/// de la recharger a chaque ouverture d'un formulaire.
+/// Departements disponibles. Liste quasi statique : cache disque 7 jours,
+/// gardee en memoire pour la session (pas de rechargement a chaque
+/// ouverture d'un formulaire).
 
 final class DepartementsProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<Departement>>,
           List<Departement>,
-          FutureOr<List<Departement>>
+          Stream<List<Departement>>
         >
     with
         $FutureModifier<List<Departement>>,
-        $FutureProvider<List<Departement>> {
-  /// Departements disponibles. keepAlive : la liste est stable, on evite
-  /// de la recharger a chaque ouverture d'un formulaire.
+        $StreamProvider<List<Departement>> {
+  /// Departements disponibles. Liste quasi statique : cache disque 7 jours,
+  /// gardee en memoire pour la session (pas de rechargement a chaque
+  /// ouverture d'un formulaire).
   DepartementsProvider._()
     : super(
         from: null,
@@ -87,17 +90,17 @@ final class DepartementsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<Departement>> $createElement(
+  $StreamProviderElement<List<Departement>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<Departement>> create(Ref ref) {
+  Stream<List<Departement>> create(Ref ref) {
     return departements(ref);
   }
 }
 
-String _$departementsHash() => r'26e62bc04cef9a29b805db65d8862c7f474b97e9';
+String _$departementsHash() => r'628e0ce06b77b73b7bf0ff245b56c5a57ffc533c';
 
 /// Quartiers d'un departement (autocompletion livraison). Non keepAlive :
 /// depend du departement choisi.

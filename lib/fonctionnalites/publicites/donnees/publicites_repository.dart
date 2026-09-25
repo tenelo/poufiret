@@ -31,26 +31,32 @@ class PublicitesRepository {
     return brut.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList();
   }
 
+  // Lectures cachees : `xxxBrut` (reseau, JSON tel quel — stocke sur disque)
+  // et `xxxDepuis` (decodage, applique aussi au JSON relu du cache).
+
   /// GET /publicites/carrousel/ — pubs du carrousel d'accueil (public).
-  Future<List<PubliciteListe>> carrousel() async {
-    final r = await _dio.get('$_base/carrousel/');
-    return _liste(r.data, 'publicites').map(PubliciteListe.fromJson).toList();
-  }
+  Future<Object?> carrouselBrut() async =>
+      (await _dio.get('$_base/carrousel/')).data;
+
+  List<PubliciteListe> carrouselDepuis(Object? json) =>
+      _liste(json, 'publicites').map(PubliciteListe.fromJson).toList();
 
   /// GET /publicites/ — toutes les pubs actives (onglet Publicites, public).
-  Future<List<PubliciteListe>> pagePublicites() async {
-    final r = await _dio.get('$_base/');
-    return _liste(r.data, 'publicites').map(PubliciteListe.fromJson).toList();
-  }
+  Future<Object?> pagePublicitesBrut() async => (await _dio.get('$_base/')).data;
+
+  List<PubliciteListe> pagePublicitesDepuis(Object? json) =>
+      _liste(json, 'publicites').map(PubliciteListe.fromJson).toList();
 
   /// GET /publicites/bandeau-bas/ — une pub ou rien (public).
-  Future<PubliciteListe?> bandeauBas() async {
-    final r = await _dio.get('$_base/bandeau-bas/');
-    final data = r.data;
-    if (data is! Map<String, dynamic>) return null;
-    final pub = data['publicite'];
-    if (pub is! Map) return null;
-    return PubliciteListe.fromJson(Map<String, dynamic>.from(pub));
+  Future<Object?> bandeauBasBrut() async =>
+      (await _dio.get('$_base/bandeau-bas/')).data;
+
+  /// Le bandeau est une liste de 0 ou 1 pub (meme forme que les autres).
+  List<PubliciteListe> bandeauBasDepuis(Object? json) {
+    if (json is! Map<String, dynamic>) return const [];
+    final pub = json['publicite'];
+    if (pub is! Map) return const [];
+    return [PubliciteListe.fromJson(Map<String, dynamic>.from(pub))];
   }
 
   /// GET /publicites/interstitiel/?minute_session=N — pub plein ecran ou rien.
@@ -151,13 +157,13 @@ class PublicitesRepository {
   }
 
   /// GET /publicites/formules/ — forfaits disponibles (partenaire).
-  Future<List<FormulePublicite>> formules() async {
-    final r = await _dio.get(
-      '$_base/formules/',
-      queryParameters: {'page_size': 100},
-    );
-    return _liste(r.data, 'results').map(FormulePublicite.fromJson).toList();
-  }
+  Future<Object?> formulesBrut() async => (await _dio.get(
+    '$_base/formules/',
+    queryParameters: {'page_size': 100},
+  )).data;
+
+  List<FormulePublicite> formulesDepuis(Object? json) =>
+      _liste(json, 'results').map(FormulePublicite.fromJson).toList();
 
   /// GET /publicites/mes-credits/ — credits de formule du partenaire.
   Future<List<CreditFormule>> mesCredits({String? statut}) async {

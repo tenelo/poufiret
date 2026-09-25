@@ -10,6 +10,8 @@ import 'package:poufiret/fonctionnalites/chat/donnees/chat_providers.dart';
 import 'package:poufiret/fonctionnalites/chat/screens/ecran_discussion.dart';
 import 'package:poufiret/fonctionnalites/prestations/screens/ecran_demande_intervention.dart';
 
+import '../../catalogue/metier_domaine/partenaire_categorie.dart';
+import '../../../global/ui/squelette.dart';
 import '../donnees/partenaire_providers.dart';
 import '../metier_domaine/partenaire_vitrine.dart';
 import '../../../global/ui/notificateur.dart';
@@ -22,7 +24,13 @@ class EcranVitrinePartenaire extends ConsumerWidget {
     super.key,
     required this.partenaireId,
     this.modeTransaction = '',
+    this.apercu,
   });
+
+  /// Ce que l'ecran precedent sait deja du partenaire (nom, logo, couverture,
+  /// departement) : affiche tout de suite, le temps que la fiche complete
+  /// arrive.
+  final PartenaireCategorie? apercu;
 
   /// Mode de la categorie d'ou vient le client : determine l'action principale.
   final String modeTransaction;
@@ -71,9 +79,15 @@ class EcranVitrinePartenaire extends ConsumerWidget {
     ref.watch(vueVitrineProvider(partenaireId: partenaireId, avecCatalogue: false));
 
     return Scaffold(
+      // Tant que la fiche n'est pas la, une barre simple garde le retour.
+      appBar: async.hasValue
+          ? null
+          : AppBar(title: Text(apercu?.nomCommerce ?? '')),
       body: async.when(
-        loading: () =>
-            const Center(child: CircularProgressIndicator()),
+        skipLoadingOnReload: true,
+        loading: () => apercu != null
+            ? _ApercuVitrine(apercu: apercu!)
+            : const SqueletteVitrine(),
         error: (e, _) => _Erreur(
           onRetry: () => ref.invalidate(
               partenaireVitrineProvider(id: partenaireId)),
@@ -99,6 +113,92 @@ class EcranVitrinePartenaire extends ConsumerWidget {
           ),
         ),
         orElse: () => null,
+      ),
+    );
+  }
+}
+
+/// Affichage progressif : couverture, logo, nom et departement deja connus,
+/// suivis de blocs squelettes pour le reste de la fiche.
+class _ApercuVitrine extends StatelessWidget {
+  const _ApercuVitrine({required this.apercu});
+  final PartenaireCategorie apercu;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ZoneSquelette(
+      child: LayoutBuilder(
+        builder: (context, contraintes) {
+          final largeur =
+              contraintes.maxWidth > 700 ? 700.0 : contraintes.maxWidth;
+          return SingleChildScrollView(
+            physics: const NeverScrollableScrollPhysics(),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 200,
+                  width: double.infinity,
+                  child: apercu.photoCouverture.isNotEmpty
+                      ? ImageReseau(
+                          apercu.photoCouverture,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, _, _) => Container(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                          ),
+                        )
+                      : Container(
+                          color: theme.colorScheme.surfaceContainerHighest,
+                        ),
+                ),
+                Center(
+                  child: SizedBox(
+                    width: largeur,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              _Logo(logo: apercu.logo, theme: theme),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      apercu.nomCommerce,
+                                      style: theme.textTheme.headlineSmall,
+                                    ),
+                                    if (apercu.departement.isNotEmpty)
+                                      Text(
+                                        apercu.departement,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                          color: theme.colorScheme.primary,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          const Squelette(hauteur: 12),
+                          const SizedBox(height: 8),
+                          const Squelette(hauteur: 12),
+                          const SizedBox(height: 8),
+                          const Squelette(largeur: 220, hauteur: 12),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

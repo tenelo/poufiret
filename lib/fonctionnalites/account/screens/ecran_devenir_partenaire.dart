@@ -87,7 +87,7 @@ class _EcranDevenirPartenaireState
         if (_ctrlWhatsapp.text.trim().isNotEmpty)
           'whatsapp': _ctrlWhatsapp.text.trim(),
       });
-      ref.invalidate(authProvider);
+      await ref.read(authProvider.notifier).revalider(forcer: true);
       if (!mounted) return;
       await showDialog<void>(
         context: context,

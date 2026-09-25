@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../metier_domaine/info_version.dart';
 import 'version_repository.dart';
 
-/// Repository de contrôle de version (Dio nu, sans auth).
+/// Repository de contrôle de version (Dio nu, sans auth, pool partagé).
 final versionRepositoryProvider = Provider<VersionRepository>(
   (ref) => VersionRepository(),
 );
@@ -13,6 +13,9 @@ final versionRepositoryProvider = Provider<VersionRepository>(
 /// Non bloquant : tant que ce Future n'a pas répondu, l'app s'affiche
 /// normalement. Seul un statut 'obligatoire' déclenche l'écran bloquant,
 /// via CoucheMiseAJour. En cas d'erreur, le repository renvoie « à jour ».
+///
+/// Au lancement, main() démarre déjà l'appel (en parallèle de l'init
+/// Firebase) et surcharge ce provider avec ce Future : aucun second appel.
 final controleVersionProvider = FutureProvider<InfoVersion>(
   (ref) => ref.watch(versionRepositoryProvider).verifier(),
 );

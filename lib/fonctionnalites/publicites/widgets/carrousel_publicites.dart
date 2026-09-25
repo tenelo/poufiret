@@ -51,9 +51,11 @@ class _CarrouselPublicitesState extends ConsumerState<CarrouselPublicites> {
     });
   }
 
-  /// Trace une impression une seule fois par pub et par session d'ecran.
-  void _tracerImpression(PubliciteListe pub) {
-    if (!_tracees.add(pub.id)) return;
+  /// Trace une impression une seule fois par pub et par session d'ecran,
+  /// et seulement si la pub est confirmee par une reponse reseau fraiche
+  /// (une pub lue dans le cache peut avoir ete arretee depuis).
+  void _tracerImpression(PubliciteListe pub, {required bool confirmee}) {
+    if (!confirmee || !_tracees.add(pub.id)) return;
     ref
         .read(publicitesRepositoryProvider)
         .enregistrerImpression(
@@ -71,18 +73,21 @@ class _CarrouselPublicitesState extends ConsumerState<CarrouselPublicites> {
       // Silencieux : un carrousel qui charge ou echoue ne doit pas
       // perturber l'accueil.
       orElse: () => const SizedBox.shrink(),
-      data: (pubs) {
+      data: (donnees) {
+        // Jamais de pub dont la diffusion est terminee, meme en cache.
+        final pubs = donnees.affichables();
+        final confirmee = donnees.confirmeReseau;
         if (pubs.isEmpty) return const SizedBox.shrink();
 
         if (_index >= pubs.length) _index = 0;
-        _tracerImpression(pubs[_index]);
+        _tracerImpression(pubs[_index], confirmee: confirmee);
         _programmerSuivant(pubs);
 
         return LayoutBuilder(
           builder: (context, contraintes) {
             // Hauteur proportionnelle a la largeur (ratio ~16/9 borne).
             final largeur = contraintes.maxWidth;
-            final hauteur = (largeur * 0.30).clamp(140.0, 260.0);
+            final hauteur = (largeur * 0.25).clamp(140.0, 260.0);
 
             return Column(
               mainAxisSize: MainAxisSize.min,
@@ -94,7 +99,7 @@ class _CarrouselPublicitesState extends ConsumerState<CarrouselPublicites> {
                     itemCount: pubs.length,
                     onPageChanged: (i) {
                       setState(() => _index = i);
-                      _tracerImpression(pubs[i]);
+                      _tracerImpression(pubs[i], confirmee: confirmee);
                     },
                     itemBuilder: (context, i) => _Diapositive(pub: pubs[i]),
                   ),

@@ -15,6 +15,7 @@ _PubliciteListe _$PubliciteListeFromJson(Map<String, dynamic> json) =>
       dureeAffichageSecondes:
           (json['duree_affichage_secondes'] as num?)?.toInt() ?? 5,
       priorite: (json['priorite'] as num?)?.toInt() ?? 0,
+      finDiffusion: json['fin_diffusion'] as String?,
     );
 
 Map<String, dynamic> _$PubliciteListeToJson(_PubliciteListe instance) =>
@@ -25,4 +26,5 @@ Map<String, dynamic> _$PubliciteListeToJson(_PubliciteListe instance) =>
       'partenaire_id': instance.partenaireId,
       'duree_affichage_secondes': instance.dureeAffichageSecondes,
       'priorite': instance.priorite,
+      'fin_diffusion': instance.finDiffusion,
     };

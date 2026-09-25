@@ -67,13 +67,11 @@ final carrouselPublicitesProvider = CarrouselPublicitesProvider._();
 final class CarrouselPublicitesProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<PubliciteListe>>,
-          List<PubliciteListe>,
-          FutureOr<List<PubliciteListe>>
+          AsyncValue<PubsAffichees>,
+          PubsAffichees,
+          Stream<PubsAffichees>
         >
-    with
-        $FutureModifier<List<PubliciteListe>>,
-        $FutureProvider<List<PubliciteListe>> {
+    with $FutureModifier<PubsAffichees>, $StreamProvider<PubsAffichees> {
   /// Pubs du carrousel d'accueil.
   CarrouselPublicitesProvider._()
     : super(
@@ -91,18 +89,18 @@ final class CarrouselPublicitesProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<PubliciteListe>> $createElement(
+  $StreamProviderElement<PubsAffichees> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<PubliciteListe>> create(Ref ref) {
+  Stream<PubsAffichees> create(Ref ref) {
     return carrouselPublicites(ref);
   }
 }
 
 String _$carrouselPublicitesHash() =>
-    r'80b53f54211362f0ec5205d6ad40f78c079a7440';
+    r'64832385ac12f268c33c28c4ae9e4735fe4ae756';
 
 /// Pubs de l'onglet Publicites.
 
@@ -114,13 +112,11 @@ final pagePublicitesProvider = PagePublicitesProvider._();
 final class PagePublicitesProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<PubliciteListe>>,
-          List<PubliciteListe>,
-          FutureOr<List<PubliciteListe>>
+          AsyncValue<PubsAffichees>,
+          PubsAffichees,
+          Stream<PubsAffichees>
         >
-    with
-        $FutureModifier<List<PubliciteListe>>,
-        $FutureProvider<List<PubliciteListe>> {
+    with $FutureModifier<PubsAffichees>, $StreamProvider<PubsAffichees> {
   /// Pubs de l'onglet Publicites.
   PagePublicitesProvider._()
     : super(
@@ -138,19 +134,19 @@ final class PagePublicitesProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<PubliciteListe>> $createElement(
+  $StreamProviderElement<PubsAffichees> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<PubliciteListe>> create(Ref ref) {
+  Stream<PubsAffichees> create(Ref ref) {
     return pagePublicites(ref);
   }
 }
 
-String _$pagePublicitesHash() => r'22de15462f8b31a5fd0b64c60b94e2469446c3fe';
+String _$pagePublicitesHash() => r'dd5c31880b70e7f7bd07ad49d996ac0553a25f60';
 
-/// Pub du bandeau bas (peut etre nulle).
+/// Pub du bandeau bas (liste vide = aucune pub).
 ///
 /// keepAlive : le bandeau est affiche globalement et disparait sur
 /// certains ecrans. Sans cela, Riverpod detruirait le provider des qu'il
@@ -160,7 +156,7 @@ String _$pagePublicitesHash() => r'22de15462f8b31a5fd0b64c60b94e2469446c3fe';
 @ProviderFor(bandeauBasPublicite)
 final bandeauBasPubliciteProvider = BandeauBasPubliciteProvider._();
 
-/// Pub du bandeau bas (peut etre nulle).
+/// Pub du bandeau bas (liste vide = aucune pub).
 ///
 /// keepAlive : le bandeau est affiche globalement et disparait sur
 /// certains ecrans. Sans cela, Riverpod detruirait le provider des qu'il
@@ -170,12 +166,12 @@ final bandeauBasPubliciteProvider = BandeauBasPubliciteProvider._();
 final class BandeauBasPubliciteProvider
     extends
         $FunctionalProvider<
-          AsyncValue<PubliciteListe?>,
-          PubliciteListe?,
-          FutureOr<PubliciteListe?>
+          AsyncValue<PubsAffichees>,
+          PubsAffichees,
+          Stream<PubsAffichees>
         >
-    with $FutureModifier<PubliciteListe?>, $FutureProvider<PubliciteListe?> {
-  /// Pub du bandeau bas (peut etre nulle).
+    with $FutureModifier<PubsAffichees>, $StreamProvider<PubsAffichees> {
+  /// Pub du bandeau bas (liste vide = aucune pub).
   ///
   /// keepAlive : le bandeau est affiche globalement et disparait sur
   /// certains ecrans. Sans cela, Riverpod detruirait le provider des qu'il
@@ -197,18 +193,18 @@ final class BandeauBasPubliciteProvider
 
   @$internal
   @override
-  $FutureProviderElement<PubliciteListe?> $createElement(
+  $StreamProviderElement<PubsAffichees> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<PubliciteListe?> create(Ref ref) {
+  Stream<PubsAffichees> create(Ref ref) {
     return bandeauBasPublicite(ref);
   }
 }
 
 String _$bandeauBasPubliciteHash() =>
-    r'9dc47bf6815d3204f098d99960889977b39a1b01';
+    r'df7a94222d1361374957b0e49a2e630fbded867e';
 
 /// Forfaits proposes au partenaire.
 
@@ -222,11 +218,11 @@ final class FormulesPubliciteProvider
         $FunctionalProvider<
           AsyncValue<List<FormulePublicite>>,
           List<FormulePublicite>,
-          FutureOr<List<FormulePublicite>>
+          Stream<List<FormulePublicite>>
         >
     with
         $FutureModifier<List<FormulePublicite>>,
-        $FutureProvider<List<FormulePublicite>> {
+        $StreamProvider<List<FormulePublicite>> {
   /// Forfaits proposes au partenaire.
   FormulesPubliciteProvider._()
     : super(
@@ -244,17 +240,17 @@ final class FormulesPubliciteProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<FormulePublicite>> $createElement(
+  $StreamProviderElement<List<FormulePublicite>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<FormulePublicite>> create(Ref ref) {
+  Stream<List<FormulePublicite>> create(Ref ref) {
     return formulesPublicite(ref);
   }
 }
 
-String _$formulesPubliciteHash() => r'a3d5a4e6804b46581d527dd7b242d74000da525c';
+String _$formulesPubliciteHash() => r'3651c580665c50e6e4354caf9cd248281308b724';
 
 /// Fiche detail d'une publicite.
 

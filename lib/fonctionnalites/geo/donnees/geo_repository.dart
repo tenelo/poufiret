@@ -9,9 +9,10 @@ class GeoRepository {
   final Dio _dio;
 
   /// Liste des departements pour les menus deroulants (endpoint public).
-  Future<List<Departement>> departements() async {
-    final r = await _dio.get('${Env.apiPrefix}/geo/departements/');
-    final data = r.data;
+  Future<Object?> departementsBrut() async =>
+      (await _dio.get('${Env.apiPrefix}/geo/departements/')).data;
+
+  List<Departement> departementsDepuis(Object? data) {
     final brut = data is Map<String, dynamic> ? data['results'] : data;
     if (brut is! List) return const [];
     return brut

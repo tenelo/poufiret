@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../../../global/carte/carte_poufiret.dart';
+import '../../../global/carte/modeles_carte.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/notificateur.dart';
+import '../../catalogue/donnees/invalidations_catalogue.dart';
 import '../../map/donnees/map_providers.dart';
 import '../../map/donnees/service_position.dart';
 import '../donnees/espace_partenaire_providers.dart';
@@ -120,6 +122,7 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
             cheminCouverture: _couverture?.path,
           );
       ref.invalidate(monProfilPartenaireProvider);
+      invaliderPartenaires(ref);
       if (!mounted) return;
       setState(() {
         _logo = null;
@@ -256,7 +259,7 @@ class _SectionLocalisationState extends ConsumerState<_SectionLocalisation> {
   late double? _lng = widget.longitude;
   bool _envoi = false;
   bool _localisationEnCours = false;
-  GoogleMapController? _controller;
+  final _carte = ControleurCarte();
 
   bool get _aUnPoint => _lat != null && _lng != null;
   bool get _modifie => _lat != widget.latitude || _lng != widget.longitude;
@@ -285,11 +288,7 @@ class _SectionLocalisationState extends ConsumerState<_SectionLocalisation> {
           _lat = latitude;
           _lng = longitude;
         });
-        if (_controller != null) {
-          _controller!.animateCamera(
-            CameraUpdate.newLatLng(LatLng(latitude, longitude)),
-          );
-        }
+        _carte.centrerSur(PointCarte(latitude, longitude));
       case ServiceDesactive():
         Notificateur.avertissement(
             context, 'Activez la localisation (GPS) de votre téléphone.');
@@ -308,7 +307,7 @@ class _SectionLocalisationState extends ConsumerState<_SectionLocalisation> {
   }
 
   /// Ajustement fin : deplace le marqueur au point tape sur la carte.
-  void _ajusterPoint(LatLng point) {
+  void _ajusterPoint(PointCarte point) {
     setState(() {
       _lat = point.latitude;
       _lng = point.longitude;
@@ -351,6 +350,7 @@ class _SectionLocalisationState extends ConsumerState<_SectionLocalisation> {
         'longitude': lng,
       });
       ref.invalidate(monProfilPartenaireProvider);
+      invaliderPartenaires(ref);
       if (!mounted) return;
       setState(() {
         _lat = lat;
@@ -406,21 +406,17 @@ class _SectionLocalisationState extends ConsumerState<_SectionLocalisation> {
                 borderRadius: BorderRadius.circular(10),
                 child: SizedBox(
                   height: 200,
-                  child: GoogleMap(
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(_lat!, _lng!),
-                      zoom: 15,
-                    ),
-                    markers: {
-                      Marker(
-                        markerId: const MarkerId('commerce'),
-                        position: LatLng(_lat!, _lng!),
+                  child: CartePoufiret(
+                    centreInitial: PointCarte(_lat!, _lng!),
+                    zoomInitial: 15,
+                    marqueurs: [
+                      MarqueurCarte(
+                        id: 'commerce',
+                        position: PointCarte(_lat!, _lng!),
                       ),
-                    },
-                    onMapCreated: (c) => _controller = c,
+                    ],
+                    controleur: _carte,
                     onTap: _ajusterPoint,
-                    zoomControlsEnabled: false,
-                    myLocationButtonEnabled: false,
                   ),
                 ),
               ),

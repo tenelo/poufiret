@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../catalogue/donnees/catalogue_providers.dart';
+import '../../catalogue/donnees/invalidations_catalogue.dart';
 import '../../catalogue/metier_domaine/categorie.dart';
 import '../donnees/espace_partenaire_providers.dart';
 
@@ -183,6 +184,7 @@ class _EcranFormulaireArticleState
           echecs++;
         }
       }
+      invaliderArticles(ref);
       if (!mounted) return;
       if (echecs == 0) {
         Notificateur.succes(
@@ -233,6 +235,7 @@ class _EcranFormulaireArticleState
       await ref
           .read(espacePartenaireRepositoryProvider)
           .supprimerArticle(widget.slug!);
+      invaliderArticles(ref);
       if (!mounted) return;
       Notificateur.succes(context, 'Article supprimé.');
       Navigator.of(context).pop(true);
@@ -253,7 +256,8 @@ class _EcranFormulaireArticleState
 
     // En édition : préremplir une seule fois depuis la fiche.
     if (_estEdition && !_prerempli) {
-      final detailAsync = ref.watch(articleDetailProvider(slug: widget.slug!));
+      final detailAsync =
+          ref.watch(articleDetailFraisProvider(slug: widget.slug!));
       final article = detailAsync.whenOrNull(data: (a) => a);
       if (article != null) {
         _prerempli = true;

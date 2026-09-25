@@ -110,18 +110,25 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
           lat = latitude;
           lng = longitude;
         case ServiceDesactive():
-          messenger.showSnackBar(Notificateur.snackAvertissement(
-              'Activez la localisation pour etre livre.'));
+          messenger.showSnackBar(
+            Notificateur.snackAvertissement(
+              'Activez la localisation pour etre livre.',
+            ),
+          );
           if (mounted) setState(() => _envoiEnCours = false);
           return;
         case PermissionRefusee():
-          messenger.showSnackBar(Notificateur.snackAvertissement(
-              'Autorisez la localisation pour etre livre, ou choisissez Je viens chercher.'));
+          messenger.showSnackBar(
+            Notificateur.snackAvertissement(
+              'Autorisez la localisation pour etre livre, ou choisissez Je viens chercher.',
+            ),
+          );
           if (mounted) setState(() => _envoiEnCours = false);
           return;
         case ErreurPosition():
           messenger.showSnackBar(
-              Notificateur.snackErreur('Position introuvable. Reessayez.'));
+            Notificateur.snackErreur('Position introuvable. Reessayez.'),
+          );
           if (mounted) setState(() => _envoiEnCours = false);
           return;
       }
@@ -170,7 +177,13 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(widget.titre, style: theme.textTheme.titleLarge),
+            Text(
+              widget.titre,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: Colors.grey[400],
+              ),
+            ),
             const Divider(),
             for (final panier in widget.paniers)
               for (final ligne in panier.lignes)
@@ -237,7 +250,7 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
                 'Réglez comme vous voulez à la remise (espèces, Wave, '
                 'Mobile Money…).',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.outline,
+                  color: Colors.grey[600],
                 ),
               ),
             ),
@@ -333,14 +346,16 @@ class _LigneTuileState extends ConsumerState<_LigneTuile> {
               children: [
                 Text(
                   l.articleNom,
-                  style: theme.textTheme.bodyLarge,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   'chez ${widget.commercant}',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.outline,
+                    color: Colors.grey[600],
                   ),
                 ),
                 Text(

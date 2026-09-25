@@ -1,8 +1,8 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -11,6 +11,8 @@ import '../donnees/marqueur_icone.dart';
 import '../donnees/position_socket.dart';
 import '../../map/donnees/map_providers.dart';
 import '../../map/donnees/service_position.dart';
+import '../../../global/carte/carte_poufiret.dart';
+import '../../../global/carte/modeles_carte.dart';
 import '../../../global/config/config.dart';
 import '../../../global/network/providers.dart';
 import '../../../global/ui/notificateur.dart';
@@ -56,11 +58,11 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
 
   Timer? _timer;
   Course? _course;
-  BitmapDescriptor? _iconeStandard;
-  BitmapDescriptor? _iconeTerminee;
+  Uint8List? _iconeStandard;
+  Uint8List? _iconeTerminee;
   bool _iconeDemandee = false;
-  LatLng? _posLivreur;
-  GoogleMapController? _controller;
+  PointCarte? _posLivreur;
+  final _carte = ControleurCarte();
   bool _annulation = false;
   PositionSocket? _positionSocket;
   StreamSubscription<Position>? _fluxPosition;
@@ -86,7 +88,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
     _positionSocket = socket;
     socket.positions.listen((p) {
       if (!mounted) return;
-      setState(() => _posLivreur = LatLng(p.latitude, p.longitude));
+      setState(() => _posLivreur = PointCarte(p.latitude, p.longitude));
       _ajusterCamera();
     });
     socket.connecter();
@@ -218,13 +220,13 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
       final dpr = MediaQuery.of(context).devicePixelRatio;
       final taille = (30 * dpr).round().clamp(60, 180);
       final urls = await ref.read(livraisonRepositoryProvider).iconesMotard();
-      BitmapDescriptor? std;
-      BitmapDescriptor? term;
+      Uint8List? std;
+      Uint8List? term;
       if (urls.standard != null) {
-        std = await bitmapDepuisUrl(urls.standard!, taille: taille);
+        std = await octetsPngDepuisUrl(urls.standard!, taille: taille);
       }
       if (urls.terminee != null) {
-        term = await bitmapDepuisUrl(urls.terminee!, taille: taille);
+        term = await octetsPngDepuisUrl(urls.terminee!, taille: taille);
       }
       if (!mounted) return;
       setState(() {
@@ -247,7 +249,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
         _course = c;
         _posLivreur =
             (lp != null && lp.latitude != null && lp.longitude != null)
-            ? LatLng(lp.latitude!, lp.longitude!)
+            ? PointCarte(lp.latitude!, lp.longitude!)
             : null;
       });
       if (_terminaux.contains(c.statut)) {
@@ -269,88 +271,48 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
     }
   }
 
-  LatLng? _pt(GpsPoint? g) {
+  PointCarte? _pt(GpsPoint? g) {
     if (g?.latitude != null && g?.longitude != null) {
-      return LatLng(g!.latitude!, g.longitude!);
+      return PointCarte(g!.latitude!, g.longitude!);
     }
     return null;
   }
 
-  LatLng? get _posA => _pt(_course?.pointA.gps);
-  LatLng? get _posB => _pt(_course?.pointB.gps);
+  PointCarte? get _posA => _pt(_course?.pointA.gps);
+  PointCarte? get _posB => _pt(_course?.pointB.gps);
 
-  Set<Marker> _marqueurs() {
-    final m = <Marker>{};
-    final a = _posA;
-    if (a != null) {
-      m.add(
-        Marker(
-          markerId: const MarkerId('A'),
-          position: a,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow: InfoWindow(
-            title: 'Retrait (A)',
-            snippet: _course?.pointA.quartier,
-          ),
-        ),
-      );
-    }
-    final b = _posB;
-    if (b != null) {
-      m.add(
-        Marker(
-          markerId: const MarkerId('B'),
-          position: b,
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueGreen,
-          ),
-          infoWindow: InfoWindow(
-            title: 'Livraison (B)',
-            snippet: _course?.pointB.quartier,
-          ),
-        ),
-      );
-    }
-    final iconeLivreur = _course?.statut == 'livree'
-        ? _iconeTerminee
-        : _iconeStandard;
-    if (_posLivreur != null && iconeLivreur != null) {
-      m.add(
-        Marker(
-          markerId: const MarkerId('livreur'),
-          position: _posLivreur!,
-          icon: iconeLivreur,
-          infoWindow: const InfoWindow(title: 'Livreur'),
-        ),
-      );
-    }
-    return m;
-  }
+  Uint8List? get _iconeLivreur =>
+      _course?.statut == 'livree' ? _iconeTerminee : _iconeStandard;
+
+  List<MarqueurCarte> _marqueurs() => marqueursSuivi(
+    posA: _posA,
+    posB: _posB,
+    posLivreur: _posLivreur,
+    quartierA: _course?.pointA.quartier,
+    quartierB: _course?.pointB.quartier,
+    iconeLivreur: _iconeLivreur,
+  );
 
   void _ajusterCamera() {
-    final ctrl = _controller;
-    if (ctrl == null) return;
-    final pts = [_posA, _posB, _posLivreur].whereType<LatLng>().toList();
-    if (pts.isEmpty) return;
-    if (pts.length == 1) {
-      ctrl.animateCamera(CameraUpdate.newLatLngZoom(pts.first, 14));
-      return;
-    }
-    var minLat = pts.first.latitude, maxLat = pts.first.latitude;
-    var minLng = pts.first.longitude, maxLng = pts.first.longitude;
-    for (final p in pts) {
-      minLat = p.latitude < minLat ? p.latitude : minLat;
-      maxLat = p.latitude > maxLat ? p.latitude : maxLat;
-      minLng = p.longitude < minLng ? p.longitude : minLng;
-      maxLng = p.longitude > maxLng ? p.longitude : maxLng;
-    }
-    ctrl.animateCamera(
-      CameraUpdate.newLatLngBounds(
-        LatLngBounds(
-          southwest: LatLng(minLat, minLng),
-          northeast: LatLng(maxLat, maxLng),
+    _carte.ajuster(
+      [_posA, _posB, _posLivreur].whereType<PointCarte>().toList(),
+      marge: 60,
+      zoomSiUnPoint: 14,
+    );
+  }
+
+  void _ouvrirPleinEcran(Course c) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => _CartePleinEcran(
+          posA: _posA,
+          posB: _posB,
+          posLivreur: _posLivreur,
+          quartierA: c.pointA.quartier,
+          quartierB: c.pointB.quartier,
+          titre: c.numero,
+          iconeLivreur: _iconeLivreur,
         ),
-        60,
       ),
     );
   }
@@ -528,39 +490,35 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
                     children: [
                       if (aGps)
                         GestureDetector(
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => _CartePleinEcran(
-                                posA: _posA,
-                                posB: _posB,
-                                posLivreur: _posLivreur,
-                                quartierA: c.pointA.quartier,
-                                quartierB: c.pointB.quartier,
-                                titre: c.numero,
-                                iconeLivreur: c.statut == 'livree'
-                                    ? _iconeTerminee
-                                    : _iconeStandard,
-                              ),
-                            ),
-                          ),
+                          onTap: () => _ouvrirPleinEcran(c),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: SizedBox(
                               height: 300,
-                              child: GoogleMap(
-                                initialCameraPosition: CameraPosition(
-                                  target: _posB ?? _posA ?? _posLivreur!,
-                                  zoom: 14,
-                                ),
-                                markers: _marqueurs(),
-                                zoomControlsEnabled: true,
-                                zoomGesturesEnabled: true,
-                                myLocationEnabled: false,
-                                myLocationButtonEnabled: false,
-                                onMapCreated: (ctrl) {
-                                  _controller = ctrl;
-                                  _ajusterCamera();
-                                },
+                              child: Stack(
+                                children: [
+                                  CartePoufiret(
+                                    centreInitial:
+                                        _posB ?? _posA ?? _posLivreur!,
+                                    zoomInitial: 14,
+                                    marqueurs: _marqueurs(),
+                                    boutonsZoom: true,
+                                    controleur: _carte,
+                                    onPrete: _ajusterCamera,
+                                  ),
+                                  // Agrandir : fonctionne sur les deux cartes
+                                  // (les gestes d'OpenStreetMap priment sur le
+                                  // tap du conteneur).
+                                  Positioned(
+                                    top: 8,
+                                    left: 8,
+                                    child: IconButton.filledTonal(
+                                      tooltip: 'Agrandir la carte',
+                                      icon: const Icon(Icons.fullscreen),
+                                      onPressed: () => _ouvrirPleinEcran(c),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -626,6 +584,44 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
   }
 }
 
+/// Marqueurs d'une course : retrait (A), livraison (B) et moto du livreur
+/// (PNG defini dans l'admin, aucune icone de repli). Partage par l'apercu et
+/// la carte plein ecran, sur les deux cartes (Google / OpenStreetMap).
+List<MarqueurCarte> marqueursSuivi({
+  required PointCarte? posA,
+  required PointCarte? posB,
+  required PointCarte? posLivreur,
+  required String? quartierA,
+  required String? quartierB,
+  required Uint8List? iconeLivreur,
+}) {
+  return [
+    if (posA != null)
+      MarqueurCarte(
+        id: 'A',
+        position: posA,
+        teinte: TeinteMarqueur.bleu,
+        titre: 'Retrait (A)',
+        sousTitre: quartierA,
+      ),
+    if (posB != null)
+      MarqueurCarte(
+        id: 'B',
+        position: posB,
+        teinte: TeinteMarqueur.vert,
+        titre: 'Livraison (B)',
+        sousTitre: quartierB,
+      ),
+    if (posLivreur != null && iconeLivreur != null)
+      MarqueurCarte(
+        id: 'livreur',
+        position: posLivreur,
+        octetsPng: iconeLivreur,
+        titre: 'Livreur',
+      ),
+  ];
+}
+
 /// Carte en plein ecran : suivi detaille (A, B, moto), zoom complet.
 class _CartePleinEcran extends StatefulWidget {
   const _CartePleinEcran({
@@ -638,10 +634,10 @@ class _CartePleinEcran extends StatefulWidget {
     required this.iconeLivreur,
   });
 
-  final BitmapDescriptor? iconeLivreur;
-  final LatLng? posA;
-  final LatLng? posB;
-  final LatLng? posLivreur;
+  final Uint8List? iconeLivreur;
+  final PointCarte? posA;
+  final PointCarte? posB;
+  final PointCarte? posLivreur;
   final String quartierA;
   final String quartierB;
   final String titre;
@@ -651,80 +647,17 @@ class _CartePleinEcran extends StatefulWidget {
 }
 
 class _CartePleinEcranState extends State<_CartePleinEcran> {
-  GoogleMapController? _controller;
-
-  Set<Marker> _marqueurs() {
-    final m = <Marker>{};
-    if (widget.posA != null) {
-      m.add(
-        Marker(
-          markerId: const MarkerId('A'),
-          position: widget.posA!,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow: InfoWindow(
-            title: 'Retrait (A)',
-            snippet: widget.quartierA,
-          ),
-        ),
-      );
-    }
-    if (widget.posB != null) {
-      m.add(
-        Marker(
-          markerId: const MarkerId('B'),
-          position: widget.posB!,
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-            BitmapDescriptor.hueGreen,
-          ),
-          infoWindow: InfoWindow(
-            title: 'Livraison (B)',
-            snippet: widget.quartierB,
-          ),
-        ),
-      );
-    }
-    if (widget.posLivreur != null && widget.iconeLivreur != null) {
-      m.add(
-        Marker(
-          markerId: const MarkerId('livreur'),
-          position: widget.posLivreur!,
-          icon: widget.iconeLivreur!,
-          infoWindow: const InfoWindow(title: 'Livreur'),
-        ),
-      );
-    }
-    return m;
-  }
+  final _carte = ControleurCarte();
 
   void _ajusterCamera() {
-    final ctrl = _controller;
-    if (ctrl == null) return;
-    final pts = [
-      widget.posA,
-      widget.posB,
-      widget.posLivreur,
-    ].whereType<LatLng>().toList();
-    if (pts.isEmpty) return;
-    if (pts.length == 1) {
-      ctrl.animateCamera(CameraUpdate.newLatLngZoom(pts.first, 15));
-      return;
-    }
-    var minLat = pts.first.latitude, maxLat = pts.first.latitude;
-    var minLng = pts.first.longitude, maxLng = pts.first.longitude;
-    for (final p in pts) {
-      minLat = p.latitude < minLat ? p.latitude : minLat;
-      maxLat = p.latitude > maxLat ? p.latitude : maxLat;
-      minLng = p.longitude < minLng ? p.longitude : minLng;
-      maxLng = p.longitude > maxLng ? p.longitude : maxLng;
-    }
-    ctrl.animateCamera(
-      CameraUpdate.newLatLngBounds(
-        LatLngBounds(
-          southwest: LatLng(minLat, minLng),
-          northeast: LatLng(maxLat, maxLng),
-        ),
-        80,
-      ),
+    _carte.ajuster(
+      [
+        widget.posA,
+        widget.posB,
+        widget.posLivreur,
+      ].whereType<PointCarte>().toList(),
+      marge: 80,
+      zoomSiUnPoint: 15,
     );
   }
 
@@ -735,17 +668,20 @@ class _CartePleinEcranState extends State<_CartePleinEcran> {
       appBar: AppBar(title: Text(widget.titre)),
       body: premier == null
           ? const Center(child: Text('Aucune position à afficher.'))
-          : GoogleMap(
-              initialCameraPosition: CameraPosition(target: premier, zoom: 14),
-              markers: _marqueurs(),
-              zoomControlsEnabled: true,
-              zoomGesturesEnabled: true,
-              myLocationEnabled: false,
-              myLocationButtonEnabled: false,
-              onMapCreated: (ctrl) {
-                _controller = ctrl;
-                _ajusterCamera();
-              },
+          : CartePoufiret(
+              centreInitial: premier,
+              zoomInitial: 14,
+              marqueurs: marqueursSuivi(
+                posA: widget.posA,
+                posB: widget.posB,
+                posLivreur: widget.posLivreur,
+                quartierA: widget.quartierA,
+                quartierB: widget.quartierB,
+                iconeLivreur: widget.iconeLivreur,
+              ),
+              boutonsZoom: true,
+              controleur: _carte,
+              onPrete: _ajusterCamera,
             ),
     );
   }

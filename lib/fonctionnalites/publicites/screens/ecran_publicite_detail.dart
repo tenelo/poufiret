@@ -61,6 +61,32 @@ class _EcranPubliciteDetailState extends ConsumerState<EcranPubliciteDetail> {
   }
 }
 
+/// La description est un texte libre saisi par le partenaire. Les lignes du
+/// type « Prix : 39 900 FCFA » sont mises en avant : libelle en gras, montant
+/// en gras et couleur de l'app.
+TextSpan _descriptionMiseEnForme(String description, ThemeData theme) {
+  final ligne = RegExp(r'^(\s*prix\s*:)(.*)$', caseSensitive: false);
+  final gras = theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold);
+  final lignes = description.split('\n');
+  final enfants = <InlineSpan>[];
+  for (var i = 0; i < lignes.length; i++) {
+    final m = ligne.firstMatch(lignes[i]);
+    if (m == null) {
+      enfants.add(TextSpan(text: lignes[i]));
+    } else {
+      enfants.add(TextSpan(text: m.group(1), style: gras));
+      enfants.add(
+        TextSpan(
+          text: m.group(2),
+          style: gras?.copyWith(color: Config.couleurPrimaire),
+        ),
+      );
+    }
+    if (i < lignes.length - 1) enfants.add(const TextSpan(text: '\n'));
+  }
+  return TextSpan(children: enfants);
+}
+
 class _Contenu extends StatelessWidget {
   const _Contenu({required this.pub});
   final PubliciteDetail pub;
@@ -116,7 +142,10 @@ class _Contenu extends StatelessWidget {
                 ],
                 if (pub.description.isNotEmpty) ...[
                   const SizedBox(height: 16),
-                  Text(pub.description, style: theme.textTheme.bodyLarge),
+                  Text.rich(
+                    _descriptionMiseEnForme(pub.description, theme),
+                    style: theme.textTheme.bodyLarge,
+                  ),
                 ],
                 if (pub.aUneVideo) ...[
                   const SizedBox(height: 16),

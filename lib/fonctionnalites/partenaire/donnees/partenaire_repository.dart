@@ -9,8 +9,9 @@ class PartenaireRepository {
   PartenaireRepository({required Dio dio}) : _dio = dio;
 
   /// GET /auth/partenaires/<id>/ — vitrine publique d'un partenaire.
-  Future<PartenaireVitrine> vitrine(int id) async {
-    final r = await _dio.get('${Env.apiPrefix}/auth/partenaires/$id/');
-    return PartenaireVitrine.fromJson(r.data as Map<String, dynamic>);
-  }
+  Future<Object?> vitrineBrut(int id) async =>
+      (await _dio.get('${Env.apiPrefix}/auth/partenaires/$id/')).data;
+
+  PartenaireVitrine vitrineDepuis(Object? json) =>
+      PartenaireVitrine.fromJson(json as Map<String, dynamic>);
 }

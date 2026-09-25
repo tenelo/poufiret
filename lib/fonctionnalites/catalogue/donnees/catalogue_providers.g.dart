@@ -57,22 +57,22 @@ final class CatalogueRepositoryProvider
 String _$catalogueRepositoryHash() =>
     r'8021cb515029653ba2cc98a2bffd63b781c6453c';
 
-/// Charge la liste des catégories. FutureProvider : gère loading/error/data.
+/// Charge la liste des catégories.
 
 @ProviderFor(categories)
 final categoriesProvider = CategoriesProvider._();
 
-/// Charge la liste des catégories. FutureProvider : gère loading/error/data.
+/// Charge la liste des catégories.
 
 final class CategoriesProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<Categorie>>,
           List<Categorie>,
-          FutureOr<List<Categorie>>
+          Stream<List<Categorie>>
         >
-    with $FutureModifier<List<Categorie>>, $FutureProvider<List<Categorie>> {
-  /// Charge la liste des catégories. FutureProvider : gère loading/error/data.
+    with $FutureModifier<List<Categorie>>, $StreamProvider<List<Categorie>> {
+  /// Charge la liste des catégories.
   CategoriesProvider._()
     : super(
         from: null,
@@ -89,39 +89,131 @@ final class CategoriesProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<Categorie>> $createElement(
+  $StreamProviderElement<List<Categorie>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<Categorie>> create(Ref ref) {
+  Stream<List<Categorie>> create(Ref ref) {
     return categories(ref);
   }
 }
 
-String _$categoriesHash() => r'175c3af0a228629cc1bdcc809622adfaf63315ee';
+String _$categoriesHash() => r'9a8bf443372a0b0e59b9735df106b3270404dbdf';
 
-/// Articles d'une catégorie donnée. Le paramètre categorieId permet
-/// à Riverpod de mettre en cache par catégorie.
+/// Fiche article telle que le serveur la connait MAINTENANT (sans cache) :
+/// pour les formulaires d'edition, qui ne doivent jamais se pre-remplir avec
+/// une donnee perimee (le partenaire l'ecraserait a l'enregistrement).
+
+@ProviderFor(articleDetailFrais)
+final articleDetailFraisProvider = ArticleDetailFraisFamily._();
+
+/// Fiche article telle que le serveur la connait MAINTENANT (sans cache) :
+/// pour les formulaires d'edition, qui ne doivent jamais se pre-remplir avec
+/// une donnee perimee (le partenaire l'ecraserait a l'enregistrement).
+
+final class ArticleDetailFraisProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ArticleDetail>,
+          ArticleDetail,
+          FutureOr<ArticleDetail>
+        >
+    with $FutureModifier<ArticleDetail>, $FutureProvider<ArticleDetail> {
+  /// Fiche article telle que le serveur la connait MAINTENANT (sans cache) :
+  /// pour les formulaires d'edition, qui ne doivent jamais se pre-remplir avec
+  /// une donnee perimee (le partenaire l'ecraserait a l'enregistrement).
+  ArticleDetailFraisProvider._({
+    required ArticleDetailFraisFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'articleDetailFraisProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$articleDetailFraisHash();
+
+  @override
+  String toString() {
+    return r'articleDetailFraisProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<ArticleDetail> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<ArticleDetail> create(Ref ref) {
+    final argument = this.argument as String;
+    return articleDetailFrais(ref, slug: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ArticleDetailFraisProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$articleDetailFraisHash() =>
+    r'1150da8eac3badc0f8cdfff8fd8c8725a9e1fcdd';
+
+/// Fiche article telle que le serveur la connait MAINTENANT (sans cache) :
+/// pour les formulaires d'edition, qui ne doivent jamais se pre-remplir avec
+/// une donnee perimee (le partenaire l'ecraserait a l'enregistrement).
+
+final class ArticleDetailFraisFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<ArticleDetail>, String> {
+  ArticleDetailFraisFamily._()
+    : super(
+        retry: null,
+        name: r'articleDetailFraisProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Fiche article telle que le serveur la connait MAINTENANT (sans cache) :
+  /// pour les formulaires d'edition, qui ne doivent jamais se pre-remplir avec
+  /// une donnee perimee (le partenaire l'ecraserait a l'enregistrement).
+
+  ArticleDetailFraisProvider call({required String slug}) =>
+      ArticleDetailFraisProvider._(argument: slug, from: this);
+
+  @override
+  String toString() => r'articleDetailFraisProvider';
+}
+
+/// Articles d'une catégorie donnée (et éventuellement d'un partenaire).
 
 @ProviderFor(articles)
 final articlesProvider = ArticlesFamily._();
 
-/// Articles d'une catégorie donnée. Le paramètre categorieId permet
-/// à Riverpod de mettre en cache par catégorie.
+/// Articles d'une catégorie donnée (et éventuellement d'un partenaire).
 
 final class ArticlesProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<ArticleListe>>,
           List<ArticleListe>,
-          FutureOr<List<ArticleListe>>
+          Stream<List<ArticleListe>>
         >
     with
         $FutureModifier<List<ArticleListe>>,
-        $FutureProvider<List<ArticleListe>> {
-  /// Articles d'une catégorie donnée. Le paramètre categorieId permet
-  /// à Riverpod de mettre en cache par catégorie.
+        $StreamProvider<List<ArticleListe>> {
+  /// Articles d'une catégorie donnée (et éventuellement d'un partenaire).
   ArticlesProvider._({
     required ArticlesFamily super.from,
     required ({int categorieId, int? partenaireId}) super.argument,
@@ -145,12 +237,12 @@ final class ArticlesProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<ArticleListe>> $createElement(
+  $StreamProviderElement<List<ArticleListe>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<ArticleListe>> create(Ref ref) {
+  Stream<List<ArticleListe>> create(Ref ref) {
     final argument = this.argument as ({int categorieId, int? partenaireId});
     return articles(
       ref,
@@ -170,15 +262,14 @@ final class ArticlesProvider
   }
 }
 
-String _$articlesHash() => r'fbc3cbf02e7840a9d7cde94568980e30a36d112a';
+String _$articlesHash() => r'9c2376a78f1cb0b25583a3694688c9449353f92a';
 
-/// Articles d'une catégorie donnée. Le paramètre categorieId permet
-/// à Riverpod de mettre en cache par catégorie.
+/// Articles d'une catégorie donnée (et éventuellement d'un partenaire).
 
 final class ArticlesFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<List<ArticleListe>>,
+          Stream<List<ArticleListe>>,
           ({int categorieId, int? partenaireId})
         > {
   ArticlesFamily._()
@@ -190,8 +281,7 @@ final class ArticlesFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Articles d'une catégorie donnée. Le paramètre categorieId permet
-  /// à Riverpod de mettre en cache par catégorie.
+  /// Articles d'une catégorie donnée (et éventuellement d'un partenaire).
 
   ArticlesProvider call({required int categorieId, int? partenaireId}) =>
       ArticlesProvider._(
@@ -215,9 +305,9 @@ final class ArticleDetailProvider
         $FunctionalProvider<
           AsyncValue<ArticleDetail>,
           ArticleDetail,
-          FutureOr<ArticleDetail>
+          Stream<ArticleDetail>
         >
-    with $FutureModifier<ArticleDetail>, $FutureProvider<ArticleDetail> {
+    with $FutureModifier<ArticleDetail>, $StreamProvider<ArticleDetail> {
   /// Fiche détail d'un article par son slug.
   ArticleDetailProvider._({
     required ArticleDetailFamily super.from,
@@ -242,12 +332,12 @@ final class ArticleDetailProvider
 
   @$internal
   @override
-  $FutureProviderElement<ArticleDetail> $createElement(
+  $StreamProviderElement<ArticleDetail> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<ArticleDetail> create(Ref ref) {
+  Stream<ArticleDetail> create(Ref ref) {
     final argument = this.argument as String;
     return articleDetail(ref, slug: argument);
   }
@@ -263,12 +353,12 @@ final class ArticleDetailProvider
   }
 }
 
-String _$articleDetailHash() => r'ad4c91ec0d608927523f7bffd2cd3335f46e64ca';
+String _$articleDetailHash() => r'77d283fb27656e0e09521ac31f2c99d2fabef303';
 
 /// Fiche détail d'un article par son slug.
 
 final class ArticleDetailFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<ArticleDetail>, String> {
+    with $FunctionalFamilyOverride<Stream<ArticleDetail>, String> {
   ArticleDetailFamily._()
     : super(
         retry: null,
@@ -461,11 +551,11 @@ final class PartenairesParCategorieProvider
         $FunctionalProvider<
           AsyncValue<List<PartenaireCategorie>>,
           List<PartenaireCategorie>,
-          FutureOr<List<PartenaireCategorie>>
+          Stream<List<PartenaireCategorie>>
         >
     with
         $FutureModifier<List<PartenaireCategorie>>,
-        $FutureProvider<List<PartenaireCategorie>> {
+        $StreamProvider<List<PartenaireCategorie>> {
   /// Annuaire des prestataires d'une catégorie, filtre par les localites
   /// choisies (le backend applique aussi la regle de portee).
   PartenairesParCategorieProvider._({
@@ -491,12 +581,12 @@ final class PartenairesParCategorieProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<PartenaireCategorie>> $createElement(
+  $StreamProviderElement<List<PartenaireCategorie>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<PartenaireCategorie>> create(Ref ref) {
+  Stream<List<PartenaireCategorie>> create(Ref ref) {
     final argument = this.argument as String;
     return partenairesParCategorie(ref, slug: argument);
   }
@@ -514,14 +604,13 @@ final class PartenairesParCategorieProvider
 }
 
 String _$partenairesParCategorieHash() =>
-    r'77bad025c404ecc3f0da0ef303f066ba83fadc1a';
+    r'96ed26a8949c25bdc5d60db38a3ec34cfc658a7e';
 
 /// Annuaire des prestataires d'une catégorie, filtre par les localites
 /// choisies (le backend applique aussi la regle de portee).
 
 final class PartenairesParCategorieFamily extends $Family
-    with
-        $FunctionalFamilyOverride<FutureOr<List<PartenaireCategorie>>, String> {
+    with $FunctionalFamilyOverride<Stream<List<PartenaireCategorie>>, String> {
   PartenairesParCategorieFamily._()
     : super(
         retry: null,

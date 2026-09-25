@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../global/cache/cache_api.dart';
+import '../../../global/cache/contexte_cache.dart';
 import '../../../global/network/providers.dart';
 import '../metier_domaine/departement.dart';
 import '../metier_domaine/quartier.dart';
@@ -12,11 +14,19 @@ GeoRepository geoRepository(Ref ref) {
   return GeoRepository(dio: ref.watch(dioProvider));
 }
 
-/// Departements disponibles. keepAlive : la liste est stable, on evite
-/// de la recharger a chaque ouverture d'un formulaire.
+/// Departements disponibles. Liste quasi statique : cache disque 7 jours,
+/// gardee en memoire pour la session (pas de rechargement a chaque
+/// ouverture d'un formulaire).
 @Riverpod(keepAlive: true)
-Future<List<Departement>> departements(Ref ref) {
-  return ref.watch(geoRepositoryProvider).departements();
+Stream<List<Departement>> departements(Ref ref) {
+  final repo = ref.watch(geoRepositoryProvider);
+  return fluxCache(
+    ref,
+    cle: 'departements',
+    politique: PolitiqueCache.departements,
+    reseau: repo.departementsBrut,
+    decoder: repo.departementsDepuis,
+  );
 }
 
 /// Quartiers d'un departement (autocompletion livraison). Non keepAlive :

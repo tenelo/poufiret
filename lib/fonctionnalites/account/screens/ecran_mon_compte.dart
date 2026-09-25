@@ -3,9 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/notificateur.dart';
-import '../../auth/donnees/auth_providers.dart';
 import '../../auth/screens/auth_notifier.dart';
-import 'ecran_appareils.dart';
 import 'ecran_devenir_partenaire.dart';
 
 /// Écran « Mon compte » : profil éditable + accès appareils / partenaire.
@@ -34,12 +32,13 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
   Future<void> _enregistrer() async {
     setState(() => _envoiEnCours = true);
     try {
-      await ref.read(authRepositoryProvider).modifierProfil({
+      // Le notifier met l'état ET le profil mémorisé à jour d'un seul coup
+      // (pas d'invalidation : elle rejouerait l'ancien profil du cache).
+      await ref.read(authProvider.notifier).modifierProfil({
         'first_name': _ctrlPrenom.text.trim(),
         'last_name': _ctrlNom.text.trim(),
         'username': _ctrlUsername.text.trim(),
       });
-      ref.invalidate(authProvider);
       if (mounted) Notificateur.succes(context, 'Profil mis à jour.');
     } catch (e) {
       if (mounted) {
@@ -84,11 +83,14 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
                         Card(
                           child: ListTile(
                             leading: const CircleAvatar(
-                                child: Icon(Icons.person)),
+                              child: Icon(Icons.person),
+                            ),
                             title: Text(utilisateur.telephone),
-                            subtitle: Text(utilisateur.estPartenaire
-                                ? 'Compte partenaire'
-                                : 'Compte client'),
+                            subtitle: Text(
+                              utilisateur.estPartenaire
+                                  ? 'Compte partenaire'
+                                  : 'Compte client',
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -103,32 +105,38 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
                                 TextFormField(
                                   controller: _ctrlPrenom,
                                   decoration: const InputDecoration(
-                                      labelText: 'Prénom'),
+                                    labelText: 'Prénom',
+                                  ),
                                 ),
                                 const SizedBox(height: 12),
                                 TextFormField(
                                   controller: _ctrlNom,
-                                  decoration:
-                                      const InputDecoration(labelText: 'Nom'),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Nom',
+                                  ),
                                 ),
                                 const SizedBox(height: 12),
                                 TextFormField(
                                   controller: _ctrlUsername,
                                   decoration: const InputDecoration(
-                                      labelText: 'Nom d\'utilisateur'),
+                                    labelText: 'Nom d\'utilisateur',
+                                  ),
                                 ),
                                 const SizedBox(height: 16),
                                 SizedBox(
                                   width: double.infinity,
                                   child: FilledButton.icon(
-                                    onPressed:
-                                        _envoiEnCours ? null : _enregistrer,
+                                    onPressed: _envoiEnCours
+                                        ? null
+                                        : _enregistrer,
                                     icon: _envoiEnCours
                                         ? const SizedBox(
                                             width: 18,
                                             height: 18,
                                             child: CircularProgressIndicator(
-                                                strokeWidth: 2))
+                                              strokeWidth: 2,
+                                            ),
+                                          )
                                         : const Icon(Icons.save),
                                     label: const Text('Enregistrer'),
                                   ),
@@ -144,27 +152,20 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
                           clipBehavior: Clip.antiAlias,
                           child: Column(
                             children: [
-                              ListTile(
-                                leading: const Icon(Icons.devices),
-                                title: const Text('Appareils connectés'),
-                                trailing: const Icon(Icons.chevron_right),
-                                onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (_) => const EcranAppareils()),
-                                ),
-                              ),
                               if (!utilisateur.estPartenaire) ...[
                                 const Divider(height: 1),
                                 ListTile(
                                   leading: const Icon(Icons.storefront),
                                   title: const Text('Devenir partenaire'),
                                   subtitle: const Text(
-                                      'Vendez vos produits ou services sur Poufiret.'),
+                                    'Vendez vos produits ou services sur Poufiret.',
+                                  ),
                                   trailing: const Icon(Icons.chevron_right),
                                   onTap: () => Navigator.of(context).push(
                                     MaterialPageRoute(
-                                        builder: (_) =>
-                                            const EcranDevenirPartenaire()),
+                                      builder: (_) =>
+                                          const EcranDevenirPartenaire(),
+                                    ),
                                   ),
                                 ),
                               ],

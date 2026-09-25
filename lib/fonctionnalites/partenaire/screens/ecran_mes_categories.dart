@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/notificateur.dart';
+import '../../catalogue/donnees/invalidations_catalogue.dart';
 import '../donnees/espace_partenaire_providers.dart';
 import '../metier_domaine/ma_categorie.dart';
 import '../../../global/widgets/image_reseau.dart';
@@ -117,6 +118,7 @@ class _CarteCategorieState extends ConsumerState<_CarteCategorie> {
           .read(espacePartenaireRepositoryProvider)
           .changerImageCategorie(widget.categorie.id, image.path);
       ref.invalidate(mesCategoriesProvider);
+      invaliderCategories(ref);
       if (mounted) Notificateur.succes(context, 'Image mise à jour.');
     } on ApiException catch (e) {
       if (mounted) Notificateur.erreur(context, e.messageLisible);

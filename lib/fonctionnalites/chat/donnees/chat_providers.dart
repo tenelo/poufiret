@@ -1,5 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../global/cache/cache_api.dart';
+import '../../../global/cache/contexte_cache.dart';
 import '../../../global/network/providers.dart';
 import '../../auth/screens/auth_notifier.dart';
 import '../metier_domaine/chat_models.dart';
@@ -12,10 +14,18 @@ ChatRepository chatRepository(Ref ref) {
   return ChatRepository(dio: ref.watch(dioProvider));
 }
 
-/// Mes conversations (client + partenaire).
+/// Mes conversations (client + partenaire) : affichees depuis le cache,
+/// rafraichies a chaque ouverture (le temps reel reste sur WebSocket).
 @riverpod
-Future<List<Conversation>> conversations(Ref ref) {
-  return ref.watch(chatRepositoryProvider).conversations();
+Stream<List<Conversation>> conversations(Ref ref) {
+  final repo = ref.watch(chatRepositoryProvider);
+  return fluxCache(
+    ref,
+    cle: 'conversations',
+    politique: PolitiqueCache.conversations,
+    reseau: repo.conversationsBrut,
+    decoder: repo.conversationsDepuis,
+  );
 }
 
 /// Historique d'une conversation (chargé une fois à l'ouverture ;

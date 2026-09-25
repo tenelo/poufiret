@@ -45,10 +45,13 @@ class _BandeauBasPubliciteState extends ConsumerState<BandeauBasPublicite> {
     // On garde la derniere pub connue pendant un rechargement : sinon le
     // bandeau clignote a chaque navigation. `value` reste renseigne
     // pendant un rechargement, contrairement a maybeWhen(data:).
-    final pub = async.value;
-    if (pub == null) return const SizedBox.shrink();
+    final donnees = async.value;
+    // Jamais de pub dont la diffusion est terminee, meme en cache.
+    final pub = donnees?.affichables().firstOrNull;
+    if (donnees == null || pub == null) return const SizedBox.shrink();
 
-    _tracer(pub);
+    // Impression seulement pour une pub confirmee par le reseau.
+    if (donnees.confirmeReseau) _tracer(pub);
     return _Bandeau(pub: pub, onFermer: () => setState(() => _ferme = true));
   }
 }

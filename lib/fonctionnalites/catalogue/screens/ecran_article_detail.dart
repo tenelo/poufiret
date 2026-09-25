@@ -3,6 +3,9 @@ import 'package:poufiret/global/config/config.dart';
 import 'package:flutter/material.dart';
 
 import '../widgets/prix_promo.dart';
+import '../metier_domaine/article_liste.dart';
+import '../../../global/ui/squelette.dart';
+import '../../../global/widgets/image_reseau.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
@@ -28,7 +31,12 @@ class EcranArticleDetail extends ConsumerWidget {
     super.key,
     required this.slug,
     this.modeTransaction = '',
+    this.apercu,
   });
+
+  /// Ce que la liste precedente sait deja de l'article (nom, photo, prix) :
+  /// affiche tout de suite, le temps que la fiche complete arrive.
+  final ArticleListe? apercu;
 
   // Libellé du bouton d'action selon le mode de la catégorie.
   String get _libelleAction {
@@ -50,8 +58,13 @@ class EcranArticleDetail extends ConsumerWidget {
 
     return Scaffold(
       body: detailAsync.when(
-        loading: () =>
-            const Scaffold(body: Center(child: CircularProgressIndicator())),
+        skipLoadingOnReload: true,
+        loading: () => Scaffold(
+          appBar: AppBar(title: Text(apercu?.nom ?? '')),
+          body: SqueletteDetailArticle(
+            entete: apercu == null ? null : _EntetePrecharge(article: apercu!),
+          ),
+        ),
         error: (err, _) {
           final message = err is ApiException
               ? err.messageLisible
@@ -83,6 +96,51 @@ class EcranArticleDetail extends ConsumerWidget {
           modeTransaction: modeTransaction,
         ),
       ),
+    );
+  }
+}
+
+/// Photo, nom et prix deja connus par la liste : visibles pendant le chargement.
+class _EntetePrecharge extends StatelessWidget {
+  const _EntetePrecharge({required this.article});
+  final ArticleListe article;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final image = article.imagePrincipale ?? '';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AspectRatio(
+          aspectRatio: 16 / 9,
+          child: image.isEmpty
+              ? Container(color: theme.colorScheme.surfaceContainerHighest)
+              : ImageReseau(
+                  image,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Container(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                  ),
+                ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(article.nom, style: theme.textTheme.titleLarge),
+              const SizedBox(height: 8),
+              PrixPromo(
+                prixNormal: article.prixNormal,
+                prixEffectif: article.prixEffectif,
+                pourcentageReduction: article.pourcentageReduction,
+                taillePrix: 20,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

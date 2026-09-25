@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../reseau/etat_reseau.dart';
 import '../storage/token_storage.dart';
 import 'dio_client.dart';
 
@@ -12,8 +13,10 @@ TokenStorage tokenStorage(Ref ref) => TokenStorage();
 @Riverpod(keepAlive: true)
 Dio dio(Ref ref) {
   final tokens = ref.watch(tokenStorageProvider);
+  final etatReseau = ref.read(etatReseauProvider.notifier);
   return DioClient.creer(
     tokens: tokens,
+    onEtatReseau: (horsLigne) => etatReseau.signaler(horsLigne: horsLigne),
     onSessionExpiree: () {
       // Le refresh a échoué : on invalide l'état d'auth.
       // (branché à l'AuthNotifier ci-dessous via ref.invalidate)

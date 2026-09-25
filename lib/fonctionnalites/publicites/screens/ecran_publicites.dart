@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../global/cache/contexte_cache.dart';
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../analytics/donnees/analytics_providers.dart';
@@ -21,8 +22,9 @@ class EcranPublicites extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Publicités')),
       body: RefreshIndicator(
-        onRefresh: () async => ref.invalidate(pagePublicitesProvider),
+        onRefresh: () => rafraichir(ref, pagePublicitesProvider),
         child: async.when(
+          skipLoadingOnReload: true,
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (err, _) => _Etat(
             icone: Icons.wifi_off_outlined,
@@ -31,7 +33,9 @@ class EcranPublicites extends ConsumerWidget {
                 : 'Erreur de chargement.',
             onReessayer: () => ref.invalidate(pagePublicitesProvider),
           ),
-          data: (pubs) {
+          data: (donnees) {
+            // Jamais de pub dont la diffusion est terminee, meme en cache.
+            final pubs = donnees.affichables();
             if (pubs.isEmpty) {
               return const _Etat(
                 icone: Icons.campaign_outlined,
@@ -54,7 +58,10 @@ class EcranPublicites extends ConsumerWidget {
                     childAspectRatio: 0.68,
                   ),
                   itemCount: pubs.length,
-                  itemBuilder: (context, i) => _CarteAffiche(pub: pubs[i]),
+                  itemBuilder: (context, i) => _CarteAffiche(
+                    pub: pubs[i],
+                    confirmee: donnees.confirmeReseau,
+                  ),
                 );
               },
             );
@@ -66,18 +73,38 @@ class EcranPublicites extends ConsumerWidget {
 }
 
 class _CarteAffiche extends ConsumerStatefulWidget {
-  const _CarteAffiche({required this.pub});
+  const _CarteAffiche({required this.pub, required this.confirmee});
   final PubliciteListe pub;
+
+  /// Vrai si la pub est confirmee par une reponse reseau fraiche (et non
+  /// seulement lue dans le cache) : condition pour compter une impression.
+  final bool confirmee;
 
   @override
   ConsumerState<_CarteAffiche> createState() => _CarteAfficheState();
 }
 
 class _CarteAfficheState extends ConsumerState<_CarteAffiche> {
+  bool _impressionTracee = false;
+
   @override
   void initState() {
     super.initState();
-    // Impression tracee a l'apparition de la carte.
+    _tracerSiConfirmee();
+  }
+
+  @override
+  void didUpdateWidget(_CarteAffiche ancien) {
+    super.didUpdateWidget(ancien);
+    // Affichee d'abord depuis le cache, puis confirmee par le reseau.
+    _tracerSiConfirmee();
+  }
+
+  /// Impression tracee une seule fois, et seulement pour une pub confirmee
+  /// par le serveur : une pub arretee entre-temps ne doit pas etre comptee.
+  void _tracerSiConfirmee() {
+    if (_impressionTracee || !widget.confirmee) return;
+    _impressionTracee = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       ref.read(publicitesRepositoryProvider).enregistrerImpression(

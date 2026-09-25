@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../widgets/prix_promo.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:poufiret/global/cache/contexte_cache.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
+import 'package:poufiret/global/ui/squelette.dart';
 import 'package:poufiret/fonctionnalites/analytics/donnees/analytics_providers.dart';
 import 'package:poufiret/fonctionnalites/catalogue/donnees/catalogue_providers.dart';
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/article_liste.dart';
@@ -66,7 +68,8 @@ class EcranArticles extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(categorieNom)),
       body: articlesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        skipLoadingOnReload: true,
+        loading: () => const _SqueletteArticles(),
         error: (err, _) {
           final message = err is ApiException
               ? err.messageLisible
@@ -88,18 +91,28 @@ class EcranArticles extends ConsumerWidget {
               final largeur = contraintes.maxWidth;
               // ~220px par vignette d'article (un peu plus large qu'une catégorie).
               final nbColonnes = (largeur / 220).floor().clamp(1, 5);
-              return GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: nbColonnes,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 0.75, // vignette plus haute que large
+              return RefreshIndicator(
+                onRefresh: () => rafraichir(
+                  ref,
+                  articlesProvider(
+                    categorieId: categorieId,
+                    partenaireId: partenaireId,
+                  ),
                 ),
-                itemCount: articles.length,
-                itemBuilder: (context, i) => _VignetteArticle(
-                  article: articles[i],
-                  modeTransaction: modeTransaction,
+                child: GridView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: nbColonnes,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 0.75, // vignette plus haute que large
+                  ),
+                  itemCount: articles.length,
+                  itemBuilder: (context, i) => _VignetteArticle(
+                    article: articles[i],
+                    modeTransaction: modeTransaction,
+                  ),
                 ),
               );
             },
@@ -108,6 +121,19 @@ class EcranArticles extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Squelette de la grille d'articles (memes colonnes et proportions).
+class _SqueletteArticles extends StatelessWidget {
+  const _SqueletteArticles();
+
+  @override
+  Widget build(BuildContext context) => const SqueletteGrille(
+    largeurTuile: 220,
+    ratio: 0.75,
+    minColonnes: 1,
+    padding: EdgeInsets.all(16),
+  );
 }
 
 /// Onglet Images : la grille d'articles du partenaire.
@@ -127,7 +153,8 @@ class _OngletArticles extends ConsumerWidget {
     final articlesAsync = ref.watch(
         articlesProvider(categorieId: categorieId, partenaireId: partenaireId));
     return articlesAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      skipLoadingOnReload: true,
+      loading: () => const _SqueletteArticles(),
       error: (err, _) {
         final message =
             err is ApiException ? err.messageLisible : 'Erreur de chargement.';
@@ -144,18 +171,28 @@ class _OngletArticles extends ConsumerWidget {
         return LayoutBuilder(
           builder: (context, contraintes) {
             final nbColonnes = (contraintes.maxWidth / 220).floor().clamp(1, 5);
-            return GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: nbColonnes,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.75,
+            return RefreshIndicator(
+              onRefresh: () => rafraichir(
+                ref,
+                articlesProvider(
+                  categorieId: categorieId,
+                  partenaireId: partenaireId,
+                ),
               ),
-              itemCount: articles.length,
-              itemBuilder: (context, i) => _VignetteArticle(
-                article: articles[i],
-                modeTransaction: modeTransaction,
+              child: GridView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: nbColonnes,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 0.75,
+                ),
+                itemCount: articles.length,
+                itemBuilder: (context, i) => _VignetteArticle(
+                  article: articles[i],
+                  modeTransaction: modeTransaction,
+                ),
               ),
             );
           },
@@ -278,6 +315,7 @@ class _VignetteArticle extends StatelessWidget {
               builder: (_) => EcranArticleDetail(
                 slug: article.slug,
                 modeTransaction: modeTransaction,
+                apercu: article,
               ),
             ),
           );

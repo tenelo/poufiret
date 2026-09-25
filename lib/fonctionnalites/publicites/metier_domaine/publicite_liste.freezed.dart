@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PubliciteListe {
 
- String get id; String get titre;@JsonKey(name: 'image_couverture') String? get imageCouverture;@JsonKey(name: 'partenaire_id') int? get partenaireId;@JsonKey(name: 'duree_affichage_secondes') int get dureeAffichageSecondes; int get priorite;
+ String get id; String get titre;@JsonKey(name: 'image_couverture') String? get imageCouverture;@JsonKey(name: 'partenaire_id') int? get partenaireId;@JsonKey(name: 'duree_affichage_secondes') int get dureeAffichageSecondes; int get priorite;@JsonKey(name: 'fin_diffusion') String? get finDiffusion;
 /// Create a copy of PubliciteListe
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $PubliciteListeCopyWith<PubliciteListe> get copyWith => _$PubliciteListeCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PubliciteListe&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.imageCouverture, imageCouverture) || other.imageCouverture == imageCouverture)&&(identical(other.partenaireId, partenaireId) || other.partenaireId == partenaireId)&&(identical(other.dureeAffichageSecondes, dureeAffichageSecondes) || other.dureeAffichageSecondes == dureeAffichageSecondes)&&(identical(other.priorite, priorite) || other.priorite == priorite));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PubliciteListe&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.imageCouverture, imageCouverture) || other.imageCouverture == imageCouverture)&&(identical(other.partenaireId, partenaireId) || other.partenaireId == partenaireId)&&(identical(other.dureeAffichageSecondes, dureeAffichageSecondes) || other.dureeAffichageSecondes == dureeAffichageSecondes)&&(identical(other.priorite, priorite) || other.priorite == priorite)&&(identical(other.finDiffusion, finDiffusion) || other.finDiffusion == finDiffusion));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,titre,imageCouverture,partenaireId,dureeAffichageSecondes,priorite);
+int get hashCode => Object.hash(runtimeType,id,titre,imageCouverture,partenaireId,dureeAffichageSecondes,priorite,finDiffusion);
 
 @override
 String toString() {
-  return 'PubliciteListe(id: $id, titre: $titre, imageCouverture: $imageCouverture, partenaireId: $partenaireId, dureeAffichageSecondes: $dureeAffichageSecondes, priorite: $priorite)';
+  return 'PubliciteListe(id: $id, titre: $titre, imageCouverture: $imageCouverture, partenaireId: $partenaireId, dureeAffichageSecondes: $dureeAffichageSecondes, priorite: $priorite, finDiffusion: $finDiffusion)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $PubliciteListeCopyWith<$Res>  {
   factory $PubliciteListeCopyWith(PubliciteListe value, $Res Function(PubliciteListe) _then) = _$PubliciteListeCopyWithImpl;
 @useResult
 $Res call({
- String id, String titre,@JsonKey(name: 'image_couverture') String? imageCouverture,@JsonKey(name: 'partenaire_id') int? partenaireId,@JsonKey(name: 'duree_affichage_secondes') int dureeAffichageSecondes, int priorite
+ String id, String titre,@JsonKey(name: 'image_couverture') String? imageCouverture,@JsonKey(name: 'partenaire_id') int? partenaireId,@JsonKey(name: 'duree_affichage_secondes') int dureeAffichageSecondes, int priorite,@JsonKey(name: 'fin_diffusion') String? finDiffusion
 });
 
 
@@ -65,7 +65,7 @@ class _$PubliciteListeCopyWithImpl<$Res>
 
 /// Create a copy of PubliciteListe
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? titre = null,Object? imageCouverture = freezed,Object? partenaireId = freezed,Object? dureeAffichageSecondes = null,Object? priorite = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? titre = null,Object? imageCouverture = freezed,Object? partenaireId = freezed,Object? dureeAffichageSecondes = null,Object? priorite = null,Object? finDiffusion = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,titre: null == titre ? _self.titre : titre // ignore: cast_nullable_to_non_nullable
@@ -73,7 +73,8 @@ as String,imageCouverture: freezed == imageCouverture ? _self.imageCouverture : 
 as String?,partenaireId: freezed == partenaireId ? _self.partenaireId : partenaireId // ignore: cast_nullable_to_non_nullable
 as int?,dureeAffichageSecondes: null == dureeAffichageSecondes ? _self.dureeAffichageSecondes : dureeAffichageSecondes // ignore: cast_nullable_to_non_nullable
 as int,priorite: null == priorite ? _self.priorite : priorite // ignore: cast_nullable_to_non_nullable
-as int,
+as int,finDiffusion: freezed == finDiffusion ? _self.finDiffusion : finDiffusion // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -158,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String titre, @JsonKey(name: 'image_couverture')  String? imageCouverture, @JsonKey(name: 'partenaire_id')  int? partenaireId, @JsonKey(name: 'duree_affichage_secondes')  int dureeAffichageSecondes,  int priorite)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String titre, @JsonKey(name: 'image_couverture')  String? imageCouverture, @JsonKey(name: 'partenaire_id')  int? partenaireId, @JsonKey(name: 'duree_affichage_secondes')  int dureeAffichageSecondes,  int priorite, @JsonKey(name: 'fin_diffusion')  String? finDiffusion)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PubliciteListe() when $default != null:
-return $default(_that.id,_that.titre,_that.imageCouverture,_that.partenaireId,_that.dureeAffichageSecondes,_that.priorite);case _:
+return $default(_that.id,_that.titre,_that.imageCouverture,_that.partenaireId,_that.dureeAffichageSecondes,_that.priorite,_that.finDiffusion);case _:
   return orElse();
 
 }
@@ -179,10 +180,10 @@ return $default(_that.id,_that.titre,_that.imageCouverture,_that.partenaireId,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String titre, @JsonKey(name: 'image_couverture')  String? imageCouverture, @JsonKey(name: 'partenaire_id')  int? partenaireId, @JsonKey(name: 'duree_affichage_secondes')  int dureeAffichageSecondes,  int priorite)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String titre, @JsonKey(name: 'image_couverture')  String? imageCouverture, @JsonKey(name: 'partenaire_id')  int? partenaireId, @JsonKey(name: 'duree_affichage_secondes')  int dureeAffichageSecondes,  int priorite, @JsonKey(name: 'fin_diffusion')  String? finDiffusion)  $default,) {final _that = this;
 switch (_that) {
 case _PubliciteListe():
-return $default(_that.id,_that.titre,_that.imageCouverture,_that.partenaireId,_that.dureeAffichageSecondes,_that.priorite);case _:
+return $default(_that.id,_that.titre,_that.imageCouverture,_that.partenaireId,_that.dureeAffichageSecondes,_that.priorite,_that.finDiffusion);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +200,10 @@ return $default(_that.id,_that.titre,_that.imageCouverture,_that.partenaireId,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String titre, @JsonKey(name: 'image_couverture')  String? imageCouverture, @JsonKey(name: 'partenaire_id')  int? partenaireId, @JsonKey(name: 'duree_affichage_secondes')  int dureeAffichageSecondes,  int priorite)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String titre, @JsonKey(name: 'image_couverture')  String? imageCouverture, @JsonKey(name: 'partenaire_id')  int? partenaireId, @JsonKey(name: 'duree_affichage_secondes')  int dureeAffichageSecondes,  int priorite, @JsonKey(name: 'fin_diffusion')  String? finDiffusion)?  $default,) {final _that = this;
 switch (_that) {
 case _PubliciteListe() when $default != null:
-return $default(_that.id,_that.titre,_that.imageCouverture,_that.partenaireId,_that.dureeAffichageSecondes,_that.priorite);case _:
+return $default(_that.id,_that.titre,_that.imageCouverture,_that.partenaireId,_that.dureeAffichageSecondes,_that.priorite,_that.finDiffusion);case _:
   return null;
 
 }
@@ -214,7 +215,7 @@ return $default(_that.id,_that.titre,_that.imageCouverture,_that.partenaireId,_t
 @JsonSerializable()
 
 class _PubliciteListe extends PubliciteListe {
-  const _PubliciteListe({required this.id, this.titre = '', @JsonKey(name: 'image_couverture') this.imageCouverture, @JsonKey(name: 'partenaire_id') this.partenaireId, @JsonKey(name: 'duree_affichage_secondes') this.dureeAffichageSecondes = 5, this.priorite = 0}): super._();
+  const _PubliciteListe({required this.id, this.titre = '', @JsonKey(name: 'image_couverture') this.imageCouverture, @JsonKey(name: 'partenaire_id') this.partenaireId, @JsonKey(name: 'duree_affichage_secondes') this.dureeAffichageSecondes = 5, this.priorite = 0, @JsonKey(name: 'fin_diffusion') this.finDiffusion}): super._();
   factory _PubliciteListe.fromJson(Map<String, dynamic> json) => _$PubliciteListeFromJson(json);
 
 @override final  String id;
@@ -223,6 +224,7 @@ class _PubliciteListe extends PubliciteListe {
 @override@JsonKey(name: 'partenaire_id') final  int? partenaireId;
 @override@JsonKey(name: 'duree_affichage_secondes') final  int dureeAffichageSecondes;
 @override@JsonKey() final  int priorite;
+@override@JsonKey(name: 'fin_diffusion') final  String? finDiffusion;
 
 /// Create a copy of PubliciteListe
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PubliciteListe&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.imageCouverture, imageCouverture) || other.imageCouverture == imageCouverture)&&(identical(other.partenaireId, partenaireId) || other.partenaireId == partenaireId)&&(identical(other.dureeAffichageSecondes, dureeAffichageSecondes) || other.dureeAffichageSecondes == dureeAffichageSecondes)&&(identical(other.priorite, priorite) || other.priorite == priorite));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PubliciteListe&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.imageCouverture, imageCouverture) || other.imageCouverture == imageCouverture)&&(identical(other.partenaireId, partenaireId) || other.partenaireId == partenaireId)&&(identical(other.dureeAffichageSecondes, dureeAffichageSecondes) || other.dureeAffichageSecondes == dureeAffichageSecondes)&&(identical(other.priorite, priorite) || other.priorite == priorite)&&(identical(other.finDiffusion, finDiffusion) || other.finDiffusion == finDiffusion));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,titre,imageCouverture,partenaireId,dureeAffichageSecondes,priorite);
+int get hashCode => Object.hash(runtimeType,id,titre,imageCouverture,partenaireId,dureeAffichageSecondes,priorite,finDiffusion);
 
 @override
 String toString() {
-  return 'PubliciteListe(id: $id, titre: $titre, imageCouverture: $imageCouverture, partenaireId: $partenaireId, dureeAffichageSecondes: $dureeAffichageSecondes, priorite: $priorite)';
+  return 'PubliciteListe(id: $id, titre: $titre, imageCouverture: $imageCouverture, partenaireId: $partenaireId, dureeAffichageSecondes: $dureeAffichageSecondes, priorite: $priorite, finDiffusion: $finDiffusion)';
 }
 
 
@@ -257,7 +259,7 @@ abstract mixin class _$PubliciteListeCopyWith<$Res> implements $PubliciteListeCo
   factory _$PubliciteListeCopyWith(_PubliciteListe value, $Res Function(_PubliciteListe) _then) = __$PubliciteListeCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String titre,@JsonKey(name: 'image_couverture') String? imageCouverture,@JsonKey(name: 'partenaire_id') int? partenaireId,@JsonKey(name: 'duree_affichage_secondes') int dureeAffichageSecondes, int priorite
+ String id, String titre,@JsonKey(name: 'image_couverture') String? imageCouverture,@JsonKey(name: 'partenaire_id') int? partenaireId,@JsonKey(name: 'duree_affichage_secondes') int dureeAffichageSecondes, int priorite,@JsonKey(name: 'fin_diffusion') String? finDiffusion
 });
 
 
@@ -274,7 +276,7 @@ class __$PubliciteListeCopyWithImpl<$Res>
 
 /// Create a copy of PubliciteListe
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? titre = null,Object? imageCouverture = freezed,Object? partenaireId = freezed,Object? dureeAffichageSecondes = null,Object? priorite = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? titre = null,Object? imageCouverture = freezed,Object? partenaireId = freezed,Object? dureeAffichageSecondes = null,Object? priorite = null,Object? finDiffusion = freezed,}) {
   return _then(_PubliciteListe(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,titre: null == titre ? _self.titre : titre // ignore: cast_nullable_to_non_nullable
@@ -282,7 +284,8 @@ as String,imageCouverture: freezed == imageCouverture ? _self.imageCouverture : 
 as String?,partenaireId: freezed == partenaireId ? _self.partenaireId : partenaireId // ignore: cast_nullable_to_non_nullable
 as int?,dureeAffichageSecondes: null == dureeAffichageSecondes ? _self.dureeAffichageSecondes : dureeAffichageSecondes // ignore: cast_nullable_to_non_nullable
 as int,priorite: null == priorite ? _self.priorite : priorite // ignore: cast_nullable_to_non_nullable
-as int,
+as int,finDiffusion: freezed == finDiffusion ? _self.finDiffusion : finDiffusion // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

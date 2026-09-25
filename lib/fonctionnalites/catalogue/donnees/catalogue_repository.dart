@@ -13,19 +13,25 @@ class CatalogueRepository {
 
   CatalogueRepository({required Dio dio}) : _dio = dio;
 
+  // Les lectures cachees sont scindees en deux : `xxxBrut` (appel reseau,
+  // renvoie le JSON tel quel — c'est lui qui est stocke sur disque) et
+  // `xxxDepuis` (decodage, applique aussi au JSON relu du cache).
+
   /// GET /catalogue/categories/ — liste des catégories racines (public).
-  Future<List<Categorie>> categories() async {
-    final r = await _dio.get('${Env.apiPrefix}/catalogue/categories/');
-    final data = r.data as Map<String, dynamic>;
+  Future<Object?> categoriesBrut() async =>
+      (await _dio.get('${Env.apiPrefix}/catalogue/categories/')).data;
+
+  List<Categorie> categoriesDepuis(Object? json) {
+    final data = json as Map<String, dynamic>;
     final results = (data['results'] as List).cast<Map<String, dynamic>>();
     return results.map(Categorie.fromJson).toList();
   }
 
 /// GET /catalogue/articles/ — articles filtrés (catégorie et/ou recherche).
-  Future<List<ArticleListe>> articles({
+  Future<Object?> articlesBrut({
     int? categorie,
     String? recherche,
-  int? partenaire,
+    int? partenaire,
   }) async {
     final r = await _dio.get(
       '${Env.apiPrefix}/catalogue/articles/',
@@ -35,13 +41,29 @@ class CatalogueRepository {
         if (recherche != null && recherche.isNotEmpty) 'recherche': recherche,
       },
     );
-    final data = r.data as Map<String, dynamic>;
+    return r.data;
+  }
+
+  List<ArticleListe> articlesDepuis(Object? json) {
+    final data = json as Map<String, dynamic>;
     final results = (data['results'] as List).cast<Map<String, dynamic>>();
     return results.map(ArticleListe.fromJson).toList();
   }
+
+  Future<List<ArticleListe>> articles({
+    int? categorie,
+    String? recherche,
+    int? partenaire,
+  }) async => articlesDepuis(
+    await articlesBrut(
+      categorie: categorie,
+      recherche: recherche,
+      partenaire: partenaire,
+    ),
+  );
   
   /// GET /catalogue/categories/<slug>/partenaires/ — annuaire d'une catégorie.
-  Future<List<PartenaireCategorie>> partenairesParCategorie(
+  Future<Object?> partenairesParCategorieBrut(
     String slug, {
     List<String>? localites,
   }) async {
@@ -52,10 +74,12 @@ class CatalogueRepository {
           'localites': localites.join(','),
       },
     );
-    return (r.data as List)
-        .map((e) => PartenaireCategorie.fromJson(e as Map<String, dynamic>))
-        .toList();
+    return r.data;
   }
+
+  List<PartenaireCategorie> partenairesDepuis(Object? json) => (json as List)
+      .map((e) => PartenaireCategorie.fromJson(e as Map<String, dynamic>))
+      .toList();
 
   /// GET /catalogue/carte/partenaires/ — tous les partenaires geolocalises
   /// de la portee (pour la carte). Filtre optionnel par [categorie] (slug).
@@ -78,10 +102,11 @@ class CatalogueRepository {
   }
 
   /// GET /catalogue/articles/<slug>/ — fiche détail (public).
-  Future<ArticleDetail> articleDetail(String slug) async {
-    final r = await _dio.get('${Env.apiPrefix}/catalogue/articles/$slug/');
-    return ArticleDetail.fromJson(r.data as Map<String, dynamic>);
-  }
+  Future<Object?> articleDetailBrut(String slug) async =>
+      (await _dio.get('${Env.apiPrefix}/catalogue/articles/$slug/')).data;
+
+  ArticleDetail articleDetailDepuis(Object? json) =>
+      ArticleDetail.fromJson(json as Map<String, dynamic>);
 
   /// GET /catalogue/recherche/?q= — recherche unifiee en 3 sections.
   ///

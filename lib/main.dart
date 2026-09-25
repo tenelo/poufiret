@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'global/navigation/app_shell.dart';
 import 'global/notifications/fcm_service.dart';
 import 'global/notifications/routeur_notifications.dart';
+import 'global/carte/services_google.dart';
+import 'global/reseau/etat_reseau.dart';
 import 'global/ui/theme_poufiret.dart';
 import 'fonctionnalites/analytics/donnees/analytics_providers.dart';
 import 'fonctionnalites/auth/screens/auth_notifier.dart';
@@ -13,13 +15,25 @@ import 'fonctionnalites/auth/screens/ecran_connexion.dart';
 import 'fonctionnalites/auth/screens/ecran_changer_pin.dart';
 import 'fonctionnalites/publicites/widgets/couche_publicites.dart';
 import 'fonctionnalites/publicites/widgets/observateur_interstitiel.dart';
+import 'fonctionnalites/version/donnees/version_providers.dart';
+import 'fonctionnalites/version/donnees/version_repository.dart';
 import 'fonctionnalites/version/widgets/couche_mise_a_jour.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Préchauffage : le contrôle de version part tout de suite (ouvre la
+  // connexion TLS du pool partagé) pendant que Firebase s'initialise.
+  final controleVersion = VersionRepository().verifier();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(fcmBackgroundHandler);
-  runApp(const ProviderScope(child: PoufiretApp()));
+  runApp(
+    ProviderScope(
+      overrides: [
+        controleVersionProvider.overrideWith((ref) => controleVersion),
+      ],
+      child: const PoufiretApp(),
+    ),
+  );
 }
 
 class PoufiretApp extends StatelessWidget {
@@ -33,7 +47,36 @@ class PoufiretApp extends StatelessWidget {
       theme: ThemePoufiret.clair,
       debugShowCheckedModeBanner: false,
       navigatorObservers: [observateurNavigation],
+      builder: (context, enfant) => _AvecBandeauHorsLigne(enfant: enfant!),
       home: const CoucheMiseAJour(enfant: _Racine()),
+    );
+  }
+}
+
+/// Affiche le bandeau « Hors connexion » sous toute l'app.
+///
+/// La structure (Column > Expanded > MediaQuery > enfant) est constante : seul
+/// le bandeau apparait/disparait, le Navigator n'est jamais remonte.
+class _AvecBandeauHorsLigne extends ConsumerWidget {
+  const _AvecBandeauHorsLigne({required this.enfant});
+  final Widget enfant;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final horsLigne = ref.watch(etatReseauProvider);
+    return Column(
+      children: [
+        Expanded(
+          // Le bandeau occupe le bas de l'ecran : l'app n'a plus a reserver
+          // la zone de geste systeme tant qu'il est la.
+          child: MediaQuery.removePadding(
+            context: context,
+            removeBottom: horsLigne,
+            child: enfant,
+          ),
+        ),
+        const BandeauHorsLigne(),
+      ],
     );
   }
 }
@@ -47,19 +90,29 @@ class _Racine extends ConsumerStatefulWidget {
 }
 
 class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
+  // Vrai des que la coquille d'accueil a ete construite une premiere fois.
+  bool _accueilAffiche = false;
+  // Vrai tant que FCM + session analytics sont lances pour l'utilisateur
+  // connecte courant (remis a faux a la deconnexion).
+  bool _servicesLances = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Cas 'deja connecte au lancement' : aucune transition auth ne se produit,
-    // donc on demarre la session et les notifications push apres le premier
-    // build si un user est present.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (ref.read(authProvider).value != null) {
-        ref.read(sessionAnalyticsProvider.notifier).demarrer();
-        ref.read(fcmServiceProvider).initialiser();
-      }
-    });
+    // Detection des services Google (carte Google ou OpenStreetMap) : lancee
+    // au demarrage, sans attente ; le resultat reste en memoire.
+    ref.read(servicesGoogleProvider);
+  }
+
+  /// Notifications push + session analytics : hors du chemin critique. Lances
+  /// sans attente, APRES le premier rendu de l'accueil (jamais avant, pour ne
+  /// pas concurrencer les requetes qui remplissent la grille).
+  void _lancerServicesDifferes() {
+    if (_servicesLances || ref.read(authProvider).value == null) return;
+    _servicesLances = true;
+    ref.read(fcmServiceProvider).initialiser();
+    ref.read(sessionAnalyticsProvider.notifier).demarrer();
   }
 
   @override
@@ -72,6 +125,11 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
   /// une session mise en pause s'arrete au dernier ping recu par le serveur.
   @override
   void didChangeAppLifecycleState(AppLifecycleState etat) {
+    // Retour au premier plan : si le profil n'a pas encore ete confirme par
+    // le serveur (demarrage hors connexion), on retente tout de suite.
+    if (etat == AppLifecycleState.resumed) {
+      ref.read(authProvider.notifier).revalider();
+    }
     final connecte = ref.read(authProvider).value != null;
     if (!connecte) return;
     final session = ref.read(sessionAnalyticsProvider.notifier);
@@ -96,9 +154,11 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
       final etaitConnecte = avant?.value != null;
       if (user != null && !etaitConnecte) {
         // Connexion : notifications push + ouverture de la session analytics.
-        ref.read(fcmServiceProvider).initialiser();
-        ref.read(sessionAnalyticsProvider.notifier).demarrer();
+        // Au lancement (session restauree), l'accueil n'est pas encore
+        // affiche : le lancement est alors differe a son premier rendu.
+        if (_accueilAffiche) _lancerServicesDifferes();
       } else if (user == null && etaitConnecte) {
+        _servicesLances = false;
         ref.read(sessionAnalyticsProvider.notifier).arreter();
         // Deconnexion : on retire le token FCM de cet appareil.
         ref.read(fcmServiceProvider).desenregistrer();
@@ -118,6 +178,12 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
     final user = auth.value;
     if (user != null && user.pinParDefaut) {
       return const EcranChangerPin(bloquant: true);
+    }
+    if (!_accueilAffiche) {
+      _accueilAffiche = true;
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => _lancerServicesDifferes(),
+      );
     }
     return const ObservateurInterstitiel(
       enfant: CouchePublicites(enfant: AppShell()),

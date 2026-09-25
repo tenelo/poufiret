@@ -57,24 +57,24 @@ final class PartenaireRepositoryProvider
 String _$partenaireRepositoryHash() =>
     r'2333e1b0f22c22373f427778cafe47c0289761c5';
 
-/// Vitrine d'un partenaire par son id. Mis en cache par id.
+/// Vitrine d'un partenaire par son id (cache d'abord, une entree par id).
 
 @ProviderFor(partenaireVitrine)
 final partenaireVitrineProvider = PartenaireVitrineFamily._();
 
-/// Vitrine d'un partenaire par son id. Mis en cache par id.
+/// Vitrine d'un partenaire par son id (cache d'abord, une entree par id).
 
 final class PartenaireVitrineProvider
     extends
         $FunctionalProvider<
           AsyncValue<PartenaireVitrine>,
           PartenaireVitrine,
-          FutureOr<PartenaireVitrine>
+          Stream<PartenaireVitrine>
         >
     with
         $FutureModifier<PartenaireVitrine>,
-        $FutureProvider<PartenaireVitrine> {
-  /// Vitrine d'un partenaire par son id. Mis en cache par id.
+        $StreamProvider<PartenaireVitrine> {
+  /// Vitrine d'un partenaire par son id (cache d'abord, une entree par id).
   PartenaireVitrineProvider._({
     required PartenaireVitrineFamily super.from,
     required int super.argument,
@@ -98,12 +98,12 @@ final class PartenaireVitrineProvider
 
   @$internal
   @override
-  $FutureProviderElement<PartenaireVitrine> $createElement(
+  $StreamProviderElement<PartenaireVitrine> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<PartenaireVitrine> create(Ref ref) {
+  Stream<PartenaireVitrine> create(Ref ref) {
     final argument = this.argument as int;
     return partenaireVitrine(ref, id: argument);
   }
@@ -119,12 +119,12 @@ final class PartenaireVitrineProvider
   }
 }
 
-String _$partenaireVitrineHash() => r'9fa1d7bd356b4dc45b3543ef2ca982c9b73adb45';
+String _$partenaireVitrineHash() => r'9b8077ac98fa02e9614ff4aa1cdc41255752ea28';
 
-/// Vitrine d'un partenaire par son id. Mis en cache par id.
+/// Vitrine d'un partenaire par son id (cache d'abord, une entree par id).
 
 final class PartenaireVitrineFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<PartenaireVitrine>, int> {
+    with $FunctionalFamilyOverride<Stream<PartenaireVitrine>, int> {
   PartenaireVitrineFamily._()
     : super(
         retry: null,
@@ -134,7 +134,7 @@ final class PartenaireVitrineFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Vitrine d'un partenaire par son id. Mis en cache par id.
+  /// Vitrine d'un partenaire par son id (cache d'abord, une entree par id).
 
   PartenaireVitrineProvider call({required int id}) =>
       PartenaireVitrineProvider._(argument: id, from: this);

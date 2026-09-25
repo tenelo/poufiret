@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:poufiret/global/carte/carte_poufiret.dart';
+import 'package:poufiret/global/carte/modeles_carte.dart';
 import 'package:poufiret/fonctionnalites/catalogue/donnees/catalogue_providers.dart';
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/categorie.dart';
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/partenaire_categorie.dart';
@@ -10,7 +11,7 @@ import 'package:poufiret/fonctionnalites/map/donnees/service_position.dart';
 import 'package:poufiret/global/config/config.dart';
 
 /// Centre par defaut : Ferkessedougou (si la position n'est pas dispo).
-const _centreDefaut = LatLng(9.5928, -5.1942);
+const _centreDefaut = PointCarte(9.5928, -5.1942);
 
 /// Ombre douce et unique pour les encarts flottants au-dessus de la carte
 /// (chrome d'UI, pas les elements de la carte elle-meme).
@@ -28,7 +29,7 @@ class EcranMap extends ConsumerStatefulWidget {
 
 class _EcranMapState extends ConsumerState<EcranMap>
     with WidgetsBindingObserver {
-  GoogleMapController? _controller;
+  final _carte = ControleurCarte();
 
   double? _lat;
   double? _lng;
@@ -55,17 +56,12 @@ class _EcranMapState extends ConsumerState<EcranMap>
   }
 
   Future<void> _recentrer() async {
-    if (_lat == null || _lng == null || _controller == null) return;
-    await _controller!.animateCamera(
-      CameraUpdate.newLatLngZoom(LatLng(_lat!, _lng!), 14),
-    );
+    if (_lat == null || _lng == null) return;
+    await _carte.centrerSur(PointCarte(_lat!, _lng!), zoom: 14);
   }
 
   Future<void> _zoomer(bool avant) async {
-    if (_controller == null) return;
-    await _controller!.animateCamera(
-      avant ? CameraUpdate.zoomIn() : CameraUpdate.zoomOut(),
-    );
+    await _carte.zoomer(avant);
   }
 
   Future<void> _rafraichir() async {
@@ -99,17 +95,16 @@ class _EcranMapState extends ConsumerState<EcranMap>
     return (p: meilleur, d: meilleureDist);
   }
 
-  Set<Marker> _marqueurs(List<PartenaireCategorie> liste) {
-    return liste.map((p) {
-      return Marker(
-        markerId: MarkerId('part_${p.id}'),
-        position: LatLng(p.latitude!, p.longitude!),
-        infoWindow: InfoWindow(
-          title: p.nomCommerce,
-          snippet: p.quartier.isNotEmpty ? p.quartier : p.departement,
+  List<MarqueurCarte> _marqueurs(List<PartenaireCategorie> liste) {
+    return [
+      for (final p in liste)
+        MarqueurCarte(
+          id: 'part_${p.id}',
+          position: PointCarte(p.latitude!, p.longitude!),
+          titre: p.nomCommerce,
+          sousTitre: p.quartier.isNotEmpty ? p.quartier : p.departement,
         ),
-      );
-    }).toSet();
+    ];
   }
 
   @override
@@ -196,23 +191,21 @@ class _EcranMapState extends ConsumerState<EcranMap>
               ),
             ),
           ),
-          data: (liste) => GoogleMap(
+          // Google Maps, ou OpenStreetMap sur les appareils sans services
+          // Google : meme carte, memes marqueurs, memes commandes.
+          data: (liste) => CartePoufiret(
             // Démarre toujours centré sur Ferké, puis anime vers la
-            // position réelle de l'utilisateur (voir onMapCreated).
-            initialCameraPosition: const CameraPosition(
-              target: _centreDefaut,
-              zoom: 13,
-            ),
-            mapType: _hybride ? MapType.satellite : MapType.normal,
-            zoomControlsEnabled: false,
-            zoomGesturesEnabled: true,
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false,
-            markers: _marqueurs(liste),
-            onMapCreated: (c) {
-              _controller = c;
-              _recentrer();
-            },
+            // position réelle de l'utilisateur (voir onPrete).
+            centreInitial: _centreDefaut,
+            zoomInitial: 13,
+            satellite: _hybride,
+            afficherPosition: true,
+            positionUtilisateur: (_lat != null && _lng != null)
+                ? PointCarte(_lat!, _lng!)
+                : null,
+            marqueurs: _marqueurs(liste),
+            controleur: _carte,
+            onPrete: _recentrer,
           ),
         ),
 
@@ -233,14 +226,16 @@ class _EcranMapState extends ConsumerState<EcranMap>
         ),
 
         // ── Bouton style de carte (haut gauche) ────────────────
-        Positioned(
-          top: 64,
-          left: 8,
-          child: _BoutonTypeCarte(
-            hybride: _hybride,
-            onToggle: () => setState(() => _hybride = !_hybride),
+        // Vue satellite : Google seulement (OpenStreetMap n'en a pas).
+        if (ref.watch(satelliteDisponibleProvider))
+          Positioned(
+            top: 64,
+            left: 8,
+            child: _BoutonTypeCarte(
+              hybride: _hybride,
+              onToggle: () => setState(() => _hybride = !_hybride),
+            ),
           ),
-        ),
 
         // ── Encart « Plus proche » (haut droite) ───────────────
         Positioned(
@@ -293,11 +288,9 @@ class _EcranMapState extends ConsumerState<EcranMap>
                 return _distance(d);
               },
               onTap: (p) async {
-                await _controller?.animateCamera(
-                  CameraUpdate.newLatLngZoom(
-                    LatLng(p.latitude!, p.longitude!),
-                    16,
-                  ),
+                await _carte.centrerSur(
+                  PointCarte(p.latitude!, p.longitude!),
+                  zoom: 16,
                 );
               },
             ),
@@ -501,7 +494,7 @@ class _EncartPlusProche extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: 220),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: Config.couleurSucces.withValues(alpha: 0.12),
+        color: const Color.fromARGB(255, 115, 210, 120).withValues(alpha: 0.60),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [_ombreEncart],
       ),

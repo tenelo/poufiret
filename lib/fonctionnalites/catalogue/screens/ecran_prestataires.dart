@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:poufiret/global/cache/contexte_cache.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
+import 'package:poufiret/global/ui/squelette.dart';
 import 'package:poufiret/fonctionnalites/catalogue/donnees/catalogue_providers.dart';
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/partenaire_categorie.dart';
 import 'package:poufiret/fonctionnalites/catalogue/screens/ecran_articles.dart';
@@ -36,57 +38,95 @@ class EcranPrestataires extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    return Scaffold(
+      appBar: AppBar(title: Text(categorieNom)),
+      body: ContenuPrestataires(
+        categorieId: categorieId,
+        categorieNom: categorieNom,
+        categorieSlug: categorieSlug,
+        modeTransaction: modeTransaction,
+        afficheCatalogue: afficheCatalogue,
+      ),
+    );
+  }
+}
+
+/// Contenu de l'annuaire d'une categorie (filtre de localites + liste), sans
+/// barre ni Scaffold : partage entre l'ecran ouvert depuis la grille et les
+/// onglets de l'accueil, qui affichent directement ce contenu.
+class ContenuPrestataires extends ConsumerWidget {
+  const ContenuPrestataires({
+    super.key,
+    required this.categorieId,
+    required this.categorieNom,
+    required this.categorieSlug,
+    this.modeTransaction = '',
+    this.afficheCatalogue = true,
+  });
+
+  final bool afficheCatalogue;
+  final int categorieId;
+  final String categorieNom;
+  final String categorieSlug;
+  final String modeTransaction;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     // L affichage de la liste des prestataires = une visite de categorie.
     ref.watch(visiteCategorieProvider(categorieId: categorieId));
     final annuaireAsync = ref.watch(
       partenairesParCategorieProvider(slug: categorieSlug),
     );
-    return Scaffold(
-      appBar: AppBar(title: Text(categorieNom)),
-      body: Column(
-        children: [
-          const FiltreLocalites(),
-          const Divider(height: 1),
-          Expanded(
-            child: annuaireAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) {
-                final message = err is ApiException
-                    ? err.messageLisible
-                    : 'Erreur de chargement.';
-                return Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(message),
-                      const SizedBox(height: 12),
-                      FilledButton(
-                        onPressed: () => ref.invalidate(
+    return Column(
+      children: [
+        const FiltreLocalites(),
+        const Divider(height: 1),
+        Expanded(
+          child: annuaireAsync.when(
+            loading: () => const SqueletteListePartenaires(),
+            error: (err, _) {
+              final message = err is ApiException
+                  ? err.messageLisible
+                  : 'Erreur de chargement.';
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(message),
+                    const SizedBox(height: 12),
+                    FilledButton(
+                      onPressed: () => ref.invalidate(
+                        partenairesParCategorieProvider(slug: categorieSlug),
+                      ),
+                      child: const Text('Réessayer'),
+                    ),
+                  ],
+                ),
+              );
+            },
+            data: (prestataires) {
+              if (prestataires.isEmpty) {
+                return const Center(
+                  child: Text('Aucun prestataire dans cette catégorie.'),
+                );
+              }
+              return LayoutBuilder(
+                builder: (context, contraintes) {
+                  final largeur = contraintes.maxWidth > 700
+                      ? 700.0
+                      : contraintes.maxWidth;
+                  // Colonnes selon la largeur disponible (tuiles ~330px).
+                  final colonnes = (largeur / 330).floor().clamp(1, 2);
+                  return Center(
+                    child: SizedBox(
+                      width: largeur,
+                      child: RefreshIndicator(
+                        onRefresh: () => rafraichir(
+                          ref,
                           partenairesParCategorieProvider(slug: categorieSlug),
                         ),
-                        child: const Text('Réessayer'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              data: (prestataires) {
-                if (prestataires.isEmpty) {
-                  return const Center(
-                    child: Text('Aucun prestataire dans cette catégorie.'),
-                  );
-                }
-                return LayoutBuilder(
-                  builder: (context, contraintes) {
-                    final largeur = contraintes.maxWidth > 700
-                        ? 700.0
-                        : contraintes.maxWidth;
-                    // Colonnes selon la largeur disponible (tuiles ~330px).
-                    final colonnes = (largeur / 330).floor().clamp(1, 2);
-                    return Center(
-                      child: SizedBox(
-                        width: largeur,
                         child: GridView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
                           padding: const EdgeInsets.all(12),
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
@@ -116,6 +156,7 @@ class EcranPrestataires extends ConsumerWidget {
                                         : EcranVitrinePartenaire(
                                             partenaireId: prestataires[i].id,
                                             modeTransaction: modeTransaction,
+                                            apercu: prestataires[i],
                                           ),
                                   ),
                                 );
@@ -124,14 +165,14 @@ class EcranPrestataires extends ConsumerWidget {
                           ),
                         ),
                       ),
-                    );
-                  },
-                );
-              },
-            ),
+                    ),
+                  );
+                },
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

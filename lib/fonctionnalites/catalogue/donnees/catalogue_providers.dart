@@ -1,6 +1,8 @@
 import '../metier_domaine/partenaire_categorie.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../global/cache/cache_api.dart';
+import '../../../global/cache/contexte_cache.dart';
 import '../../../global/network/providers.dart';
 import '../metier_domaine/categorie.dart';
 import 'catalogue_repository.dart';
@@ -16,26 +18,61 @@ CatalogueRepository catalogueRepository(Ref ref) {
   return CatalogueRepository(dio: ref.watch(dioProvider));
 }
 
-/// Charge la liste des catégories. FutureProvider : gère loading/error/data.
+// Les lectures ci-dessous sont en « cache d'abord » (voir fluxCache) : la
+// derniere valeur connue s'affiche tout de suite, puis la valeur fraiche la
+// remplace. Elles restent en memoire pendant leur duree « fraiche » au lieu
+// d'etre rechargees a chaque navigation ; ref.invalidate force le reseau.
+
+/// Charge la liste des catégories.
 @riverpod
-Future<List<Categorie>> categories(Ref ref) {
-  return ref.watch(catalogueRepositoryProvider).categories();
+Stream<List<Categorie>> categories(Ref ref) {
+  final repo = ref.watch(catalogueRepositoryProvider);
+  return fluxCache(
+    ref,
+    cle: 'categories',
+    politique: PolitiqueCache.categories,
+    reseau: repo.categoriesBrut,
+    decoder: repo.categoriesDepuis,
+  );
 }
 
-/// Articles d'une catégorie donnée. Le paramètre categorieId permet
-/// à Riverpod de mettre en cache par catégorie.
+/// Fiche article telle que le serveur la connait MAINTENANT (sans cache) :
+/// pour les formulaires d'edition, qui ne doivent jamais se pre-remplir avec
+/// une donnee perimee (le partenaire l'ecraserait a l'enregistrement).
 @riverpod
-Future<List<ArticleListe>> articles(Ref ref,
+Future<ArticleDetail> articleDetailFrais(Ref ref, {required String slug}) async {
+  final repo = ref.watch(catalogueRepositoryProvider);
+  return repo.articleDetailDepuis(await repo.articleDetailBrut(slug));
+}
+
+/// Articles d'une catégorie donnée (et éventuellement d'un partenaire).
+@riverpod
+Stream<List<ArticleListe>> articles(Ref ref,
     {required int categorieId, int? partenaireId}) {
-  return ref
-      .watch(catalogueRepositoryProvider)
-      .articles(categorie: categorieId, partenaire: partenaireId);
+  final repo = ref.watch(catalogueRepositoryProvider);
+  return fluxCache(
+    ref,
+    cle: 'articles/c$categorieId/p${partenaireId ?? 0}',
+    politique: PolitiqueCache.articles,
+    reseau: () => repo.articlesBrut(
+      categorie: categorieId,
+      partenaire: partenaireId,
+    ),
+    decoder: repo.articlesDepuis,
+  );
 }
 
 /// Fiche détail d'un article par son slug.
 @riverpod
-Future<ArticleDetail> articleDetail(Ref ref, {required String slug}) {
-  return ref.watch(catalogueRepositoryProvider).articleDetail(slug);
+Stream<ArticleDetail> articleDetail(Ref ref, {required String slug}) {
+  final repo = ref.watch(catalogueRepositoryProvider);
+  return fluxCache(
+    ref,
+    cle: 'article/$slug',
+    politique: PolitiqueCache.articleDetail,
+    reseau: () => repo.articleDetailBrut(slug),
+    decoder: repo.articleDetailDepuis,
+  );
 }
 
 /// Recherche d'articles par nom. Renvoie une liste vide si le terme est vide.
@@ -65,12 +102,19 @@ class LocalitesChoisies extends _$LocalitesChoisies {
 /// Annuaire des prestataires d'une catégorie, filtre par les localites
 /// choisies (le backend applique aussi la regle de portee).
 @riverpod
-Future<List<PartenaireCategorie>> partenairesParCategorie(Ref ref,
+Stream<List<PartenaireCategorie>> partenairesParCategorie(Ref ref,
     {required String slug}) {
   final localites = ref.watch(localitesChoisiesProvider);
-  return ref
-      .watch(catalogueRepositoryProvider)
-      .partenairesParCategorie(slug, localites: localites);
+  final repo = ref.watch(catalogueRepositoryProvider);
+  // Les localites choisies changent le resultat : elles font partie de la cle.
+  final loc = ([...localites]..sort()).join(',');
+  return fluxCache(
+    ref,
+    cle: 'partenaires/$slug?loc=$loc',
+    politique: PolitiqueCache.partenaires,
+    reseau: () => repo.partenairesParCategorieBrut(slug, localites: localites),
+    decoder: repo.partenairesDepuis,
+  );
 }
 
 /// Recherche unifiee : categories + partenaires + articles.

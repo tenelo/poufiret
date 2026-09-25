@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../fonctionnalites/analytics/donnees/analytics_providers.dart';
 import 'package:poufiret/fonctionnalites/chat/screens/ecran_conversations.dart';
 
+import '../../fonctionnalites/chat/donnees/chat_providers.dart';
 import 'destinations.dart';
 import '../../fonctionnalites/catalogue/screens/ecran_categories.dart';
 import '../../fonctionnalites/publicites/screens/ecran_publicites.dart';
@@ -22,7 +23,7 @@ class AppShell extends ConsumerStatefulWidget {
 class _AppShellState extends ConsumerState<AppShell> {
   int _index = 0;
 
-static const _pages = [
+  static const _pages = [
     EcranCategories(),
     EcranPublicites(),
     EcranConversations(),
@@ -30,6 +31,13 @@ static const _pages = [
     EcranMap(),
   ];
 
+  // Onglets construits paresseusement : seul l'accueil existe au lancement.
+  // Un onglet est construit a sa premiere visite puis conserve (IndexedStack)
+  // pour garder son etat. Evite ainsi, au demarrage, les requetes des autres
+  // onglets, le GPS et la creation de la vue Google Maps.
+  final List<bool> _visites = [true, false, false, false, false];
+
+  static const int _indexMessages = 2;
   static const int _indexLivraison = 3;
 
   void _onTap(int i) {
@@ -37,7 +45,15 @@ static const _pages = [
     if (i == _indexLivraison && i != _index) {
       ref.read(analyticsRepositoryProvider).enregistrerVueServiceLivraison();
     }
-    setState(() => _index = i);
+    // Conversations : affichees depuis le cache, rafraichies a chaque
+    // ouverture de l'onglet (le temps reel reste sur WebSocket).
+    if (i == _indexMessages && i != _index) {
+      ref.invalidate(conversationsProvider);
+    }
+    setState(() {
+      _index = i;
+      _visites[i] = true;
+    });
   }
 
   @override
@@ -49,7 +65,13 @@ static const _pages = [
         // Le bandeau publicitaire est desormais gere globalement par
         // CouchePublicites, a la racine de l'application : il reste
         // visible sur les ecrans pousses par-dessus la coquille.
-        final body = IndexedStack(index: _index, children: _pages);
+        final body = IndexedStack(
+          index: _index,
+          children: [
+            for (var i = 0; i < _pages.length; i++)
+              _visites[i] ? _pages[i] : const SizedBox.shrink(),
+          ],
+        );
 
         if (useRail) {
           return Scaffold(

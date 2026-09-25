@@ -49,6 +49,10 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    // Detection des Google Play Services (repli OpenStreetMap si absents).
+    // Deja embarquee via google_maps_flutter ; declaree ici pour l'utiliser
+    // directement depuis MainActivity.
+    implementation("com.google.android.gms:play-services-base:18.5.0")
 }
 
 kotlin {

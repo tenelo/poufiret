@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../global/cache/contexte_cache.dart';
+import '../../../global/ui/squelette.dart';
 import '../donnees/chat_providers.dart';
 import '../metier_domaine/chat_models.dart';
 import 'ecran_discussion.dart';
@@ -17,7 +19,8 @@ class EcranConversations extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Messages')),
       body: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        skipLoadingOnReload: true,
+        loading: () => const SqueletteListeLignes(),
         error: (e, _) => _Erreur(
           onRetry: () => ref.invalidate(conversationsProvider),
         ),
@@ -26,7 +29,7 @@ class EcranConversations extends ConsumerWidget {
             return const _Vide();
           }
           return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(conversationsProvider),
+            onRefresh: () => rafraichir(ref, conversationsProvider),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final maxWidth =
@@ -35,6 +38,7 @@ class EcranConversations extends ConsumerWidget {
                   child: ConstrainedBox(
                     constraints: BoxConstraints(maxWidth: maxWidth),
                     child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       itemCount: convs.length,
                       separatorBuilder: (_, i) => const Divider(height: 1),
                       itemBuilder: (context, i) =>

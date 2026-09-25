@@ -31,7 +31,8 @@ class ChampDepartement extends ConsumerWidget {
           height: 20,
           child: Center(
             child: SizedBox(
-              width: 18, height: 18,
+              width: 18,
+              height: 18,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
           ),
@@ -63,8 +64,11 @@ class ChampDepartement extends ConsumerWidget {
             for (final d in departements)
               DropdownMenuItem(
                 value: d.id,
-                child: Text('${d.nom} (${d.region})',
-                    overflow: TextOverflow.ellipsis),
+                child: Text(
+                  '${d.nom}',
+                  //child: Text('${d.nom} (${d.region})',
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
           ],
           onChanged: onChange,
@@ -83,11 +87,11 @@ class _Cadre extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => InputDecorator(
-        decoration: const InputDecoration(
-          labelText: 'Département',
-          border: OutlineInputBorder(),
-          prefixIcon: Icon(Icons.place_outlined),
-        ),
-        child: enfant,
-      );
+    decoration: const InputDecoration(
+      labelText: 'Département',
+      border: OutlineInputBorder(),
+      prefixIcon: Icon(Icons.place_outlined),
+    ),
+    child: enfant,
+  );
 }

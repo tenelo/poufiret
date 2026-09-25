@@ -50,24 +50,27 @@ final class ChatRepositoryProvider
 
 String _$chatRepositoryHash() => r'a939c3ba593cb4cbad3bb01d9a8a1f4a6e900cdf';
 
-/// Mes conversations (client + partenaire).
+/// Mes conversations (client + partenaire) : affichees depuis le cache,
+/// rafraichies a chaque ouverture (le temps reel reste sur WebSocket).
 
 @ProviderFor(conversations)
 final conversationsProvider = ConversationsProvider._();
 
-/// Mes conversations (client + partenaire).
+/// Mes conversations (client + partenaire) : affichees depuis le cache,
+/// rafraichies a chaque ouverture (le temps reel reste sur WebSocket).
 
 final class ConversationsProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<Conversation>>,
           List<Conversation>,
-          FutureOr<List<Conversation>>
+          Stream<List<Conversation>>
         >
     with
         $FutureModifier<List<Conversation>>,
-        $FutureProvider<List<Conversation>> {
-  /// Mes conversations (client + partenaire).
+        $StreamProvider<List<Conversation>> {
+  /// Mes conversations (client + partenaire) : affichees depuis le cache,
+  /// rafraichies a chaque ouverture (le temps reel reste sur WebSocket).
   ConversationsProvider._()
     : super(
         from: null,
@@ -84,17 +87,17 @@ final class ConversationsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<Conversation>> $createElement(
+  $StreamProviderElement<List<Conversation>> $createElement(
     $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
+  ) => $StreamProviderElement(pointer);
 
   @override
-  FutureOr<List<Conversation>> create(Ref ref) {
+  Stream<List<Conversation>> create(Ref ref) {
     return conversations(ref);
   }
 }
 
-String _$conversationsHash() => r'ad4bea488b82fcb650e1709d6ce24488f71988fb';
+String _$conversationsHash() => r'594e69f06d8fee3c788ad6c155a013390d786f16';
 
 /// Historique d'une conversation (chargé une fois à l'ouverture ;
 /// les messages temps réel arrivent ensuite via le socket).

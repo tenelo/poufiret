@@ -22,14 +22,13 @@ class ChatRepository {
   }
 
   /// GET /messaging/conversations/ — mes conversations (client + partenaire).
-  Future<List<Conversation>> conversations() async {
-    final r = await _dio.get('${Env.apiPrefix}/messaging/conversations/');
-    final data = r.data as List;
-    return data
-        .cast<Map<String, dynamic>>()
-        .map(Conversation.fromJson)
-        .toList();
-  }
+  Future<Object?> conversationsBrut() async =>
+      (await _dio.get('${Env.apiPrefix}/messaging/conversations/')).data;
+
+  List<Conversation> conversationsDepuis(Object? json) => (json as List)
+      .cast<Map<String, dynamic>>()
+      .map(Conversation.fromJson)
+      .toList();
 
   /// GET /messaging/conversations/<id>/messages/ — historique trié chrono.
   Future<List<Message>> messages(int conversationId) async {

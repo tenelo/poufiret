@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/notificateur.dart';
+import '../donnees/invalidations_publicites.dart';
 import '../donnees/publicites_providers.dart';
 import '../metier_domaine/credit_formule.dart';
 import '../metier_domaine/formule_publicite.dart';
@@ -403,6 +404,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
       } else {
         // Parcours credit : le backend active la pub immediatement.
         ref.invalidate(mesCreditsDisponiblesProvider);
+        invaliderPublicites(ref);
       }
       ref.invalidate(mesPublicitesProvider);
       if (!mounted) return;

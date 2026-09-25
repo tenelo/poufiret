@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../donnees/orders_providers.dart';
 import '../../../global/config/config.dart';
 import '../../../global/ui/notificateur.dart';
+import '../../../global/ui/squelette.dart';
 import '../metier_domaine/orders_models.dart';
 
 /// Liste des commandes du client.
@@ -17,7 +18,7 @@ class EcranCommandes extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Mes commandes')),
       body: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const SqueletteCartes(),
         error: (e, _) =>
             _Erreur(onRetry: () => ref.invalidate(commandesProvider())),
         data: (commandes) {

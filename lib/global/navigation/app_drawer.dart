@@ -119,8 +119,7 @@ class AppDrawer extends ConsumerWidget {
             // Connecte : deconnexion. Visiteur : invitation a s'enregistrer.
             if (user != null)
               ListTile(
-                leading:
-                    Icon(Icons.logout, color: theme.colorScheme.error),
+                leading: Icon(Icons.logout, color: theme.colorScheme.error),
                 title: Text(
                   'Déconnexion',
                   style: TextStyle(color: theme.colorScheme.error),
@@ -132,19 +131,18 @@ class AppDrawer extends ConsumerWidget {
               )
             else
               ListTile(
-                leading: Icon(Icons.login,
-                    color: theme.colorScheme.primary),
+                leading: Icon(Icons.login, color: theme.colorScheme.primary),
                 title: Text(
-                  'Se connecter / S\'inscrire',
+                  'Se connecter',
                   style: TextStyle(
-                      color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w600),
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 onTap: () {
                   Navigator.of(context).pop();
                   Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (_) => const EcranConnexion()),
+                    MaterialPageRoute(builder: (_) => const EcranConnexion()),
                   );
                 },
               ),
