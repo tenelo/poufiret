@@ -71,7 +71,9 @@ class CacheDisque {
     try {
       final fichier = await _fichier(portee, cle);
       if (!await fichier.exists()) return null;
-      final enveloppe = jsonDecode(await fichier.readAsString());
+      final enveloppe = jsonDecode(
+        await _avecReprises(fichier.readAsString),
+      );
       if (enveloppe is! Map) return null;
       if (enveloppe['v'] != versionFormat) {
         await _supprimer(fichier); // ancien format : on l'oublie
@@ -92,22 +94,48 @@ class CacheDisque {
   /// Écrit (ou remplace) une entrée. Écriture atomique : fichier temporaire
   /// puis renommage, un crash en cours d'écriture ne laisse pas de JSON
   /// tronqué. Les erreurs d'écriture sont ignorées (le cache est optionnel).
+  ///
+  /// Sous Windows, renommer par-dessus un fichier qu'une lecture a ouvert
+  /// échoue (« Accès refusé ») : sans traitement, la nouvelle valeur était
+  /// perdue et l'ancienne restait. On réessaie donc brièvement, puis on
+  /// écrit directement dans le fichier cible (non atomique, mais une lecture
+  /// qui tomberait sur un JSON tronqué est simplement un « miss »).
   Future<void> ecrire(String portee, String cle, Object? donnees) async {
     try {
       final fichier = await _fichier(portee, cle);
       await fichier.parent.create(recursive: true);
+      final contenu = jsonEncode({
+        'v': versionFormat,
+        'k': cle,
+        't': _horloge().millisecondsSinceEpoch,
+        'd': donnees,
+      });
       final temporaire = File('${fichier.path}.tmp');
-      await temporaire.writeAsString(
-        jsonEncode({
-          'v': versionFormat,
-          'k': cle,
-          't': _horloge().millisecondsSinceEpoch,
-          'd': donnees,
-        }),
-        flush: true,
-      );
-      await temporaire.rename(fichier.path);
+      try {
+        await _avecReprises(() async {
+          await temporaire.writeAsString(contenu, flush: true);
+          await temporaire.rename(fichier.path);
+        });
+      } on FileSystemException {
+        await fichier.writeAsString(contenu, flush: true);
+        try {
+          await temporaire.delete();
+        } catch (_) {}
+      }
     } catch (_) {}
+  }
+
+  /// Rejoue [operation] quelques fois si le système de fichiers refuse
+  /// (fichier momentanément verrouillé), puis relance l'erreur.
+  Future<T> _avecReprises<T>(Future<T> Function() operation) async {
+    for (var essai = 0; ; essai++) {
+      try {
+        return await operation();
+      } on FileSystemException {
+        if (essai == 2) rethrow;
+        await Future<void>.delayed(Duration(milliseconds: 20 * (essai + 1)));
+      }
+    }
   }
 
   /// Supprime une entrée.

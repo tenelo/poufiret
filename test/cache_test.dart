@@ -251,6 +251,33 @@ void main() {
     expect(await disque.lire('u1', 'd3|categories'), isNull);
   });
 
+  test('écritures sous lecture continue : la dernière valeur gagne toujours',
+      () async {
+    // Sous Windows, remplacer par renommage un fichier qu'une lecture a ouvert
+    // échoue : sans repli, la nouvelle valeur était perdue (profil mémorisé
+    // resté à l'ancienne valeur).
+    var arret = false;
+    final lecteur = () async {
+      while (!arret) {
+        await disque.lire('p', 'k');
+      }
+    }();
+    var perdues = 0;
+    for (var i = 0; i < 150; i++) {
+      await disque.ecrire('p', 'k', i);
+      var ok = false;
+      for (var essai = 0; essai < 20 && !ok; essai++) {
+        ok = (await disque.lire('p', 'k'))?.donnees == i;
+        if (!ok) await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+      if (!ok) perdues++;
+    }
+    arret = true;
+    await lecteur;
+
+    expect(perdues, 0);
+  });
+
   test('horloge revenue en arrière : entrée ignorée', () async {
     await lire(nouvelleApi(), res: reseau('A'));
     maintenant = maintenant.subtract(const Duration(days: 1));
