@@ -1,0 +1,232 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'restaurants_providers.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+
+@ProviderFor(restaurantsRepository)
+final restaurantsRepositoryProvider = RestaurantsRepositoryProvider._();
+
+final class RestaurantsRepositoryProvider
+    extends
+        $FunctionalProvider<
+          RestaurantsRepository,
+          RestaurantsRepository,
+          RestaurantsRepository
+        >
+    with $Provider<RestaurantsRepository> {
+  RestaurantsRepositoryProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'restaurantsRepositoryProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$restaurantsRepositoryHash();
+
+  @$internal
+  @override
+  $ProviderElement<RestaurantsRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  RestaurantsRepository create(Ref ref) {
+    return restaurantsRepository(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(RestaurantsRepository value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<RestaurantsRepository>(value),
+    );
+  }
+}
+
+String _$restaurantsRepositoryHash() =>
+    r'd102984ef17e2cb3b1666bdef0cfca010dd835dd';
+
+/// Restaurants du département de l'utilisateur (accueil + écran Restaurants).
+
+@ProviderFor(restaurants)
+final restaurantsProvider = RestaurantsProvider._();
+
+/// Restaurants du département de l'utilisateur (accueil + écran Restaurants).
+
+final class RestaurantsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Restaurant>>,
+          List<Restaurant>,
+          Stream<List<Restaurant>>
+        >
+    with $FutureModifier<List<Restaurant>>, $StreamProvider<List<Restaurant>> {
+  /// Restaurants du département de l'utilisateur (accueil + écran Restaurants).
+  RestaurantsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'restaurantsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$restaurantsHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Restaurant>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Restaurant>> create(Ref ref) {
+    return restaurants(ref);
+  }
+}
+
+String _$restaurantsHash() => r'd5789a0b7ea4d457d56189611862c495553d64a8';
+
+/// Flux « menus du jour » du département (carrousel de l'accueil).
+
+@ProviderFor(menusDuJourAccueil)
+final menusDuJourAccueilProvider = MenusDuJourAccueilProvider._();
+
+/// Flux « menus du jour » du département (carrousel de l'accueil).
+
+final class MenusDuJourAccueilProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<MenuDuJourAccueil>>,
+          List<MenuDuJourAccueil>,
+          Stream<List<MenuDuJourAccueil>>
+        >
+    with
+        $FutureModifier<List<MenuDuJourAccueil>>,
+        $StreamProvider<List<MenuDuJourAccueil>> {
+  /// Flux « menus du jour » du département (carrousel de l'accueil).
+  MenusDuJourAccueilProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'menusDuJourAccueilProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$menusDuJourAccueilHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<MenuDuJourAccueil>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<MenuDuJourAccueil>> create(Ref ref) {
+    return menusDuJourAccueil(ref);
+  }
+}
+
+String _$menusDuJourAccueilHash() =>
+    r'20ead54a50e2973d9ac88150de99d55c65ea3259';
+
+/// Page d'un restaurant : fiche, menus du jour et carte.
+
+@ProviderFor(restaurantDetail)
+final restaurantDetailProvider = RestaurantDetailFamily._();
+
+/// Page d'un restaurant : fiche, menus du jour et carte.
+
+final class RestaurantDetailProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Restaurant>,
+          Restaurant,
+          Stream<Restaurant>
+        >
+    with $FutureModifier<Restaurant>, $StreamProvider<Restaurant> {
+  /// Page d'un restaurant : fiche, menus du jour et carte.
+  RestaurantDetailProvider._({
+    required RestaurantDetailFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'restaurantDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$restaurantDetailHash();
+
+  @override
+  String toString() {
+    return r'restaurantDetailProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<Restaurant> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<Restaurant> create(Ref ref) {
+    final argument = this.argument as int;
+    return restaurantDetail(ref, id: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is RestaurantDetailProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$restaurantDetailHash() => r'6a23a89bff4ce63fdac3ca9fca82cbac7bbf3a77';
+
+/// Page d'un restaurant : fiche, menus du jour et carte.
+
+final class RestaurantDetailFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<Restaurant>, int> {
+  RestaurantDetailFamily._()
+    : super(
+        retry: null,
+        name: r'restaurantDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Page d'un restaurant : fiche, menus du jour et carte.
+
+  RestaurantDetailProvider call({required int id}) =>
+      RestaurantDetailProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'restaurantDetailProvider';
+}

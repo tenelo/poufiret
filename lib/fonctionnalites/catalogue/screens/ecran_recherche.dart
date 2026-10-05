@@ -9,7 +9,9 @@ import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../partenaire/screens/ecran_vitrine_partenaire.dart';
 import '../donnees/catalogue_providers.dart';
+import '../metier_domaine/categorie.dart';
 import '../metier_domaine/resultats_recherche.dart';
+import 'aiguillage_categorie.dart';
 import 'ecran_article_detail.dart';
 import 'ecran_prestataires.dart';
 import '../../../global/widgets/image_reseau.dart';
@@ -218,12 +220,20 @@ class _TitreSection extends StatelessWidget {
       );
 }
 
-class _LigneCategorie extends StatelessWidget {
+class _LigneCategorie extends ConsumerWidget {
   const _LigneCategorie({required this.categorie});
   final CategorieTrouvee categorie;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // La categorie complete (deja en cache depuis l'accueil) dit quel ecran
+    // ouvrir selon son type de partenaire ; a defaut, l'annuaire generique.
+    final complete = ref
+        .watch(categoriesProvider)
+        .value
+        ?.feuilles
+        .where((c) => c.id == categorie.id)
+        .firstOrNull;
     return ListTile(
       leading: Text(
         categorie.icone.isNotEmpty ? categorie.icone : '📦',
@@ -235,13 +245,15 @@ class _LigneCategorie extends StatelessWidget {
       trailing: const Icon(Icons.chevron_right),
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => EcranPrestataires(
-            categorieId: categorie.id,
-            categorieNom: categorie.nom,
-            categorieSlug: categorie.slug,
-            modeTransaction: categorie.modeTransaction,
-            afficheCatalogue: categorie.afficheCatalogue,
-          ),
+          builder: (_) => complete != null
+              ? ecranCategorie(complete)
+              : EcranPrestataires(
+                  categorieId: categorie.id,
+                  categorieNom: categorie.nom,
+                  categorieSlug: categorie.slug,
+                  modeTransaction: categorie.modeTransaction,
+                  afficheCatalogue: categorie.afficheCatalogue,
+                ),
         ),
       ),
     );

@@ -43,6 +43,19 @@ class PolitiqueCache {
     perime: Duration(hours: 24),
   );
 
+  /// Liste des restaurants et flux « menus du jour » : le statut ouvert /
+  /// fermé et le stock bougent vite, donc 1 h d'affichage au plus.
+  static const restaurants = PolitiqueCache(
+    frais: Duration(minutes: 2),
+    perime: Duration(hours: 1),
+  );
+
+  /// Page d'un restaurant : la carte reste consultable 24 h hors connexion.
+  static const restaurantDetail = PolitiqueCache(
+    frais: Duration(minutes: 2),
+    perime: Duration(hours: 24),
+  );
+
   /// Conversations : toujours affichées depuis le cache, rafraîchies à
   /// chaque ouverture (le temps réel reste sur WebSocket).
   static const conversations = PolitiqueCache(

@@ -19,6 +19,7 @@ class ImageReseau extends StatelessWidget {
     this.height,
     this.errorBuilder,
     this.loadingBuilder,
+    this.largeurAffichee,
   });
 
   final String url;
@@ -31,6 +32,11 @@ class ImageReseau extends StatelessWidget {
   /// interne par un fondu, plus fluide qu'un indicateur qui clignote.
   final ImageLoadingBuilder? loadingBuilder;
 
+  /// Largeur a l'ecran (en pixels logiques) : l'image est decodee a cette
+  /// taille au lieu de sa taille d'origine, ce qui economise la memoire dans
+  /// les listes. null = taille d'origine.
+  final double? largeurAffichee;
+
   @override
   Widget build(BuildContext context) {
     if (url.isEmpty) return _placeholder();
@@ -40,6 +46,9 @@ class ImageReseau extends StatelessWidget {
       fit: fit,
       width: width,
       height: height,
+      memCacheWidth: largeurAffichee == null
+          ? null
+          : (largeurAffichee! * MediaQuery.devicePixelRatioOf(context)).round(),
       fadeInDuration: const Duration(milliseconds: 200),
       placeholder: (_, _) => _placeholder(),
       errorWidget: (context, _, erreur) => errorBuilder != null

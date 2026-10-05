@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../donnees/orders_providers.dart';
 import '../metier_domaine/orders_models.dart';
+import '../../../global/config/config.dart';
+import '../../../global/errors/api_exception.dart';
+import '../../../global/ui/format_montant.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../publicites/widgets/couche_publicites.dart';
 import '../../map/donnees/map_providers.dart';
@@ -90,6 +93,10 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
 
   bool _envoiEnCours = false;
 
+  /// Refus du serveur à la validation (restaurant fermé, heure limite
+  /// dépassée, stock insuffisant), avec le panier concerné.
+  ({Panier panier, String message})? _refus;
+
   /// Livraison par défaut ; le client peut choisir de venir chercher.
   bool _livraison = true;
 
@@ -98,7 +105,10 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
 
   Future<void> _validerCommande() async {
     if (_envoiEnCours) return;
-    setState(() => _envoiEnCours = true);
+    setState(() {
+      _envoiEnCours = true;
+      _refus = null;
+    });
     final messenger = ScaffoldMessenger.of(context);
 
     double? lat;
@@ -134,11 +144,13 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
       }
     }
 
+    final repo = ref.read(ordersRepositoryProvider);
+    final numeros = <String>[];
+    Panier? enCours;
     try {
-      final repo = ref.read(ordersRepositoryProvider);
-      final numeros = <String>[];
       // Un panier = un commerçant : une commande par panier de la catégorie.
       for (final panier in widget.paniers) {
+        enCours = panier;
         final commande = await repo.validerPanier(
           panierId: panier.id,
           modeLivraison: _livraison ? 'livraison' : 'emporter',
@@ -149,20 +161,43 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
         );
         numeros.add(commande.numero);
       }
-      ref.invalidate(paniersProvider);
-      messenger.showSnackBar(
-        Notificateur.snackSucces(
-          numeros.length == 1
-              ? 'Commande ${numeros.first} envoyée.'
-              : '${numeros.length} commandes envoyées.',
-        ),
-      );
-    } catch (_) {
-      messenger.showSnackBar(
-        Notificateur.snackErreur('Impossible de valider la commande.'),
-      );
+    } catch (e) {
+      // Le message du serveur s'affiche tel quel, dans le bloc, à côté des
+      // lignes à corriger.
+      if (mounted) {
+        setState(
+          () => _refus = (
+            panier: enCours!,
+            message: messageErreurApi(
+              e,
+              repli: 'Impossible de valider la commande.',
+            ),
+          ),
+        );
+      }
     } finally {
+      // Les paniers déjà validés quittent la liste.
+      if (numeros.isNotEmpty) {
+        ref.invalidate(paniersProvider);
+        messenger.showSnackBar(
+          Notificateur.snackSucces(
+            numeros.length == 1
+                ? 'Commande ${numeros.first} envoyée.'
+                : '${numeros.length} commandes envoyées.',
+          ),
+        );
+      }
       if (mounted) setState(() => _envoiEnCours = false);
+    }
+  }
+
+  /// Retire l'unique plat du panier refusé (action proposée sous l'erreur).
+  Future<void> _retirerPlatRefuse(LignePanier ligne) async {
+    try {
+      await ref.read(ordersRepositoryProvider).supprimerLigne(ligne.id);
+      ref.invalidate(paniersProvider);
+    } catch (_) {
+      if (mounted) Notificateur.erreur(context, 'Erreur, réessayez.');
     }
   }
 
@@ -188,6 +223,14 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
             for (final panier in widget.paniers)
               for (final ligne in panier.lignes)
                 _LigneTuile(ligne: ligne, commercant: panier.partenaireNom),
+            if (_refus case final refus?)
+              _RefusValidation(
+                commercant: refus.panier.partenaireNom,
+                message: refus.message,
+                onRetirer: refus.panier.lignes.length == 1
+                    ? () => _retirerPlatRefuse(refus.panier.lignes.first)
+                    : null,
+              ),
             const Divider(),
 
             // ── Mode de retrait (actif) ─────────────────────────────
@@ -261,7 +304,7 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
               children: [
                 Text('Total', style: theme.textTheme.titleMedium),
                 Text(
-                  '$_totalCategorie FCFA',
+                  formatMontant(_totalCategorie),
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
@@ -352,6 +395,9 @@ class _LigneTuileState extends ConsumerState<_LigneTuile> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+                // Variante et options choisies (plats de restaurant).
+                if (l.detailChoix.isNotEmpty)
+                  Text(l.detailChoix, style: theme.textTheme.bodySmall),
                 Text(
                   'chez ${widget.commercant}',
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -359,7 +405,7 @@ class _LigneTuileState extends ConsumerState<_LigneTuile> {
                   ),
                 ),
                 Text(
-                  '${l.prixLigne} FCFA',
+                  formatMontant(l.prixLigne),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.primary,
                   ),
@@ -381,6 +427,69 @@ class _LigneTuileState extends ConsumerState<_LigneTuile> {
             onPressed: _occupe ? null : _supprimer,
             icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Refus d'une commande par le serveur : son message, et quoi faire.
+class _RefusValidation extends StatelessWidget {
+  const _RefusValidation({
+    required this.commercant,
+    required this.message,
+    this.onRetirer,
+  });
+
+  final String commercant;
+  final String message;
+
+  /// Non null si le panier refusé ne contient qu'un plat : il peut être
+  /// retiré d'un geste.
+  final VoidCallback? onRetirer;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Config.couleurErreur.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Config.couleurErreur.withValues(alpha: 0.4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            commercant.isEmpty
+                ? 'Commande non envoyée'
+                : 'Commande chez $commercant non envoyée',
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: Config.couleurErreur,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(message),
+          const SizedBox(height: 6),
+          if (onRetirer != null)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: OutlinedButton.icon(
+                onPressed: onRetirer,
+                icon: const Icon(Icons.delete_outline, size: 18),
+                label: const Text('Retirer ce plat'),
+              ),
+            )
+          else
+            Text(
+              'Retirez le plat concerné ou changez sa quantité ci-dessus, '
+              'puis validez à nouveau.',
+              style: theme.textTheme.bodySmall,
+            ),
         ],
       ),
     );

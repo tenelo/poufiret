@@ -1,3 +1,12 @@
+import 'package:dio/dio.dart';
+
+/// Message du backend à afficher tel quel, que l'erreur arrive nue ou
+/// enveloppée par le client HTTP ; [repli] si elle n'en porte aucun.
+String messageErreurApi(Object erreur, {required String repli}) {
+  final e = erreur is DioException ? erreur.error : erreur;
+  return e is ApiException ? e.messageLisible : repli;
+}
+
 /// Exception applicative. Gère trois formats d'erreur backend :
 /// 1. Format maison  : { "erreur": true, "code": .., "message": .., "details": {..} }
 /// 2. Format DRF par champ : { "nouveau_pin": ["..."], "telephone": ["..."] }

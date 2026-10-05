@@ -10,7 +10,9 @@ _SupplementSnapshot _$SupplementSnapshotFromJson(Map<String, dynamic> json) =>
     _SupplementSnapshot(
       id: (json['id'] as num?)?.toInt(),
       nom: json['nom'] as String? ?? '',
-      prix: json['prix'] == null ? 0 : _versInt(json['prix']),
+      prix: _lirePrixSnapshot(json, 'prix') == null
+          ? 0
+          : _versInt(_lirePrixSnapshot(json, 'prix')),
     );
 
 Map<String, dynamic> _$SupplementSnapshotToJson(_SupplementSnapshot instance) =>
@@ -22,11 +24,18 @@ Map<String, dynamic> _$SupplementSnapshotToJson(_SupplementSnapshot instance) =>
 
 _LignePanier _$LignePanierFromJson(Map<String, dynamic> json) => _LignePanier(
   id: (json['id'] as num).toInt(),
-  article: (json['article'] as num).toInt(),
+  article: (json['article'] as num?)?.toInt(),
+  ligneMenu: (json['ligne_menu'] as num?)?.toInt(),
   articleNom: json['article_nom'] as String? ?? '',
   varianteId: (json['variante_id'] as num?)?.toInt(),
+  varianteNom: json['variante_nom'] as String? ?? '',
   supplements:
       (json['supplements'] as List<dynamic>?)
+          ?.map((e) => SupplementSnapshot.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <SupplementSnapshot>[],
+  options:
+      (json['options'] as List<dynamic>?)
           ?.map((e) => SupplementSnapshot.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <SupplementSnapshot>[],
@@ -42,9 +51,12 @@ Map<String, dynamic> _$LignePanierToJson(_LignePanier instance) =>
     <String, dynamic>{
       'id': instance.id,
       'article': instance.article,
+      'ligne_menu': instance.ligneMenu,
       'article_nom': instance.articleNom,
       'variante_id': instance.varianteId,
+      'variante_nom': instance.varianteNom,
       'supplements': instance.supplements,
+      'options': instance.options,
       'quantite': instance.quantite,
       'prix_unitaire': instance.prixUnitaire,
       'prix_ligne': instance.prixLigne,

@@ -5,7 +5,11 @@ import 'package:poufiret/global/errors/api_exception.dart';
 import 'package:poufiret/global/ui/squelette.dart';
 import 'package:poufiret/fonctionnalites/catalogue/donnees/catalogue_providers.dart';
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/categorie.dart';
-import 'package:poufiret/fonctionnalites/catalogue/screens/ecran_prestataires.dart';
+import 'package:poufiret/fonctionnalites/catalogue/screens/aiguillage_categorie.dart';
+import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_providers.dart';
+import 'package:poufiret/fonctionnalites/restaurants/metier_domaine/types_restauration.dart';
+import 'package:poufiret/fonctionnalites/restaurants/widgets/sections_accueil.dart';
+import 'package:poufiret/global/widgets/barre_onglets.dart';
 import 'package:poufiret/fonctionnalites/orders/screens/ecran_panier.dart';
 import 'package:poufiret/global/navigation/app_drawer.dart';
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
@@ -122,8 +126,8 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
                 return Column(
                   children: [
                     if (actives.isNotEmpty) ...[
-                      _BarreOnglets(
-                        categories: actives,
+                      BarreOnglets(
+                        libelles: ['Tous', ...actives.map((c) => c.nom)],
                         selectionIndex: index,
                         onChoisir: _allerA,
                       ),
@@ -143,21 +147,26 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
                         // pas une grille a un seul element.
                         itemBuilder: (context, i) {
                           if (i == 0) {
+                            final restauration = actives.any(
+                              (c) => estRestauration(c.typesPartenaire),
+                            );
                             return _GrilleCategories(
                               categories: toutes,
-                              onRefresh: () =>
-                                  rafraichir(ref, categoriesProvider),
+                              // Sections restauration : seulement si une
+                              // catégorie de ce type est ouverte.
+                              entete: restauration
+                                  ? const SectionsRestaurantsAccueil()
+                                  : null,
+                              onRefresh: () {
+                                if (restauration) {
+                                  ref.invalidate(menusDuJourAccueilProvider);
+                                  ref.invalidate(restaurantsProvider);
+                                }
+                                return rafraichir(ref, categoriesProvider);
+                              },
                             );
                           }
-                          final c = actives[i - 1];
-                          return ContenuPrestataires(
-                            key: ValueKey('onglet_${c.id}'),
-                            categorieId: c.id,
-                            categorieNom: c.nom,
-                            categorieSlug: c.slug,
-                            modeTransaction: c.modeTransaction,
-                            afficheCatalogue: c.afficheCatalogue,
-                          );
+                          return contenuCategorie(actives[i - 1]);
                         },
                       ),
                     ),
@@ -172,77 +181,19 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
   }
 }
 
-/// Barre d'onglets horizontale : « Tous » + un onglet par catégorie non
-/// grisée. L'onglet actif est en couleur d'accent avec un court trait
-/// dessous ; les autres sont en gris.
-class _BarreOnglets extends StatefulWidget {
-  const _BarreOnglets({
-    required this.categories,
-    required this.selectionIndex,
-    required this.onChoisir,
-  });
-
-  final List<Categorie> categories;
-
-  /// 0 = « Tous », puis 1..n = categories[index - 1].
-  final int selectionIndex;
-  final ValueChanged<int> onChoisir;
-
-  @override
-  State<_BarreOnglets> createState() => _BarreOngletsState();
-}
-
-class _BarreOngletsState extends State<_BarreOnglets> {
-  final _cles = <int, GlobalKey>{};
-
-  GlobalKey _cle(int i) => _cles.putIfAbsent(i, GlobalKey.new);
-
-  @override
-  void didUpdateWidget(_BarreOnglets ancien) {
-    super.didUpdateWidget(ancien);
-    // Quand on glisse la grille, l'onglet actif doit rester visible.
-    if (ancien.selectionIndex != widget.selectionIndex) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final ctx = _cle(widget.selectionIndex).currentContext;
-        if (ctx == null) return;
-        Scrollable.ensureVisible(
-          ctx,
-          alignment: 0.5,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        );
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final libelles = ['Tous', ...widget.categories.map((c) => c.nom)];
-    return SizedBox(
-      height: 44,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        children: [
-          for (var i = 0; i < libelles.length; i++)
-            _Onglet(
-              key: _cle(i),
-              libelle: libelles[i],
-              actif: widget.selectionIndex == i,
-              onTap: () => widget.onChoisir(i),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
 /// Grille responsive de tuiles : le nombre de colonnes s'ajuste selon la
 /// largeur disponible (~180 px par tuile).
 class _GrilleCategories extends StatelessWidget {
-  const _GrilleCategories({required this.categories, required this.onRefresh});
+  const _GrilleCategories({
+    required this.categories,
+    required this.onRefresh,
+    this.entete,
+  });
   final List<Categorie> categories;
   final Future<void> Function() onRefresh;
+
+  /// Contenu affiché au-dessus de la grille, qui défile avec elle.
+  final Widget? entete;
 
   @override
   Widget build(BuildContext context) {
@@ -251,71 +202,28 @@ class _GrilleCategories extends StatelessWidget {
         final nbColonnes = (contraintes.maxWidth / 180).floor().clamp(2, 5);
         return RefreshIndicator(
           onRefresh: onRefresh,
-          child: GridView.builder(
+          child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: nbColonnes,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1,
-            ),
-            itemCount: categories.length,
-            itemBuilder: (context, i) =>
-                _TuileCategorie(categorie: categories[i]),
+            slivers: [
+              if (entete != null) SliverToBoxAdapter(child: entete),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                sliver: SliverGrid.builder(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: nbColonnes,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 1,
+                  ),
+                  itemCount: categories.length,
+                  itemBuilder: (context, i) =>
+                      _TuileCategorie(categorie: categories[i]),
+                ),
+              ),
+            ],
           ),
         );
       },
-    );
-  }
-}
-
-class _Onglet extends StatelessWidget {
-  const _Onglet({
-    super.key,
-    required this.libelle,
-    required this.actif,
-    required this.onTap,
-  });
-
-  final String libelle;
-  final bool actif;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final couleur = actif
-        ? theme.colorScheme.primary
-        : theme.colorScheme.onSurfaceVariant;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              libelle,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: couleur,
-                fontWeight: actif ? FontWeight.w700 : FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 4),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              height: 2,
-              width: 28,
-              decoration: BoxDecoration(
-                color: actif ? theme.colorScheme.primary : Colors.transparent,
-                borderRadius: BorderRadius.circular(1),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -502,13 +410,7 @@ class _TuileCategorie extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => EcranPrestataires(
-                      categorieId: categorie.id,
-                      categorieNom: categorie.nom,
-                      categorieSlug: categorie.slug,
-                      modeTransaction: categorie.modeTransaction,
-                      afficheCatalogue: categorie.afficheCatalogue,
-                    ),
+                    builder: (_) => ecranCategorie(categorie),
                   ),
                 );
               },

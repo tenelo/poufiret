@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../global/ui/format_montant.dart';
+
 part 'orders_models.freezed.dart';
 part 'orders_models.g.dart';
 
@@ -12,13 +14,21 @@ int _versInt(dynamic valeur) {
   return double.tryParse(valeur.toString())?.round() ?? 0;
 }
 
-/// Un supplément figé dans une ligne (snapshot {id, nom, prix}).
+/// Le surcoût d'une option de plat s'appelle `prix_supplement`, celui d'un
+/// supplément classique `prix` : les deux se lisent ici.
+Object? _lirePrixSnapshot(Map<dynamic, dynamic> json, String cle) =>
+    json[cle] ?? json['prix_supplement'];
+
+/// Un supplément (ou une option de plat) figé dans une ligne
+/// (snapshot {id, nom, prix}).
 @freezed
 abstract class SupplementSnapshot with _$SupplementSnapshot {
   const factory SupplementSnapshot({
     int? id,
     @Default('') String nom,
-    @JsonKey(fromJson: _versInt) @Default(0) int prix,
+    @JsonKey(readValue: _lirePrixSnapshot, fromJson: _versInt)
+    @Default(0)
+    int prix,
   }) = _SupplementSnapshot;
 
   factory SupplementSnapshot.fromJson(Map<String, dynamic> json) =>
@@ -30,10 +40,17 @@ abstract class SupplementSnapshot with _$SupplementSnapshot {
 abstract class LignePanier with _$LignePanier {
   const factory LignePanier({
     required int id,
-    required int article,
+    int? article,
+
+    /// Ligne de menu du jour d'où vient le plat (restaurants).
+    @JsonKey(name: 'ligne_menu') int? ligneMenu,
     @JsonKey(name: 'article_nom') @Default('') String articleNom,
     @JsonKey(name: 'variante_id') int? varianteId,
+    @JsonKey(name: 'variante_nom') @Default('') String varianteNom,
     @Default(<SupplementSnapshot>[]) List<SupplementSnapshot> supplements,
+
+    /// Options de plat choisies (restaurants) : `{nom, prix_supplement}`.
+    @Default(<SupplementSnapshot>[]) List<SupplementSnapshot> options,
     @Default(1) int quantite,
     @JsonKey(name: 'prix_unitaire', fromJson: _versInt)
     @Default(0)
@@ -41,6 +58,17 @@ abstract class LignePanier with _$LignePanier {
     @JsonKey(name: 'prix_ligne', fromJson: _versInt) @Default(0) int prixLigne,
     @JsonKey(name: 'note_speciale') @Default('') String noteSpeciale,
   }) = _LignePanier;
+
+  const LignePanier._();
+
+  /// Variante et options de la ligne, à afficher après le nom du plat :
+  /// « Demi · Alloco (+1 000 F) ». Vide pour un article simple.
+  String get detailChoix => [
+    if (varianteNom.isNotEmpty) varianteNom,
+    for (final o in [...options, ...supplements])
+      if (o.nom.isNotEmpty)
+        o.prix > 0 ? '${o.nom} (${formatSupplement(o.prix)})' : o.nom,
+  ].join(' · ');
 
   factory LignePanier.fromJson(Map<String, dynamic> json) =>
       _$LignePanierFromJson(json);

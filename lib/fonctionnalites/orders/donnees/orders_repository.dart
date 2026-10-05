@@ -20,19 +20,31 @@ class OrdersRepository {
   }
 
   /// POST /orders/paniers/ajouter/ — ajoute une ligne, renvoie le panier à jour.
+  ///
+  /// Un plat de menu du jour s'ajoute par [ligneMenuId] (à la place de
+  /// [articleId] + [varianteId]) ; [optionIds] = options choisies, dont le
+  /// serveur valide les bornes min / max.
   Future<Panier> ajouterLigne({
-    required int articleId,
+    int? articleId,
     required int quantite,
     int? varianteId,
+    int? ligneMenuId,
+    List<int>? optionIds,
     List<int>? supplementIds,
     String? noteSpeciale,
   }) async {
+    assert(articleId != null || ligneMenuId != null);
     final r = await _dio.post(
       '${Env.apiPrefix}/orders/paniers/ajouter/',
       data: {
-        'article': articleId,
+        if (ligneMenuId != null)
+          'ligne_menu': ligneMenuId
+        else ...{
+          'article': articleId,
+          if (varianteId != null) 'variante_id': varianteId,
+        },
         'quantite': quantite,
-        if (varianteId != null) 'variante_id': varianteId,
+        if (optionIds != null && optionIds.isNotEmpty) 'option_ids': optionIds,
         if (supplementIds != null) 'supplement_ids': supplementIds,
         if (noteSpeciale != null) 'note_speciale': noteSpeciale,
       },
