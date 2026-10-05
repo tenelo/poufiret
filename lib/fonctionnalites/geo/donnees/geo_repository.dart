@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../global/config/env.dart';
 import '../metier_domaine/departement.dart';
+import '../metier_domaine/localite.dart';
 import '../metier_domaine/quartier.dart';
 
 class GeoRepository {
@@ -21,7 +22,34 @@ class GeoRepository {
         .toList();
   }
 
-  /// Quartiers actifs d'un departement (autocompletion livraison).
+  // Cascade Departement -> Localite -> Quartier : reponses
+  // `{"resultats": [{"id", "nom"}]}`, actives et triees par nom.
+
+  /// Localites d'un departement.
+  Future<Object?> localitesBrut(int departementId) async => (await _dio.get(
+    '${Env.apiPrefix}/geo/localites/',
+    queryParameters: {'departement': departementId},
+  )).data;
+
+  List<Localite> localitesDepuis(Object? data) => [
+    for (final e in (data as Map)['resultats'] as List)
+      Localite.fromJson(Map<String, dynamic>.from(e as Map)),
+  ];
+
+  /// Quartiers d'une localite.
+  Future<Object?> quartiersDeLocaliteBrut(int localiteId) async =>
+      (await _dio.get(
+        '${Env.apiPrefix}/geo/quartiers/',
+        queryParameters: {'localite': localiteId},
+      )).data;
+
+  List<Quartier> quartiersDeLocaliteDepuis(Object? data) => [
+    for (final e in (data as Map)['resultats'] as List)
+      Quartier.fromJson(Map<String, dynamic>.from(e as Map)),
+  ];
+
+  /// Quartiers actifs d'un departement (autocompletion livraison). Liste
+  /// brute, sans "resultats" : a ne pas utiliser pour la cascade.
   Future<List<Quartier>> quartiers(int departementId) async {
     final r = await _dio.get(
       '${Env.apiPrefix}/geo/quartiers/',

@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../global/json/convertisseurs.dart';
+import '../../geo/metier_domaine/localisation.dart';
 
 part 'restaurant_models.freezed.dart';
 part 'restaurant_models.g.dart';
@@ -258,6 +259,11 @@ abstract class Restaurant with _$Restaurant {
     @Default('') String adresse,
     @Default('') String quartier,
     @Default('') String ville,
+
+    // Noms rattachés à la géographie de l'admin ; `ville` et `quartier`
+    // ci-dessus sont les anciens textes, gardés en repli.
+    @JsonKey(name: 'localite_nom') String? localiteNom,
+    @JsonKey(name: 'quartier_nom') String? quartierNom,
     @JsonKey(name: 'telephone_pro') @Default('') String telephonePro,
     @Default('') String whatsapp,
     @JsonKey(fromJson: versDoubleNullable) double? latitude,
@@ -285,6 +291,14 @@ abstract class Restaurant with _$Restaurant {
 
   factory Restaurant.fromJson(Map<String, dynamic> json) =>
       _$RestaurantFromJson(json);
+
+  /// « Quartier, Localité », avec repli sur les anciens textes.
+  String get localisation => formatLocalisation(
+    quartierNom: quartierNom,
+    localiteNom: localiteNom,
+    ancienQuartier: quartier,
+    ancienneVille: ville,
+  );
 
   /// Fermé : la carte reste consultable, l'ajout au panier est bloqué (le
   /// serveur reste l'arbitre à la commande).

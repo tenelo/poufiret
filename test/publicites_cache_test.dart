@@ -89,12 +89,27 @@ void main() {
   Future<void> semerCache(String cle, Object json) =>
       CacheApi(disque).ecrireBrut(ContexteCache.anonyme, cle, json);
 
-  Future<void> attendre(WidgetTester tester) async {
-    await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 150)),
-    );
-    await tester.pump();
+  /// Fait avancer le test jusqu'à ce que [condition] soit vraie. Le cache lit
+  /// et écrit de vrais fichiers, dont la durée dépend de la machine : on
+  /// attend le résultat lui-même, pas une durée. La limite ne sert qu'à faire
+  /// échouer proprement un test dont la condition n'arrive jamais.
+  Future<void> jusqua(
+    WidgetTester tester,
+    bool Function() condition, {
+    required String attendu,
+  }) async {
+    final limite = DateTime.now().add(const Duration(seconds: 20));
+    while (true) {
+      await tester.pump();
+      if (condition()) return;
+      if (DateTime.now().isAfter(limite)) fail('Jamais obtenu : $attendu');
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 5)),
+      );
+    }
   }
+
+  bool visible(String texte) => find.text(texte).evaluate().isNotEmpty;
 
   // Le widget est monté en « vraie » asynchronie : les lectures de fichiers du
   // cache ne se terminent pas dans la fausse horloge de testWidgets.
@@ -125,15 +140,16 @@ void main() {
       );
       final conteneur = ProviderContainer(overrides: overrides());
       addTearDown(conteneur.dispose);
-      final vus = <List<String>>[];
+      final premier = Completer<List<String>>();
       conteneur.listen(carrouselPublicitesProvider, (_, suivant) {
         final d = suivant.value;
-        if (d != null) vus.add(d.affichables().map((p) => p.id).toList());
+        if (d != null && !premier.isCompleted) {
+          premier.complete(d.affichables().map((p) => p.id).toList());
+        }
       });
 
-      await Future<void>.delayed(const Duration(milliseconds: 150));
-
-      expect(vus.first, ['ok']); // 'finie' n'est jamais affichable
+      // 'finie' n'est jamais affichable.
+      expect(await premier.future.timeout(const Duration(seconds: 20)), ['ok']);
     });
   });
 
@@ -144,12 +160,16 @@ void main() {
       await tester.runAsync(() => semerCache('pubs/carrousel', json));
       await monter(tester, const CarrouselPublicites());
 
-      await attendre(tester); // le cache s'affiche
+      await jusqua(tester, () => visible('Pub a'), attendu: 'pub du cache');
       expect(find.text('Pub a'), findsOneWidget);
       expect(repo.impressions, isEmpty);
 
       repo.reseau.complete(json); // le serveur confirme
-      await attendre(tester);
+      await jusqua(
+        tester,
+        () => repo.impressions.isNotEmpty,
+        attendu: 'impression après confirmation du serveur',
+      );
       expect(find.text('Pub a'), findsOneWidget);
       expect(repo.impressions, ['a']);
     });
@@ -160,12 +180,16 @@ void main() {
         () => semerCache('pubs/carrousel', _carrousel([_pub('arretee')])),
       );
       await monter(tester, const CarrouselPublicites());
-      await attendre(tester);
-      expect(find.text('Pub arretee'), findsOneWidget); // affichée depuis le cache
+      // Affichée depuis le cache.
+      await jusqua(tester, () => visible('Pub arretee'), attendu: 'pub du cache');
       expect(repo.impressions, isEmpty);
 
       repo.reseau.complete(_carrousel(const [])); // le serveur ne la connaît plus
-      await attendre(tester);
+      await jusqua(
+        tester,
+        () => !visible('Pub arretee'),
+        attendu: 'retrait de la pub arrêtée',
+      );
 
       expect(find.text('Pub arretee'), findsNothing);
       expect(repo.impressions, isEmpty);
@@ -178,7 +202,16 @@ void main() {
       );
       await monter(tester, const CarrouselPublicites());
 
-      await attendre(tester);
+      // Le cache a été lu (le provider a une valeur) : la pub périmée aurait
+      // été affichée à cet instant si elle devait l'être.
+      final conteneur = ProviderScope.containerOf(
+        tester.element(find.byType(CarrouselPublicites)),
+      );
+      await jusqua(
+        tester,
+        () => conteneur.read(carrouselPublicitesProvider).hasValue,
+        attendu: 'lecture du cache',
+      );
 
       expect(find.text('Pub finie'), findsNothing);
       expect(repo.impressions, isEmpty);
@@ -190,12 +223,16 @@ void main() {
       await tester.runAsync(() => semerCache('pubs/bandeau', json));
       await monter(tester, const BandeauBasPublicite());
 
-      await attendre(tester);
+      await jusqua(tester, () => visible('Pub b'), attendu: 'pub du cache');
       expect(find.text('Pub b'), findsOneWidget);
       expect(repo.impressions, isEmpty);
 
       repo.reseau.complete(json);
-      await attendre(tester);
+      await jusqua(
+        tester,
+        () => repo.impressions.isNotEmpty,
+        attendu: 'impression après confirmation du serveur',
+      );
       expect(repo.impressions, ['b']);
     });
   });

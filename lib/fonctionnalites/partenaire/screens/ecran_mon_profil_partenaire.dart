@@ -10,7 +10,11 @@ import 'package:image_picker/image_picker.dart';
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/notificateur.dart';
+import '../../../global/json/convertisseurs.dart';
 import '../../catalogue/donnees/invalidations_catalogue.dart';
+import '../../geo/donnees/geo_providers.dart';
+import '../../geo/metier_domaine/localisation.dart';
+import '../../geo/widgets/cascade_localisation.dart';
 import '../../map/donnees/map_providers.dart';
 import '../../map/donnees/service_position.dart';
 import '../donnees/espace_partenaire_providers.dart';
@@ -71,14 +75,22 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
   XFile? _couverture;
   bool _envoi = false;
 
-  /// Champs modifiables : cle API -> libelle affiche.
+  /// Localite et quartier rattaches (le departement reste a l'admin).
+  late SelectionLocalisation _lieu = SelectionLocalisation(
+    localite: versIntNullable(widget.profil['localite_id']),
+    quartier: versIntNullable(widget.profil['quartier_id']),
+  );
+
+  /// Refus du backend sur la localisation, affiches sous les champs.
+  Map<NiveauLocalisation, String> _erreursLieu = const {};
+
+  /// Champs modifiables : cle API -> libelle affiche. Ville et quartier
+  /// n'y sont plus : ils se choisissent dans la cascade.
   static const _libelles = {
     'nom_commerce': 'Nom de l\'enseigne',
     'description': 'Description',
     'adresse': 'Adresse',
-    'quartier': 'Quartier',
     'secteur': 'Secteur',
-    'ville': 'Ville',
     'description_acces': 'Comment vous trouver',
     'telephone_pro': 'Téléphone professionnel',
     'whatsapp': 'WhatsApp',
@@ -114,10 +126,16 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
 
   Future<void> _enregistrer() async {
     if (!_cle.currentState!.validate()) return;
-    setState(() => _envoi = true);
+    setState(() {
+      _envoi = true;
+      _erreursLieu = const {};
+    });
     try {
       await ref.read(espacePartenaireRepositoryProvider).modifierProfil(
-            {for (final e in _champs.entries) e.key: e.value.text.trim()},
+            {
+              for (final e in _champs.entries) e.key: e.value.text.trim(),
+              ..._lieu.versJson(),
+            },
             cheminLogo: _logo?.path,
             cheminCouverture: _couverture?.path,
           );
@@ -129,12 +147,19 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
         _couverture = null;
       });
       Notificateur.succes(context, 'Vitrine mise à jour.');
-    } on ApiException catch (e) {
-      if (mounted) Notificateur.erreur(context, e.messageLisible);
-    } catch (_) {
-      if (mounted) {
-        Notificateur.erreur(context, 'Enregistrement impossible. Réessayez.');
-      }
+    } catch (e) {
+      if (!mounted) return;
+      final erreursLieu = erreursLocalisation(e);
+      setState(() => _erreursLieu = erreursLieu);
+      Notificateur.erreur(
+        context,
+        erreursLieu.isNotEmpty
+            ? 'Vérifiez la localisation.'
+            : messageErreurApi(
+                e,
+                repli: 'Enregistrement impossible. Réessayez.',
+              ),
+      );
     } finally {
       if (mounted) setState(() => _envoi = false);
     }
@@ -143,6 +168,41 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
   @override
   Widget build(BuildContext context) {
     final p = widget.profil;
+
+    // Departement du profil : son id s'il est fourni, sinon retrouve par
+    // son nom dans la liste (deja en cache).
+    final brut = p['departement'];
+    final departementNom =
+        (p['departement_nom'] ?? (brut is String ? brut : '')).toString();
+    final departementId =
+        versIntNullable(p['departement_id'] ?? (brut is num ? brut : null)) ??
+        ref
+            .watch(departementsProvider)
+            .value
+            ?.where((d) => d.nom == departementNom)
+            .firstOrNull
+            ?.id;
+    final cascade = CascadeLocalisation(
+      departementModifiable: false,
+      departementNom: departementNom,
+      selection: SelectionLocalisation(
+        departement: departementId,
+        localite: _lieu.localite,
+        quartier: _lieu.quartier,
+      ),
+      erreurs: _erreursLieu,
+      // Profil jamais rattache : l'ancien texte libre guide le choix.
+      ancienneSaisie: p['localite_id'] == null
+          ? [p['quartier'], p['ville']]
+                .map((e) => (e ?? '').toString().trim())
+                .where((e) => e.isNotEmpty)
+                .join(', ')
+          : '',
+      onChange: (lieu) => setState(() {
+        _lieu = lieu;
+        _erreursLieu = const {};
+      }),
+    );
 
     return LayoutBuilder(
       builder: (context, contraintes) {
@@ -185,6 +245,11 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
                   const SizedBox(height: 20),
 
                   for (final e in _libelles.entries) ...[
+                    // La localisation se choisit juste apres l'adresse.
+                    if (e.key == 'secteur') ...[
+                      cascade,
+                      const SizedBox(height: 12),
+                    ],
                     TextFormField(
                       controller: _champs[e.key],
                       maxLines: e.key == 'description' ||

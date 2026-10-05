@@ -51,7 +51,9 @@ class EspacePartenaireRepository {
     final aDesFichiers = cheminLogo != null || cheminCouverture != null;
     final dynamic corps = aDesFichiers
         ? FormData.fromMap({
-            ...champs,
+            // En multipart, « vide » s'ecrit '' (un null serait omis et le
+            // rattachement a retirer resterait en place).
+            for (final e in champs.entries) e.key: e.value ?? '',
             if (cheminLogo != null)
               'logo': await MultipartFile.fromFile(cheminLogo),
             if (cheminCouverture != null)

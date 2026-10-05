@@ -396,15 +396,15 @@ class _Infos extends ConsumerWidget {
             ),
           ),
 
-        if (p.localisationGeo.isNotEmpty || p.localisationLisible.isNotEmpty)
+        if (p.localisationLisible.isNotEmpty || p.secteur.isNotEmpty)
           _CarteSection(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Localisation', style: theme.textTheme.titleMedium),
                 const SizedBox(height: 8),
-                // Ancrage administratif (Departement (Region)), mis en avant.
-                if (p.localisationGeo.isNotEmpty)
+                // « Quartier, Localite (Departement) ».
+                if (p.localisationLisible.isNotEmpty)
                   Row(
                     children: [
                       Icon(Icons.place,
@@ -412,27 +412,17 @@ class _Infos extends ConsumerWidget {
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
-                          p.localisationGeo,
+                          p.localisationLisible,
                           style: theme.textTheme.bodyMedium
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                       ),
                     ],
                   ),
-                // Adresse fine (quartier / secteur / ville), en complement.
-                if (p.localisationLisible.isNotEmpty) ...[
+                if (p.secteur.isNotEmpty) ...[
                   const SizedBox(height: 6),
-                  Row(
-                    children: [
-                      Icon(Icons.place_outlined,
-                          size: 18, color: theme.colorScheme.onSurfaceVariant),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(p.localisationLisible,
-                            style: theme.textTheme.bodyMedium),
-                      ),
-                    ],
-                  ),
+                  Text('Secteur : ${p.secteur}',
+                      style: theme.textTheme.bodyMedium),
                 ],
                 if (p.descriptionAcces.isNotEmpty) ...[
                   const SizedBox(height: 6),

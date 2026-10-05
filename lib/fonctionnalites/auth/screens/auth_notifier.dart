@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../global/cache/cache_providers.dart';
@@ -129,6 +130,12 @@ class AuthNotifier extends _$AuthNotifier {
   void _enSerie(Future<void> Function() operation) {
     _serieDisque = _serieDisque.then((_) => operation()).catchError((_) {});
   }
+
+  /// Se termine quand les opérations disque déjà demandées (mémorisation du
+  /// profil, purges) sont faites. Elles tournent en arrière-plan : un test
+  /// qui relit le disque doit les attendre, pas deviner leur durée.
+  @visibleForTesting
+  Future<void> get disqueAJour => _serieDisque;
 
   void _planifierReessai() {
     _echecs++;

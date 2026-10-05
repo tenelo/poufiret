@@ -22,6 +22,9 @@ class PolitiqueCache {
     frais: Duration(days: 7),
     perime: Duration(days: 30),
   );
+
+  /// Localités et quartiers : même rythme que les départements.
+  static const geographie = departements;
   static const formulesPub = PolitiqueCache(
     frais: Duration(hours: 1),
     perime: Duration(hours: 24),

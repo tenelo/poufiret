@@ -190,3 +190,177 @@ final class QuartiersFamily extends $Family
   @override
   String toString() => r'quartiersProvider';
 }
+
+/// Localites d'un departement (cascade de localisation), en cache disque
+/// comme les departements.
+
+@ProviderFor(localites)
+final localitesProvider = LocalitesFamily._();
+
+/// Localites d'un departement (cascade de localisation), en cache disque
+/// comme les departements.
+
+final class LocalitesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Localite>>,
+          List<Localite>,
+          Stream<List<Localite>>
+        >
+    with $FutureModifier<List<Localite>>, $StreamProvider<List<Localite>> {
+  /// Localites d'un departement (cascade de localisation), en cache disque
+  /// comme les departements.
+  LocalitesProvider._({
+    required LocalitesFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'localitesProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$localitesHash();
+
+  @override
+  String toString() {
+    return r'localitesProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Localite>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Localite>> create(Ref ref) {
+    final argument = this.argument as int;
+    return localites(ref, departementId: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is LocalitesProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$localitesHash() => r'd80750323f263fac757184c3219db483b351cf80';
+
+/// Localites d'un departement (cascade de localisation), en cache disque
+/// comme les departements.
+
+final class LocalitesFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<Localite>>, int> {
+  LocalitesFamily._()
+    : super(
+        retry: null,
+        name: r'localitesProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Localites d'un departement (cascade de localisation), en cache disque
+  /// comme les departements.
+
+  LocalitesProvider call({required int departementId}) =>
+      LocalitesProvider._(argument: departementId, from: this);
+
+  @override
+  String toString() => r'localitesProvider';
+}
+
+/// Quartiers d'une localite (cascade de localisation).
+
+@ProviderFor(quartiersDeLocalite)
+final quartiersDeLocaliteProvider = QuartiersDeLocaliteFamily._();
+
+/// Quartiers d'une localite (cascade de localisation).
+
+final class QuartiersDeLocaliteProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Quartier>>,
+          List<Quartier>,
+          Stream<List<Quartier>>
+        >
+    with $FutureModifier<List<Quartier>>, $StreamProvider<List<Quartier>> {
+  /// Quartiers d'une localite (cascade de localisation).
+  QuartiersDeLocaliteProvider._({
+    required QuartiersDeLocaliteFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'quartiersDeLocaliteProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$quartiersDeLocaliteHash();
+
+  @override
+  String toString() {
+    return r'quartiersDeLocaliteProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Quartier>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Quartier>> create(Ref ref) {
+    final argument = this.argument as int;
+    return quartiersDeLocalite(ref, localiteId: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is QuartiersDeLocaliteProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$quartiersDeLocaliteHash() =>
+    r'50b96f0b82e05bd27f35f0084743a14f135f1eec';
+
+/// Quartiers d'une localite (cascade de localisation).
+
+final class QuartiersDeLocaliteFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<Quartier>>, int> {
+  QuartiersDeLocaliteFamily._()
+    : super(
+        retry: null,
+        name: r'quartiersDeLocaliteProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Quartiers d'une localite (cascade de localisation).
+
+  QuartiersDeLocaliteProvider call({required int localiteId}) =>
+      QuartiersDeLocaliteProvider._(argument: localiteId, from: this);
+
+  @override
+  String toString() => r'quartiersDeLocaliteProvider';
+}

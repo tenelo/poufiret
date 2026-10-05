@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../geo/metier_domaine/localisation.dart';
+
 part 'partenaire_vitrine.freezed.dart';
 part 'partenaire_vitrine.g.dart';
 
@@ -21,6 +23,13 @@ abstract class PartenaireVitrine with _$PartenaireVitrine {
     @Default('') String ville,
     @Default('') String departement,
     @Default('') String region,
+
+    // Rattachement a la geographie de l'admin ; `ville` et `quartier`
+    // ci-dessus sont les anciens textes, gardes en repli.
+    @JsonKey(name: 'localite_id') int? localiteId,
+    @JsonKey(name: 'localite_nom') String? localiteNom,
+    @JsonKey(name: 'quartier_id') int? quartierId,
+    @JsonKey(name: 'quartier_nom') String? quartierNom,
     @JsonKey(name: 'description_acces') @Default('') String descriptionAcces,
     @JsonKey(name: 'telephone_pro') @Default('') String telephonePro,
     @Default('') String whatsapp,
@@ -34,16 +43,12 @@ abstract class PartenaireVitrine with _$PartenaireVitrine {
   factory PartenaireVitrine.fromJson(Map<String, dynamic> json) =>
       _$PartenaireVitrineFromJson(json);
 
-  /// Localisation fine : quartier / secteur / ville non vides.
-  String get localisationLisible {
-    final parts = [quartier, secteur, ville].where((p) => p.isNotEmpty);
-    return parts.join(' · ');
-  }
-
-  /// Localisation administrative : « Département (Région) ».
-  /// C'est l'ancrage geographique officiel, distinct de l'adresse fine.
-  String get localisationGeo {
-    if (departement.isEmpty) return '';
-    return region.isEmpty ? departement : '$departement ($region)';
-  }
+  /// « Quartier, Localité (Département) », avec repli sur les anciens textes.
+  String get localisationLisible => formatLocalisation(
+    quartierNom: quartierNom,
+    localiteNom: localiteNom,
+    departement: departement,
+    ancienQuartier: quartier,
+    ancienneVille: ville,
+  );
 }

@@ -3147,7 +3147,7 @@ as String,
 /// @nodoc
 mixin _$Restaurant {
 
- int get id; String get nom; String get description; String get logo; String get couverture; String get adresse; String get quartier; String get ville;@JsonKey(name: 'telephone_pro') String get telephonePro; String get whatsapp;@JsonKey(fromJson: versDoubleNullable) double? get latitude;@JsonKey(fromJson: versDoubleNullable) double? get longitude;/// Toujours fourni par le serveur (liste, fiche, flux). Sans horaires
+ int get id; String get nom; String get description; String get logo; String get couverture; String get adresse; String get quartier; String get ville;@JsonKey(name: 'localite_nom') String? get localiteNom;@JsonKey(name: 'quartier_nom') String? get quartierNom;@JsonKey(name: 'telephone_pro') String get telephonePro; String get whatsapp;@JsonKey(fromJson: versDoubleNullable) double? get latitude;@JsonKey(fromJson: versDoubleNullable) double? get longitude;/// Toujours fourni par le serveur (liste, fiche, flux). Sans horaires
 /// renseignés : fermé, avec « Horaires non renseignés » en message.
 @JsonKey(name: 'est_ouvert') bool get estOuvert;@JsonKey(name: 'message_statut') String get messageStatut;@JsonKey(name: 'prochaine_ouverture') String? get prochaineOuverture; FicheRestaurant get fiche;/// Menus du jour présents, dans l'ordre midi, soir, journée.
  List<MenuDuJour> get menus;/// Services dont le menu est en vigueur en ce moment.
@@ -3164,16 +3164,16 @@ $RestaurantCopyWith<Restaurant> get copyWith => _$RestaurantCopyWithImpl<Restaur
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Restaurant&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.estOuvert, estOuvert) || other.estOuvert == estOuvert)&&(identical(other.messageStatut, messageStatut) || other.messageStatut == messageStatut)&&(identical(other.prochaineOuverture, prochaineOuverture) || other.prochaineOuverture == prochaineOuverture)&&(identical(other.fiche, fiche) || other.fiche == fiche)&&const DeepCollectionEquality().equals(other.menus, menus)&&const DeepCollectionEquality().equals(other.servicesEnVigueur, servicesEnVigueur)&&const DeepCollectionEquality().equals(other.carte, carte)&&const DeepCollectionEquality().equals(other.apercuPlats, apercuPlats));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Restaurant&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.estOuvert, estOuvert) || other.estOuvert == estOuvert)&&(identical(other.messageStatut, messageStatut) || other.messageStatut == messageStatut)&&(identical(other.prochaineOuverture, prochaineOuverture) || other.prochaineOuverture == prochaineOuverture)&&(identical(other.fiche, fiche) || other.fiche == fiche)&&const DeepCollectionEquality().equals(other.menus, menus)&&const DeepCollectionEquality().equals(other.servicesEnVigueur, servicesEnVigueur)&&const DeepCollectionEquality().equals(other.carte, carte)&&const DeepCollectionEquality().equals(other.apercuPlats, apercuPlats));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,nom,description,logo,couverture,adresse,quartier,ville,telephonePro,whatsapp,latitude,longitude,estOuvert,messageStatut,prochaineOuverture,fiche,const DeepCollectionEquality().hash(menus),const DeepCollectionEquality().hash(servicesEnVigueur),const DeepCollectionEquality().hash(carte),const DeepCollectionEquality().hash(apercuPlats)]);
+int get hashCode => Object.hashAll([runtimeType,id,nom,description,logo,couverture,adresse,quartier,ville,localiteNom,quartierNom,telephonePro,whatsapp,latitude,longitude,estOuvert,messageStatut,prochaineOuverture,fiche,const DeepCollectionEquality().hash(menus),const DeepCollectionEquality().hash(servicesEnVigueur),const DeepCollectionEquality().hash(carte),const DeepCollectionEquality().hash(apercuPlats)]);
 
 @override
 String toString() {
-  return 'Restaurant(id: $id, nom: $nom, description: $description, logo: $logo, couverture: $couverture, adresse: $adresse, quartier: $quartier, ville: $ville, telephonePro: $telephonePro, whatsapp: $whatsapp, latitude: $latitude, longitude: $longitude, estOuvert: $estOuvert, messageStatut: $messageStatut, prochaineOuverture: $prochaineOuverture, fiche: $fiche, menus: $menus, servicesEnVigueur: $servicesEnVigueur, carte: $carte, apercuPlats: $apercuPlats)';
+  return 'Restaurant(id: $id, nom: $nom, description: $description, logo: $logo, couverture: $couverture, adresse: $adresse, quartier: $quartier, ville: $ville, localiteNom: $localiteNom, quartierNom: $quartierNom, telephonePro: $telephonePro, whatsapp: $whatsapp, latitude: $latitude, longitude: $longitude, estOuvert: $estOuvert, messageStatut: $messageStatut, prochaineOuverture: $prochaineOuverture, fiche: $fiche, menus: $menus, servicesEnVigueur: $servicesEnVigueur, carte: $carte, apercuPlats: $apercuPlats)';
 }
 
 
@@ -3184,7 +3184,7 @@ abstract mixin class $RestaurantCopyWith<$Res>  {
   factory $RestaurantCopyWith(Restaurant value, $Res Function(Restaurant) _then) = _$RestaurantCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom, String description, String logo, String couverture, String adresse, String quartier, String ville,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude,@JsonKey(name: 'est_ouvert') bool estOuvert,@JsonKey(name: 'message_statut') String messageStatut,@JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture, FicheRestaurant fiche, List<MenuDuJour> menus,@JsonKey(name: 'services_en_vigueur') List<String> servicesEnVigueur, List<SectionCarte> carte,@JsonKey(name: 'apercu_plats') List<PlatApercu> apercuPlats
+ int id, String nom, String description, String logo, String couverture, String adresse, String quartier, String ville,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude,@JsonKey(name: 'est_ouvert') bool estOuvert,@JsonKey(name: 'message_statut') String messageStatut,@JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture, FicheRestaurant fiche, List<MenuDuJour> menus,@JsonKey(name: 'services_en_vigueur') List<String> servicesEnVigueur, List<SectionCarte> carte,@JsonKey(name: 'apercu_plats') List<PlatApercu> apercuPlats
 });
 
 
@@ -3201,7 +3201,7 @@ class _$RestaurantCopyWithImpl<$Res>
 
 /// Create a copy of Restaurant
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? logo = null,Object? couverture = null,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? telephonePro = null,Object? whatsapp = null,Object? latitude = freezed,Object? longitude = freezed,Object? estOuvert = null,Object? messageStatut = null,Object? prochaineOuverture = freezed,Object? fiche = null,Object? menus = null,Object? servicesEnVigueur = null,Object? carte = null,Object? apercuPlats = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? logo = null,Object? couverture = null,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? telephonePro = null,Object? whatsapp = null,Object? latitude = freezed,Object? longitude = freezed,Object? estOuvert = null,Object? messageStatut = null,Object? prochaineOuverture = freezed,Object? fiche = null,Object? menus = null,Object? servicesEnVigueur = null,Object? carte = null,Object? apercuPlats = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -3211,7 +3211,9 @@ as String,couverture: null == couverture ? _self.couverture : couverture // igno
 as String,adresse: null == adresse ? _self.adresse : adresse // ignore: cast_nullable_to_non_nullable
 as String,quartier: null == quartier ? _self.quartier : quartier // ignore: cast_nullable_to_non_nullable
 as String,ville: null == ville ? _self.ville : ville // ignore: cast_nullable_to_non_nullable
-as String,telephonePro: null == telephonePro ? _self.telephonePro : telephonePro // ignore: cast_nullable_to_non_nullable
+as String,localiteNom: freezed == localiteNom ? _self.localiteNom : localiteNom // ignore: cast_nullable_to_non_nullable
+as String?,quartierNom: freezed == quartierNom ? _self.quartierNom : quartierNom // ignore: cast_nullable_to_non_nullable
+as String?,telephonePro: null == telephonePro ? _self.telephonePro : telephonePro // ignore: cast_nullable_to_non_nullable
 as String,whatsapp: null == whatsapp ? _self.whatsapp : whatsapp // ignore: cast_nullable_to_non_nullable
 as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
@@ -3317,10 +3319,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte, @JsonKey(name: 'apercu_plats')  List<PlatApercu> apercuPlats)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte, @JsonKey(name: 'apercu_plats')  List<PlatApercu> apercuPlats)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Restaurant() when $default != null:
-return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte,_that.apercuPlats);case _:
+return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte,_that.apercuPlats);case _:
   return orElse();
 
 }
@@ -3338,10 +3340,10 @@ return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte, @JsonKey(name: 'apercu_plats')  List<PlatApercu> apercuPlats)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte, @JsonKey(name: 'apercu_plats')  List<PlatApercu> apercuPlats)  $default,) {final _that = this;
 switch (_that) {
 case _Restaurant():
-return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte,_that.apercuPlats);case _:
+return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte,_that.apercuPlats);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -3358,10 +3360,10 @@ return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte, @JsonKey(name: 'apercu_plats')  List<PlatApercu> apercuPlats)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte, @JsonKey(name: 'apercu_plats')  List<PlatApercu> apercuPlats)?  $default,) {final _that = this;
 switch (_that) {
 case _Restaurant() when $default != null:
-return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte,_that.apercuPlats);case _:
+return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte,_that.apercuPlats);case _:
   return null;
 
 }
@@ -3373,7 +3375,7 @@ return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture
 @JsonSerializable()
 
 class _Restaurant extends Restaurant {
-  const _Restaurant({required this.id, this.nom = '', this.description = '', this.logo = '', this.couverture = '', this.adresse = '', this.quartier = '', this.ville = '', @JsonKey(name: 'telephone_pro') this.telephonePro = '', this.whatsapp = '', @JsonKey(fromJson: versDoubleNullable) this.latitude, @JsonKey(fromJson: versDoubleNullable) this.longitude, @JsonKey(name: 'est_ouvert') required this.estOuvert, @JsonKey(name: 'message_statut') this.messageStatut = '', @JsonKey(name: 'prochaine_ouverture') this.prochaineOuverture, this.fiche = const FicheRestaurant(), final  List<MenuDuJour> menus = const <MenuDuJour>[], @JsonKey(name: 'services_en_vigueur') final  List<String> servicesEnVigueur = const <String>[], final  List<SectionCarte> carte = const <SectionCarte>[], @JsonKey(name: 'apercu_plats') final  List<PlatApercu> apercuPlats = const <PlatApercu>[]}): _menus = menus,_servicesEnVigueur = servicesEnVigueur,_carte = carte,_apercuPlats = apercuPlats,super._();
+  const _Restaurant({required this.id, this.nom = '', this.description = '', this.logo = '', this.couverture = '', this.adresse = '', this.quartier = '', this.ville = '', @JsonKey(name: 'localite_nom') this.localiteNom, @JsonKey(name: 'quartier_nom') this.quartierNom, @JsonKey(name: 'telephone_pro') this.telephonePro = '', this.whatsapp = '', @JsonKey(fromJson: versDoubleNullable) this.latitude, @JsonKey(fromJson: versDoubleNullable) this.longitude, @JsonKey(name: 'est_ouvert') required this.estOuvert, @JsonKey(name: 'message_statut') this.messageStatut = '', @JsonKey(name: 'prochaine_ouverture') this.prochaineOuverture, this.fiche = const FicheRestaurant(), final  List<MenuDuJour> menus = const <MenuDuJour>[], @JsonKey(name: 'services_en_vigueur') final  List<String> servicesEnVigueur = const <String>[], final  List<SectionCarte> carte = const <SectionCarte>[], @JsonKey(name: 'apercu_plats') final  List<PlatApercu> apercuPlats = const <PlatApercu>[]}): _menus = menus,_servicesEnVigueur = servicesEnVigueur,_carte = carte,_apercuPlats = apercuPlats,super._();
   factory _Restaurant.fromJson(Map<String, dynamic> json) => _$RestaurantFromJson(json);
 
 @override final  int id;
@@ -3384,6 +3386,8 @@ class _Restaurant extends Restaurant {
 @override@JsonKey() final  String adresse;
 @override@JsonKey() final  String quartier;
 @override@JsonKey() final  String ville;
+@override@JsonKey(name: 'localite_nom') final  String? localiteNom;
+@override@JsonKey(name: 'quartier_nom') final  String? quartierNom;
 @override@JsonKey(name: 'telephone_pro') final  String telephonePro;
 @override@JsonKey() final  String whatsapp;
 @override@JsonKey(fromJson: versDoubleNullable) final  double? latitude;
@@ -3440,16 +3444,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Restaurant&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.estOuvert, estOuvert) || other.estOuvert == estOuvert)&&(identical(other.messageStatut, messageStatut) || other.messageStatut == messageStatut)&&(identical(other.prochaineOuverture, prochaineOuverture) || other.prochaineOuverture == prochaineOuverture)&&(identical(other.fiche, fiche) || other.fiche == fiche)&&const DeepCollectionEquality().equals(other._menus, _menus)&&const DeepCollectionEquality().equals(other._servicesEnVigueur, _servicesEnVigueur)&&const DeepCollectionEquality().equals(other._carte, _carte)&&const DeepCollectionEquality().equals(other._apercuPlats, _apercuPlats));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Restaurant&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.estOuvert, estOuvert) || other.estOuvert == estOuvert)&&(identical(other.messageStatut, messageStatut) || other.messageStatut == messageStatut)&&(identical(other.prochaineOuverture, prochaineOuverture) || other.prochaineOuverture == prochaineOuverture)&&(identical(other.fiche, fiche) || other.fiche == fiche)&&const DeepCollectionEquality().equals(other._menus, _menus)&&const DeepCollectionEquality().equals(other._servicesEnVigueur, _servicesEnVigueur)&&const DeepCollectionEquality().equals(other._carte, _carte)&&const DeepCollectionEquality().equals(other._apercuPlats, _apercuPlats));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,nom,description,logo,couverture,adresse,quartier,ville,telephonePro,whatsapp,latitude,longitude,estOuvert,messageStatut,prochaineOuverture,fiche,const DeepCollectionEquality().hash(_menus),const DeepCollectionEquality().hash(_servicesEnVigueur),const DeepCollectionEquality().hash(_carte),const DeepCollectionEquality().hash(_apercuPlats)]);
+int get hashCode => Object.hashAll([runtimeType,id,nom,description,logo,couverture,adresse,quartier,ville,localiteNom,quartierNom,telephonePro,whatsapp,latitude,longitude,estOuvert,messageStatut,prochaineOuverture,fiche,const DeepCollectionEquality().hash(_menus),const DeepCollectionEquality().hash(_servicesEnVigueur),const DeepCollectionEquality().hash(_carte),const DeepCollectionEquality().hash(_apercuPlats)]);
 
 @override
 String toString() {
-  return 'Restaurant(id: $id, nom: $nom, description: $description, logo: $logo, couverture: $couverture, adresse: $adresse, quartier: $quartier, ville: $ville, telephonePro: $telephonePro, whatsapp: $whatsapp, latitude: $latitude, longitude: $longitude, estOuvert: $estOuvert, messageStatut: $messageStatut, prochaineOuverture: $prochaineOuverture, fiche: $fiche, menus: $menus, servicesEnVigueur: $servicesEnVigueur, carte: $carte, apercuPlats: $apercuPlats)';
+  return 'Restaurant(id: $id, nom: $nom, description: $description, logo: $logo, couverture: $couverture, adresse: $adresse, quartier: $quartier, ville: $ville, localiteNom: $localiteNom, quartierNom: $quartierNom, telephonePro: $telephonePro, whatsapp: $whatsapp, latitude: $latitude, longitude: $longitude, estOuvert: $estOuvert, messageStatut: $messageStatut, prochaineOuverture: $prochaineOuverture, fiche: $fiche, menus: $menus, servicesEnVigueur: $servicesEnVigueur, carte: $carte, apercuPlats: $apercuPlats)';
 }
 
 
@@ -3460,7 +3464,7 @@ abstract mixin class _$RestaurantCopyWith<$Res> implements $RestaurantCopyWith<$
   factory _$RestaurantCopyWith(_Restaurant value, $Res Function(_Restaurant) _then) = __$RestaurantCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom, String description, String logo, String couverture, String adresse, String quartier, String ville,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude,@JsonKey(name: 'est_ouvert') bool estOuvert,@JsonKey(name: 'message_statut') String messageStatut,@JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture, FicheRestaurant fiche, List<MenuDuJour> menus,@JsonKey(name: 'services_en_vigueur') List<String> servicesEnVigueur, List<SectionCarte> carte,@JsonKey(name: 'apercu_plats') List<PlatApercu> apercuPlats
+ int id, String nom, String description, String logo, String couverture, String adresse, String quartier, String ville,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude,@JsonKey(name: 'est_ouvert') bool estOuvert,@JsonKey(name: 'message_statut') String messageStatut,@JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture, FicheRestaurant fiche, List<MenuDuJour> menus,@JsonKey(name: 'services_en_vigueur') List<String> servicesEnVigueur, List<SectionCarte> carte,@JsonKey(name: 'apercu_plats') List<PlatApercu> apercuPlats
 });
 
 
@@ -3477,7 +3481,7 @@ class __$RestaurantCopyWithImpl<$Res>
 
 /// Create a copy of Restaurant
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? logo = null,Object? couverture = null,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? telephonePro = null,Object? whatsapp = null,Object? latitude = freezed,Object? longitude = freezed,Object? estOuvert = null,Object? messageStatut = null,Object? prochaineOuverture = freezed,Object? fiche = null,Object? menus = null,Object? servicesEnVigueur = null,Object? carte = null,Object? apercuPlats = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? logo = null,Object? couverture = null,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? telephonePro = null,Object? whatsapp = null,Object? latitude = freezed,Object? longitude = freezed,Object? estOuvert = null,Object? messageStatut = null,Object? prochaineOuverture = freezed,Object? fiche = null,Object? menus = null,Object? servicesEnVigueur = null,Object? carte = null,Object? apercuPlats = null,}) {
   return _then(_Restaurant(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -3487,7 +3491,9 @@ as String,couverture: null == couverture ? _self.couverture : couverture // igno
 as String,adresse: null == adresse ? _self.adresse : adresse // ignore: cast_nullable_to_non_nullable
 as String,quartier: null == quartier ? _self.quartier : quartier // ignore: cast_nullable_to_non_nullable
 as String,ville: null == ville ? _self.ville : ville // ignore: cast_nullable_to_non_nullable
-as String,telephonePro: null == telephonePro ? _self.telephonePro : telephonePro // ignore: cast_nullable_to_non_nullable
+as String,localiteNom: freezed == localiteNom ? _self.localiteNom : localiteNom // ignore: cast_nullable_to_non_nullable
+as String?,quartierNom: freezed == quartierNom ? _self.quartierNom : quartierNom // ignore: cast_nullable_to_non_nullable
+as String?,telephonePro: null == telephonePro ? _self.telephonePro : telephonePro // ignore: cast_nullable_to_non_nullable
 as String,whatsapp: null == whatsapp ? _self.whatsapp : whatsapp // ignore: cast_nullable_to_non_nullable
 as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: cast_nullable_to_non_nullable
 as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable

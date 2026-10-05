@@ -4,6 +4,7 @@ import '../../../global/cache/cache_api.dart';
 import '../../../global/cache/contexte_cache.dart';
 import '../../../global/network/providers.dart';
 import '../metier_domaine/departement.dart';
+import '../metier_domaine/localite.dart';
 import '../metier_domaine/quartier.dart';
 import 'geo_repository.dart';
 
@@ -34,4 +35,34 @@ Stream<List<Departement>> departements(Ref ref) {
 @riverpod
 Future<List<Quartier>> quartiers(Ref ref, {required int departementId}) {
   return ref.watch(geoRepositoryProvider).quartiers(departementId);
+}
+
+/// Localites d'un departement (cascade de localisation), en cache disque
+/// comme les departements.
+@riverpod
+Stream<List<Localite>> localites(Ref ref, {required int departementId}) {
+  final repo = ref.watch(geoRepositoryProvider);
+  return fluxCache(
+    ref,
+    cle: 'geo/localites/$departementId',
+    politique: PolitiqueCache.geographie,
+    reseau: () => repo.localitesBrut(departementId),
+    decoder: repo.localitesDepuis,
+  );
+}
+
+/// Quartiers d'une localite (cascade de localisation).
+@riverpod
+Stream<List<Quartier>> quartiersDeLocalite(
+  Ref ref, {
+  required int localiteId,
+}) {
+  final repo = ref.watch(geoRepositoryProvider);
+  return fluxCache(
+    ref,
+    cle: 'geo/quartiers/$localiteId',
+    politique: PolitiqueCache.geographie,
+    reseau: () => repo.quartiersDeLocaliteBrut(localiteId),
+    decoder: repo.quartiersDeLocaliteDepuis,
+  );
 }

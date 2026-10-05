@@ -89,9 +89,8 @@ class _Infos extends StatelessWidget {
     };
     final adresse = [
       r.adresse,
-      r.quartier,
-      r.ville,
-    ].where((e) => e.isNotEmpty).join(', ');
+      r.localisation,
+    ].where((e) => e.isNotEmpty).join(' · ');
     final reseaux = [
       if (f.facebook.isNotEmpty)
         (

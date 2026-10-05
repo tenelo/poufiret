@@ -14,12 +14,16 @@ class ChampDepartement extends ConsumerWidget {
     required this.onChange,
     this.libelle = 'Département',
     this.obligatoire = false,
+    this.erreur,
   });
 
   final int? valeur;
   final ValueChanged<int?> onChange;
   final String libelle;
   final bool obligatoire;
+
+  /// Erreur du backend a afficher sous le champ.
+  final String? erreur;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -59,6 +63,8 @@ class ChampDepartement extends ConsumerWidget {
             labelText: obligatoire ? '$libelle *' : libelle,
             border: const OutlineInputBorder(),
             prefixIcon: const Icon(Icons.place_outlined),
+            errorText: erreur,
+            errorMaxLines: 3,
           ),
           items: [
             for (final d in departements)

@@ -7,7 +7,8 @@ import '../../auth/donnees/auth_providers.dart';
 import '../../auth/screens/auth_notifier.dart';
 import '../../catalogue/donnees/catalogue_providers.dart';
 import '../../catalogue/metier_domaine/categorie.dart';
-import '../../geo/widgets/champ_departement.dart';
+import '../../geo/metier_domaine/localisation.dart';
+import '../../geo/widgets/cascade_localisation.dart';
 
 /// Formulaire « Devenir partenaire » : crée le ProfilPartenaire
 /// (statut en attente de validation par un administrateur).
@@ -25,11 +26,14 @@ class _EcranDevenirPartenaireState
   final _ctrlNomCommerce = TextEditingController();
   final _ctrlDescription = TextEditingController();
   final _ctrlAdresse = TextEditingController();
-  final _ctrlQuartier = TextEditingController();
   final _ctrlTelephonePro = TextEditingController();
   final _ctrlWhatsapp = TextEditingController();
 
-  int? _departement;
+  /// Departement, localite et quartier, choisis dans les listes de l'admin.
+  SelectionLocalisation _lieu = const SelectionLocalisation();
+
+  /// Refus du backend sur la localisation, affiches sous les champs.
+  Map<NiveauLocalisation, String> _erreursLieu = const {};
   String _type = 'commercant';
   bool _envoiEnCours = false;
 
@@ -64,7 +68,6 @@ class _EcranDevenirPartenaireState
     _ctrlNomCommerce.dispose();
     _ctrlDescription.dispose();
     _ctrlAdresse.dispose();
-    _ctrlQuartier.dispose();
     _ctrlTelephonePro.dispose();
     _ctrlWhatsapp.dispose();
     super.dispose();
@@ -72,16 +75,18 @@ class _EcranDevenirPartenaireState
 
   Future<void> _envoyer() async {
     if (!_cleFormulaire.currentState!.validate()) return;
-    setState(() => _envoiEnCours = true);
+    setState(() {
+      _envoiEnCours = true;
+      _erreursLieu = const {};
+    });
     try {
       await ref.read(authRepositoryProvider).devenirPartenaire({
         'type_partenaire': _type,
-        if (_departement != null) 'departement': _departement,
+        ..._lieu.versJson(avecDepartement: true),
         if (_categories.isNotEmpty) 'categories': _categories,
         'nom_commerce': _ctrlNomCommerce.text.trim(),
         'description': _ctrlDescription.text.trim(),
         'adresse': _ctrlAdresse.text.trim(),
-        'quartier': _ctrlQuartier.text.trim(),
         if (_ctrlTelephonePro.text.trim().isNotEmpty)
           'telephone_pro': _ctrlTelephonePro.text.trim(),
         if (_ctrlWhatsapp.text.trim().isNotEmpty)
@@ -106,9 +111,13 @@ class _EcranDevenirPartenaireState
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (!mounted) return;
+      final erreursLieu = erreursLocalisation(e);
+      setState(() => _erreursLieu = erreursLieu);
       Notificateur.erreur(
         context,
-        e is ApiException ? e.messageLisible : 'Envoi impossible. Réessayez.',
+        erreursLieu.isNotEmpty
+            ? 'Vérifiez la localisation.'
+            : messageErreurApi(e, repli: 'Envoi impossible. Réessayez.'),
       );
     } finally {
       if (mounted) setState(() => _envoiEnCours = false);
@@ -182,16 +191,13 @@ class _EcranDevenirPartenaireState
                           const InputDecoration(labelText: 'Adresse'),
                     ),
                     const SizedBox(height: 12),
-                    TextFormField(
-                      controller: _ctrlQuartier,
-                      decoration:
-                          const InputDecoration(labelText: 'Quartier'),
-                    ),
-                    const SizedBox(height: 12),
-                    ChampDepartement(
-                      valeur: _departement,
-                      obligatoire: true,
-                      onChange: (v) => setState(() => _departement = v),
+                    CascadeLocalisation(
+                      selection: _lieu,
+                      erreurs: _erreursLieu,
+                      onChange: (lieu) => setState(() {
+                        _lieu = lieu;
+                        _erreursLieu = const {};
+                      }),
                     ),
                     const SizedBox(height: 12),
                     TextFormField(

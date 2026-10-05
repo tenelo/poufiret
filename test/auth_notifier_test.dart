@@ -93,6 +93,12 @@ void main() {
   Future<void> laisserPasser() =>
       Future<void>.delayed(const Duration(milliseconds: 50));
 
+  /// Attend la fin des opérations disque du notifier (écriture du profil,
+  /// purges). Elles sont mises en file dès le changement d'état mais
+  /// s'exécutent en arrière-plan, et leur durée dépend de la machine.
+  Future<void> disqueAJour() =>
+      conteneur.read(authProvider.notifier).disqueAJour;
+
   /// Attend qu'une condition asynchrone soit vraie (3 s max) : les tests ne
   /// dépendent pas de la charge de la machine.
   Future<void> jusqua(Future<bool> Function() condition) async {
@@ -177,7 +183,7 @@ void main() {
           : null;
     }
 
-    await jusqua(() async => await memorise() == frais);
+    await disqueAJour();
     expect(await memorise(), frais);
   });
 
@@ -198,9 +204,7 @@ void main() {
 
     await conteneur.read(authProvider.future);
     await jusqua(() async => conteneur.read(authProvider).value == null);
-    await jusqua(
-      () async => await disque.lire(AuthNotifier.porteeSession, 'moi') == null,
-    );
+    await disqueAJour();
 
     expect(conteneur.read(authProvider).value, isNull);
     expect(await tokens.aSession, isFalse);
@@ -229,14 +233,10 @@ void main() {
       [1],
     );
     await conteneur.read(authProvider.future);
-    await laisserPasser();
+    await disqueAJour();
 
     await conteneur.read(authProvider.notifier).deconnexion();
-    await jusqua(
-      () async =>
-          await disque.lire('u1', 'd0|conversations') == null &&
-          await disque.lire(AuthNotifier.porteeSession, 'moi') == null,
-    );
+    await disqueAJour();
 
     expect(await disque.lire('u1', 'd0|conversations'), isNull);
     expect(await disque.lire(AuthNotifier.porteeSession, 'moi'), isNull);
@@ -275,16 +275,15 @@ void main() {
       [2],
     );
     await conteneur.read(authProvider.future);
-    await laisserPasser();
+    await disqueAJour(); // le profil d'Alice est mémorisé
 
     repo.connexionRetour = _bob;
     await conteneur
         .read(authProvider.notifier)
         .connexion(telephone: _bob.telephone, password: '1234');
-    await jusqua(
-      () async => await disque.lire('u1', 'd0|conversations') == null,
-    );
-    await laisserPasser();
+    // Purge d'Alice PUIS mémorisation de Bob : les deux sont attendues (la
+    // purge seule ne dit rien de l'écriture qui la suit).
+    await disqueAJour();
 
     expect(await disque.lire('u1', 'd0|conversations'), isNull);
     expect((await disque.lire('u2', 'd0|conversations'))?.donnees, [2]);
