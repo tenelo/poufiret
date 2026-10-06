@@ -26,23 +26,7 @@ void ouvrirRestaurant(
   });
 }
 
-/// Pastille « Ouvert » / « Fermé ».
-class BadgeStatut extends StatelessWidget {
-  const BadgeStatut({super.key, required this.restaurant});
-
-  final Restaurant restaurant;
-
-  @override
-  Widget build(BuildContext context) {
-    final ouvert = restaurant.estOuvert;
-    return BadgeTexte(
-      ouvert ? 'Ouvert' : 'Fermé',
-      couleur: ouvert ? Config.couleurSucces : Config.couleurErreur,
-    );
-  }
-}
-
-/// Petit badge plein (Ouvert, Fermé, Promo, Épuisé…).
+/// Petit badge plein (Promo, Épuisé…).
 class BadgeTexte extends StatelessWidget {
   const BadgeTexte(this.texte, {super.key, required this.couleur});
 
@@ -63,34 +47,6 @@ class BadgeTexte extends StatelessWidget {
           color: Colors.white,
           fontWeight: FontWeight.w700,
         ),
-      ),
-    );
-  }
-}
-
-/// Message de statut (« Ferme à 22h », « Ouvre à 11h »), s'il dit autre
-/// chose que le badge.
-class MessageStatut extends StatelessWidget {
-  const MessageStatut({super.key, required this.restaurant});
-
-  final Restaurant restaurant;
-
-  @override
-  Widget build(BuildContext context) {
-    final message = restaurant.messageStatut.trim();
-    final badge = restaurant.estFerme ? 'fermé' : 'ouvert';
-    if (message.isEmpty || message.toLowerCase() == badge) {
-      return const SizedBox.shrink();
-    }
-    return Text(
-      message,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-        color: restaurant.estFerme
-            ? Config.couleurErreur
-            : Config.couleurTexteSecondaire,
-        fontWeight: FontWeight.w600,
       ),
     );
   }
@@ -235,8 +191,8 @@ class MedaillonLogo extends StatelessWidget {
   }
 }
 
-/// Carte riche d'un restaurant : couverture, logo, statut, délai, services,
-/// spécialités et aperçu du menu du jour. Atténuée si le restaurant est fermé.
+/// Carte riche d'un restaurant : couverture, logo, délai, services,
+/// spécialités et aperçu du menu du jour.
 class CarteRestaurant extends ConsumerWidget {
   const CarteRestaurant({super.key, required this.restaurant});
 
@@ -246,74 +202,65 @@ class CarteRestaurant extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final r = restaurant;
-    return Opacity(
-      opacity: r.estFerme ? 0.6 : 1,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        margin: EdgeInsets.zero,
-        child: InkWell(
-          onTap: () => ouvrirRestaurant(context, ref, r),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Stack(
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        onTap: () => ouvrirRestaurant(context, ref, r),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              children: [
+                _Couverture(url: r.couverture, ratio: 16 / 7),
+                Positioned(
+                  left: 10,
+                  bottom: 8,
+                  child: MedaillonLogo(url: r.logo),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _Couverture(url: r.couverture, ratio: 16 / 7),
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: BadgeStatut(restaurant: r),
+                  Text(
+                    r.nom,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                  Positioned(
-                    left: 10,
-                    bottom: 8,
-                    child: MedaillonLogo(url: r.logo),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                  const SizedBox(height: 6),
+                  InfosPratiques(restaurant: r),
+                  if (r.fiche.specialites.isNotEmpty) ...[
+                    const SizedBox(height: 6),
                     Text(
-                      r.nom,
+                      r.fiche.specialites.join(' · '),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: Config.couleurTexteSecondaire,
+                      ),
+                    ),
+                  ],
+                  if (r.apercuPlats.isNotEmpty) ...[
+                    const Divider(height: 16),
+                    Text(
+                      'Menu du jour',
+                      style: theme.textTheme.labelMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    MessageStatut(restaurant: r),
-                    const SizedBox(height: 6),
-                    InfosPratiques(restaurant: r),
-                    if (r.fiche.specialites.isNotEmpty) ...[
-                      const SizedBox(height: 6),
-                      Text(
-                        r.fiche.specialites.join(' · '),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: Config.couleurTexteSecondaire,
-                        ),
-                      ),
-                    ],
-                    if (r.apercuPlats.isNotEmpty) ...[
-                      const Divider(height: 16),
-                      Text(
-                        'Menu du jour',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      ApercuMenu(plats: r.apercuPlats),
-                    ],
+                    ApercuMenu(plats: r.apercuPlats),
                   ],
-                ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -321,7 +268,7 @@ class CarteRestaurant extends ConsumerWidget {
 }
 
 /// Carte du carrousel « Menus du jour » : photo du plat, restaurant, 2 à 3
-/// plats avec prix, badge Ouvert / Fermé.
+/// plats avec prix.
 class CarteMenuDuJour extends ConsumerWidget {
   const CarteMenuDuJour({super.key, required this.menu});
 
@@ -335,66 +282,54 @@ class CarteMenuDuJour extends ConsumerWidget {
     final photo = menu.plats
         .map((p) => p.image)
         .firstWhere((i) => i.isNotEmpty, orElse: () => r.couverture);
-    return Opacity(
-      opacity: r.estFerme ? 0.6 : 1,
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        margin: EdgeInsets.zero,
-        child: InkWell(
-          onTap: () => ouvrirRestaurant(context, ref, r),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Stack(
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      margin: EdgeInsets.zero,
+      child: InkWell(
+        onTap: () => ouvrirRestaurant(context, ref, r),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _Couverture(url: photo, ratio: 16 / 9),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _Couverture(url: photo, ratio: 16 / 9),
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: BadgeStatut(restaurant: r),
-                  ),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        if (r.logo.isNotEmpty) ...[
-                          MedaillonLogo(url: r.logo, rayon: 11),
-                          const SizedBox(width: 6),
-                        ],
-                        Expanded(
-                          child: Text(
-                            r.nom,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                  Row(
+                    children: [
+                      if (r.logo.isNotEmpty) ...[
+                        MedaillonLogo(url: r.logo, rayon: 11),
+                        const SizedBox(width: 6),
+                      ],
+                      Expanded(
+                        child: Text(
+                          r.nom,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
-                      ],
-                    ),
-                    if (menu.titre.isNotEmpty)
-                      Text(
-                        menu.titre,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: Config.couleurTexteSecondaire,
-                        ),
                       ),
-                    const SizedBox(height: 2),
-                    ApercuMenu(plats: menu.plats),
-                  ],
-                ),
+                    ],
+                  ),
+                  if (menu.titre.isNotEmpty)
+                    Text(
+                      menu.titre,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: Config.couleurTexteSecondaire,
+                      ),
+                    ),
+                  const SizedBox(height: 2),
+                  ApercuMenu(plats: menu.plats),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

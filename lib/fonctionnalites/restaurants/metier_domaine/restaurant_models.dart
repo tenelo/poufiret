@@ -270,7 +270,8 @@ abstract class Restaurant with _$Restaurant {
     @JsonKey(fromJson: versDoubleNullable) double? longitude,
 
     /// Toujours fourni par le serveur (liste, fiche, flux). Sans horaires
-    /// renseignés : fermé, avec « Horaires non renseignés » en message.
+    /// renseignés : fermé, avec « Horaires non renseignés » en message. Non
+    /// affiché : sert seulement à expliquer un refus de commande.
     @JsonKey(name: 'est_ouvert') required bool estOuvert,
     @JsonKey(name: 'message_statut') @Default('') String messageStatut,
     @JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture,
@@ -300,19 +301,9 @@ abstract class Restaurant with _$Restaurant {
     ancienneVille: ville,
   );
 
-  /// Fermé : la carte reste consultable, l'ajout au panier est bloqué (le
-  /// serveur reste l'arbitre à la commande).
+  /// Fermé d'après le serveur. Rien n'est bloqué ni affiché pour autant :
+  /// c'est lui qui refuse la commande, et son message est alors relayé.
   bool get estFerme => !estOuvert;
-
-  /// Message du bandeau quand le restaurant est fermé : « Fermé · ouvre à
-  /// 11h », « Fermé · horaires non renseignés ».
-  String get messageFermeture {
-    final message = messageStatut.trim();
-    if (message.isEmpty || message.toLowerCase() == 'fermé') return 'Fermé';
-    return message.toLowerCase().startsWith('ferm')
-        ? message
-        : 'Fermé · ${message[0].toLowerCase()}${message.substring(1)}';
-  }
 
   /// Plat de la carte par son id (pour une ligne de menu non imbriquée).
   Plat? platParId(int id) {

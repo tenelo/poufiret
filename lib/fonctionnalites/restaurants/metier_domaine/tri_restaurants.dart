@@ -22,18 +22,15 @@ const _accents = {
 String sansAccents(String texte) =>
     texte.toLowerCase().split('').map((c) => _accents[c] ?? c).join();
 
-/// Restaurants correspondant aux filtres, les ouverts d'abord (les fermés
-/// restent listés, à la suite). L'ordre du serveur est conservé à statut égal.
+/// Restaurants correspondant aux filtres, dans l'ordre du serveur.
 List<Restaurant> filtrerRestaurants(
   List<Restaurant> restaurants, {
   String recherche = '',
-  bool ouvertMaintenant = false,
   bool livraison = false,
   bool emporter = false,
 }) {
   final terme = sansAccents(recherche.trim());
-  bool correspond(Restaurant r) {
-    if (ouvertMaintenant && !r.estOuvert) return false;
+  return restaurants.where((r) {
     if (livraison && !r.fiche.services.contains('livraison')) return false;
     if (emporter && !r.fiche.services.contains('emporter')) return false;
     if (terme.isEmpty) return true;
@@ -41,13 +38,7 @@ List<Restaurant> filtrerRestaurants(
       r.nom,
       ...r.fiche.specialites,
     ].any((t) => sansAccents(t).contains(terme));
-  }
-
-  final retenus = restaurants.where(correspond).toList();
-  return [
-    ...retenus.where((r) => !r.estFerme),
-    ...retenus.where((r) => r.estFerme),
-  ];
+  }).toList();
 }
 
 /// Plats d'une section dont le nom ou la description contient [recherche].

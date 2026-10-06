@@ -156,7 +156,8 @@ bool heureLimiteDepassee(MenuDuJour menu, DateTime maintenant) {
 }
 
 /// Pourquoi le plat ne peut pas être ajouté au panier ; null s'il peut
-/// l'être. Les plats restent consultables dans tous les cas.
+/// l'être. Les plats restent consultables dans tous les cas. Un restaurant
+/// fermé ne bloque rien ici : c'est le serveur qui refuse la commande.
 String? motifIndisponible({
   required Restaurant restaurant,
   required Plat plat,
@@ -164,7 +165,6 @@ String? motifIndisponible({
   MenuDuJour? menu,
   required DateTime maintenant,
 }) {
-  if (restaurant.estFerme) return restaurant.messageFermeture;
   if (ligne != null) {
     if (ligne.epuisee) return 'Ce plat du menu est épuisé';
     if (menu != null &&

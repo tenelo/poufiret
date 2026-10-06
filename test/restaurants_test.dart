@@ -8,6 +8,7 @@ import 'package:poufiret/fonctionnalites/analytics/donnees/analytics_providers.d
 import 'package:poufiret/fonctionnalites/auth/metier_domaine/utilisateur.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
+import 'package:poufiret/fonctionnalites/orders/donnees/orders_repository.dart';
 import 'package:poufiret/fonctionnalites/orders/metier_domaine/orders_models.dart';
 import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_providers.dart';
 import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_repository.dart';
@@ -20,6 +21,7 @@ import 'package:poufiret/fonctionnalites/restaurants/widgets/feuille_plat.dart';
 import 'package:poufiret/fonctionnalites/restaurants/widgets/sections_accueil.dart';
 import 'package:poufiret/global/carte/carte_poufiret.dart';
 import 'package:poufiret/global/carte/services_google.dart';
+import 'package:poufiret/global/errors/api_exception.dart';
 import 'package:poufiret/global/ui/format_montant.dart';
 import 'package:dio/dio.dart';
 
@@ -120,6 +122,34 @@ Restaurant _complet({Map<String, dynamic> statut = const {}}) =>
 
 final _midi = DateTime(2026, 10, 5, 12);
 
+/// Serveur qui refuse tout ajout au panier (restaurant fermé).
+class _CommandesRefusees extends OrdersRepository {
+  _CommandesRefusees(this.message) : super(dio: Dio());
+
+  final String message;
+  int tentatives = 0;
+
+  @override
+  Future<Panier> ajouterLigne({
+    int? articleId,
+    required int quantite,
+    int? varianteId,
+    int? ligneMenuId,
+    List<int>? optionIds,
+    List<int>? supplementIds,
+    String? noteSpeciale,
+  }) async {
+    tentatives++;
+    throw DioException(
+      requestOptions: RequestOptions(),
+      error: ApiException.fromResponse(400, {
+        'erreur': true,
+        'message': message,
+      }),
+    );
+  }
+}
+
 /// Visiteur non connecté.
 class _Visiteur extends AuthNotifier {
   @override
@@ -162,7 +192,7 @@ void main() {
       expect(r.estOuvert, isFalse);
       expect(r.prochaineOuverture, isNull);
       expect(r.messageStatut, 'Horaires non renseignés');
-      expect(r.messageFermeture, 'Fermé · horaires non renseignés');
+      expect(r.estFerme, isTrue);
     });
 
     test('liste réelle : résumés avec statut, délai et services', () {
@@ -178,7 +208,8 @@ void main() {
       expect(liste[0].fiche.services, isEmpty);
       expect(liste[0].apercuPlats, isEmpty);
       expect(liste[2].logo, endsWith('logo_101.png'));
-      expect(filtrerRestaurants(liste, ouvertMaintenant: true), isEmpty);
+      // Fermés ou non, tous restent listés, dans l'ordre du serveur.
+      expect(filtrerRestaurants(liste).map((r) => r.id), [54, 53, 8]);
       expect(filtrerRestaurants(liste, recherche: 'capi').single.id, 53);
     });
 
@@ -298,8 +329,6 @@ void main() {
       });
       expect(liste.first.apercuPlats.single.prix, 5000);
       expect(liste.first.fiche.specialites, ['Poisson']);
-      // Ouverts d'abord ; les fermés restent visibles.
-      expect(filtrerRestaurants(liste).first.id, 54);
       expect(filtrerRestaurants(liste), hasLength(4));
       expect(filtrerRestaurants(liste, livraison: true).single.id, 54);
     });
@@ -335,7 +364,7 @@ void main() {
       expect(entree.restaurant.nom, 'Chez Capi');
       expect(entree.restaurant.ville, 'Ferké');
       expect(entree.restaurant.estFerme, isTrue);
-      expect(entree.restaurant.messageFermeture, 'Fermé · ouvre à 11h');
+      expect(entree.restaurant.messageStatut, 'Ouvre à 11h');
       expect(entree.service, 'midi');
       expect(entree.titre, 'Menu du midi');
       expect(entree.plats.map((p) => p.prix), [5000, 1500]);
@@ -431,23 +460,17 @@ void main() {
       );
     });
 
-    test('restaurant fermé', () {
-      final ferme = _complet(
-        statut: {'est_ouvert': false, 'message_statut': 'Ouvre à 11h'},
-      );
-      expect(
-        motifIndisponible(restaurant: ferme, plat: poulet, maintenant: _midi),
-        'Fermé · ouvre à 11h',
-      );
-      // Sans horaires : fermé aussi, donc non commandable.
+    test('restaurant fermé : rien n\'est bloqué côté app', () {
+      // Le serveur reste l'arbitre : il refuse la commande, l'app relaie.
       final sansHoraires = _repo.detailDepuis(_capture('fiche_53'));
+      expect(sansHoraires.estFerme, isTrue);
       expect(
         motifIndisponible(
           restaurant: sansHoraires,
           plat: poulet,
           maintenant: _midi,
         ),
-        'Fermé · horaires non renseignés',
+        isNull,
       );
     });
 
@@ -556,21 +579,60 @@ void main() {
       expect(find.text('Ajouter au panier · 9 000 F'), findsOneWidget);
     });
 
-    testWidgets('fiche plat désactivée si le restaurant est fermé', (
+    testWidgets('restaurant fermé : ajout possible, refus du serveur notifié', (
       tester,
     ) async {
       final ferme = sansPhotos.copyWith(
         estOuvert: false,
-        messageStatut: 'Ouvre à 11h',
+        messageStatut: 'Horaires non renseignés',
       );
-      await monter(
-        tester,
-        ferme,
-        (_) => Scaffold(body: FeuillePlat(restaurantId: 53, platId: 103)),
+      final commandes = _CommandesRefusees('Horaires non renseignés');
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            restaurantDetailProvider(
+              id: 53,
+            ).overrideWith((ref) => Stream.value(ferme)),
+            ordersRepositoryProvider.overrideWithValue(commandes),
+            paniersProvider.overrideWith((ref) async => const <Panier>[]),
+          ],
+          child: MaterialApp(
+            home: Builder(
+              builder: (context) => Scaffold(
+                body: TextButton(
+                  onPressed: () =>
+                      ouvrirFeuillePlat(context, restaurantId: 53, platId: 103),
+                  child: const Text('Ouvrir'),
+                ),
+              ),
+            ),
+          ),
+        ),
       );
-      expect(find.text('Fermé · ouvre à 11h'), findsOneWidget);
-      expect(find.text('Indisponible'), findsOneWidget);
-      expect(boutonAjout(tester).onPressed, isNull);
+      await tester.tap(find.text('Ouvrir'));
+      await tester.pumpAndSettle();
+
+      // Aucune mention de fermeture, et le bouton reste actif.
+      expect(find.textContaining('Fermé'), findsNothing);
+      expect(find.text('Indisponible'), findsNothing);
+      expect(boutonAjout(tester).onPressed, isNotNull);
+
+      await tester.tap(find.text('Ajouter au panier · 500\u00A0F'));
+      await tester.pumpAndSettle();
+
+      // Le serveur a refusé : feuille refermée, son message en notification.
+      expect(commandes.tentatives, 1);
+      expect(find.byType(FeuillePlat), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byType(SnackBar),
+          matching: find.text('Horaires non renseignés'),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('fiche plat désactivée si le plat est épuisé', (tester) async {
@@ -591,7 +653,8 @@ void main() {
         sansPhotos,
         (_) => const EcranRestaurant(restaurantId: 53),
       );
-      expect(find.text('Ouvert'), findsOneWidget);
+      expect(find.text('Ouvert'), findsNothing);
+      expect(find.text('Ferme à 22h'), findsNothing);
       // « Commandable jusqu'à 14h » ou « Commandes closes depuis 14h »,
       // selon l'heure à laquelle le test tourne.
       expect(find.textContaining('14h'), findsOneWidget);
@@ -668,7 +731,9 @@ void main() {
       expect(find.text('Menus du jour'), findsOneWidget);
       expect(find.text('Restaurants'), findsOneWidget);
       expect(find.text('Chez Capi'), findsNWidgets(2));
-      expect(find.text('Ferme à 22h'), findsOneWidget);
+      // Ni badge ni texte de statut sur les cartes.
+      expect(find.text('Ouvert'), findsNothing);
+      expect(find.text('Ferme à 22h'), findsNothing);
 
       // Visiteur : la carte est visible, le tap invite à s'inscrire.
       await tester.tap(find.text('Chez Capi').first);
@@ -677,7 +742,7 @@ void main() {
       expect(find.byType(EcranRestaurant), findsNothing);
     });
 
-    testWidgets('page restaurant fermée : badge et bandeau visibles', (
+    testWidgets('page restaurant fermée : ni badge ni bandeau, carte lisible', (
       tester,
     ) async {
       final ferme = sansPhotos.copyWith(
@@ -689,8 +754,9 @@ void main() {
         ferme,
         (_) => const EcranRestaurant(restaurantId: 53),
       );
-      expect(find.text('Fermé'), findsOneWidget);
-      expect(find.text('Fermé · horaires non renseignés'), findsOneWidget);
+      expect(find.textContaining('Fermé'), findsNothing);
+      expect(find.text('Horaires non renseignés'), findsNothing);
+      expect(find.text('Poulet braisé'), findsWidgets);
     });
 
     testWidgets('feuille Infos : carte seulement avec des coordonnées', (

@@ -45,7 +45,6 @@ class ContenuRestaurants extends ConsumerStatefulWidget {
 
 class _ContenuRestaurantsState extends ConsumerState<ContenuRestaurants> {
   String _recherche = '';
-  bool _ouvertMaintenant = false;
   bool _livraison = false;
   bool _emporter = false;
 
@@ -77,12 +76,6 @@ class _ContenuRestaurantsState extends ConsumerState<ContenuRestaurants> {
           child: Row(
             children: [
               FilterChip(
-                label: const Text('Ouvert maintenant'),
-                selected: _ouvertMaintenant,
-                onSelected: (v) => setState(() => _ouvertMaintenant = v),
-              ),
-              const SizedBox(width: 8),
-              FilterChip(
                 label: const Text('Livraison'),
                 selected: _livraison,
                 onSelected: (v) => setState(() => _livraison = v),
@@ -111,7 +104,6 @@ class _ContenuRestaurantsState extends ConsumerState<ContenuRestaurants> {
               final restaurants = filtrerRestaurants(
                 tous,
                 recherche: _recherche,
-                ouvertMaintenant: _ouvertMaintenant,
                 livraison: _livraison,
                 emporter: _emporter,
               );

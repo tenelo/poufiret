@@ -137,6 +137,29 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
         );
     } catch (e) {
       if (!mounted) return;
+      final refus = exceptionApi(e);
+      final restaurant = ref.read(provider).value;
+      if (refus != null &&
+          refus.code == 400 &&
+          (restaurant?.estFerme ?? false)) {
+        // Restaurant fermé : le serveur refuse. Son message part en simple
+        // notification et la feuille se ferme, la carte reste consultable.
+        final statut = restaurant!.messageStatut.trim();
+        navigator.pop();
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            Notificateur.snackAvertissement(
+              messageErreurApi(
+                e,
+                repli: statut.isEmpty
+                    ? 'Ce restaurant ne prend pas de commande pour le moment.'
+                    : statut,
+              ),
+            ),
+          );
+        return;
+      }
       setState(
         () => _erreur = messageErreurApi(
           e,

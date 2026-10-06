@@ -199,13 +199,6 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                   padding: marge,
                   sliver: SliverToBoxAdapter(child: _Entete(restaurant: r)),
                 ),
-                if (r.estFerme)
-                  SliverPadding(
-                    padding: marge,
-                    sliver: SliverToBoxAdapter(
-                      child: _BandeauFerme(message: r.messageFermeture),
-                    ),
-                  ),
                 if (!enRecherche && r.menus.isNotEmpty)
                   SliverPadding(
                     padding: marge,
@@ -361,7 +354,7 @@ class _BarreCouverture extends StatelessWidget {
   }
 }
 
-/// Logo, nom, statut, délai, services et accès aux infos pratiques.
+/// Logo, nom, délai, services et accès aux infos pratiques.
 class _Entete extends StatelessWidget {
   const _Entete({required this.restaurant});
 
@@ -393,14 +386,6 @@ class _Entete extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        BadgeStatut(restaurant: r),
-                        const SizedBox(width: 8),
-                        Expanded(child: MessageStatut(restaurant: r)),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -413,53 +398,6 @@ class _Entete extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           InfosPratiques(restaurant: r),
-        ],
-      ),
-    );
-  }
-}
-
-/// Bandeau bien visible quand le restaurant est fermé : la carte reste
-/// consultable, l'ajout au panier est désactivé.
-class _BandeauFerme extends StatelessWidget {
-  const _BandeauFerme({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Config.couleurErreur,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.lock_clock_outlined, color: Colors.white),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  message,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
-                  'Vous pouvez consulter la carte ; les commandes '
-                  'reprendront à la réouverture.',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(color: Colors.white),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -586,7 +524,7 @@ class _SectionMenuDuJour extends StatelessWidget {
       mention: !ligne.epuisee && stock != null && stock <= _seuilStockBas
           ? 'Plus que $stock'
           : '',
-      attenue: ligne.epuisee || clos || restaurant.estFerme,
+      attenue: ligne.epuisee || clos,
       onTap: () => onLigne(ligne),
     );
   }

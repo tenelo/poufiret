@@ -8,7 +8,6 @@ import '../../../global/config/config.dart';
 import '../../../global/ui/notificateur.dart';
 import '../metier_domaine/commande_plat.dart';
 import '../metier_domaine/restaurant_models.dart';
-import 'carte_restaurant.dart';
 
 const _jours = [
   'Lundi',
@@ -121,14 +120,6 @@ class _Infos extends StatelessWidget {
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.w700,
           ),
-        ),
-        const SizedBox(height: 6),
-        Row(
-          children: [
-            BadgeStatut(restaurant: r),
-            const SizedBox(width: 8),
-            Expanded(child: MessageStatut(restaurant: r)),
-          ],
         ),
         if (r.description.isNotEmpty) ...[
           const SizedBox(height: 10),
