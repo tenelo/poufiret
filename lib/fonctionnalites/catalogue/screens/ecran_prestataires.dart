@@ -15,6 +15,8 @@ import '../../../global/widgets/image_reseau.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../auth/widgets/mur_inscription.dart';
 import '../../geo/widgets/filtre_localites.dart';
+import '../../restaurants/metier_domaine/types_restauration.dart';
+import '../../restaurants/screens/ecran_restaurant.dart';
 
 /// Annuaire d'une catégorie : les prestataires/commerces (couverture + nom).
 /// Le client choisit un commerce avant de voir ses articles.
@@ -26,10 +28,14 @@ class EcranPrestataires extends ConsumerWidget {
     required this.categorieSlug,
     this.modeTransaction = '',
     this.afficheCatalogue = true,
+    this.typesPartenaire = const [],
   });
 
   /// Faux pour les metiers de service pur : on va droit a la fiche partenaire.
   final bool afficheCatalogue;
+
+  /// Types de partenaire de la categorie (voir [ContenuPrestataires]).
+  final List<String> typesPartenaire;
 
   final int categorieId;
   final String categorieNom;
@@ -46,6 +52,7 @@ class EcranPrestataires extends ConsumerWidget {
         categorieSlug: categorieSlug,
         modeTransaction: modeTransaction,
         afficheCatalogue: afficheCatalogue,
+        typesPartenaire: typesPartenaire,
       ),
     );
   }
@@ -62,9 +69,15 @@ class ContenuPrestataires extends ConsumerWidget {
     required this.categorieSlug,
     this.modeTransaction = '',
     this.afficheCatalogue = true,
+    this.typesPartenaire = const [],
   });
 
   final bool afficheCatalogue;
+
+  /// Types de partenaire de la categorie. L'affichage est le meme pour
+  /// toutes ; seul l'ecran ouvert par une tuile en depend (un restaurant
+  /// ouvre sa page : menu du jour et carte).
+  final List<String> typesPartenaire;
   final int categorieId;
   final String categorieNom;
   final String categorieSlug;
@@ -110,69 +123,98 @@ class ContenuPrestataires extends ConsumerWidget {
                   child: Text('Aucun prestataire dans cette catégorie.'),
                 );
               }
-              return LayoutBuilder(
-                builder: (context, contraintes) {
-                  final largeur = contraintes.maxWidth > 700
-                      ? 700.0
-                      : contraintes.maxWidth;
-                  // Colonnes selon la largeur disponible (tuiles ~330px).
-                  final colonnes = (largeur / 330).floor().clamp(1, 2);
-                  return Center(
-                    child: SizedBox(
-                      width: largeur,
-                      child: RefreshIndicator(
-                        onRefresh: () => rafraichir(
-                          ref,
-                          partenairesParCategorieProvider(slug: categorieSlug),
-                        ),
-                        child: GridView.builder(
-                          physics: const AlwaysScrollableScrollPhysics(),
-                          padding: const EdgeInsets.all(12),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: colonnes,
-                                mainAxisSpacing: 12,
-                                crossAxisSpacing: 12,
-                                childAspectRatio: 16 / 11,
-                              ),
-                          itemCount: prestataires.length,
-                          itemBuilder: (context, i) => _CartePrestataire(
-                            prestataire: prestataires[i],
-                            onTap: () {
-                              // Mur d'inscription : un visiteur non enregistre
-                              // voit la liste mais doit creer un compte pour
-                              // ouvrir une fiche partenaire.
-                              murInscription(context, ref, () {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => afficheCatalogue
-                                        ? EcranArticles(
-                                            categorieId: categorieId,
-                                            categorieNom:
-                                                prestataires[i].nomCommerce,
-                                            modeTransaction: modeTransaction,
-                                            partenaireId: prestataires[i].id,
-                                          )
-                                        : EcranVitrinePartenaire(
-                                            partenaireId: prestataires[i].id,
-                                            modeTransaction: modeTransaction,
-                                            apercu: prestataires[i],
-                                          ),
-                                  ),
-                                );
-                              });
-                            },
-                          ),
-                        ),
-                      ),
+              return GrillePrestataires(
+                prestataires: prestataires,
+                onRefresh: () => rafraichir(
+                  ref,
+                  partenairesParCategorieProvider(slug: categorieSlug),
+                ),
+                // Mur d'inscription : un visiteur non enregistre voit la
+                // liste mais doit creer un compte pour ouvrir une fiche
+                // partenaire.
+                onTap: (prestataire) => murInscription(context, ref, () {
+                  final fiche = afficheCatalogue
+                      ? EcranArticles(
+                          categorieId: categorieId,
+                          categorieNom: prestataire.nomCommerce,
+                          modeTransaction: modeTransaction,
+                          partenaireId: prestataire.id,
+                        )
+                      : EcranVitrinePartenaire(
+                          partenaireId: prestataire.id,
+                          modeTransaction: modeTransaction,
+                          apercu: prestataire,
+                        );
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => estRestauration(typesPartenaire)
+                          ? EcranRestaurant(
+                              restaurantId: prestataire.id,
+                              nom: prestataire.nomCommerce,
+                              // Partenaire de la categorie sans fiche
+                              // restaurant : sa fiche habituelle.
+                              siIntrouvable: fiche,
+                            )
+                          : fiche,
                     ),
                   );
-                },
+                }),
               );
             },
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Grille des partenaires d'une categorie (couverture, logo, nom), bornee a
+/// 700 px, avec « tirer pour rafraichir ».
+class GrillePrestataires extends StatelessWidget {
+  const GrillePrestataires({
+    super.key,
+    required this.prestataires,
+    required this.onRefresh,
+    required this.onTap,
+  });
+
+  final List<PartenaireCategorie> prestataires;
+  final Future<void> Function() onRefresh;
+  final ValueChanged<PartenaireCategorie> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, contraintes) {
+        final largeur = contraintes.maxWidth > 700
+            ? 700.0
+            : contraintes.maxWidth;
+        // Colonnes selon la largeur disponible (tuiles ~330px).
+        final colonnes = (largeur / 330).floor().clamp(1, 2);
+        return Center(
+          child: SizedBox(
+            width: largeur,
+            child: RefreshIndicator(
+              onRefresh: onRefresh,
+              child: GridView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(12),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: colonnes,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 16 / 11,
+                ),
+                itemCount: prestataires.length,
+                itemBuilder: (context, i) => _CartePrestataire(
+                  prestataire: prestataires[i],
+                  onTap: () => onTap(prestataires[i]),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -225,8 +267,8 @@ class _CartePrestataire extends ConsumerWidget {
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleMedium,
                         ),
-                        if (prestataire.departement.isNotEmpty)
-                          // Departement (ex: "Ferké") sous le nom du commerce.
+                        if (prestataire.ligneLocalisation.isNotEmpty)
+                          // « Localite - Quartier - Secteur » sous le nom.
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -238,7 +280,7 @@ class _CartePrestataire extends ConsumerWidget {
                               const SizedBox(width: 2),
                               Flexible(
                                 child: Text(
-                                  prestataire.departement,
+                                  prestataire.ligneLocalisation,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: theme.textTheme.bodySmall?.copyWith(

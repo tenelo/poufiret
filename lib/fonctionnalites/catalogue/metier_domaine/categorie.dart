@@ -12,6 +12,9 @@ abstract class Categorie with _$Categorie {
     @Default('') String description,
     @Default('') String icone, // emoji 🍽️
     @JsonKey(name: 'image_couverture') String? imageCouverture,
+
+    /// Image de la tuile (URL absolue), si le serveur en fournit une.
+    String? image,
     int? parent,
     @JsonKey(name: 'mode_transaction') @Default('') String modeTransaction,
     @Default(0) int ordre,
@@ -30,6 +33,13 @@ abstract class Categorie with _$Categorie {
 }
 
 extension CategorieAffichage on Categorie {
+  /// Image affichee dans la tuile de la grille : `image`, sinon
+  /// `image_couverture` ; chaine vide si la categorie n'en a pas (emoji).
+  String get imageTuile {
+    final url = (image ?? '').isNotEmpty ? image! : imageCouverture ?? '';
+    return url.trim();
+  }
+
   /// Active ET avec au moins un partenaire (ou effectif inconnu).
   /// Exactement l'inverse de « Bientôt disponible » sur l'accueil.
   bool get aDesPartenaires =>

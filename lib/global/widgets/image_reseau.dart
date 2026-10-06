@@ -20,6 +20,7 @@ class ImageReseau extends StatelessWidget {
     this.errorBuilder,
     this.loadingBuilder,
     this.largeurAffichee,
+    this.attente,
   });
 
   final String url;
@@ -37,6 +38,9 @@ class ImageReseau extends StatelessWidget {
   /// les listes. null = taille d'origine.
   final double? largeurAffichee;
 
+  /// Affiche pendant le chargement, a la place du fond neutre par defaut.
+  final Widget? attente;
+
   @override
   Widget build(BuildContext context) {
     if (url.isEmpty) return _placeholder();
@@ -50,7 +54,7 @@ class ImageReseau extends StatelessWidget {
           ? null
           : (largeurAffichee! * MediaQuery.devicePixelRatioOf(context)).round(),
       fadeInDuration: const Duration(milliseconds: 200),
-      placeholder: (_, _) => _placeholder(),
+      placeholder: (_, _) => attente ?? _placeholder(),
       errorWidget: (context, _, erreur) => errorBuilder != null
           ? errorBuilder!(context, erreur, null)
           : _placeholder(icone: Icons.image_not_supported_outlined),

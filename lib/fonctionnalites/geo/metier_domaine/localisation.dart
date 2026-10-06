@@ -92,3 +92,18 @@ String formatLocalisation({
   }
   return lieu.isEmpty ? dep : '$lieu ($dep)';
 }
+
+/// Ligne de localisation d'une carte de partenaire :
+/// « Localité - Quartier - Secteur ». Un élément manquant reste vide entre
+/// les tirets (« Ferké - - », « Ferké - - Rue Princesse ») ; chaîne vide si
+/// rien n'est connu. La troncature (une ligne, « … ») est faite à
+/// l'affichage.
+String ligneLocalisation({
+  String localite = '',
+  String quartier = '',
+  String secteur = '',
+}) {
+  final elements = [localite.trim(), quartier.trim(), secteur.trim()];
+  if (elements.every((e) => e.isEmpty)) return '';
+  return elements.join(' - ').replaceAll(RegExp(' +'), ' ').trim();
+}

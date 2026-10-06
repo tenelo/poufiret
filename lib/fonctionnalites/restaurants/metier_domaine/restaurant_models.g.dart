@@ -255,19 +255,6 @@ Map<String, dynamic> _$MenuDuJourToJson(_MenuDuJour instance) =>
       'lignes': instance.lignes,
     };
 
-_PlatApercu _$PlatApercuFromJson(Map<String, dynamic> json) => _PlatApercu(
-  nom: json['nom'] as String? ?? '',
-  prix: json['prix'] == null ? 0 : versInt(json['prix']),
-  image: json['image'] as String? ?? '',
-);
-
-Map<String, dynamic> _$PlatApercuToJson(_PlatApercu instance) =>
-    <String, dynamic>{
-      'nom': instance.nom,
-      'prix': instance.prix,
-      'image': instance.image,
-    };
-
 _Restaurant _$RestaurantFromJson(Map<String, dynamic> json) => _Restaurant(
   id: (json['id'] as num).toInt(),
   nom: json['nom'] as String? ?? '',
@@ -304,11 +291,6 @@ _Restaurant _$RestaurantFromJson(Map<String, dynamic> json) => _Restaurant(
           ?.map((e) => SectionCarte.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <SectionCarte>[],
-  apercuPlats:
-      (json['apercu_plats'] as List<dynamic>?)
-          ?.map((e) => PlatApercu.fromJson(e as Map<String, dynamic>))
-          .toList() ??
-      const <PlatApercu>[],
 );
 
 Map<String, dynamic> _$RestaurantToJson(_Restaurant instance) =>
@@ -334,27 +316,4 @@ Map<String, dynamic> _$RestaurantToJson(_Restaurant instance) =>
       'menus': instance.menus,
       'services_en_vigueur': instance.servicesEnVigueur,
       'carte': instance.carte,
-      'apercu_plats': instance.apercuPlats,
-    };
-
-_MenuDuJourAccueil _$MenuDuJourAccueilFromJson(Map<String, dynamic> json) =>
-    _MenuDuJourAccueil(
-      restaurant: Restaurant.fromJson(
-        json['restaurant'] as Map<String, dynamic>,
-      ),
-      service: json['service'] as String? ?? '',
-      titre: json['titre'] as String? ?? '',
-      plats:
-          (json['plats'] as List<dynamic>?)
-              ?.map((e) => PlatApercu.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          const <PlatApercu>[],
-    );
-
-Map<String, dynamic> _$MenuDuJourAccueilToJson(_MenuDuJourAccueil instance) =>
-    <String, dynamic>{
-      'restaurant': instance.restaurant,
-      'service': instance.service,
-      'titre': instance.titre,
-      'plats': instance.plats,
     };

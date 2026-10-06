@@ -12,35 +12,6 @@ class RestaurantsRepository {
   // Comme dans le catalogue : `xxxBrut` (appel réseau, JSON stocké tel quel
   // sur disque) et `xxxDepuis` (décodage, appliqué aussi au JSON du cache).
 
-  Map<String, dynamic> _parDepartement(int departement) => {
-    // 0 = visiteur sans département : le serveur applique sa portée.
-    if (departement > 0) 'departement': departement,
-  };
-
-  /// `GET /restaurants/?departement=<id>` — restaurants du département.
-  Future<Object?> listeBrut({required int departement}) async =>
-      (await _dio.get(
-        '${Env.apiPrefix}/restaurants/',
-        queryParameters: _parDepartement(departement),
-      )).data;
-
-  List<Restaurant> listeDepuis(Object? json) => [
-    for (final e in elementsDeListe(json))
-      Restaurant.fromJson(normaliserResume(e)),
-  ];
-
-  /// `GET /restaurants/menus-du-jour/?departement=<id>` — flux de l'accueil.
-  Future<Object?> menusDuJourBrut({required int departement}) async =>
-      (await _dio.get(
-        '${Env.apiPrefix}/restaurants/menus-du-jour/',
-        queryParameters: _parDepartement(departement),
-      )).data;
-
-  List<MenuDuJourAccueil> menusDuJourDepuis(Object? json) => [
-    for (final e in elementsDeListe(json))
-      MenuDuJourAccueil.fromJson(normaliserMenuAccueil(e)),
-  ];
-
   /// `GET /restaurants/<id>/` — fiche, menus du jour et carte, en une requête.
   Future<Object?> detailBrut(int id) async =>
       (await _dio.get('${Env.apiPrefix}/restaurants/$id/')).data;

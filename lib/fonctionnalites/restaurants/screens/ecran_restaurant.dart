@@ -33,13 +33,21 @@ const int _seuilStockBas = 5;
 
 /// Page d'un restaurant : en-tête, menu du jour, carte par sections.
 class EcranRestaurant extends ConsumerWidget {
-  const EcranRestaurant({super.key, required this.restaurantId, this.apercu});
+  const EcranRestaurant({
+    super.key,
+    required this.restaurantId,
+    this.nom = '',
+    this.siIntrouvable,
+  });
 
   final int restaurantId;
 
-  /// Résumé déjà connu de l'écran précédent : son nom s'affiche pendant le
-  /// premier chargement.
-  final Restaurant? apercu;
+  /// Nom déjà connu de l'écran précédent, affiché pendant le chargement.
+  final String nom;
+
+  /// Écran affiché à la place si le serveur ne connaît pas ce restaurant
+  /// (404) : partenaire rangé dans la catégorie sans fiche restaurant.
+  final Widget? siIntrouvable;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,19 +60,21 @@ class EcranRestaurant extends ConsumerWidget {
           // Rechargement (tirer pour rafraîchir) : la page reste affichée.
           skipLoadingOnReload: true,
           loading: () => Scaffold(
-            appBar: AppBar(title: Text(apercu?.nom ?? '')),
+            appBar: AppBar(title: Text(nom)),
             body: const SqueletteVitrine(),
           ),
-          error: (err, _) => Scaffold(
-            appBar: AppBar(title: Text(apercu?.nom ?? '')),
-            body: MessageErreur(
-              message: messageErreurApi(
-                err,
-                repli: 'Impossible de charger ce restaurant.',
+          error: (err, _) =>
+              (exceptionApi(err)?.code == 404 ? siIntrouvable : null) ??
+              Scaffold(
+                appBar: AppBar(title: Text(nom)),
+                body: MessageErreur(
+                  message: messageErreurApi(
+                    err,
+                    repli: 'Impossible de charger ce restaurant.',
+                  ),
+                  onReessayer: () => ref.invalidate(provider),
+                ),
               ),
-              onReessayer: () => ref.invalidate(provider),
-            ),
-          ),
           data: (restaurant) => _PageRestaurant(restaurant: restaurant),
         );
   }

@@ -22,25 +22,6 @@ const _accents = {
 String sansAccents(String texte) =>
     texte.toLowerCase().split('').map((c) => _accents[c] ?? c).join();
 
-/// Restaurants correspondant aux filtres, dans l'ordre du serveur.
-List<Restaurant> filtrerRestaurants(
-  List<Restaurant> restaurants, {
-  String recherche = '',
-  bool livraison = false,
-  bool emporter = false,
-}) {
-  final terme = sansAccents(recherche.trim());
-  return restaurants.where((r) {
-    if (livraison && !r.fiche.services.contains('livraison')) return false;
-    if (emporter && !r.fiche.services.contains('emporter')) return false;
-    if (terme.isEmpty) return true;
-    return [
-      r.nom,
-      ...r.fiche.specialites,
-    ].any((t) => sansAccents(t).contains(terme));
-  }).toList();
-}
-
 /// Plats d'une section dont le nom ou la description contient [recherche].
 List<Plat> filtrerPlats(List<Plat> plats, String recherche) {
   final terme = sansAccents(recherche.trim());

@@ -19,6 +19,10 @@ _PartenaireCategorie _$PartenaireCategorieFromJson(Map<String, dynamic> json) =>
       longitude: (json['longitude'] as num?)?.toDouble(),
       adresse: json['adresse'] as String? ?? '',
       quartier: json['quartier'] as String? ?? '',
+      ville: json['ville'] as String? ?? '',
+      secteur: json['secteur'] as String? ?? '',
+      localiteNom: json['localite_nom'] as String?,
+      quartierNom: json['quartier_nom'] as String?,
     );
 
 Map<String, dynamic> _$PartenaireCategorieToJson(
@@ -35,4 +39,8 @@ Map<String, dynamic> _$PartenaireCategorieToJson(
   'longitude': instance.longitude,
   'adresse': instance.adresse,
   'quartier': instance.quartier,
+  'ville': instance.ville,
+  'secteur': instance.secteur,
+  'localite_nom': instance.localiteNom,
+  'quartier_nom': instance.quartierNom,
 };

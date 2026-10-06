@@ -2876,282 +2876,14 @@ as List<LigneMenu>,
 
 
 /// @nodoc
-mixin _$PlatApercu {
-
- String get nom;@JsonKey(fromJson: versInt) int get prix; String get image;
-/// Create a copy of PlatApercu
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$PlatApercuCopyWith<PlatApercu> get copyWith => _$PlatApercuCopyWithImpl<PlatApercu>(this as PlatApercu, _$identity);
-
-  /// Serializes this PlatApercu to a JSON map.
-  Map<String, dynamic> toJson();
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PlatApercu&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.image, image) || other.image == image));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,nom,prix,image);
-
-@override
-String toString() {
-  return 'PlatApercu(nom: $nom, prix: $prix, image: $image)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $PlatApercuCopyWith<$Res>  {
-  factory $PlatApercuCopyWith(PlatApercu value, $Res Function(PlatApercu) _then) = _$PlatApercuCopyWithImpl;
-@useResult
-$Res call({
- String nom,@JsonKey(fromJson: versInt) int prix, String image
-});
-
-
-
-
-}
-/// @nodoc
-class _$PlatApercuCopyWithImpl<$Res>
-    implements $PlatApercuCopyWith<$Res> {
-  _$PlatApercuCopyWithImpl(this._self, this._then);
-
-  final PlatApercu _self;
-  final $Res Function(PlatApercu) _then;
-
-/// Create a copy of PlatApercu
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? nom = null,Object? prix = null,Object? image = null,}) {
-  return _then(_self.copyWith(
-nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
-as String,prix: null == prix ? _self.prix : prix // ignore: cast_nullable_to_non_nullable
-as int,image: null == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-}
-
-
-/// Adds pattern-matching-related methods to [PlatApercu].
-extension PlatApercuPatterns on PlatApercu {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _PlatApercu value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _PlatApercu() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _PlatApercu value)  $default,){
-final _that = this;
-switch (_that) {
-case _PlatApercu():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _PlatApercu value)?  $default,){
-final _that = this;
-switch (_that) {
-case _PlatApercu() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String nom, @JsonKey(fromJson: versInt)  int prix,  String image)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _PlatApercu() when $default != null:
-return $default(_that.nom,_that.prix,_that.image);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String nom, @JsonKey(fromJson: versInt)  int prix,  String image)  $default,) {final _that = this;
-switch (_that) {
-case _PlatApercu():
-return $default(_that.nom,_that.prix,_that.image);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String nom, @JsonKey(fromJson: versInt)  int prix,  String image)?  $default,) {final _that = this;
-switch (_that) {
-case _PlatApercu() when $default != null:
-return $default(_that.nom,_that.prix,_that.image);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-@JsonSerializable()
-
-class _PlatApercu implements PlatApercu {
-  const _PlatApercu({this.nom = '', @JsonKey(fromJson: versInt) this.prix = 0, this.image = ''});
-  factory _PlatApercu.fromJson(Map<String, dynamic> json) => _$PlatApercuFromJson(json);
-
-@override@JsonKey() final  String nom;
-@override@JsonKey(fromJson: versInt) final  int prix;
-@override@JsonKey() final  String image;
-
-/// Create a copy of PlatApercu
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$PlatApercuCopyWith<_PlatApercu> get copyWith => __$PlatApercuCopyWithImpl<_PlatApercu>(this, _$identity);
-
-@override
-Map<String, dynamic> toJson() {
-  return _$PlatApercuToJson(this, );
-}
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PlatApercu&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.image, image) || other.image == image));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,nom,prix,image);
-
-@override
-String toString() {
-  return 'PlatApercu(nom: $nom, prix: $prix, image: $image)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$PlatApercuCopyWith<$Res> implements $PlatApercuCopyWith<$Res> {
-  factory _$PlatApercuCopyWith(_PlatApercu value, $Res Function(_PlatApercu) _then) = __$PlatApercuCopyWithImpl;
-@override @useResult
-$Res call({
- String nom,@JsonKey(fromJson: versInt) int prix, String image
-});
-
-
-
-
-}
-/// @nodoc
-class __$PlatApercuCopyWithImpl<$Res>
-    implements _$PlatApercuCopyWith<$Res> {
-  __$PlatApercuCopyWithImpl(this._self, this._then);
-
-  final _PlatApercu _self;
-  final $Res Function(_PlatApercu) _then;
-
-/// Create a copy of PlatApercu
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? nom = null,Object? prix = null,Object? image = null,}) {
-  return _then(_PlatApercu(
-nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
-as String,prix: null == prix ? _self.prix : prix // ignore: cast_nullable_to_non_nullable
-as int,image: null == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
-
-
-/// @nodoc
 mixin _$Restaurant {
 
  int get id; String get nom; String get description; String get logo; String get couverture; String get adresse; String get quartier; String get ville;@JsonKey(name: 'localite_nom') String? get localiteNom;@JsonKey(name: 'quartier_nom') String? get quartierNom;@JsonKey(name: 'telephone_pro') String get telephonePro; String get whatsapp;@JsonKey(fromJson: versDoubleNullable) double? get latitude;@JsonKey(fromJson: versDoubleNullable) double? get longitude;/// Toujours fourni par le serveur (liste, fiche, flux). Sans horaires
-/// renseignés : fermé, avec « Horaires non renseignés » en message.
+/// renseignés : fermé, avec « Horaires non renseignés » en message. Non
+/// affiché : sert seulement à expliquer un refus de commande.
 @JsonKey(name: 'est_ouvert') bool get estOuvert;@JsonKey(name: 'message_statut') String get messageStatut;@JsonKey(name: 'prochaine_ouverture') String? get prochaineOuverture; FicheRestaurant get fiche;/// Menus du jour présents, dans l'ordre midi, soir, journée.
  List<MenuDuJour> get menus;/// Services dont le menu est en vigueur en ce moment.
-@JsonKey(name: 'services_en_vigueur') List<String> get servicesEnVigueur; List<SectionCarte> get carte;@JsonKey(name: 'apercu_plats') List<PlatApercu> get apercuPlats;
+@JsonKey(name: 'services_en_vigueur') List<String> get servicesEnVigueur; List<SectionCarte> get carte;
 /// Create a copy of Restaurant
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -3164,16 +2896,16 @@ $RestaurantCopyWith<Restaurant> get copyWith => _$RestaurantCopyWithImpl<Restaur
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Restaurant&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.estOuvert, estOuvert) || other.estOuvert == estOuvert)&&(identical(other.messageStatut, messageStatut) || other.messageStatut == messageStatut)&&(identical(other.prochaineOuverture, prochaineOuverture) || other.prochaineOuverture == prochaineOuverture)&&(identical(other.fiche, fiche) || other.fiche == fiche)&&const DeepCollectionEquality().equals(other.menus, menus)&&const DeepCollectionEquality().equals(other.servicesEnVigueur, servicesEnVigueur)&&const DeepCollectionEquality().equals(other.carte, carte)&&const DeepCollectionEquality().equals(other.apercuPlats, apercuPlats));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Restaurant&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.estOuvert, estOuvert) || other.estOuvert == estOuvert)&&(identical(other.messageStatut, messageStatut) || other.messageStatut == messageStatut)&&(identical(other.prochaineOuverture, prochaineOuverture) || other.prochaineOuverture == prochaineOuverture)&&(identical(other.fiche, fiche) || other.fiche == fiche)&&const DeepCollectionEquality().equals(other.menus, menus)&&const DeepCollectionEquality().equals(other.servicesEnVigueur, servicesEnVigueur)&&const DeepCollectionEquality().equals(other.carte, carte));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,nom,description,logo,couverture,adresse,quartier,ville,localiteNom,quartierNom,telephonePro,whatsapp,latitude,longitude,estOuvert,messageStatut,prochaineOuverture,fiche,const DeepCollectionEquality().hash(menus),const DeepCollectionEquality().hash(servicesEnVigueur),const DeepCollectionEquality().hash(carte),const DeepCollectionEquality().hash(apercuPlats)]);
+int get hashCode => Object.hashAll([runtimeType,id,nom,description,logo,couverture,adresse,quartier,ville,localiteNom,quartierNom,telephonePro,whatsapp,latitude,longitude,estOuvert,messageStatut,prochaineOuverture,fiche,const DeepCollectionEquality().hash(menus),const DeepCollectionEquality().hash(servicesEnVigueur),const DeepCollectionEquality().hash(carte)]);
 
 @override
 String toString() {
-  return 'Restaurant(id: $id, nom: $nom, description: $description, logo: $logo, couverture: $couverture, adresse: $adresse, quartier: $quartier, ville: $ville, localiteNom: $localiteNom, quartierNom: $quartierNom, telephonePro: $telephonePro, whatsapp: $whatsapp, latitude: $latitude, longitude: $longitude, estOuvert: $estOuvert, messageStatut: $messageStatut, prochaineOuverture: $prochaineOuverture, fiche: $fiche, menus: $menus, servicesEnVigueur: $servicesEnVigueur, carte: $carte, apercuPlats: $apercuPlats)';
+  return 'Restaurant(id: $id, nom: $nom, description: $description, logo: $logo, couverture: $couverture, adresse: $adresse, quartier: $quartier, ville: $ville, localiteNom: $localiteNom, quartierNom: $quartierNom, telephonePro: $telephonePro, whatsapp: $whatsapp, latitude: $latitude, longitude: $longitude, estOuvert: $estOuvert, messageStatut: $messageStatut, prochaineOuverture: $prochaineOuverture, fiche: $fiche, menus: $menus, servicesEnVigueur: $servicesEnVigueur, carte: $carte)';
 }
 
 
@@ -3184,7 +2916,7 @@ abstract mixin class $RestaurantCopyWith<$Res>  {
   factory $RestaurantCopyWith(Restaurant value, $Res Function(Restaurant) _then) = _$RestaurantCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom, String description, String logo, String couverture, String adresse, String quartier, String ville,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude,@JsonKey(name: 'est_ouvert') bool estOuvert,@JsonKey(name: 'message_statut') String messageStatut,@JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture, FicheRestaurant fiche, List<MenuDuJour> menus,@JsonKey(name: 'services_en_vigueur') List<String> servicesEnVigueur, List<SectionCarte> carte,@JsonKey(name: 'apercu_plats') List<PlatApercu> apercuPlats
+ int id, String nom, String description, String logo, String couverture, String adresse, String quartier, String ville,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude,@JsonKey(name: 'est_ouvert') bool estOuvert,@JsonKey(name: 'message_statut') String messageStatut,@JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture, FicheRestaurant fiche, List<MenuDuJour> menus,@JsonKey(name: 'services_en_vigueur') List<String> servicesEnVigueur, List<SectionCarte> carte
 });
 
 
@@ -3201,7 +2933,7 @@ class _$RestaurantCopyWithImpl<$Res>
 
 /// Create a copy of Restaurant
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? logo = null,Object? couverture = null,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? telephonePro = null,Object? whatsapp = null,Object? latitude = freezed,Object? longitude = freezed,Object? estOuvert = null,Object? messageStatut = null,Object? prochaineOuverture = freezed,Object? fiche = null,Object? menus = null,Object? servicesEnVigueur = null,Object? carte = null,Object? apercuPlats = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? logo = null,Object? couverture = null,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? telephonePro = null,Object? whatsapp = null,Object? latitude = freezed,Object? longitude = freezed,Object? estOuvert = null,Object? messageStatut = null,Object? prochaineOuverture = freezed,Object? fiche = null,Object? menus = null,Object? servicesEnVigueur = null,Object? carte = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -3224,8 +2956,7 @@ as String?,fiche: null == fiche ? _self.fiche : fiche // ignore: cast_nullable_t
 as FicheRestaurant,menus: null == menus ? _self.menus : menus // ignore: cast_nullable_to_non_nullable
 as List<MenuDuJour>,servicesEnVigueur: null == servicesEnVigueur ? _self.servicesEnVigueur : servicesEnVigueur // ignore: cast_nullable_to_non_nullable
 as List<String>,carte: null == carte ? _self.carte : carte // ignore: cast_nullable_to_non_nullable
-as List<SectionCarte>,apercuPlats: null == apercuPlats ? _self.apercuPlats : apercuPlats // ignore: cast_nullable_to_non_nullable
-as List<PlatApercu>,
+as List<SectionCarte>,
   ));
 }
 /// Create a copy of Restaurant
@@ -3319,10 +3050,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte, @JsonKey(name: 'apercu_plats')  List<PlatApercu> apercuPlats)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Restaurant() when $default != null:
-return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte,_that.apercuPlats);case _:
+return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte);case _:
   return orElse();
 
 }
@@ -3340,10 +3071,10 @@ return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte, @JsonKey(name: 'apercu_plats')  List<PlatApercu> apercuPlats)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte)  $default,) {final _that = this;
 switch (_that) {
 case _Restaurant():
-return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte,_that.apercuPlats);case _:
+return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -3360,10 +3091,10 @@ return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte, @JsonKey(name: 'apercu_plats')  List<PlatApercu> apercuPlats)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte)?  $default,) {final _that = this;
 switch (_that) {
 case _Restaurant() when $default != null:
-return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte,_that.apercuPlats);case _:
+return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte);case _:
   return null;
 
 }
@@ -3375,7 +3106,7 @@ return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture
 @JsonSerializable()
 
 class _Restaurant extends Restaurant {
-  const _Restaurant({required this.id, this.nom = '', this.description = '', this.logo = '', this.couverture = '', this.adresse = '', this.quartier = '', this.ville = '', @JsonKey(name: 'localite_nom') this.localiteNom, @JsonKey(name: 'quartier_nom') this.quartierNom, @JsonKey(name: 'telephone_pro') this.telephonePro = '', this.whatsapp = '', @JsonKey(fromJson: versDoubleNullable) this.latitude, @JsonKey(fromJson: versDoubleNullable) this.longitude, @JsonKey(name: 'est_ouvert') required this.estOuvert, @JsonKey(name: 'message_statut') this.messageStatut = '', @JsonKey(name: 'prochaine_ouverture') this.prochaineOuverture, this.fiche = const FicheRestaurant(), final  List<MenuDuJour> menus = const <MenuDuJour>[], @JsonKey(name: 'services_en_vigueur') final  List<String> servicesEnVigueur = const <String>[], final  List<SectionCarte> carte = const <SectionCarte>[], @JsonKey(name: 'apercu_plats') final  List<PlatApercu> apercuPlats = const <PlatApercu>[]}): _menus = menus,_servicesEnVigueur = servicesEnVigueur,_carte = carte,_apercuPlats = apercuPlats,super._();
+  const _Restaurant({required this.id, this.nom = '', this.description = '', this.logo = '', this.couverture = '', this.adresse = '', this.quartier = '', this.ville = '', @JsonKey(name: 'localite_nom') this.localiteNom, @JsonKey(name: 'quartier_nom') this.quartierNom, @JsonKey(name: 'telephone_pro') this.telephonePro = '', this.whatsapp = '', @JsonKey(fromJson: versDoubleNullable) this.latitude, @JsonKey(fromJson: versDoubleNullable) this.longitude, @JsonKey(name: 'est_ouvert') required this.estOuvert, @JsonKey(name: 'message_statut') this.messageStatut = '', @JsonKey(name: 'prochaine_ouverture') this.prochaineOuverture, this.fiche = const FicheRestaurant(), final  List<MenuDuJour> menus = const <MenuDuJour>[], @JsonKey(name: 'services_en_vigueur') final  List<String> servicesEnVigueur = const <String>[], final  List<SectionCarte> carte = const <SectionCarte>[]}): _menus = menus,_servicesEnVigueur = servicesEnVigueur,_carte = carte,super._();
   factory _Restaurant.fromJson(Map<String, dynamic> json) => _$RestaurantFromJson(json);
 
 @override final  int id;
@@ -3393,7 +3124,8 @@ class _Restaurant extends Restaurant {
 @override@JsonKey(fromJson: versDoubleNullable) final  double? latitude;
 @override@JsonKey(fromJson: versDoubleNullable) final  double? longitude;
 /// Toujours fourni par le serveur (liste, fiche, flux). Sans horaires
-/// renseignés : fermé, avec « Horaires non renseignés » en message.
+/// renseignés : fermé, avec « Horaires non renseignés » en message. Non
+/// affiché : sert seulement à expliquer un refus de commande.
 @override@JsonKey(name: 'est_ouvert') final  bool estOuvert;
 @override@JsonKey(name: 'message_statut') final  String messageStatut;
 @override@JsonKey(name: 'prochaine_ouverture') final  String? prochaineOuverture;
@@ -3423,13 +3155,6 @@ class _Restaurant extends Restaurant {
   return EqualUnmodifiableListView(_carte);
 }
 
- final  List<PlatApercu> _apercuPlats;
-@override@JsonKey(name: 'apercu_plats') List<PlatApercu> get apercuPlats {
-  if (_apercuPlats is EqualUnmodifiableListView) return _apercuPlats;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_apercuPlats);
-}
-
 
 /// Create a copy of Restaurant
 /// with the given fields replaced by the non-null parameter values.
@@ -3444,16 +3169,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Restaurant&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.estOuvert, estOuvert) || other.estOuvert == estOuvert)&&(identical(other.messageStatut, messageStatut) || other.messageStatut == messageStatut)&&(identical(other.prochaineOuverture, prochaineOuverture) || other.prochaineOuverture == prochaineOuverture)&&(identical(other.fiche, fiche) || other.fiche == fiche)&&const DeepCollectionEquality().equals(other._menus, _menus)&&const DeepCollectionEquality().equals(other._servicesEnVigueur, _servicesEnVigueur)&&const DeepCollectionEquality().equals(other._carte, _carte)&&const DeepCollectionEquality().equals(other._apercuPlats, _apercuPlats));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Restaurant&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.estOuvert, estOuvert) || other.estOuvert == estOuvert)&&(identical(other.messageStatut, messageStatut) || other.messageStatut == messageStatut)&&(identical(other.prochaineOuverture, prochaineOuverture) || other.prochaineOuverture == prochaineOuverture)&&(identical(other.fiche, fiche) || other.fiche == fiche)&&const DeepCollectionEquality().equals(other._menus, _menus)&&const DeepCollectionEquality().equals(other._servicesEnVigueur, _servicesEnVigueur)&&const DeepCollectionEquality().equals(other._carte, _carte));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,nom,description,logo,couverture,adresse,quartier,ville,localiteNom,quartierNom,telephonePro,whatsapp,latitude,longitude,estOuvert,messageStatut,prochaineOuverture,fiche,const DeepCollectionEquality().hash(_menus),const DeepCollectionEquality().hash(_servicesEnVigueur),const DeepCollectionEquality().hash(_carte),const DeepCollectionEquality().hash(_apercuPlats)]);
+int get hashCode => Object.hashAll([runtimeType,id,nom,description,logo,couverture,adresse,quartier,ville,localiteNom,quartierNom,telephonePro,whatsapp,latitude,longitude,estOuvert,messageStatut,prochaineOuverture,fiche,const DeepCollectionEquality().hash(_menus),const DeepCollectionEquality().hash(_servicesEnVigueur),const DeepCollectionEquality().hash(_carte)]);
 
 @override
 String toString() {
-  return 'Restaurant(id: $id, nom: $nom, description: $description, logo: $logo, couverture: $couverture, adresse: $adresse, quartier: $quartier, ville: $ville, localiteNom: $localiteNom, quartierNom: $quartierNom, telephonePro: $telephonePro, whatsapp: $whatsapp, latitude: $latitude, longitude: $longitude, estOuvert: $estOuvert, messageStatut: $messageStatut, prochaineOuverture: $prochaineOuverture, fiche: $fiche, menus: $menus, servicesEnVigueur: $servicesEnVigueur, carte: $carte, apercuPlats: $apercuPlats)';
+  return 'Restaurant(id: $id, nom: $nom, description: $description, logo: $logo, couverture: $couverture, adresse: $adresse, quartier: $quartier, ville: $ville, localiteNom: $localiteNom, quartierNom: $quartierNom, telephonePro: $telephonePro, whatsapp: $whatsapp, latitude: $latitude, longitude: $longitude, estOuvert: $estOuvert, messageStatut: $messageStatut, prochaineOuverture: $prochaineOuverture, fiche: $fiche, menus: $menus, servicesEnVigueur: $servicesEnVigueur, carte: $carte)';
 }
 
 
@@ -3464,7 +3189,7 @@ abstract mixin class _$RestaurantCopyWith<$Res> implements $RestaurantCopyWith<$
   factory _$RestaurantCopyWith(_Restaurant value, $Res Function(_Restaurant) _then) = __$RestaurantCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom, String description, String logo, String couverture, String adresse, String quartier, String ville,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude,@JsonKey(name: 'est_ouvert') bool estOuvert,@JsonKey(name: 'message_statut') String messageStatut,@JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture, FicheRestaurant fiche, List<MenuDuJour> menus,@JsonKey(name: 'services_en_vigueur') List<String> servicesEnVigueur, List<SectionCarte> carte,@JsonKey(name: 'apercu_plats') List<PlatApercu> apercuPlats
+ int id, String nom, String description, String logo, String couverture, String adresse, String quartier, String ville,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude,@JsonKey(name: 'est_ouvert') bool estOuvert,@JsonKey(name: 'message_statut') String messageStatut,@JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture, FicheRestaurant fiche, List<MenuDuJour> menus,@JsonKey(name: 'services_en_vigueur') List<String> servicesEnVigueur, List<SectionCarte> carte
 });
 
 
@@ -3481,7 +3206,7 @@ class __$RestaurantCopyWithImpl<$Res>
 
 /// Create a copy of Restaurant
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? logo = null,Object? couverture = null,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? telephonePro = null,Object? whatsapp = null,Object? latitude = freezed,Object? longitude = freezed,Object? estOuvert = null,Object? messageStatut = null,Object? prochaineOuverture = freezed,Object? fiche = null,Object? menus = null,Object? servicesEnVigueur = null,Object? carte = null,Object? apercuPlats = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? logo = null,Object? couverture = null,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? telephonePro = null,Object? whatsapp = null,Object? latitude = freezed,Object? longitude = freezed,Object? estOuvert = null,Object? messageStatut = null,Object? prochaineOuverture = freezed,Object? fiche = null,Object? menus = null,Object? servicesEnVigueur = null,Object? carte = null,}) {
   return _then(_Restaurant(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -3504,8 +3229,7 @@ as String?,fiche: null == fiche ? _self.fiche : fiche // ignore: cast_nullable_t
 as FicheRestaurant,menus: null == menus ? _self._menus : menus // ignore: cast_nullable_to_non_nullable
 as List<MenuDuJour>,servicesEnVigueur: null == servicesEnVigueur ? _self._servicesEnVigueur : servicesEnVigueur // ignore: cast_nullable_to_non_nullable
 as List<String>,carte: null == carte ? _self._carte : carte // ignore: cast_nullable_to_non_nullable
-as List<SectionCarte>,apercuPlats: null == apercuPlats ? _self._apercuPlats : apercuPlats // ignore: cast_nullable_to_non_nullable
-as List<PlatApercu>,
+as List<SectionCarte>,
   ));
 }
 
@@ -3517,302 +3241,6 @@ $FicheRestaurantCopyWith<$Res> get fiche {
   
   return $FicheRestaurantCopyWith<$Res>(_self.fiche, (value) {
     return _then(_self.copyWith(fiche: value));
-  });
-}
-}
-
-
-/// @nodoc
-mixin _$MenuDuJourAccueil {
-
- Restaurant get restaurant; String get service; String get titre; List<PlatApercu> get plats;
-/// Create a copy of MenuDuJourAccueil
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$MenuDuJourAccueilCopyWith<MenuDuJourAccueil> get copyWith => _$MenuDuJourAccueilCopyWithImpl<MenuDuJourAccueil>(this as MenuDuJourAccueil, _$identity);
-
-  /// Serializes this MenuDuJourAccueil to a JSON map.
-  Map<String, dynamic> toJson();
-
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MenuDuJourAccueil&&(identical(other.restaurant, restaurant) || other.restaurant == restaurant)&&(identical(other.service, service) || other.service == service)&&(identical(other.titre, titre) || other.titre == titre)&&const DeepCollectionEquality().equals(other.plats, plats));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,restaurant,service,titre,const DeepCollectionEquality().hash(plats));
-
-@override
-String toString() {
-  return 'MenuDuJourAccueil(restaurant: $restaurant, service: $service, titre: $titre, plats: $plats)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $MenuDuJourAccueilCopyWith<$Res>  {
-  factory $MenuDuJourAccueilCopyWith(MenuDuJourAccueil value, $Res Function(MenuDuJourAccueil) _then) = _$MenuDuJourAccueilCopyWithImpl;
-@useResult
-$Res call({
- Restaurant restaurant, String service, String titre, List<PlatApercu> plats
-});
-
-
-$RestaurantCopyWith<$Res> get restaurant;
-
-}
-/// @nodoc
-class _$MenuDuJourAccueilCopyWithImpl<$Res>
-    implements $MenuDuJourAccueilCopyWith<$Res> {
-  _$MenuDuJourAccueilCopyWithImpl(this._self, this._then);
-
-  final MenuDuJourAccueil _self;
-  final $Res Function(MenuDuJourAccueil) _then;
-
-/// Create a copy of MenuDuJourAccueil
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? restaurant = null,Object? service = null,Object? titre = null,Object? plats = null,}) {
-  return _then(_self.copyWith(
-restaurant: null == restaurant ? _self.restaurant : restaurant // ignore: cast_nullable_to_non_nullable
-as Restaurant,service: null == service ? _self.service : service // ignore: cast_nullable_to_non_nullable
-as String,titre: null == titre ? _self.titre : titre // ignore: cast_nullable_to_non_nullable
-as String,plats: null == plats ? _self.plats : plats // ignore: cast_nullable_to_non_nullable
-as List<PlatApercu>,
-  ));
-}
-/// Create a copy of MenuDuJourAccueil
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$RestaurantCopyWith<$Res> get restaurant {
-  
-  return $RestaurantCopyWith<$Res>(_self.restaurant, (value) {
-    return _then(_self.copyWith(restaurant: value));
-  });
-}
-}
-
-
-/// Adds pattern-matching-related methods to [MenuDuJourAccueil].
-extension MenuDuJourAccueilPatterns on MenuDuJourAccueil {
-/// A variant of `map` that fallback to returning `orElse`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MenuDuJourAccueil value)?  $default,{required TResult orElse(),}){
-final _that = this;
-switch (_that) {
-case _MenuDuJourAccueil() when $default != null:
-return $default(_that);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// Callbacks receives the raw object, upcasted.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case final Subclass2 value:
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MenuDuJourAccueil value)  $default,){
-final _that = this;
-switch (_that) {
-case _MenuDuJourAccueil():
-return $default(_that);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `map` that fallback to returning `null`.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case final Subclass value:
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MenuDuJourAccueil value)?  $default,){
-final _that = this;
-switch (_that) {
-case _MenuDuJourAccueil() when $default != null:
-return $default(_that);case _:
-  return null;
-
-}
-}
-/// A variant of `when` that fallback to an `orElse` callback.
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return orElse();
-/// }
-/// ```
-
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Restaurant restaurant,  String service,  String titre,  List<PlatApercu> plats)?  $default,{required TResult orElse(),}) {final _that = this;
-switch (_that) {
-case _MenuDuJourAccueil() when $default != null:
-return $default(_that.restaurant,_that.service,_that.titre,_that.plats);case _:
-  return orElse();
-
-}
-}
-/// A `switch`-like method, using callbacks.
-///
-/// As opposed to `map`, this offers destructuring.
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case Subclass2(:final field2):
-///     return ...;
-/// }
-/// ```
-
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Restaurant restaurant,  String service,  String titre,  List<PlatApercu> plats)  $default,) {final _that = this;
-switch (_that) {
-case _MenuDuJourAccueil():
-return $default(_that.restaurant,_that.service,_that.titre,_that.plats);case _:
-  throw StateError('Unexpected subclass');
-
-}
-}
-/// A variant of `when` that fallback to returning `null`
-///
-/// It is equivalent to doing:
-/// ```dart
-/// switch (sealedClass) {
-///   case Subclass(:final field):
-///     return ...;
-///   case _:
-///     return null;
-/// }
-/// ```
-
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Restaurant restaurant,  String service,  String titre,  List<PlatApercu> plats)?  $default,) {final _that = this;
-switch (_that) {
-case _MenuDuJourAccueil() when $default != null:
-return $default(_that.restaurant,_that.service,_that.titre,_that.plats);case _:
-  return null;
-
-}
-}
-
-}
-
-/// @nodoc
-@JsonSerializable()
-
-class _MenuDuJourAccueil implements MenuDuJourAccueil {
-  const _MenuDuJourAccueil({required this.restaurant, this.service = '', this.titre = '', final  List<PlatApercu> plats = const <PlatApercu>[]}): _plats = plats;
-  factory _MenuDuJourAccueil.fromJson(Map<String, dynamic> json) => _$MenuDuJourAccueilFromJson(json);
-
-@override final  Restaurant restaurant;
-@override@JsonKey() final  String service;
-@override@JsonKey() final  String titre;
- final  List<PlatApercu> _plats;
-@override@JsonKey() List<PlatApercu> get plats {
-  if (_plats is EqualUnmodifiableListView) return _plats;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_plats);
-}
-
-
-/// Create a copy of MenuDuJourAccueil
-/// with the given fields replaced by the non-null parameter values.
-@override @JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-_$MenuDuJourAccueilCopyWith<_MenuDuJourAccueil> get copyWith => __$MenuDuJourAccueilCopyWithImpl<_MenuDuJourAccueil>(this, _$identity);
-
-@override
-Map<String, dynamic> toJson() {
-  return _$MenuDuJourAccueilToJson(this, );
-}
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MenuDuJourAccueil&&(identical(other.restaurant, restaurant) || other.restaurant == restaurant)&&(identical(other.service, service) || other.service == service)&&(identical(other.titre, titre) || other.titre == titre)&&const DeepCollectionEquality().equals(other._plats, _plats));
-}
-
-@JsonKey(includeFromJson: false, includeToJson: false)
-@override
-int get hashCode => Object.hash(runtimeType,restaurant,service,titre,const DeepCollectionEquality().hash(_plats));
-
-@override
-String toString() {
-  return 'MenuDuJourAccueil(restaurant: $restaurant, service: $service, titre: $titre, plats: $plats)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class _$MenuDuJourAccueilCopyWith<$Res> implements $MenuDuJourAccueilCopyWith<$Res> {
-  factory _$MenuDuJourAccueilCopyWith(_MenuDuJourAccueil value, $Res Function(_MenuDuJourAccueil) _then) = __$MenuDuJourAccueilCopyWithImpl;
-@override @useResult
-$Res call({
- Restaurant restaurant, String service, String titre, List<PlatApercu> plats
-});
-
-
-@override $RestaurantCopyWith<$Res> get restaurant;
-
-}
-/// @nodoc
-class __$MenuDuJourAccueilCopyWithImpl<$Res>
-    implements _$MenuDuJourAccueilCopyWith<$Res> {
-  __$MenuDuJourAccueilCopyWithImpl(this._self, this._then);
-
-  final _MenuDuJourAccueil _self;
-  final $Res Function(_MenuDuJourAccueil) _then;
-
-/// Create a copy of MenuDuJourAccueil
-/// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? restaurant = null,Object? service = null,Object? titre = null,Object? plats = null,}) {
-  return _then(_MenuDuJourAccueil(
-restaurant: null == restaurant ? _self.restaurant : restaurant // ignore: cast_nullable_to_non_nullable
-as Restaurant,service: null == service ? _self.service : service // ignore: cast_nullable_to_non_nullable
-as String,titre: null == titre ? _self.titre : titre // ignore: cast_nullable_to_non_nullable
-as String,plats: null == plats ? _self._plats : plats // ignore: cast_nullable_to_non_nullable
-as List<PlatApercu>,
-  ));
-}
-
-/// Create a copy of MenuDuJourAccueil
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$RestaurantCopyWith<$Res> get restaurant {
-  
-  return $RestaurantCopyWith<$Res>(_self.restaurant, (value) {
-    return _then(_self.copyWith(restaurant: value));
   });
 }
 }

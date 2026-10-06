@@ -231,19 +231,6 @@ abstract class MenuDuJour with _$MenuDuJour {
       _$MenuDuJourFromJson(json);
 }
 
-/// Plat résumé (nom + prix) pour l'aperçu d'un menu sur une carte.
-@freezed
-abstract class PlatApercu with _$PlatApercu {
-  const factory PlatApercu({
-    @Default('') String nom,
-    @JsonKey(fromJson: versInt) @Default(0) int prix,
-    @Default('') String image,
-  }) = _PlatApercu;
-
-  factory PlatApercu.fromJson(Map<String, dynamic> json) =>
-      _$PlatApercuFromJson(json);
-}
-
 /// Un restaurant : résumé (liste, accueil) ou fiche complète (avec [carte]
 /// et [menus]). Même forme dans les deux cas, les champs absents sont vides.
 @freezed
@@ -285,9 +272,6 @@ abstract class Restaurant with _$Restaurant {
     @Default(<String>[])
     List<String> servicesEnVigueur,
     @Default(<SectionCarte>[]) List<SectionCarte> carte,
-    @JsonKey(name: 'apercu_plats')
-    @Default(<PlatApercu>[])
-    List<PlatApercu> apercuPlats,
   }) = _Restaurant;
 
   factory Restaurant.fromJson(Map<String, dynamic> json) =>
@@ -337,18 +321,4 @@ abstract class Restaurant with _$Restaurant {
     }
     return null;
   }
-}
-
-/// Entrée du flux « menus du jour » de l'accueil.
-@freezed
-abstract class MenuDuJourAccueil with _$MenuDuJourAccueil {
-  const factory MenuDuJourAccueil({
-    required Restaurant restaurant,
-    @Default('') String service,
-    @Default('') String titre,
-    @Default(<PlatApercu>[]) List<PlatApercu> plats,
-  }) = _MenuDuJourAccueil;
-
-  factory MenuDuJourAccueil.fromJson(Map<String, dynamic> json) =>
-      _$MenuDuJourAccueilFromJson(json);
 }

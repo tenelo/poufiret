@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:poufiret/fonctionnalites/analytics/donnees/analytics_providers.dart';
-import 'package:poufiret/fonctionnalites/auth/metier_domaine/utilisateur.dart';
-import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_repository.dart';
 import 'package:poufiret/fonctionnalites/orders/metier_domaine/orders_models.dart';
@@ -14,11 +12,9 @@ import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_provide
 import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_repository.dart';
 import 'package:poufiret/fonctionnalites/restaurants/metier_domaine/commande_plat.dart';
 import 'package:poufiret/fonctionnalites/restaurants/metier_domaine/restaurant_models.dart';
-import 'package:poufiret/fonctionnalites/restaurants/metier_domaine/tri_restaurants.dart';
 import 'package:poufiret/fonctionnalites/restaurants/screens/ecran_restaurant.dart';
 import 'package:poufiret/fonctionnalites/restaurants/widgets/feuille_infos_restaurant.dart';
 import 'package:poufiret/fonctionnalites/restaurants/widgets/feuille_plat.dart';
-import 'package:poufiret/fonctionnalites/restaurants/widgets/sections_accueil.dart';
 import 'package:poufiret/global/carte/carte_poufiret.dart';
 import 'package:poufiret/global/carte/services_google.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
@@ -27,7 +23,7 @@ import 'package:dio/dio.dart';
 
 /// Réponses RÉELLES de production, capturées le 2026-10-05 et rangées telles
 /// quelles dans test/fixtures/restaurants/. À cette date la carte, les menus
-/// et le flux « menus du jour » sont encore vides.
+/// sont encore vides.
 Object? _capture(String nom) =>
     jsonDecode(File('test/fixtures/restaurants/$nom.json').readAsStringSync());
 
@@ -150,12 +146,6 @@ class _CommandesRefusees extends OrdersRepository {
   }
 }
 
-/// Visiteur non connecté.
-class _Visiteur extends AuthNotifier {
-  @override
-  Future<Utilisateur?> build() async => null;
-}
-
 void main() {
   final restaurant = _complet();
   final poulet = restaurant.platParId(101)!;
@@ -195,31 +185,6 @@ void main() {
       expect(r.estFerme, isTrue);
     });
 
-    test('liste réelle : résumés avec statut, délai et services', () {
-      final liste = _repo.listeDepuis(_capture('liste_departement_1'));
-      expect(liste.map((r) => r.nom), [
-        'Chez Sara',
-        'Chez Capi',
-        'Resto Ferke Centre',
-      ]);
-      expect(liste.every((r) => r.estFerme), isTrue);
-      expect(liste[0].messageStatut, 'Horaires non renseignés');
-      expect(liste[0].fiche.delaiPreparationMin, 20);
-      expect(liste[0].fiche.services, isEmpty);
-      expect(liste[0].apercuPlats, isEmpty);
-      expect(liste[2].logo, endsWith('logo_101.png'));
-      // Fermés ou non, tous restent listés, dans l'ordre du serveur.
-      expect(filtrerRestaurants(liste).map((r) => r.id), [54, 53, 8]);
-      expect(filtrerRestaurants(liste, recherche: 'capi').single.id, 53);
-    });
-
-    test('flux réel « menus du jour » (vide)', () {
-      expect(
-        _repo.menusDuJourDepuis(_capture('menus_du_jour_departement_1')),
-        isEmpty,
-      );
-    });
-
     test('fiche complète : carte, variantes, options, menus', () {
       expect(restaurant.estOuvert, isTrue);
       expect(restaurant.messageStatut, 'Ferme à 22h');
@@ -256,8 +221,6 @@ void main() {
       expect(ligne.stockRestant, 3);
       expect(menu.lignes[1].epuisee, isTrue);
       expect(restaurant.platDeLigne(ligne).id, 101);
-      expect(restaurant.apercuPlats.first.nom, 'Poulet braisé');
-      expect(restaurant.apercuPlats.first.prix, 5000);
     });
 
     test('ligne de menu : stock null = illimité, plat hors carte', () {
@@ -299,76 +262,6 @@ void main() {
       final plat = r.platDeLigne(ligne);
       expect(plat.nom, 'Foutou');
       expect(prixUnitaire(plat, ligne: ligne), 2000);
-    });
-
-    test('liste : aperçu du menu du jour', () {
-      final liste = _repo.listeDepuis({
-        'resultats': [
-          {
-            'id': 54,
-            'nom': 'Chez Sara',
-            'logo': null,
-            'couverture': null,
-            'est_ouvert': true,
-            'prochaine_ouverture': null,
-            'message_statut': 'Ferme à 22h',
-            'delai_preparation_min': 20,
-            'services': ['livraison'],
-            'specialites': ['Poisson'],
-            'menu_du_jour': {
-              'id': 7,
-              'titre': null,
-              'service': 'midi',
-              'plats': [
-                {'nom': 'Poulet braisé', 'prix': '5000.00', 'image': null},
-              ],
-            },
-          },
-          ...(_capture('liste_departement_1') as Map)['resultats'] as List,
-        ],
-      });
-      expect(liste.first.apercuPlats.single.prix, 5000);
-      expect(liste.first.fiche.specialites, ['Poisson']);
-      expect(filtrerRestaurants(liste), hasLength(4));
-      expect(filtrerRestaurants(liste, livraison: true).single.id, 54);
-    });
-
-    test('flux menus du jour : {partenaire_id, nom, ville, menu, statut}', () {
-      final flux = _repo.menusDuJourDepuis({
-        'resultats': [
-          {
-            'partenaire_id': 53,
-            'nom': 'Chez Capi',
-            'ville': 'Ferké',
-            'menu': {
-              'id': 7,
-              'titre': 'Menu du midi',
-              'service': 'midi',
-              'plats': [
-                {'nom': 'Poulet braisé', 'prix': '5000.00', 'image': null},
-                {
-                  'nom': 'Riz gras',
-                  'prix': 1500,
-                  'image': 'https://x.test/r.jpg',
-                },
-              ],
-            },
-            'est_ouvert': false,
-            'prochaine_ouverture': '2026-10-06T11:00:00Z',
-            'message_statut': 'Ouvre à 11h',
-          },
-        ],
-      });
-      final entree = flux.single;
-      expect(entree.restaurant.id, 53);
-      expect(entree.restaurant.nom, 'Chez Capi');
-      expect(entree.restaurant.ville, 'Ferké');
-      expect(entree.restaurant.estFerme, isTrue);
-      expect(entree.restaurant.messageStatut, 'Ouvre à 11h');
-      expect(entree.service, 'midi');
-      expect(entree.titre, 'Menu du midi');
-      expect(entree.plats.map((p) => p.prix), [5000, 1500]);
-      expect(entree.plats[1].image, 'https://x.test/r.jpg');
     });
 
     test('ligne de panier : variante et options', () {
@@ -695,51 +588,6 @@ void main() {
       await tester.tap(find.text('Bissap'));
       await tester.pumpAndSettle();
       expect(find.text('Ajouter au panier · 500 F'), findsOneWidget);
-    });
-
-    testWidgets("accueil : sections affichées, mur d'inscription au tap", (
-      tester,
-    ) async {
-      tester.view.physicalSize = const Size(400, 800);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.reset);
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            authProvider.overrideWith(_Visiteur.new),
-            restaurantsProvider.overrideWith(
-              (ref) => Stream.value([sansPhotos]),
-            ),
-            menusDuJourAccueilProvider.overrideWith(
-              (ref) => Stream.value([
-                MenuDuJourAccueil(
-                  restaurant: sansPhotos,
-                  service: 'midi',
-                  plats: sansPhotos.apercuPlats,
-                ),
-              ]),
-            ),
-          ],
-          child: const MaterialApp(
-            home: Scaffold(
-              body: SingleChildScrollView(child: SectionsRestaurantsAccueil()),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(find.text('Menus du jour'), findsOneWidget);
-      expect(find.text('Restaurants'), findsOneWidget);
-      expect(find.text('Chez Capi'), findsNWidgets(2));
-      // Ni badge ni texte de statut sur les cartes.
-      expect(find.text('Ouvert'), findsNothing);
-      expect(find.text('Ferme à 22h'), findsNothing);
-
-      // Visiteur : la carte est visible, le tap invite à s'inscrire.
-      await tester.tap(find.text('Chez Capi').first);
-      await tester.pumpAndSettle();
-      expect(find.text('Enregistrez-vous pour continuer'), findsOneWidget);
-      expect(find.byType(EcranRestaurant), findsNothing);
     });
 
     testWidgets('page restaurant fermée : ni badge ni bandeau, carte lisible', (

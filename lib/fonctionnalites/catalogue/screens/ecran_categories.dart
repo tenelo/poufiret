@@ -6,10 +6,10 @@ import 'package:poufiret/global/ui/squelette.dart';
 import 'package:poufiret/fonctionnalites/catalogue/donnees/catalogue_providers.dart';
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/categorie.dart';
 import 'package:poufiret/fonctionnalites/catalogue/screens/aiguillage_categorie.dart';
-import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_providers.dart';
-import 'package:poufiret/fonctionnalites/restaurants/metier_domaine/types_restauration.dart';
-import 'package:poufiret/fonctionnalites/restaurants/widgets/sections_accueil.dart';
+import 'package:poufiret/global/config/config.dart';
 import 'package:poufiret/global/widgets/barre_onglets.dart';
+import 'package:poufiret/global/widgets/image_reseau.dart';
+import 'package:poufiret/global/widgets/texte_defilant.dart';
 import 'package:poufiret/fonctionnalites/orders/screens/ecran_panier.dart';
 import 'package:poufiret/global/navigation/app_drawer.dart';
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
@@ -147,23 +147,10 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
                         // pas une grille a un seul element.
                         itemBuilder: (context, i) {
                           if (i == 0) {
-                            final restauration = actives.any(
-                              (c) => estRestauration(c.typesPartenaire),
-                            );
                             return _GrilleCategories(
                               categories: toutes,
-                              // Sections restauration : seulement si une
-                              // catégorie de ce type est ouverte.
-                              entete: restauration
-                                  ? const SectionsRestaurantsAccueil()
-                                  : null,
-                              onRefresh: () {
-                                if (restauration) {
-                                  ref.invalidate(menusDuJourAccueilProvider);
-                                  ref.invalidate(restaurantsProvider);
-                                }
-                                return rafraichir(ref, categoriesProvider);
-                              },
+                              onRefresh: () =>
+                                  rafraichir(ref, categoriesProvider),
                             );
                           }
                           return contenuCategorie(actives[i - 1]);
@@ -184,16 +171,9 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
 /// Grille responsive de tuiles : le nombre de colonnes s'ajuste selon la
 /// largeur disponible (~180 px par tuile).
 class _GrilleCategories extends StatelessWidget {
-  const _GrilleCategories({
-    required this.categories,
-    required this.onRefresh,
-    this.entete,
-  });
+  const _GrilleCategories({required this.categories, required this.onRefresh});
   final List<Categorie> categories;
   final Future<void> Function() onRefresh;
-
-  /// Contenu affiché au-dessus de la grille, qui défile avec elle.
-  final Widget? entete;
 
   @override
   Widget build(BuildContext context) {
@@ -202,25 +182,18 @@ class _GrilleCategories extends StatelessWidget {
         final nbColonnes = (contraintes.maxWidth / 180).floor().clamp(2, 5);
         return RefreshIndicator(
           onRefresh: onRefresh,
-          child: CustomScrollView(
+          child: GridView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              if (entete != null) SliverToBoxAdapter(child: entete),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                sliver: SliverGrid.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: nbColonnes,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 1,
-                  ),
-                  itemCount: categories.length,
-                  itemBuilder: (context, i) =>
-                      _TuileCategorie(categorie: categories[i]),
-                ),
-              ),
-            ],
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: nbColonnes,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              childAspectRatio: 1,
+            ),
+            itemCount: categories.length,
+            itemBuilder: (context, i) =>
+                _TuileCategorie(categorie: categories[i]),
           ),
         );
       },
@@ -255,10 +228,9 @@ class _BarreRecherche extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(
-                    'Que recherchez-vous ? (ex: pharmacie, restaurant…)',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  // L'invite defile si elle ne tient pas en entier.
+                  child: TexteDefilant(
+                    'Que recherchez-vous ? Tapez votre recherche...',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -401,6 +373,14 @@ class _TuileCategorie extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bientot = _bientot;
+    final image = categorie.imageTuile;
+    final emoji = FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(
+        categorie.icone.isNotEmpty ? categorie.icone : '📦',
+        style: const TextStyle(fontSize: 48),
+      ),
+    );
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -409,9 +389,7 @@ class _TuileCategorie extends StatelessWidget {
             : () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => ecranCategorie(categorie),
-                  ),
+                  MaterialPageRoute(builder: (_) => ecranCategorie(categorie)),
                 );
               },
         child: Opacity(
@@ -421,15 +399,29 @@ class _TuileCategorie extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      categorie.icone.isNotEmpty ? categorie.icone : '📦',
-                      style: const TextStyle(fontSize: 48),
+                if (image.isEmpty)
+                  Flexible(child: emoji)
+                else
+                  // Image reelle : elle remplit la zone visuelle. L'emoji
+                  // la remplace pendant le chargement et en cas d'erreur.
+                  Expanded(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: LayoutBuilder(
+                        builder: (context, contraintes) => ImageReseau(
+                          image,
+                          fit: BoxFit.cover,
+                          width: contraintes.maxWidth,
+                          height: contraintes.maxHeight,
+                          largeurAffichee: contraintes.maxWidth,
+                          attente: categorie.icone.isNotEmpty
+                              ? Center(child: emoji)
+                              : const ColoredBox(color: Config.couleurFond),
+                          errorBuilder: (_, _, _) => Center(child: emoji),
+                        ),
+                      ),
                     ),
                   ),
-                ),
                 const SizedBox(height: 8),
                 Text(
                   bientot

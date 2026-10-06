@@ -5,6 +5,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/partenaire_categorie.dart';
+import 'package:poufiret/fonctionnalites/catalogue/screens/ecran_prestataires.dart';
 import 'package:poufiret/fonctionnalites/geo/donnees/geo_providers.dart';
 import 'package:poufiret/fonctionnalites/geo/donnees/geo_repository.dart';
 import 'package:poufiret/fonctionnalites/geo/metier_domaine/departement.dart';
@@ -424,6 +426,119 @@ void main() {
       );
       expect(find.text('Localité hors du département.'), findsOneWidget);
       expect(find.text('Quartier hors de la localité.'), findsOneWidget);
+    });
+  });
+
+  group('ligne de localisation des cartes de partenaires', () {
+    test('complet', () {
+      expect(
+        ligneLocalisation(
+          localite: 'Ferké',
+          quartier: 'Bromakoté',
+          secteur: 'Rue Princesse',
+        ),
+        'Ferké - Bromakoté - Rue Princesse',
+      );
+    });
+
+    test('quartier absent', () {
+      expect(
+        ligneLocalisation(localite: 'Ferké', secteur: 'Rue Princesse'),
+        'Ferké - - Rue Princesse',
+      );
+    });
+
+    test('secteur absent', () {
+      expect(
+        ligneLocalisation(localite: 'Ferké', quartier: 'Bromakoté'),
+        'Ferké - Bromakoté -',
+      );
+    });
+
+    test('quartier et secteur absents', () {
+      expect(ligneLocalisation(localite: 'Ferké'), 'Ferké - -');
+      expect(ligneLocalisation(), '');
+    });
+
+    test(
+      'texte long : rendu entier par la fonction (tronqué à l\'affichage)',
+      () {
+        const secteur =
+            'Derrière la grande mosquée, deuxième rue à gauche après le marché';
+        expect(
+          ligneLocalisation(
+            localite: 'Ferkessédougou',
+            quartier: 'Résidentiel',
+            secteur: secteur,
+          ),
+          'Ferkessédougou - Résidentiel - $secteur',
+        );
+      },
+    );
+
+    test('sources : noms rattachés, sinon anciens textes', () {
+      const rattache = PartenaireCategorie(
+        id: 54,
+        departement: 'Ferké',
+        ville: 'Ancienne ville',
+        quartier: 'Ancien quartier',
+        secteur: 'Rue Princesse',
+        localiteNom: 'Ferké',
+        quartierNom: 'Bromakoté',
+      );
+      expect(rattache.ligneLocalisation, 'Ferké - Bromakoté - Rue Princesse');
+
+      const ancien = PartenaireCategorie(
+        id: 53,
+        ville: 'Kong',
+        quartier: 'Marché',
+      );
+      expect(ancien.ligneLocalisation, 'Kong - Marché -');
+    });
+
+    test(
+      'annuaire réel : ni localité ni ville, le département en tient lieu',
+      () {
+        final p = PartenaireCategorie.fromJson(
+          (_capture('catalogue/annuaire_restaurants') as List).first
+              as Map<String, dynamic>,
+        );
+        expect(p.nomCommerce, 'Business Center');
+        expect(p.ligneLocalisation, 'Ferké - Gare -');
+      },
+    );
+
+    testWidgets('carte : une seule ligne, tronquée par « … »', (tester) async {
+      const ligne =
+          'Ferké - Bromakoté - Derrière la grande mosquée, '
+          'deuxième rue à gauche après le marché';
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: GrillePrestataires(
+                prestataires: const [
+                  PartenaireCategorie(
+                    id: 54,
+                    nomCommerce: 'Chez Sara',
+                    localiteNom: 'Ferké',
+                    quartierNom: 'Bromakoté',
+                    secteur:
+                        'Derrière la grande mosquée, '
+                        'deuxième rue à gauche après le marché',
+                  ),
+                ],
+                onRefresh: () async {},
+                onTap: (_) {},
+              ),
+            ),
+          ),
+        ),
+      );
+      final texte = tester.widget<Text>(find.text(ligne));
+      expect(texte.maxLines, 1);
+      expect(texte.overflow, TextOverflow.ellipsis);
+      expect(tester.takeException(), isNull); // aucun débordement
     });
   });
 }
