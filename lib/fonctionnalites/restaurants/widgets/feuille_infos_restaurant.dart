@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../global/carte/carte_poufiret.dart';
 import '../../../global/carte/modeles_carte.dart';
 import '../../../global/config/config.dart';
-import '../../../global/ui/notificateur.dart';
+import '../../../global/ui/liens_externes.dart';
 import '../metier_domaine/commande_plat.dart';
 import '../metier_domaine/restaurant_models.dart';
 
@@ -18,9 +17,6 @@ const _jours = [
   'Samedi',
   'Dimanche',
 ];
-
-/// Indicatif ajouté aux numéros locaux pour WhatsApp (Côte d'Ivoire).
-const _indicatif = '225';
 
 /// Feuille « Infos » d'un restaurant : horaires de la semaine, téléphones,
 /// repères d'adresse, réseaux sociaux, spécialités et localisation.
@@ -46,29 +42,6 @@ class _Infos extends StatelessWidget {
 
   final Restaurant restaurant;
   final ScrollController defilement;
-
-  Future<void> _lancer(BuildContext context, Uri uri) async {
-    final messenger = ScaffoldMessenger.of(context);
-    var ok = false;
-    try {
-      ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    } catch (_) {
-      ok = false;
-    }
-    if (!ok) {
-      messenger.showSnackBar(
-        Notificateur.snackErreur("Impossible d'ouvrir ce lien."),
-      );
-    }
-  }
-
-  Uri _whatsapp(String numero) {
-    final chiffres = numero.replaceAll(RegExp(r'[^0-9]'), '');
-    final complet = numero.trim().startsWith('+') || chiffres.length > 10
-        ? chiffres
-        : '$_indicatif$chiffres';
-    return Uri.parse('https://wa.me/$complet');
-  }
 
   /// Adresse d'un réseau social : lien complet, ou identifiant du compte.
   Uri _reseau(String base, String valeur) => Uri.parse(
@@ -150,7 +123,7 @@ class _Infos extends StatelessWidget {
               title: Text(t.key),
               subtitle: t.value.isEmpty ? null : Text(t.value),
               trailing: const Icon(Icons.call, color: Config.couleurSucces),
-              onTap: () => _lancer(context, Uri(scheme: 'tel', path: t.key)),
+              onTap: () => ouvrirLien(context, uriAppel(t.key)),
             ),
           if (r.whatsapp.isNotEmpty)
             ListTile(
@@ -163,7 +136,7 @@ class _Infos extends StatelessWidget {
               title: Text(r.whatsapp),
               subtitle: const Text('WhatsApp'),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => _lancer(context, _whatsapp(r.whatsapp)),
+              onTap: () => ouvrirLien(context, uriWhatsapp(r.whatsapp)),
             ),
         ],
 
@@ -225,7 +198,7 @@ class _Infos extends StatelessWidget {
                 ActionChip(
                   avatar: FaIcon(icone, size: 16),
                   label: Text(nom),
-                  onPressed: () => _lancer(context, uri),
+                  onPressed: () => ouvrirLien(context, uri),
                 ),
             ],
           ),

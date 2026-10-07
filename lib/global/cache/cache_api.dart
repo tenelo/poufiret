@@ -59,6 +59,11 @@ class PolitiqueCache {
     perime: Duration(hours: 24),
   );
 
+  /// Logements d'un loueur (liste) et fiche d'un logement : mêmes rythmes
+  /// que les restaurants.
+  static const logements = restaurants;
+  static const logementDetail = restaurantDetail;
+
   /// Conversations : toujours affichées depuis le cache, rafraîchies à
   /// chaque ouverture (le temps réel reste sur WebSocket).
   static const conversations = PolitiqueCache(

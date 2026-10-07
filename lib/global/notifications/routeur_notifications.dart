@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../fonctionnalites/prestations/screens/ecran_demande_detail.dart';
 import '../../fonctionnalites/chat/screens/ecran_discussion.dart';
 import '../../fonctionnalites/livraison/screens/ecran_suivi.dart';
+import '../../fonctionnalites/locations/screens/ecran_mes_demandes_visite.dart';
 import '../../fonctionnalites/orders/screens/ecran_commandes.dart';
 
 /// Cle de navigation globale : permet de naviguer depuis un tap de
@@ -78,6 +79,13 @@ class RouteurNotifications {
               estArtisan: estArtisan,
             ),
           ),
+        );
+
+      // ── Reservation : transition d'une demande de visite
+      // (data : demande_id, statut) -> ouvre « Mes demandes de visite ».
+      case 'reservation':
+        await nav.push(
+          MaterialPageRoute(builder: (_) => const EcranMesDemandesVisite()),
         );
 
       default:

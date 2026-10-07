@@ -15,6 +15,8 @@ import '../../../global/widgets/image_reseau.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../auth/widgets/mur_inscription.dart';
 import '../../geo/widgets/filtre_localites.dart';
+import '../../locations/metier_domaine/location_models.dart';
+import '../../locations/screens/ecran_loueur.dart';
 import '../../restaurants/metier_domaine/types_restauration.dart';
 import '../../restaurants/screens/ecran_restaurant.dart';
 
@@ -76,7 +78,7 @@ class ContenuPrestataires extends ConsumerWidget {
 
   /// Types de partenaire de la categorie. L'affichage est le meme pour
   /// toutes ; seul l'ecran ouvert par une tuile en depend (un restaurant
-  /// ouvre sa page : menu du jour et carte).
+  /// ouvre sa page avec menu du jour et carte, un loueur ses logements).
   final List<String> typesPartenaire;
   final int categorieId;
   final String categorieNom;
@@ -147,12 +149,19 @@ class ContenuPrestataires extends ConsumerWidget {
                         );
                   Navigator.of(context).push(
                     MaterialPageRoute(
+                      // Restaurateur ou loueur : sa page dediee. Un
+                      // partenaire de la categorie que le serveur ne
+                      // connait pas sous ce type garde sa fiche habituelle.
                       builder: (_) => estRestauration(typesPartenaire)
                           ? EcranRestaurant(
                               restaurantId: prestataire.id,
                               nom: prestataire.nomCommerce,
-                              // Partenaire de la categorie sans fiche
-                              // restaurant : sa fiche habituelle.
+                              siIntrouvable: fiche,
+                            )
+                          : estLocation(typesPartenaire)
+                          ? EcranLoueur(
+                              partenaireId: prestataire.id,
+                              nom: prestataire.nomCommerce,
                               siIntrouvable: fiche,
                             )
                           : fiche,

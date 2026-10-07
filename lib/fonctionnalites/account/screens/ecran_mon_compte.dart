@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../auth/screens/auth_notifier.dart';
+import '../../locations/screens/ecran_mes_demandes_visite.dart';
 import 'ecran_devenir_partenaire.dart';
 
 /// Écran « Mon compte » : profil éditable + accès appareils / partenaire.
@@ -152,6 +153,22 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
                           clipBehavior: Clip.antiAlias,
                           child: Column(
                             children: [
+                              ListTile(
+                                leading: const Icon(
+                                  Icons.event_available_outlined,
+                                ),
+                                title: const Text('Mes demandes de visite'),
+                                subtitle: const Text(
+                                  'Suivez vos demandes de visite de logement.',
+                                ),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const EcranMesDemandesVisite(),
+                                  ),
+                                ),
+                              ),
                               if (!utilisateur.estPartenaire) ...[
                                 const Divider(height: 1),
                                 ListTile(
