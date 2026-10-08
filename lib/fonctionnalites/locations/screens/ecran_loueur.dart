@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show ProviderOrFamily;
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../global/cache/contexte_cache.dart';
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
-import '../../../global/ui/liens_externes.dart';
 import '../../../global/ui/squelette.dart';
 import '../../../global/widgets/image_reseau.dart';
 import '../../../global/widgets/message_erreur.dart';
 import '../../analytics/donnees/analytics_providers.dart';
 import '../donnees/locations_providers.dart';
+import '../metier_domaine/hebergement_models.dart';
 import '../metier_domaine/location_models.dart';
 import '../metier_domaine/vehicule_models.dart';
+import '../widgets/carte_hebergement.dart';
 import '../widgets/carte_logement.dart';
 import '../widgets/carte_vehicule.dart';
+import '../widgets/elements_fiche.dart';
+import '../widgets/entete_etablissement.dart';
+import '../widgets/feuille_filtre_hebergements.dart';
 import '../widgets/feuille_filtre_logements.dart';
 import '../widgets/feuille_filtre_vehicules.dart';
 
@@ -56,6 +59,7 @@ class _Liste {
     required this.nombreFiltres,
     required this.filtrer,
     required this.textes,
+    this.entete,
   });
 
   final AsyncValue<Object?> async;
@@ -67,6 +71,9 @@ class _Liste {
   final int nombreFiltres;
   final VoidCallback filtrer;
   final _Textes textes;
+
+  /// En-tête propre au type (établissement) ; sinon l'en-tête du loueur.
+  final Widget? entete;
 }
 
 /// Libellés propres à un type de location.
@@ -108,11 +115,22 @@ class _Textes {
     erreur: 'Impossible de charger les véhicules.',
     icone: Icons.car_rental_outlined,
   );
+
+  static const hebergements = _Textes(
+    singulier: 'hébergement disponible',
+    pluriel: 'hébergements disponibles',
+    titre: 'Hébergements disponibles',
+    vide: 'Aucun hébergement disponible pour le moment.',
+    videFiltre: 'Aucun hébergement ne correspond à ces critères.',
+    erreur: 'Impossible de charger cet établissement.',
+    icone: Icons.hotel_outlined,
+  );
 }
 
 class _EcranLoueurState extends ConsumerState<EcranLoueur> {
   FiltreLogements _filtreLogements = const FiltreLogements();
   FiltreVehicules _filtreVehicules = const FiltreVehicules();
+  FiltreHebergements _filtreHebergements = const FiltreHebergements();
 
   /// Dernier loueur reçu : l'en-tête reste affiché pendant qu'un nouveau
   /// filtre charge.
@@ -166,6 +184,43 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
     );
   }
 
+  /// Établissement (hôtel, résidence) : son en-tête détaillé, puis ses
+  /// hébergements disponibles, filtrés sur place.
+  _Liste _hebergements() {
+    final provider = pageEtablissementProvider(
+      partenaireId: widget.partenaireId,
+    );
+    final async = ref.watch(provider);
+    final page = async.value;
+    final disponibles = page?.disponibles;
+    return _Liste(
+      async: async,
+      provider: provider,
+      loueur: page?.etablissement.loueur,
+      entete: page == null
+          ? null
+          : EnteteEtablissement(etablissement: page.etablissement),
+      cartes: disponibles == null
+          ? null
+          : [
+              for (final h in _filtreHebergements.appliquer(disponibles))
+                CarteHebergement(key: ValueKey(h.id), hebergement: h),
+            ],
+      nombreFiltres: _filtreHebergements.nombre,
+      filtrer: () async {
+        final choisi = await ouvrirFiltreHebergements(
+          context,
+          _filtreHebergements,
+          hebergements: disponibles ?? const [],
+        );
+        if (choisi != null && mounted) {
+          setState(() => _filtreHebergements = choisi);
+        }
+      },
+      textes: _Textes.hebergements,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // L'ouverture de la page = une consultation de la fiche du partenaire.
@@ -173,6 +228,7 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
     final liste = switch (widget.type) {
       TypeLocation.logement => _logements(),
       TypeLocation.vehicule => _vehicules(),
+      TypeLocation.hebergement => _hebergements(),
     };
     final async = liste.async;
     final textes = liste.textes;
@@ -219,11 +275,12 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.only(bottom: 24),
                   children: [
-                    _Entete(
-                      loueur: loueur,
-                      largeur: largeur,
-                      icone: textes.icone,
-                    ),
+                    liste.entete ??
+                        _Entete(
+                          loueur: loueur,
+                          largeur: largeur,
+                          icone: textes.icone,
+                        ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 4, 12, 4),
                       child: Row(
@@ -363,34 +420,13 @@ class _Entete extends StatelessWidget {
             ],
           ),
         ),
-        if (l.telephonePro.isNotEmpty || l.whatsapp.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-            child: Row(
-              children: [
-                if (l.telephonePro.isNotEmpty)
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () =>
-                          ouvrirLien(context, uriAppel(l.telephonePro)),
-                      icon: const Icon(Icons.call, size: 18),
-                      label: const Text('Appeler'),
-                    ),
-                  ),
-                if (l.telephonePro.isNotEmpty && l.whatsapp.isNotEmpty)
-                  const SizedBox(width: 12),
-                if (l.whatsapp.isNotEmpty)
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () =>
-                          ouvrirLien(context, uriWhatsapp(l.whatsapp)),
-                      icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 18),
-                      label: const Text('WhatsApp'),
-                    ),
-                  ),
-              ],
-            ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: BoutonsContact(
+            telephone: l.telephonePro,
+            whatsapp: l.whatsapp,
           ),
+        ),
         const Divider(height: 16),
       ],
     );

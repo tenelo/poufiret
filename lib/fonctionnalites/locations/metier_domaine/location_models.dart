@@ -11,10 +11,11 @@ part 'location_models.g.dart';
 /// fiche du bien) au lieu de la vitrine générique.
 const typeLoueurMaison = 'loueur_maison';
 const typeLoueurVoiture = 'loueur_voiture';
+const typeHotelier = 'hotelier';
 
 /// Ce que loue un loueur : la page loueur est la même, seuls la liste, ses
 /// filtres et la fiche ouverte en dépendent.
-enum TypeLocation { logement, vehicule }
+enum TypeLocation { logement, vehicule, hebergement }
 
 /// Type de location d'une catégorie portant ces types de partenaire, ou
 /// null si elle n'en relève pas.
@@ -23,6 +24,8 @@ TypeLocation? typeLocation(Iterable<String> typesPartenaire) =>
     ? TypeLocation.logement
     : typesPartenaire.contains(typeLoueurVoiture)
     ? TypeLocation.vehicule
+    : typesPartenaire.contains(typeHotelier)
+    ? TypeLocation.hebergement
     : null;
 
 /// « 50 000 F/mois ».
@@ -30,6 +33,9 @@ String formatLoyer(int loyer) => '${formatMontant(loyer)}/mois';
 
 /// « 25 000 F/jour ».
 String formatPrixJour(int prix) => '${formatMontant(prix)}/jour';
+
+/// « 25 000 F/nuit ».
+String formatPrixNuit(int prix) => '${formatMontant(prix)}/nuit';
 
 /// « 1 chambre », « 3 chambres ».
 String pluriel(int nombre, String singulier, [String? plurielle]) =>
@@ -66,6 +72,12 @@ abstract class MetaLocations with _$MetaLocations {
     @JsonKey(name: 'equipements_vehicule')
     @Default(<OptionMeta>[])
     List<OptionMeta> equipementsVehicule,
+    @JsonKey(name: 'equipements_etablissement')
+    @Default(<OptionMeta>[])
+    List<OptionMeta> equipementsEtablissement,
+    @JsonKey(name: 'equipements_hebergement')
+    @Default(<OptionMeta>[])
+    List<OptionMeta> equipementsHebergement,
   }) = _MetaLocations;
 
   factory MetaLocations.fromJson(Map<String, dynamic> json) =>
@@ -78,12 +90,29 @@ abstract class MetaLocations with _$MetaLocations {
   String libelleEquipementVehicule(String valeur) =>
       _libelle(equipementsVehicule, valeur);
 
+  /// Libellé d'un équipement d'hôtel (établissement ou hébergement) ; à
+  /// défaut, la valeur rendue lisible (« salle_de_sport » → « Salle de
+  /// sport »).
+  String libelleEquipementHotel(String valeur) {
+    for (final o in [...equipementsEtablissement, ...equipementsHebergement]) {
+      if (o.valeur == valeur) return o.libelle;
+    }
+    return lisible(valeur);
+  }
+
   static String _libelle(List<OptionMeta> options, String valeur) => options
       .firstWhere(
         (e) => e.valeur == valeur,
         orElse: () => OptionMeta(valeur: valeur, libelle: valeur),
       )
       .libelle;
+}
+
+/// « salle_de_sport » → « Salle de sport ».
+String lisible(String valeur) {
+  final texte = valeur.replaceAll('_', ' ').trim();
+  if (texte.isEmpty) return texte;
+  return texte[0].toUpperCase() + texte.substring(1);
 }
 
 /// Le loueur, tel qu'il accompagne la liste de ses logements.
@@ -312,6 +341,9 @@ abstract class DemandeReservation with _$DemandeReservation {
     String lieuPriseEnCharge,
     @JsonKey(name: 'montant_estime', fromJson: versIntNullable)
     int? montantEstime,
+    @JsonKey(name: 'nb_adultes', fromJson: versIntNullable) int? nbAdultes,
+    @JsonKey(name: 'nb_enfants', fromJson: versIntNullable) int? nbEnfants,
+    @JsonKey(name: 'nb_unites', fromJson: versIntNullable) int? nbUnites,
     @Default('') String statut,
     @JsonKey(name: 'statut_libelle') @Default('') String statutLibelle,
     @JsonKey(name: 'raison_refus') @Default('') String raisonRefus,
@@ -337,6 +369,18 @@ abstract class DemandeReservation with _$DemandeReservation {
   bool get estReservation =>
       nature == 'reservation' || (dateDebut ?? '').isNotEmpty;
 
+  /// Séjour dans un hébergement (hôtel, résidence).
+  bool get estSejour => objetType == 'hebergement' || nbUnites != null;
+
+  /// « Arrivée le 20/10/2026 · départ le 23/10/2026 ».
+  String get sejourLisible =>
+      'Arrivée le ${formatDateCourte(dateDebut)} · '
+      'départ le ${formatDateCourte(dateFin)}';
+
+  /// « 2 adultes · 1 enfant » (vide si inconnu).
+  String get voyageursLisible =>
+      nbAdultes == null ? '' : capaciteLisible(nbAdultes!, nbEnfants ?? 0);
+
   /// Date souhaitée au format « 07/10/2026 ».
   String get dateLisible => formatDateCourte(dateSouhaitee);
 
@@ -348,6 +392,12 @@ abstract class DemandeReservation with _$DemandeReservation {
     return 'Du $du au $au';
   }
 }
+
+/// « 2 adultes · 1 enfant » ; les enfants sont omis s'il n'y en a pas.
+String capaciteLisible(int adultes, int enfants) => [
+  pluriel(adultes, 'adulte'),
+  if (enfants > 0) pluriel(enfants, 'enfant'),
+].join(' · ');
 
 /// « 2026-10-07 » ou « 2026-10-07T10:00:00Z » → « 07/10/2026 ».
 String formatDateCourte(String? iso) {

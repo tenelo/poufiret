@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../global/cache/cache_api.dart';
 import '../../../global/cache/contexte_cache.dart';
 import '../../../global/network/providers.dart';
+import '../metier_domaine/hebergement_models.dart';
 import '../metier_domaine/location_models.dart';
 import '../metier_domaine/vehicule_models.dart';
 import 'locations_repository.dart';
@@ -89,6 +90,54 @@ Stream<Vehicule> vehiculeDetail(Ref ref, {required int id}) {
     reseau: () => repo.vehiculeBrut(id),
     decoder: repo.vehiculeDepuis,
   );
+}
+
+/// Page d'un établissement (hôtel, résidence) : lui-même et ses
+/// hébergements. Les filtres s'appliquent à la liste reçue.
+@riverpod
+Stream<PageEtablissement> pageEtablissement(
+  Ref ref, {
+  required int partenaireId,
+}) {
+  final repo = ref.watch(locationsRepositoryProvider);
+  return fluxCache(
+    ref,
+    cle: 'locations/etablissement/$partenaireId',
+    politique: PolitiqueCache.etablissement,
+    reseau: () => repo.etablissementBrut(partenaireId),
+    decoder: repo.pageEtablissementDepuis,
+  );
+}
+
+/// Fiche d'un hébergement.
+@riverpod
+Stream<Hebergement> hebergementDetail(Ref ref, {required int id}) {
+  final repo = ref.watch(locationsRepositoryProvider);
+  return fluxCache(
+    ref,
+    cle: 'locations/hebergement/$id',
+    politique: PolitiqueCache.hebergementDetail,
+    reseau: () => repo.hebergementBrut(id),
+    decoder: repo.hebergementDepuis,
+  );
+}
+
+/// Unités libres d'un hébergement sur un séjour (dates « 2026-10-20 »).
+/// Toujours lu sur le réseau : la disponibilité change vite.
+@riverpod
+Future<int> disponibiliteHebergement(
+  Ref ref, {
+  required int id,
+  required String arrivee,
+  required String depart,
+}) {
+  return ref
+      .watch(locationsRepositoryProvider)
+      .disponibiliteHebergement(
+        id,
+        arrivee: DateTime.parse(arrivee),
+        depart: DateTime.parse(depart),
+      );
 }
 
 /// Mes demandes (visites et réservations). Rechargées après chaque envoi

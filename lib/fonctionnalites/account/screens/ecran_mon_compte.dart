@@ -159,8 +159,8 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
                                 ),
                                 title: const Text('Mes demandes'),
                                 subtitle: const Text(
-                                  'Visites de logement et réservations de '
-                                  'véhicule.',
+                                  'Visites de logement, réservations de '
+                                  'véhicule et de séjour.',
                                 ),
                                 trailing: const Icon(Icons.chevron_right),
                                 onTap: () => Navigator.of(context).push(

@@ -9,6 +9,7 @@ import '../../auth/widgets/mur_inscription.dart';
 import '../donnees/locations_providers.dart';
 import '../metier_domaine/location_models.dart';
 import '../metier_domaine/vehicule_models.dart';
+import 'elements_fiche.dart';
 
 /// « Réserver » un véhicule. Un visiteur non inscrit est invité à créer un
 /// compte (mur d'inscription) ; sinon la feuille s'ouvre.
@@ -273,7 +274,10 @@ class _FeuilleReservationVehiculeState
                   alignLabelWithHint: true,
                 ),
               ),
-              _MontantEstime(estimation: estimation),
+              EncadreMontant(
+                libelle: estimation?.libelle,
+                vide: 'Choisissez vos dates pour voir le montant.',
+              ),
               const SizedBox(height: 12),
               if (_erreur != null)
                 Padding(
@@ -309,53 +313,5 @@ class _FeuilleReservationVehiculeState
     final au = formatDateCourte(formatDateIso(plage.end));
     final jours = pluriel(nombreJours(plage.start, plage.end), 'jour');
     return du == au ? 'Le $du · $jours' : 'Du $du au $au · $jours';
-  }
-}
-
-/// Encadré du montant estimé : « 3 jours × 25 000 F = 75 000 F ».
-class _MontantEstime extends StatelessWidget {
-  const _MontantEstime({required this.estimation});
-
-  final EstimationLocation? estimation;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final e = estimation;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Config.couleurFond,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Config.couleurBordure),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Montant estimé', style: theme.textTheme.labelLarge),
-          const SizedBox(height: 4),
-          Text(
-            e == null
-                ? 'Choisissez vos dates pour voir le montant.'
-                : e.libelle,
-            style: e == null
-                ? theme.textTheme.bodyMedium?.copyWith(
-                    color: Config.couleurTexteSecondaire,
-                  )
-                : theme.textTheme.titleMedium?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w700,
-                  ),
-          ),
-          if (e != null)
-            Text(
-              'Hors caution et frais éventuels ; le loueur confirme le prix.',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: Config.couleurTexteSecondaire,
-              ),
-            ),
-        ],
-      ),
-    );
   }
 }

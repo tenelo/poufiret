@@ -51,6 +51,16 @@ _MetaLocations _$MetaLocationsFromJson(Map<String, dynamic> json) =>
               ?.map((e) => OptionMeta.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const <OptionMeta>[],
+      equipementsEtablissement:
+          (json['equipements_etablissement'] as List<dynamic>?)
+              ?.map((e) => OptionMeta.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <OptionMeta>[],
+      equipementsHebergement:
+          (json['equipements_hebergement'] as List<dynamic>?)
+              ?.map((e) => OptionMeta.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <OptionMeta>[],
     );
 
 Map<String, dynamic> _$MetaLocationsToJson(_MetaLocations instance) =>
@@ -62,6 +72,8 @@ Map<String, dynamic> _$MetaLocationsToJson(_MetaLocations instance) =>
       'boites': instance.boites,
       'carburants': instance.carburants,
       'equipements_vehicule': instance.equipementsVehicule,
+      'equipements_etablissement': instance.equipementsEtablissement,
+      'equipements_hebergement': instance.equipementsHebergement,
     };
 
 _Loueur _$LoueurFromJson(Map<String, dynamic> json) => _Loueur(
@@ -247,6 +259,9 @@ _DemandeReservation _$DemandeReservationFromJson(Map<String, dynamic> json) =>
       avecChauffeur: json['avec_chauffeur'] as bool? ?? false,
       lieuPriseEnCharge: json['lieu_prise_en_charge'] as String? ?? '',
       montantEstime: versIntNullable(json['montant_estime']),
+      nbAdultes: versIntNullable(json['nb_adultes']),
+      nbEnfants: versIntNullable(json['nb_enfants']),
+      nbUnites: versIntNullable(json['nb_unites']),
       statut: json['statut'] as String? ?? '',
       statutLibelle: json['statut_libelle'] as String? ?? '',
       raisonRefus: json['raison_refus'] as String? ?? '',
@@ -268,6 +283,9 @@ Map<String, dynamic> _$DemandeReservationToJson(_DemandeReservation instance) =>
       'avec_chauffeur': instance.avecChauffeur,
       'lieu_prise_en_charge': instance.lieuPriseEnCharge,
       'montant_estime': instance.montantEstime,
+      'nb_adultes': instance.nbAdultes,
+      'nb_enfants': instance.nbEnfants,
+      'nb_unites': instance.nbUnites,
       'statut': instance.statut,
       'statut_libelle': instance.statutLibelle,
       'raison_refus': instance.raisonRefus,

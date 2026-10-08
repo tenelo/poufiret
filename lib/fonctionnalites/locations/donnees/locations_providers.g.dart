@@ -465,12 +465,289 @@ final class VehiculeDetailFamily extends $Family
   String toString() => r'vehiculeDetailProvider';
 }
 
-/// Mes demandes (visites et réservations). Rechargées après chaque envoi ou annulation.
+/// Page d'un établissement (hôtel, résidence) : lui-même et ses
+/// hébergements. Les filtres s'appliquent à la liste reçue.
+
+@ProviderFor(pageEtablissement)
+final pageEtablissementProvider = PageEtablissementFamily._();
+
+/// Page d'un établissement (hôtel, résidence) : lui-même et ses
+/// hébergements. Les filtres s'appliquent à la liste reçue.
+
+final class PageEtablissementProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<PageEtablissement>,
+          PageEtablissement,
+          Stream<PageEtablissement>
+        >
+    with
+        $FutureModifier<PageEtablissement>,
+        $StreamProvider<PageEtablissement> {
+  /// Page d'un établissement (hôtel, résidence) : lui-même et ses
+  /// hébergements. Les filtres s'appliquent à la liste reçue.
+  PageEtablissementProvider._({
+    required PageEtablissementFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'pageEtablissementProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$pageEtablissementHash();
+
+  @override
+  String toString() {
+    return r'pageEtablissementProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<PageEtablissement> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<PageEtablissement> create(Ref ref) {
+    final argument = this.argument as int;
+    return pageEtablissement(ref, partenaireId: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PageEtablissementProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$pageEtablissementHash() => r'e9f330a7df8d216ce33a4dc8529ab7cc711bc7cb';
+
+/// Page d'un établissement (hôtel, résidence) : lui-même et ses
+/// hébergements. Les filtres s'appliquent à la liste reçue.
+
+final class PageEtablissementFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<PageEtablissement>, int> {
+  PageEtablissementFamily._()
+    : super(
+        retry: null,
+        name: r'pageEtablissementProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Page d'un établissement (hôtel, résidence) : lui-même et ses
+  /// hébergements. Les filtres s'appliquent à la liste reçue.
+
+  PageEtablissementProvider call({required int partenaireId}) =>
+      PageEtablissementProvider._(argument: partenaireId, from: this);
+
+  @override
+  String toString() => r'pageEtablissementProvider';
+}
+
+/// Fiche d'un hébergement.
+
+@ProviderFor(hebergementDetail)
+final hebergementDetailProvider = HebergementDetailFamily._();
+
+/// Fiche d'un hébergement.
+
+final class HebergementDetailProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<Hebergement>,
+          Hebergement,
+          Stream<Hebergement>
+        >
+    with $FutureModifier<Hebergement>, $StreamProvider<Hebergement> {
+  /// Fiche d'un hébergement.
+  HebergementDetailProvider._({
+    required HebergementDetailFamily super.from,
+    required int super.argument,
+  }) : super(
+         retry: null,
+         name: r'hebergementDetailProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$hebergementDetailHash();
+
+  @override
+  String toString() {
+    return r'hebergementDetailProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<Hebergement> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<Hebergement> create(Ref ref) {
+    final argument = this.argument as int;
+    return hebergementDetail(ref, id: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HebergementDetailProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$hebergementDetailHash() => r'ed263466a44196ea48a3c6867a80fe4ae042454a';
+
+/// Fiche d'un hébergement.
+
+final class HebergementDetailFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<Hebergement>, int> {
+  HebergementDetailFamily._()
+    : super(
+        retry: null,
+        name: r'hebergementDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Fiche d'un hébergement.
+
+  HebergementDetailProvider call({required int id}) =>
+      HebergementDetailProvider._(argument: id, from: this);
+
+  @override
+  String toString() => r'hebergementDetailProvider';
+}
+
+/// Unités libres d'un hébergement sur un séjour (dates « 2026-10-20 »).
+/// Toujours lu sur le réseau : la disponibilité change vite.
+
+@ProviderFor(disponibiliteHebergement)
+final disponibiliteHebergementProvider = DisponibiliteHebergementFamily._();
+
+/// Unités libres d'un hébergement sur un séjour (dates « 2026-10-20 »).
+/// Toujours lu sur le réseau : la disponibilité change vite.
+
+final class DisponibiliteHebergementProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, FutureOr<int>>
+    with $FutureModifier<int>, $FutureProvider<int> {
+  /// Unités libres d'un hébergement sur un séjour (dates « 2026-10-20 »).
+  /// Toujours lu sur le réseau : la disponibilité change vite.
+  DisponibiliteHebergementProvider._({
+    required DisponibiliteHebergementFamily super.from,
+    required ({int id, String arrivee, String depart}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'disponibiliteHebergementProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$disponibiliteHebergementHash();
+
+  @override
+  String toString() {
+    return r'disponibiliteHebergementProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<int> create(Ref ref) {
+    final argument = this.argument as ({int id, String arrivee, String depart});
+    return disponibiliteHebergement(
+      ref,
+      id: argument.id,
+      arrivee: argument.arrivee,
+      depart: argument.depart,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is DisponibiliteHebergementProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$disponibiliteHebergementHash() =>
+    r'63f0de6e6d82d836485a5278a9b2de07f5b25e7c';
+
+/// Unités libres d'un hébergement sur un séjour (dates « 2026-10-20 »).
+/// Toujours lu sur le réseau : la disponibilité change vite.
+
+final class DisponibiliteHebergementFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<int>,
+          ({int id, String arrivee, String depart})
+        > {
+  DisponibiliteHebergementFamily._()
+    : super(
+        retry: null,
+        name: r'disponibiliteHebergementProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Unités libres d'un hébergement sur un séjour (dates « 2026-10-20 »).
+  /// Toujours lu sur le réseau : la disponibilité change vite.
+
+  DisponibiliteHebergementProvider call({
+    required int id,
+    required String arrivee,
+    required String depart,
+  }) => DisponibiliteHebergementProvider._(
+    argument: (id: id, arrivee: arrivee, depart: depart),
+    from: this,
+  );
+
+  @override
+  String toString() => r'disponibiliteHebergementProvider';
+}
+
+/// Mes demandes (visites et réservations). Rechargées après chaque envoi
+/// ou annulation.
 
 @ProviderFor(mesDemandesReservation)
 final mesDemandesReservationProvider = MesDemandesReservationProvider._();
 
-/// Mes demandes (visites et réservations). Rechargées après chaque envoi ou annulation.
+/// Mes demandes (visites et réservations). Rechargées après chaque envoi
+/// ou annulation.
 
 final class MesDemandesReservationProvider
     extends
@@ -482,7 +759,8 @@ final class MesDemandesReservationProvider
     with
         $FutureModifier<List<DemandeReservation>>,
         $FutureProvider<List<DemandeReservation>> {
-  /// Mes demandes (visites et réservations). Rechargées après chaque envoi ou annulation.
+  /// Mes demandes (visites et réservations). Rechargées après chaque envoi
+  /// ou annulation.
   MesDemandesReservationProvider._()
     : super(
         from: null,

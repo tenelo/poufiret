@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../global/carte/carte_poufiret.dart';
 import '../../../global/carte/modeles_carte.dart';
@@ -101,16 +102,15 @@ class LigneFiche extends StatelessWidget {
   }
 }
 
-/// Barre du bas d'une fiche : Itinéraire et Localisation (seulement avec
-/// des coordonnées), puis l'action principale.
-class BarreActionsFiche extends StatelessWidget {
-  const BarreActionsFiche({
+/// Itinéraire et Localisation (carte en feuille) d'un point. Rien sans
+/// coordonnées.
+class BoutonsPosition extends StatelessWidget {
+  const BoutonsPosition({
     super.key,
     required this.latitude,
     required this.longitude,
     required this.titreCarte,
     required this.nomMarqueur,
-    required this.action,
   });
 
   final double? latitude;
@@ -119,9 +119,6 @@ class BarreActionsFiche extends StatelessWidget {
   /// Titre de la feuille « Localisation ».
   final String titreCarte;
   final String nomMarqueur;
-
-  /// Bouton principal (« Demander une visite », « Réserver »).
-  final Widget action;
 
   void _montrerCarte(BuildContext context) {
     final point = PointCarte(latitude!, longitude!);
@@ -163,6 +160,91 @@ class BarreActionsFiche extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (latitude == null || longitude == null) return const SizedBox.shrink();
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () =>
+                ouvrirLien(context, uriItineraire(latitude!, longitude!)),
+            icon: const Icon(Icons.directions_outlined, size: 18),
+            label: const Text('Itinéraire'),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: () => _montrerCarte(context),
+            icon: const Icon(Icons.map_outlined, size: 18),
+            label: const Text('Localisation'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Appeler et WhatsApp (chacun seulement si le numéro est connu).
+class BoutonsContact extends StatelessWidget {
+  const BoutonsContact({
+    super.key,
+    required this.telephone,
+    required this.whatsapp,
+  });
+
+  final String telephone;
+  final String whatsapp;
+
+  @override
+  Widget build(BuildContext context) {
+    if (telephone.isEmpty && whatsapp.isEmpty) return const SizedBox.shrink();
+    return Row(
+      children: [
+        if (telephone.isNotEmpty)
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: () => ouvrirLien(context, uriAppel(telephone)),
+              icon: const Icon(Icons.call, size: 18),
+              label: const Text('Appeler'),
+            ),
+          ),
+        if (telephone.isNotEmpty && whatsapp.isNotEmpty)
+          const SizedBox(width: 12),
+        if (whatsapp.isNotEmpty)
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: () => ouvrirLien(context, uriWhatsapp(whatsapp)),
+              icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 18),
+              label: const Text('WhatsApp'),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Barre du bas d'une fiche : Itinéraire et Localisation (seulement avec
+/// des coordonnées), puis l'action principale.
+class BarreActionsFiche extends StatelessWidget {
+  const BarreActionsFiche({
+    super.key,
+    required this.latitude,
+    required this.longitude,
+    required this.titreCarte,
+    required this.nomMarqueur,
+    required this.action,
+  });
+
+  final double? latitude;
+  final double? longitude;
+  final String titreCarte;
+  final String nomMarqueur;
+
+  /// Bouton principal (« Demander une visite », « Réserver »).
+  final Widget action;
+
+  @override
+  Widget build(BuildContext context) {
     final aPosition = latitude != null && longitude != null;
     return SafeArea(
       child: Center(
@@ -176,27 +258,11 @@ class BarreActionsFiche extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (aPosition) ...[
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () => ouvrirLien(
-                            context,
-                            uriItineraire(latitude!, longitude!),
-                          ),
-                          icon: const Icon(Icons.directions_outlined, size: 18),
-                          label: const Text('Itinéraire'),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () => _montrerCarte(context),
-                          icon: const Icon(Icons.map_outlined, size: 18),
-                          label: const Text('Localisation'),
-                        ),
-                      ),
-                    ],
+                  BoutonsPosition(
+                    latitude: latitude,
+                    longitude: longitude,
+                    titreCarte: titreCarte,
+                    nomMarqueur: nomMarqueur,
                   ),
                   const SizedBox(height: 8),
                 ],
@@ -205,6 +271,56 @@ class BarreActionsFiche extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Encadré « Montant estimé » d'une feuille de réservation.
+class EncadreMontant extends StatelessWidget {
+  const EncadreMontant({super.key, required this.libelle, this.vide = ''});
+
+  /// « 3 jours × 25 000 F = 75 000 F » ; null tant qu'il manque un choix.
+  final String? libelle;
+
+  /// Invitation affichée tant que [libelle] est null.
+  final String vide;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final texte = libelle;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Config.couleurFond,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Config.couleurBordure),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Montant estimé', style: theme.textTheme.labelLarge),
+          const SizedBox(height: 4),
+          Text(
+            texte ?? vide,
+            style: texte == null
+                ? theme.textTheme.bodyMedium?.copyWith(
+                    color: Config.couleurTexteSecondaire,
+                  )
+                : theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w700,
+                  ),
+          ),
+          if (texte != null)
+            Text(
+              'Hors caution et frais éventuels ; le loueur confirme le prix.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Config.couleurTexteSecondaire,
+              ),
+            ),
+        ],
       ),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 
 import '../../../global/config/env.dart';
+import '../../../global/json/convertisseurs.dart';
+import '../metier_domaine/hebergement_models.dart';
 import '../metier_domaine/location_models.dart';
 import '../metier_domaine/vehicule_models.dart';
 
@@ -59,6 +61,39 @@ class LocationsRepository {
   Vehicule vehiculeDepuis(Object? json) =>
       Vehicule.fromJson(Map<String, dynamic>.from(json as Map));
 
+  /// `GET /locations/partenaires/<id>/etablissement/` — l'établissement
+  /// (hôtel, résidence) et ses hébergements.
+  Future<Object?> etablissementBrut(int partenaireId) async => (await _dio.get(
+    '${Env.apiPrefix}/locations/partenaires/$partenaireId/etablissement/',
+  )).data;
+
+  PageEtablissement pageEtablissementDepuis(Object? json) =>
+      PageEtablissement.fromJson(Map<String, dynamic>.from(json as Map));
+
+  /// `GET /locations/hebergements/<id>/` — fiche complète.
+  Future<Object?> hebergementBrut(int id) async =>
+      (await _dio.get('${Env.apiPrefix}/locations/hebergements/$id/')).data;
+
+  Hebergement hebergementDepuis(Object? json) =>
+      Hebergement.fromJson(Map<String, dynamic>.from(json as Map));
+
+  /// `GET /locations/hebergements/<id>/disponibilite/` — unités libres du
+  /// [arrivee] au [depart] (jamais en cache).
+  Future<int> disponibiliteHebergement(
+    int id, {
+    required DateTime arrivee,
+    required DateTime depart,
+  }) async {
+    final r = await _dio.get(
+      '${Env.apiPrefix}/locations/hebergements/$id/disponibilite/',
+      queryParameters: {
+        'date_debut': formatDateIso(arrivee),
+        'date_fin': formatDateIso(depart),
+      },
+    );
+    return versInt((r.data as Map)['unites_disponibles']);
+  }
+
   // ── Demandes de visite et réservations (jamais en cache : écritures et suivi) ──────────
 
   /// `POST /reservations/` — demande de visite d'un logement.
@@ -100,6 +135,33 @@ class LocationsRepository {
         'date_fin': formatDateIso(au),
         'avec_chauffeur': avecChauffeur,
         'lieu_prise_en_charge': lieuPriseEnCharge,
+        'message': message,
+        'telephone_contact': telephone,
+      },
+    );
+  }
+
+  /// `POST /reservations/` — réservation d'un séjour dans un hébergement.
+  Future<void> reserverHebergement({
+    required int hebergementId,
+    required DateTime arrivee,
+    required DateTime depart,
+    required int adultes,
+    required int enfants,
+    required int unites,
+    required String telephone,
+    String message = '',
+  }) async {
+    await _dio.post(
+      '${Env.apiPrefix}/reservations/',
+      data: {
+        'objet_id': hebergementId,
+        'nature': 'reservation',
+        'date_debut': formatDateIso(arrivee),
+        'date_fin': formatDateIso(depart),
+        'nb_adultes': adultes,
+        'nb_enfants': enfants,
+        'nb_unites': unites,
         'message': message,
         'telephone_contact': telephone,
       },

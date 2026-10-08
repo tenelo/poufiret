@@ -10,8 +10,8 @@ import '../../../global/widgets/message_erreur.dart';
 import '../donnees/locations_providers.dart';
 import '../metier_domaine/location_models.dart';
 
-/// « Mes demandes » : les visites de logement et les réservations de
-/// véhicule du client, avec leur statut, le motif d'un refus, et
+/// « Mes demandes » : les visites de logement et les réservations
+/// (véhicule, séjour) du client, avec leur statut, le motif d'un refus, et
 /// l'annulation tant qu'elles ne sont pas terminées.
 class EcranMesDemandes extends ConsumerWidget {
   const EcranMesDemandes({super.key});
@@ -179,7 +179,18 @@ class _CarteDemandeState extends ConsumerState<_CarteDemande> {
                 ),
               ),
             const SizedBox(height: 6),
-            if (d.estReservation) ...[
+            if (d.estSejour) ...[
+              _Info(Icons.date_range_outlined, d.sejourLisible),
+              if (d.voyageursLisible.isNotEmpty)
+                _Info(Icons.people_outline, d.voyageursLisible),
+              if (d.nbUnites != null)
+                _Info(Icons.bed_outlined, pluriel(d.nbUnites!, 'chambre')),
+              if (d.montantEstime != null)
+                _Info(
+                  Icons.payments_outlined,
+                  'Montant estimé : ${formatMontant(d.montantEstime!)}',
+                ),
+            ] else if (d.estReservation) ...[
               _Info(Icons.date_range_outlined, d.periodeLisible),
               if (d.avecChauffeur)
                 const _Info(Icons.person_outline, 'Avec chauffeur'),
