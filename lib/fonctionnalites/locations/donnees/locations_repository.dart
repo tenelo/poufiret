@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../global/config/env.dart';
 import '../metier_domaine/location_models.dart';
+import '../metier_domaine/vehicule_models.dart';
 
 class LocationsRepository {
   LocationsRepository(this._dio);
@@ -38,7 +39,27 @@ class LocationsRepository {
   Logement logementDepuis(Object? json) =>
       Logement.fromJson(Map<String, dynamic>.from(json as Map));
 
-  // ── Demandes de visite (jamais en cache : écritures et suivi) ──────────
+  /// `GET /locations/partenaires/<id>/vehicules/` — le loueur et ses
+  /// véhicules disponibles, filtrés.
+  Future<Object?> vehiculesBrut(
+    int partenaireId,
+    FiltreVehicules filtre,
+  ) async => (await _dio.get(
+    '${Env.apiPrefix}/locations/partenaires/$partenaireId/vehicules/',
+    queryParameters: filtre.parametres,
+  )).data;
+
+  PageLoueurVehicules pageVehiculesDepuis(Object? json) =>
+      PageLoueurVehicules.fromJson(Map<String, dynamic>.from(json as Map));
+
+  /// `GET /locations/vehicules/<id>/` — fiche complète.
+  Future<Object?> vehiculeBrut(int id) async =>
+      (await _dio.get('${Env.apiPrefix}/locations/vehicules/$id/')).data;
+
+  Vehicule vehiculeDepuis(Object? json) =>
+      Vehicule.fromJson(Map<String, dynamic>.from(json as Map));
+
+  // ── Demandes de visite et réservations (jamais en cache : écritures et suivi) ──────────
 
   /// `POST /reservations/` — demande de visite d'un logement.
   Future<void> demanderVisite({
@@ -53,6 +74,32 @@ class LocationsRepository {
         'objet_id': logementId,
         'nature': 'visite',
         'date_souhaitee': formatDateIso(date),
+        'message': message,
+        'telephone_contact': telephone,
+      },
+    );
+  }
+
+  /// `POST /reservations/` — réservation d'un véhicule. Un refus (400 :
+  /// chevauchement, durée minimale, chauffeur) remonte en [DioException].
+  Future<void> reserverVehicule({
+    required int vehiculeId,
+    required DateTime du,
+    required DateTime au,
+    required bool avecChauffeur,
+    required String telephone,
+    String lieuPriseEnCharge = '',
+    String message = '',
+  }) async {
+    await _dio.post(
+      '${Env.apiPrefix}/reservations/',
+      data: {
+        'objet_id': vehiculeId,
+        'nature': 'reservation',
+        'date_debut': formatDateIso(du),
+        'date_fin': formatDateIso(au),
+        'avec_chauffeur': avecChauffeur,
+        'lieu_prise_en_charge': lieuPriseEnCharge,
         'message': message,
         'telephone_contact': telephone,
       },

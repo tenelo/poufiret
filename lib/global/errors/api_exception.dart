@@ -41,6 +41,16 @@ class ApiException implements Exception {
         );
       }
 
+      // 1 bis. Variante { "erreur": "message", "details": {..} }.
+      if (data['erreur'] is String) {
+        final details = data['details'];
+        return ApiException(
+          code: statut,
+          message: data['erreur'] as String,
+          details: details is Map<String, dynamic> ? details : const {},
+        );
+      }
+
       // 3. Format DRF simple { "detail": "..." }.
       if (data['detail'] is String) {
         return ApiException(
@@ -81,8 +91,8 @@ class ApiException implements Exception {
     if (details.isNotEmpty) {
       final morceaux = <String>[];
       details.forEach((champ, valeur) {
-        if (valeur is List && valeur.isNotEmpty) {
-          morceaux.add(valeur.first.toString());
+        if (valeur is List && valeur.isNotEmpty && valeur.first is String) {
+          morceaux.add(valeur.first as String);
         } else if (valeur is String) {
           morceaux.add(valeur);
         }

@@ -24,7 +24,7 @@ import 'package:poufiret/fonctionnalites/locations/donnees/locations_repository.
 import 'package:poufiret/fonctionnalites/locations/metier_domaine/location_models.dart';
 import 'package:poufiret/fonctionnalites/locations/screens/ecran_logement.dart';
 import 'package:poufiret/fonctionnalites/locations/screens/ecran_loueur.dart';
-import 'package:poufiret/fonctionnalites/locations/screens/ecran_mes_demandes_visite.dart';
+import 'package:poufiret/fonctionnalites/locations/screens/ecran_mes_demandes.dart';
 import 'package:poufiret/fonctionnalites/locations/widgets/carte_logement.dart';
 import 'package:poufiret/fonctionnalites/locations/widgets/feuille_demande_visite.dart';
 import 'package:poufiret/fonctionnalites/locations/widgets/visite_immersive.dart';
@@ -663,7 +663,7 @@ void main() {
       final serveur = _FauxLocations()..demandes = const [enAttente, refusee];
       await _monter(
         tester,
-        const EcranMesDemandesVisite(),
+        const EcranMesDemandes(),
         overrides: [locationsRepositoryProvider.overrideWithValue(serveur)],
       );
       expect(find.text('Villa 3 pièces à Bromakoté'), findsOneWidget);
@@ -700,7 +700,7 @@ void main() {
         'statut': 'confirmee',
       });
       await tester.pumpAndSettle();
-      expect(find.byType(EcranMesDemandesVisite), findsOneWidget);
+      expect(find.byType(EcranMesDemandes), findsOneWidget);
       expect(find.text('Villa 3 pièces à Bromakoté'), findsOneWidget);
     });
 
@@ -732,7 +732,7 @@ void main() {
           }),
         );
         await tester.pumpAndSettle();
-        expect(find.byType(EcranMesDemandesVisite), findsOneWidget);
+        expect(find.byType(EcranMesDemandes), findsOneWidget);
         navigatorNotifications.currentState!.pop();
         await tester.pumpAndSettle();
       }
@@ -751,7 +751,7 @@ void main() {
         'demande_id': 5,
       });
       await tester.pumpAndSettle();
-      expect(find.byType(EcranMesDemandesVisite), findsNothing);
+      expect(find.byType(EcranMesDemandes), findsNothing);
       expect(find.text('Accueil'), findsOneWidget);
     });
   });

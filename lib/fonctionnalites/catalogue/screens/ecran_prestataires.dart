@@ -78,7 +78,8 @@ class ContenuPrestataires extends ConsumerWidget {
 
   /// Types de partenaire de la categorie. L'affichage est le meme pour
   /// toutes ; seul l'ecran ouvert par une tuile en depend (un restaurant
-  /// ouvre sa page avec menu du jour et carte, un loueur ses logements).
+  /// ouvre sa page avec menu du jour et carte, un loueur ses logements ou
+  /// ses vehicules).
   final List<String> typesPartenaire;
   final int categorieId;
   final String categorieNom;
@@ -147,20 +148,23 @@ class ContenuPrestataires extends ConsumerWidget {
                           modeTransaction: modeTransaction,
                           apercu: prestataire,
                         );
+                  final location = typeLocation(typesPartenaire);
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      // Restaurateur ou loueur : sa page dediee. Un
-                      // partenaire de la categorie que le serveur ne
-                      // connait pas sous ce type garde sa fiche habituelle.
+                      // Restaurateur ou loueur (logements, vehicules) : sa
+                      // page dediee. Un partenaire de la categorie que le
+                      // serveur ne connait pas sous ce type garde sa fiche
+                      // habituelle.
                       builder: (_) => estRestauration(typesPartenaire)
                           ? EcranRestaurant(
                               restaurantId: prestataire.id,
                               nom: prestataire.nomCommerce,
                               siIntrouvable: fiche,
                             )
-                          : estLocation(typesPartenaire)
+                          : location != null
                           ? EcranLoueur(
                               partenaireId: prestataire.id,
+                              type: location,
                               nom: prestataire.nomCommerce,
                               siIntrouvable: fiche,
                             )

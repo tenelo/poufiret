@@ -12,38 +12,75 @@ class CarteLogement extends StatelessWidget {
 
   final LogementResume logement;
 
+  @override
+  Widget build(BuildContext context) {
+    final l = logement;
+    return CarteLocation(
+      photo: l.photo,
+      iconeSansPhoto: Icons.home_outlined,
+      titre: l.titre,
+      sousTitre: l.localisationTexte,
+      prix: formatLoyer(l.loyer),
+      puces: l.puces,
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => EcranLogement(logementId: l.id, titre: l.titre),
+        ),
+      ),
+    );
+  }
+}
+
+/// Mise en page commune des cartes de location (logement, véhicule) :
+/// photo carrée à gauche ; à droite le titre, une ligne secondaire, le prix
+/// et des puces.
+class CarteLocation extends StatelessWidget {
+  const CarteLocation({
+    super.key,
+    required this.photo,
+    required this.iconeSansPhoto,
+    required this.titre,
+    required this.prix,
+    required this.onTap,
+    this.sousTitre = '',
+    this.puces = const [],
+  });
+
+  final String photo;
+  final IconData iconeSansPhoto;
+  final String titre;
+  final String sousTitre;
+  final String prix;
+  final List<String> puces;
+  final VoidCallback onTap;
+
   static const double _cotePhoto = 108;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final l = logement;
     return Card(
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.zero,
       child: InkWell(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => EcranLogement(logementId: l.id, titre: l.titre),
-          ),
-        ),
+        onTap: onTap,
         child: IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               SizedBox(
                 width: _cotePhoto,
-                child: l.photo.isEmpty
+                child: photo.isEmpty
                     ? ColoredBox(
                         color: theme.colorScheme.surfaceContainerHighest,
                         child: Icon(
-                          Icons.home_outlined,
+                          iconeSansPhoto,
                           size: 36,
                           color: theme.colorScheme.outline,
                         ),
                       )
                     : ImageReseau(
-                        l.photo,
+                        photo,
                         fit: BoxFit.cover,
                         largeurAffichee: _cotePhoto,
                       ),
@@ -59,17 +96,17 @@ class CarteLogement extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          l.titre,
+                          titre,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        if (l.localisationTexte.isNotEmpty) ...[
+                        if (sousTitre.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(
-                            l.localisationTexte,
+                            sousTitre,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodySmall?.copyWith(
@@ -79,19 +116,19 @@ class CarteLogement extends StatelessWidget {
                         ],
                         const SizedBox(height: 4),
                         Text(
-                          formatLoyer(l.loyer),
+                          prix,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        if (l.puces.isNotEmpty) ...[
+                        if (puces.isNotEmpty) ...[
                           const SizedBox(height: 6),
                           Wrap(
                             spacing: 6,
                             runSpacing: 4,
                             children: [
-                              for (final puce in l.puces) PuceLogement(puce),
+                              for (final puce in puces) PuceLogement(puce),
                             ],
                           ),
                         ],

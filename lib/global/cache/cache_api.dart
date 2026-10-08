@@ -64,6 +64,10 @@ class PolitiqueCache {
   static const logements = restaurants;
   static const logementDetail = restaurantDetail;
 
+  /// Véhicules d'un loueur et fiche d'un véhicule : idem.
+  static const vehicules = restaurants;
+  static const vehiculeDetail = restaurantDetail;
+
   /// Conversations : toujours affichées depuis le cache, rafraîchies à
   /// chaque ouverture (le temps réel reste sur WebSocket).
   static const conversations = PolitiqueCache(

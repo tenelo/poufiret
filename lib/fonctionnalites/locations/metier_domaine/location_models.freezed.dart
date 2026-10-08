@@ -281,7 +281,7 @@ as String,
 /// @nodoc
 mixin _$MetaLocations {
 
-@JsonKey(name: 'types_logement') List<OptionMeta> get typesLogement; List<OptionMeta> get equipements; List<OptionMeta> get disponibilites;
+@JsonKey(name: 'types_logement') List<OptionMeta> get typesLogement; List<OptionMeta> get equipements; List<OptionMeta> get disponibilites;@JsonKey(name: 'categories_vehicule') List<OptionMeta> get categoriesVehicule; List<OptionMeta> get boites; List<OptionMeta> get carburants;@JsonKey(name: 'equipements_vehicule') List<OptionMeta> get equipementsVehicule;
 /// Create a copy of MetaLocations
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -294,16 +294,16 @@ $MetaLocationsCopyWith<MetaLocations> get copyWith => _$MetaLocationsCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MetaLocations&&const DeepCollectionEquality().equals(other.typesLogement, typesLogement)&&const DeepCollectionEquality().equals(other.equipements, equipements)&&const DeepCollectionEquality().equals(other.disponibilites, disponibilites));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MetaLocations&&const DeepCollectionEquality().equals(other.typesLogement, typesLogement)&&const DeepCollectionEquality().equals(other.equipements, equipements)&&const DeepCollectionEquality().equals(other.disponibilites, disponibilites)&&const DeepCollectionEquality().equals(other.categoriesVehicule, categoriesVehicule)&&const DeepCollectionEquality().equals(other.boites, boites)&&const DeepCollectionEquality().equals(other.carburants, carburants)&&const DeepCollectionEquality().equals(other.equipementsVehicule, equipementsVehicule));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(typesLogement),const DeepCollectionEquality().hash(equipements),const DeepCollectionEquality().hash(disponibilites));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(typesLogement),const DeepCollectionEquality().hash(equipements),const DeepCollectionEquality().hash(disponibilites),const DeepCollectionEquality().hash(categoriesVehicule),const DeepCollectionEquality().hash(boites),const DeepCollectionEquality().hash(carburants),const DeepCollectionEquality().hash(equipementsVehicule));
 
 @override
 String toString() {
-  return 'MetaLocations(typesLogement: $typesLogement, equipements: $equipements, disponibilites: $disponibilites)';
+  return 'MetaLocations(typesLogement: $typesLogement, equipements: $equipements, disponibilites: $disponibilites, categoriesVehicule: $categoriesVehicule, boites: $boites, carburants: $carburants, equipementsVehicule: $equipementsVehicule)';
 }
 
 
@@ -314,7 +314,7 @@ abstract mixin class $MetaLocationsCopyWith<$Res>  {
   factory $MetaLocationsCopyWith(MetaLocations value, $Res Function(MetaLocations) _then) = _$MetaLocationsCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'types_logement') List<OptionMeta> typesLogement, List<OptionMeta> equipements, List<OptionMeta> disponibilites
+@JsonKey(name: 'types_logement') List<OptionMeta> typesLogement, List<OptionMeta> equipements, List<OptionMeta> disponibilites,@JsonKey(name: 'categories_vehicule') List<OptionMeta> categoriesVehicule, List<OptionMeta> boites, List<OptionMeta> carburants,@JsonKey(name: 'equipements_vehicule') List<OptionMeta> equipementsVehicule
 });
 
 
@@ -331,11 +331,15 @@ class _$MetaLocationsCopyWithImpl<$Res>
 
 /// Create a copy of MetaLocations
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? typesLogement = null,Object? equipements = null,Object? disponibilites = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? typesLogement = null,Object? equipements = null,Object? disponibilites = null,Object? categoriesVehicule = null,Object? boites = null,Object? carburants = null,Object? equipementsVehicule = null,}) {
   return _then(_self.copyWith(
 typesLogement: null == typesLogement ? _self.typesLogement : typesLogement // ignore: cast_nullable_to_non_nullable
 as List<OptionMeta>,equipements: null == equipements ? _self.equipements : equipements // ignore: cast_nullable_to_non_nullable
 as List<OptionMeta>,disponibilites: null == disponibilites ? _self.disponibilites : disponibilites // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,categoriesVehicule: null == categoriesVehicule ? _self.categoriesVehicule : categoriesVehicule // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,boites: null == boites ? _self.boites : boites // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,carburants: null == carburants ? _self.carburants : carburants // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,equipementsVehicule: null == equipementsVehicule ? _self.equipementsVehicule : equipementsVehicule // ignore: cast_nullable_to_non_nullable
 as List<OptionMeta>,
   ));
 }
@@ -421,10 +425,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'types_logement')  List<OptionMeta> typesLogement,  List<OptionMeta> equipements,  List<OptionMeta> disponibilites)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'types_logement')  List<OptionMeta> typesLogement,  List<OptionMeta> equipements,  List<OptionMeta> disponibilites, @JsonKey(name: 'categories_vehicule')  List<OptionMeta> categoriesVehicule,  List<OptionMeta> boites,  List<OptionMeta> carburants, @JsonKey(name: 'equipements_vehicule')  List<OptionMeta> equipementsVehicule)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MetaLocations() when $default != null:
-return $default(_that.typesLogement,_that.equipements,_that.disponibilites);case _:
+return $default(_that.typesLogement,_that.equipements,_that.disponibilites,_that.categoriesVehicule,_that.boites,_that.carburants,_that.equipementsVehicule);case _:
   return orElse();
 
 }
@@ -442,10 +446,10 @@ return $default(_that.typesLogement,_that.equipements,_that.disponibilites);case
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'types_logement')  List<OptionMeta> typesLogement,  List<OptionMeta> equipements,  List<OptionMeta> disponibilites)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'types_logement')  List<OptionMeta> typesLogement,  List<OptionMeta> equipements,  List<OptionMeta> disponibilites, @JsonKey(name: 'categories_vehicule')  List<OptionMeta> categoriesVehicule,  List<OptionMeta> boites,  List<OptionMeta> carburants, @JsonKey(name: 'equipements_vehicule')  List<OptionMeta> equipementsVehicule)  $default,) {final _that = this;
 switch (_that) {
 case _MetaLocations():
-return $default(_that.typesLogement,_that.equipements,_that.disponibilites);case _:
+return $default(_that.typesLogement,_that.equipements,_that.disponibilites,_that.categoriesVehicule,_that.boites,_that.carburants,_that.equipementsVehicule);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -462,10 +466,10 @@ return $default(_that.typesLogement,_that.equipements,_that.disponibilites);case
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'types_logement')  List<OptionMeta> typesLogement,  List<OptionMeta> equipements,  List<OptionMeta> disponibilites)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'types_logement')  List<OptionMeta> typesLogement,  List<OptionMeta> equipements,  List<OptionMeta> disponibilites, @JsonKey(name: 'categories_vehicule')  List<OptionMeta> categoriesVehicule,  List<OptionMeta> boites,  List<OptionMeta> carburants, @JsonKey(name: 'equipements_vehicule')  List<OptionMeta> equipementsVehicule)?  $default,) {final _that = this;
 switch (_that) {
 case _MetaLocations() when $default != null:
-return $default(_that.typesLogement,_that.equipements,_that.disponibilites);case _:
+return $default(_that.typesLogement,_that.equipements,_that.disponibilites,_that.categoriesVehicule,_that.boites,_that.carburants,_that.equipementsVehicule);case _:
   return null;
 
 }
@@ -477,7 +481,7 @@ return $default(_that.typesLogement,_that.equipements,_that.disponibilites);case
 @JsonSerializable()
 
 class _MetaLocations extends MetaLocations {
-  const _MetaLocations({@JsonKey(name: 'types_logement') final  List<OptionMeta> typesLogement = const <OptionMeta>[], final  List<OptionMeta> equipements = const <OptionMeta>[], final  List<OptionMeta> disponibilites = const <OptionMeta>[]}): _typesLogement = typesLogement,_equipements = equipements,_disponibilites = disponibilites,super._();
+  const _MetaLocations({@JsonKey(name: 'types_logement') final  List<OptionMeta> typesLogement = const <OptionMeta>[], final  List<OptionMeta> equipements = const <OptionMeta>[], final  List<OptionMeta> disponibilites = const <OptionMeta>[], @JsonKey(name: 'categories_vehicule') final  List<OptionMeta> categoriesVehicule = const <OptionMeta>[], final  List<OptionMeta> boites = const <OptionMeta>[], final  List<OptionMeta> carburants = const <OptionMeta>[], @JsonKey(name: 'equipements_vehicule') final  List<OptionMeta> equipementsVehicule = const <OptionMeta>[]}): _typesLogement = typesLogement,_equipements = equipements,_disponibilites = disponibilites,_categoriesVehicule = categoriesVehicule,_boites = boites,_carburants = carburants,_equipementsVehicule = equipementsVehicule,super._();
   factory _MetaLocations.fromJson(Map<String, dynamic> json) => _$MetaLocationsFromJson(json);
 
  final  List<OptionMeta> _typesLogement;
@@ -501,6 +505,34 @@ class _MetaLocations extends MetaLocations {
   return EqualUnmodifiableListView(_disponibilites);
 }
 
+ final  List<OptionMeta> _categoriesVehicule;
+@override@JsonKey(name: 'categories_vehicule') List<OptionMeta> get categoriesVehicule {
+  if (_categoriesVehicule is EqualUnmodifiableListView) return _categoriesVehicule;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_categoriesVehicule);
+}
+
+ final  List<OptionMeta> _boites;
+@override@JsonKey() List<OptionMeta> get boites {
+  if (_boites is EqualUnmodifiableListView) return _boites;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_boites);
+}
+
+ final  List<OptionMeta> _carburants;
+@override@JsonKey() List<OptionMeta> get carburants {
+  if (_carburants is EqualUnmodifiableListView) return _carburants;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_carburants);
+}
+
+ final  List<OptionMeta> _equipementsVehicule;
+@override@JsonKey(name: 'equipements_vehicule') List<OptionMeta> get equipementsVehicule {
+  if (_equipementsVehicule is EqualUnmodifiableListView) return _equipementsVehicule;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_equipementsVehicule);
+}
+
 
 /// Create a copy of MetaLocations
 /// with the given fields replaced by the non-null parameter values.
@@ -515,16 +547,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MetaLocations&&const DeepCollectionEquality().equals(other._typesLogement, _typesLogement)&&const DeepCollectionEquality().equals(other._equipements, _equipements)&&const DeepCollectionEquality().equals(other._disponibilites, _disponibilites));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MetaLocations&&const DeepCollectionEquality().equals(other._typesLogement, _typesLogement)&&const DeepCollectionEquality().equals(other._equipements, _equipements)&&const DeepCollectionEquality().equals(other._disponibilites, _disponibilites)&&const DeepCollectionEquality().equals(other._categoriesVehicule, _categoriesVehicule)&&const DeepCollectionEquality().equals(other._boites, _boites)&&const DeepCollectionEquality().equals(other._carburants, _carburants)&&const DeepCollectionEquality().equals(other._equipementsVehicule, _equipementsVehicule));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_typesLogement),const DeepCollectionEquality().hash(_equipements),const DeepCollectionEquality().hash(_disponibilites));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_typesLogement),const DeepCollectionEquality().hash(_equipements),const DeepCollectionEquality().hash(_disponibilites),const DeepCollectionEquality().hash(_categoriesVehicule),const DeepCollectionEquality().hash(_boites),const DeepCollectionEquality().hash(_carburants),const DeepCollectionEquality().hash(_equipementsVehicule));
 
 @override
 String toString() {
-  return 'MetaLocations(typesLogement: $typesLogement, equipements: $equipements, disponibilites: $disponibilites)';
+  return 'MetaLocations(typesLogement: $typesLogement, equipements: $equipements, disponibilites: $disponibilites, categoriesVehicule: $categoriesVehicule, boites: $boites, carburants: $carburants, equipementsVehicule: $equipementsVehicule)';
 }
 
 
@@ -535,7 +567,7 @@ abstract mixin class _$MetaLocationsCopyWith<$Res> implements $MetaLocationsCopy
   factory _$MetaLocationsCopyWith(_MetaLocations value, $Res Function(_MetaLocations) _then) = __$MetaLocationsCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'types_logement') List<OptionMeta> typesLogement, List<OptionMeta> equipements, List<OptionMeta> disponibilites
+@JsonKey(name: 'types_logement') List<OptionMeta> typesLogement, List<OptionMeta> equipements, List<OptionMeta> disponibilites,@JsonKey(name: 'categories_vehicule') List<OptionMeta> categoriesVehicule, List<OptionMeta> boites, List<OptionMeta> carburants,@JsonKey(name: 'equipements_vehicule') List<OptionMeta> equipementsVehicule
 });
 
 
@@ -552,11 +584,15 @@ class __$MetaLocationsCopyWithImpl<$Res>
 
 /// Create a copy of MetaLocations
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? typesLogement = null,Object? equipements = null,Object? disponibilites = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? typesLogement = null,Object? equipements = null,Object? disponibilites = null,Object? categoriesVehicule = null,Object? boites = null,Object? carburants = null,Object? equipementsVehicule = null,}) {
   return _then(_MetaLocations(
 typesLogement: null == typesLogement ? _self._typesLogement : typesLogement // ignore: cast_nullable_to_non_nullable
 as List<OptionMeta>,equipements: null == equipements ? _self._equipements : equipements // ignore: cast_nullable_to_non_nullable
 as List<OptionMeta>,disponibilites: null == disponibilites ? _self._disponibilites : disponibilites // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,categoriesVehicule: null == categoriesVehicule ? _self._categoriesVehicule : categoriesVehicule // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,boites: null == boites ? _self._boites : boites // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,carburants: null == carburants ? _self._carburants : carburants // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,equipementsVehicule: null == equipementsVehicule ? _self._equipementsVehicule : equipementsVehicule // ignore: cast_nullable_to_non_nullable
 as List<OptionMeta>,
   ));
 }
@@ -2104,7 +2140,9 @@ $LoueurCopyWith<$Res>? get loueur {
 /// @nodoc
 mixin _$DemandeReservation {
 
- int get id; String get numero;@JsonKey(name: 'nature_libelle') String get natureLibelle;@JsonKey(name: 'objet_nom') String get objetNom;@JsonKey(name: 'partenaire_nom') String get partenaireNom;@JsonKey(name: 'date_souhaitee') String? get dateSouhaitee; String get statut;@JsonKey(name: 'statut_libelle') String get statutLibelle;@JsonKey(name: 'raison_refus') String get raisonRefus;@JsonKey(name: 'created_at') String? get createdAt;
+ int get id; String get numero;/// visite | reservation
+ String get nature;@JsonKey(name: 'nature_libelle') String get natureLibelle;/// logement | vehicule
+@JsonKey(name: 'objet_type') String get objetType;@JsonKey(name: 'objet_nom') String get objetNom;@JsonKey(name: 'partenaire_nom') String get partenaireNom;@JsonKey(name: 'date_souhaitee') String? get dateSouhaitee;@JsonKey(name: 'date_debut') String? get dateDebut;@JsonKey(name: 'date_fin') String? get dateFin;@JsonKey(name: 'avec_chauffeur') bool get avecChauffeur;@JsonKey(name: 'lieu_prise_en_charge') String get lieuPriseEnCharge;@JsonKey(name: 'montant_estime', fromJson: versIntNullable) int? get montantEstime; String get statut;@JsonKey(name: 'statut_libelle') String get statutLibelle;@JsonKey(name: 'raison_refus') String get raisonRefus;@JsonKey(name: 'created_at') String? get createdAt;
 /// Create a copy of DemandeReservation
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2117,16 +2155,16 @@ $DemandeReservationCopyWith<DemandeReservation> get copyWith => _$DemandeReserva
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DemandeReservation&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.natureLibelle, natureLibelle) || other.natureLibelle == natureLibelle)&&(identical(other.objetNom, objetNom) || other.objetNom == objetNom)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.dateSouhaitee, dateSouhaitee) || other.dateSouhaitee == dateSouhaitee)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.statutLibelle, statutLibelle) || other.statutLibelle == statutLibelle)&&(identical(other.raisonRefus, raisonRefus) || other.raisonRefus == raisonRefus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DemandeReservation&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.nature, nature) || other.nature == nature)&&(identical(other.natureLibelle, natureLibelle) || other.natureLibelle == natureLibelle)&&(identical(other.objetType, objetType) || other.objetType == objetType)&&(identical(other.objetNom, objetNom) || other.objetNom == objetNom)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.dateSouhaitee, dateSouhaitee) || other.dateSouhaitee == dateSouhaitee)&&(identical(other.dateDebut, dateDebut) || other.dateDebut == dateDebut)&&(identical(other.dateFin, dateFin) || other.dateFin == dateFin)&&(identical(other.avecChauffeur, avecChauffeur) || other.avecChauffeur == avecChauffeur)&&(identical(other.lieuPriseEnCharge, lieuPriseEnCharge) || other.lieuPriseEnCharge == lieuPriseEnCharge)&&(identical(other.montantEstime, montantEstime) || other.montantEstime == montantEstime)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.statutLibelle, statutLibelle) || other.statutLibelle == statutLibelle)&&(identical(other.raisonRefus, raisonRefus) || other.raisonRefus == raisonRefus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,numero,natureLibelle,objetNom,partenaireNom,dateSouhaitee,statut,statutLibelle,raisonRefus,createdAt);
+int get hashCode => Object.hash(runtimeType,id,numero,nature,natureLibelle,objetType,objetNom,partenaireNom,dateSouhaitee,dateDebut,dateFin,avecChauffeur,lieuPriseEnCharge,montantEstime,statut,statutLibelle,raisonRefus,createdAt);
 
 @override
 String toString() {
-  return 'DemandeReservation(id: $id, numero: $numero, natureLibelle: $natureLibelle, objetNom: $objetNom, partenaireNom: $partenaireNom, dateSouhaitee: $dateSouhaitee, statut: $statut, statutLibelle: $statutLibelle, raisonRefus: $raisonRefus, createdAt: $createdAt)';
+  return 'DemandeReservation(id: $id, numero: $numero, nature: $nature, natureLibelle: $natureLibelle, objetType: $objetType, objetNom: $objetNom, partenaireNom: $partenaireNom, dateSouhaitee: $dateSouhaitee, dateDebut: $dateDebut, dateFin: $dateFin, avecChauffeur: $avecChauffeur, lieuPriseEnCharge: $lieuPriseEnCharge, montantEstime: $montantEstime, statut: $statut, statutLibelle: $statutLibelle, raisonRefus: $raisonRefus, createdAt: $createdAt)';
 }
 
 
@@ -2137,7 +2175,7 @@ abstract mixin class $DemandeReservationCopyWith<$Res>  {
   factory $DemandeReservationCopyWith(DemandeReservation value, $Res Function(DemandeReservation) _then) = _$DemandeReservationCopyWithImpl;
 @useResult
 $Res call({
- int id, String numero,@JsonKey(name: 'nature_libelle') String natureLibelle,@JsonKey(name: 'objet_nom') String objetNom,@JsonKey(name: 'partenaire_nom') String partenaireNom,@JsonKey(name: 'date_souhaitee') String? dateSouhaitee, String statut,@JsonKey(name: 'statut_libelle') String statutLibelle,@JsonKey(name: 'raison_refus') String raisonRefus,@JsonKey(name: 'created_at') String? createdAt
+ int id, String numero, String nature,@JsonKey(name: 'nature_libelle') String natureLibelle,@JsonKey(name: 'objet_type') String objetType,@JsonKey(name: 'objet_nom') String objetNom,@JsonKey(name: 'partenaire_nom') String partenaireNom,@JsonKey(name: 'date_souhaitee') String? dateSouhaitee,@JsonKey(name: 'date_debut') String? dateDebut,@JsonKey(name: 'date_fin') String? dateFin,@JsonKey(name: 'avec_chauffeur') bool avecChauffeur,@JsonKey(name: 'lieu_prise_en_charge') String lieuPriseEnCharge,@JsonKey(name: 'montant_estime', fromJson: versIntNullable) int? montantEstime, String statut,@JsonKey(name: 'statut_libelle') String statutLibelle,@JsonKey(name: 'raison_refus') String raisonRefus,@JsonKey(name: 'created_at') String? createdAt
 });
 
 
@@ -2154,15 +2192,22 @@ class _$DemandeReservationCopyWithImpl<$Res>
 
 /// Create a copy of DemandeReservation
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? numero = null,Object? natureLibelle = null,Object? objetNom = null,Object? partenaireNom = null,Object? dateSouhaitee = freezed,Object? statut = null,Object? statutLibelle = null,Object? raisonRefus = null,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? numero = null,Object? nature = null,Object? natureLibelle = null,Object? objetType = null,Object? objetNom = null,Object? partenaireNom = null,Object? dateSouhaitee = freezed,Object? dateDebut = freezed,Object? dateFin = freezed,Object? avecChauffeur = null,Object? lieuPriseEnCharge = null,Object? montantEstime = freezed,Object? statut = null,Object? statutLibelle = null,Object? raisonRefus = null,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,numero: null == numero ? _self.numero : numero // ignore: cast_nullable_to_non_nullable
+as String,nature: null == nature ? _self.nature : nature // ignore: cast_nullable_to_non_nullable
 as String,natureLibelle: null == natureLibelle ? _self.natureLibelle : natureLibelle // ignore: cast_nullable_to_non_nullable
+as String,objetType: null == objetType ? _self.objetType : objetType // ignore: cast_nullable_to_non_nullable
 as String,objetNom: null == objetNom ? _self.objetNom : objetNom // ignore: cast_nullable_to_non_nullable
 as String,partenaireNom: null == partenaireNom ? _self.partenaireNom : partenaireNom // ignore: cast_nullable_to_non_nullable
 as String,dateSouhaitee: freezed == dateSouhaitee ? _self.dateSouhaitee : dateSouhaitee // ignore: cast_nullable_to_non_nullable
-as String?,statut: null == statut ? _self.statut : statut // ignore: cast_nullable_to_non_nullable
+as String?,dateDebut: freezed == dateDebut ? _self.dateDebut : dateDebut // ignore: cast_nullable_to_non_nullable
+as String?,dateFin: freezed == dateFin ? _self.dateFin : dateFin // ignore: cast_nullable_to_non_nullable
+as String?,avecChauffeur: null == avecChauffeur ? _self.avecChauffeur : avecChauffeur // ignore: cast_nullable_to_non_nullable
+as bool,lieuPriseEnCharge: null == lieuPriseEnCharge ? _self.lieuPriseEnCharge : lieuPriseEnCharge // ignore: cast_nullable_to_non_nullable
+as String,montantEstime: freezed == montantEstime ? _self.montantEstime : montantEstime // ignore: cast_nullable_to_non_nullable
+as int?,statut: null == statut ? _self.statut : statut // ignore: cast_nullable_to_non_nullable
 as String,statutLibelle: null == statutLibelle ? _self.statutLibelle : statutLibelle // ignore: cast_nullable_to_non_nullable
 as String,raisonRefus: null == raisonRefus ? _self.raisonRefus : raisonRefus // ignore: cast_nullable_to_non_nullable
 as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
@@ -2251,10 +2296,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String numero, @JsonKey(name: 'nature_libelle')  String natureLibelle, @JsonKey(name: 'objet_nom')  String objetNom, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'date_souhaitee')  String? dateSouhaitee,  String statut, @JsonKey(name: 'statut_libelle')  String statutLibelle, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'created_at')  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String numero,  String nature, @JsonKey(name: 'nature_libelle')  String natureLibelle, @JsonKey(name: 'objet_type')  String objetType, @JsonKey(name: 'objet_nom')  String objetNom, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'date_souhaitee')  String? dateSouhaitee, @JsonKey(name: 'date_debut')  String? dateDebut, @JsonKey(name: 'date_fin')  String? dateFin, @JsonKey(name: 'avec_chauffeur')  bool avecChauffeur, @JsonKey(name: 'lieu_prise_en_charge')  String lieuPriseEnCharge, @JsonKey(name: 'montant_estime', fromJson: versIntNullable)  int? montantEstime,  String statut, @JsonKey(name: 'statut_libelle')  String statutLibelle, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'created_at')  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DemandeReservation() when $default != null:
-return $default(_that.id,_that.numero,_that.natureLibelle,_that.objetNom,_that.partenaireNom,_that.dateSouhaitee,_that.statut,_that.statutLibelle,_that.raisonRefus,_that.createdAt);case _:
+return $default(_that.id,_that.numero,_that.nature,_that.natureLibelle,_that.objetType,_that.objetNom,_that.partenaireNom,_that.dateSouhaitee,_that.dateDebut,_that.dateFin,_that.avecChauffeur,_that.lieuPriseEnCharge,_that.montantEstime,_that.statut,_that.statutLibelle,_that.raisonRefus,_that.createdAt);case _:
   return orElse();
 
 }
@@ -2272,10 +2317,10 @@ return $default(_that.id,_that.numero,_that.natureLibelle,_that.objetNom,_that.p
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String numero, @JsonKey(name: 'nature_libelle')  String natureLibelle, @JsonKey(name: 'objet_nom')  String objetNom, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'date_souhaitee')  String? dateSouhaitee,  String statut, @JsonKey(name: 'statut_libelle')  String statutLibelle, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'created_at')  String? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String numero,  String nature, @JsonKey(name: 'nature_libelle')  String natureLibelle, @JsonKey(name: 'objet_type')  String objetType, @JsonKey(name: 'objet_nom')  String objetNom, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'date_souhaitee')  String? dateSouhaitee, @JsonKey(name: 'date_debut')  String? dateDebut, @JsonKey(name: 'date_fin')  String? dateFin, @JsonKey(name: 'avec_chauffeur')  bool avecChauffeur, @JsonKey(name: 'lieu_prise_en_charge')  String lieuPriseEnCharge, @JsonKey(name: 'montant_estime', fromJson: versIntNullable)  int? montantEstime,  String statut, @JsonKey(name: 'statut_libelle')  String statutLibelle, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'created_at')  String? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _DemandeReservation():
-return $default(_that.id,_that.numero,_that.natureLibelle,_that.objetNom,_that.partenaireNom,_that.dateSouhaitee,_that.statut,_that.statutLibelle,_that.raisonRefus,_that.createdAt);case _:
+return $default(_that.id,_that.numero,_that.nature,_that.natureLibelle,_that.objetType,_that.objetNom,_that.partenaireNom,_that.dateSouhaitee,_that.dateDebut,_that.dateFin,_that.avecChauffeur,_that.lieuPriseEnCharge,_that.montantEstime,_that.statut,_that.statutLibelle,_that.raisonRefus,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -2292,10 +2337,10 @@ return $default(_that.id,_that.numero,_that.natureLibelle,_that.objetNom,_that.p
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String numero, @JsonKey(name: 'nature_libelle')  String natureLibelle, @JsonKey(name: 'objet_nom')  String objetNom, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'date_souhaitee')  String? dateSouhaitee,  String statut, @JsonKey(name: 'statut_libelle')  String statutLibelle, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'created_at')  String? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String numero,  String nature, @JsonKey(name: 'nature_libelle')  String natureLibelle, @JsonKey(name: 'objet_type')  String objetType, @JsonKey(name: 'objet_nom')  String objetNom, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'date_souhaitee')  String? dateSouhaitee, @JsonKey(name: 'date_debut')  String? dateDebut, @JsonKey(name: 'date_fin')  String? dateFin, @JsonKey(name: 'avec_chauffeur')  bool avecChauffeur, @JsonKey(name: 'lieu_prise_en_charge')  String lieuPriseEnCharge, @JsonKey(name: 'montant_estime', fromJson: versIntNullable)  int? montantEstime,  String statut, @JsonKey(name: 'statut_libelle')  String statutLibelle, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'created_at')  String? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _DemandeReservation() when $default != null:
-return $default(_that.id,_that.numero,_that.natureLibelle,_that.objetNom,_that.partenaireNom,_that.dateSouhaitee,_that.statut,_that.statutLibelle,_that.raisonRefus,_that.createdAt);case _:
+return $default(_that.id,_that.numero,_that.nature,_that.natureLibelle,_that.objetType,_that.objetNom,_that.partenaireNom,_that.dateSouhaitee,_that.dateDebut,_that.dateFin,_that.avecChauffeur,_that.lieuPriseEnCharge,_that.montantEstime,_that.statut,_that.statutLibelle,_that.raisonRefus,_that.createdAt);case _:
   return null;
 
 }
@@ -2307,15 +2352,24 @@ return $default(_that.id,_that.numero,_that.natureLibelle,_that.objetNom,_that.p
 @JsonSerializable()
 
 class _DemandeReservation extends DemandeReservation {
-  const _DemandeReservation({required this.id, this.numero = '', @JsonKey(name: 'nature_libelle') this.natureLibelle = '', @JsonKey(name: 'objet_nom') this.objetNom = '', @JsonKey(name: 'partenaire_nom') this.partenaireNom = '', @JsonKey(name: 'date_souhaitee') this.dateSouhaitee, this.statut = '', @JsonKey(name: 'statut_libelle') this.statutLibelle = '', @JsonKey(name: 'raison_refus') this.raisonRefus = '', @JsonKey(name: 'created_at') this.createdAt}): super._();
+  const _DemandeReservation({required this.id, this.numero = '', this.nature = '', @JsonKey(name: 'nature_libelle') this.natureLibelle = '', @JsonKey(name: 'objet_type') this.objetType = '', @JsonKey(name: 'objet_nom') this.objetNom = '', @JsonKey(name: 'partenaire_nom') this.partenaireNom = '', @JsonKey(name: 'date_souhaitee') this.dateSouhaitee, @JsonKey(name: 'date_debut') this.dateDebut, @JsonKey(name: 'date_fin') this.dateFin, @JsonKey(name: 'avec_chauffeur') this.avecChauffeur = false, @JsonKey(name: 'lieu_prise_en_charge') this.lieuPriseEnCharge = '', @JsonKey(name: 'montant_estime', fromJson: versIntNullable) this.montantEstime, this.statut = '', @JsonKey(name: 'statut_libelle') this.statutLibelle = '', @JsonKey(name: 'raison_refus') this.raisonRefus = '', @JsonKey(name: 'created_at') this.createdAt}): super._();
   factory _DemandeReservation.fromJson(Map<String, dynamic> json) => _$DemandeReservationFromJson(json);
 
 @override final  int id;
 @override@JsonKey() final  String numero;
+/// visite | reservation
+@override@JsonKey() final  String nature;
 @override@JsonKey(name: 'nature_libelle') final  String natureLibelle;
+/// logement | vehicule
+@override@JsonKey(name: 'objet_type') final  String objetType;
 @override@JsonKey(name: 'objet_nom') final  String objetNom;
 @override@JsonKey(name: 'partenaire_nom') final  String partenaireNom;
 @override@JsonKey(name: 'date_souhaitee') final  String? dateSouhaitee;
+@override@JsonKey(name: 'date_debut') final  String? dateDebut;
+@override@JsonKey(name: 'date_fin') final  String? dateFin;
+@override@JsonKey(name: 'avec_chauffeur') final  bool avecChauffeur;
+@override@JsonKey(name: 'lieu_prise_en_charge') final  String lieuPriseEnCharge;
+@override@JsonKey(name: 'montant_estime', fromJson: versIntNullable) final  int? montantEstime;
 @override@JsonKey() final  String statut;
 @override@JsonKey(name: 'statut_libelle') final  String statutLibelle;
 @override@JsonKey(name: 'raison_refus') final  String raisonRefus;
@@ -2334,16 +2388,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DemandeReservation&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.natureLibelle, natureLibelle) || other.natureLibelle == natureLibelle)&&(identical(other.objetNom, objetNom) || other.objetNom == objetNom)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.dateSouhaitee, dateSouhaitee) || other.dateSouhaitee == dateSouhaitee)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.statutLibelle, statutLibelle) || other.statutLibelle == statutLibelle)&&(identical(other.raisonRefus, raisonRefus) || other.raisonRefus == raisonRefus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DemandeReservation&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.nature, nature) || other.nature == nature)&&(identical(other.natureLibelle, natureLibelle) || other.natureLibelle == natureLibelle)&&(identical(other.objetType, objetType) || other.objetType == objetType)&&(identical(other.objetNom, objetNom) || other.objetNom == objetNom)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.dateSouhaitee, dateSouhaitee) || other.dateSouhaitee == dateSouhaitee)&&(identical(other.dateDebut, dateDebut) || other.dateDebut == dateDebut)&&(identical(other.dateFin, dateFin) || other.dateFin == dateFin)&&(identical(other.avecChauffeur, avecChauffeur) || other.avecChauffeur == avecChauffeur)&&(identical(other.lieuPriseEnCharge, lieuPriseEnCharge) || other.lieuPriseEnCharge == lieuPriseEnCharge)&&(identical(other.montantEstime, montantEstime) || other.montantEstime == montantEstime)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.statutLibelle, statutLibelle) || other.statutLibelle == statutLibelle)&&(identical(other.raisonRefus, raisonRefus) || other.raisonRefus == raisonRefus)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,numero,natureLibelle,objetNom,partenaireNom,dateSouhaitee,statut,statutLibelle,raisonRefus,createdAt);
+int get hashCode => Object.hash(runtimeType,id,numero,nature,natureLibelle,objetType,objetNom,partenaireNom,dateSouhaitee,dateDebut,dateFin,avecChauffeur,lieuPriseEnCharge,montantEstime,statut,statutLibelle,raisonRefus,createdAt);
 
 @override
 String toString() {
-  return 'DemandeReservation(id: $id, numero: $numero, natureLibelle: $natureLibelle, objetNom: $objetNom, partenaireNom: $partenaireNom, dateSouhaitee: $dateSouhaitee, statut: $statut, statutLibelle: $statutLibelle, raisonRefus: $raisonRefus, createdAt: $createdAt)';
+  return 'DemandeReservation(id: $id, numero: $numero, nature: $nature, natureLibelle: $natureLibelle, objetType: $objetType, objetNom: $objetNom, partenaireNom: $partenaireNom, dateSouhaitee: $dateSouhaitee, dateDebut: $dateDebut, dateFin: $dateFin, avecChauffeur: $avecChauffeur, lieuPriseEnCharge: $lieuPriseEnCharge, montantEstime: $montantEstime, statut: $statut, statutLibelle: $statutLibelle, raisonRefus: $raisonRefus, createdAt: $createdAt)';
 }
 
 
@@ -2354,7 +2408,7 @@ abstract mixin class _$DemandeReservationCopyWith<$Res> implements $DemandeReser
   factory _$DemandeReservationCopyWith(_DemandeReservation value, $Res Function(_DemandeReservation) _then) = __$DemandeReservationCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String numero,@JsonKey(name: 'nature_libelle') String natureLibelle,@JsonKey(name: 'objet_nom') String objetNom,@JsonKey(name: 'partenaire_nom') String partenaireNom,@JsonKey(name: 'date_souhaitee') String? dateSouhaitee, String statut,@JsonKey(name: 'statut_libelle') String statutLibelle,@JsonKey(name: 'raison_refus') String raisonRefus,@JsonKey(name: 'created_at') String? createdAt
+ int id, String numero, String nature,@JsonKey(name: 'nature_libelle') String natureLibelle,@JsonKey(name: 'objet_type') String objetType,@JsonKey(name: 'objet_nom') String objetNom,@JsonKey(name: 'partenaire_nom') String partenaireNom,@JsonKey(name: 'date_souhaitee') String? dateSouhaitee,@JsonKey(name: 'date_debut') String? dateDebut,@JsonKey(name: 'date_fin') String? dateFin,@JsonKey(name: 'avec_chauffeur') bool avecChauffeur,@JsonKey(name: 'lieu_prise_en_charge') String lieuPriseEnCharge,@JsonKey(name: 'montant_estime', fromJson: versIntNullable) int? montantEstime, String statut,@JsonKey(name: 'statut_libelle') String statutLibelle,@JsonKey(name: 'raison_refus') String raisonRefus,@JsonKey(name: 'created_at') String? createdAt
 });
 
 
@@ -2371,15 +2425,22 @@ class __$DemandeReservationCopyWithImpl<$Res>
 
 /// Create a copy of DemandeReservation
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? numero = null,Object? natureLibelle = null,Object? objetNom = null,Object? partenaireNom = null,Object? dateSouhaitee = freezed,Object? statut = null,Object? statutLibelle = null,Object? raisonRefus = null,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? numero = null,Object? nature = null,Object? natureLibelle = null,Object? objetType = null,Object? objetNom = null,Object? partenaireNom = null,Object? dateSouhaitee = freezed,Object? dateDebut = freezed,Object? dateFin = freezed,Object? avecChauffeur = null,Object? lieuPriseEnCharge = null,Object? montantEstime = freezed,Object? statut = null,Object? statutLibelle = null,Object? raisonRefus = null,Object? createdAt = freezed,}) {
   return _then(_DemandeReservation(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,numero: null == numero ? _self.numero : numero // ignore: cast_nullable_to_non_nullable
+as String,nature: null == nature ? _self.nature : nature // ignore: cast_nullable_to_non_nullable
 as String,natureLibelle: null == natureLibelle ? _self.natureLibelle : natureLibelle // ignore: cast_nullable_to_non_nullable
+as String,objetType: null == objetType ? _self.objetType : objetType // ignore: cast_nullable_to_non_nullable
 as String,objetNom: null == objetNom ? _self.objetNom : objetNom // ignore: cast_nullable_to_non_nullable
 as String,partenaireNom: null == partenaireNom ? _self.partenaireNom : partenaireNom // ignore: cast_nullable_to_non_nullable
 as String,dateSouhaitee: freezed == dateSouhaitee ? _self.dateSouhaitee : dateSouhaitee // ignore: cast_nullable_to_non_nullable
-as String?,statut: null == statut ? _self.statut : statut // ignore: cast_nullable_to_non_nullable
+as String?,dateDebut: freezed == dateDebut ? _self.dateDebut : dateDebut // ignore: cast_nullable_to_non_nullable
+as String?,dateFin: freezed == dateFin ? _self.dateFin : dateFin // ignore: cast_nullable_to_non_nullable
+as String?,avecChauffeur: null == avecChauffeur ? _self.avecChauffeur : avecChauffeur // ignore: cast_nullable_to_non_nullable
+as bool,lieuPriseEnCharge: null == lieuPriseEnCharge ? _self.lieuPriseEnCharge : lieuPriseEnCharge // ignore: cast_nullable_to_non_nullable
+as String,montantEstime: freezed == montantEstime ? _self.montantEstime : montantEstime // ignore: cast_nullable_to_non_nullable
+as int?,statut: null == statut ? _self.statut : statut // ignore: cast_nullable_to_non_nullable
 as String,statutLibelle: null == statutLibelle ? _self.statutLibelle : statutLibelle // ignore: cast_nullable_to_non_nullable
 as String,raisonRefus: null == raisonRefus ? _self.raisonRefus : raisonRefus // ignore: cast_nullable_to_non_nullable
 as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable

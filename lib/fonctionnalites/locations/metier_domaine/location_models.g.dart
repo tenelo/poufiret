@@ -31,6 +31,26 @@ _MetaLocations _$MetaLocationsFromJson(Map<String, dynamic> json) =>
               ?.map((e) => OptionMeta.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const <OptionMeta>[],
+      categoriesVehicule:
+          (json['categories_vehicule'] as List<dynamic>?)
+              ?.map((e) => OptionMeta.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <OptionMeta>[],
+      boites:
+          (json['boites'] as List<dynamic>?)
+              ?.map((e) => OptionMeta.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <OptionMeta>[],
+      carburants:
+          (json['carburants'] as List<dynamic>?)
+              ?.map((e) => OptionMeta.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <OptionMeta>[],
+      equipementsVehicule:
+          (json['equipements_vehicule'] as List<dynamic>?)
+              ?.map((e) => OptionMeta.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <OptionMeta>[],
     );
 
 Map<String, dynamic> _$MetaLocationsToJson(_MetaLocations instance) =>
@@ -38,6 +58,10 @@ Map<String, dynamic> _$MetaLocationsToJson(_MetaLocations instance) =>
       'types_logement': instance.typesLogement,
       'equipements': instance.equipements,
       'disponibilites': instance.disponibilites,
+      'categories_vehicule': instance.categoriesVehicule,
+      'boites': instance.boites,
+      'carburants': instance.carburants,
+      'equipements_vehicule': instance.equipementsVehicule,
     };
 
 _Loueur _$LoueurFromJson(Map<String, dynamic> json) => _Loueur(
@@ -212,10 +236,17 @@ _DemandeReservation _$DemandeReservationFromJson(Map<String, dynamic> json) =>
     _DemandeReservation(
       id: (json['id'] as num).toInt(),
       numero: json['numero'] as String? ?? '',
+      nature: json['nature'] as String? ?? '',
       natureLibelle: json['nature_libelle'] as String? ?? '',
+      objetType: json['objet_type'] as String? ?? '',
       objetNom: json['objet_nom'] as String? ?? '',
       partenaireNom: json['partenaire_nom'] as String? ?? '',
       dateSouhaitee: json['date_souhaitee'] as String?,
+      dateDebut: json['date_debut'] as String?,
+      dateFin: json['date_fin'] as String?,
+      avecChauffeur: json['avec_chauffeur'] as bool? ?? false,
+      lieuPriseEnCharge: json['lieu_prise_en_charge'] as String? ?? '',
+      montantEstime: versIntNullable(json['montant_estime']),
       statut: json['statut'] as String? ?? '',
       statutLibelle: json['statut_libelle'] as String? ?? '',
       raisonRefus: json['raison_refus'] as String? ?? '',
@@ -226,10 +257,17 @@ Map<String, dynamic> _$DemandeReservationToJson(_DemandeReservation instance) =>
     <String, dynamic>{
       'id': instance.id,
       'numero': instance.numero,
+      'nature': instance.nature,
       'nature_libelle': instance.natureLibelle,
+      'objet_type': instance.objetType,
       'objet_nom': instance.objetNom,
       'partenaire_nom': instance.partenaireNom,
       'date_souhaitee': instance.dateSouhaitee,
+      'date_debut': instance.dateDebut,
+      'date_fin': instance.dateFin,
+      'avec_chauffeur': instance.avecChauffeur,
+      'lieu_prise_en_charge': instance.lieuPriseEnCharge,
+      'montant_estime': instance.montantEstime,
       'statut': instance.statut,
       'statut_libelle': instance.statutLibelle,
       'raison_refus': instance.raisonRefus,

@@ -3,16 +3,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
+import '../../../global/ui/format_montant.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../../global/ui/squelette.dart';
 import '../../../global/widgets/message_erreur.dart';
 import '../donnees/locations_providers.dart';
 import '../metier_domaine/location_models.dart';
 
-/// « Mes demandes » : les demandes de visite du client, avec leur statut,
-/// le motif d'un refus, et l'annulation tant qu'elles ne sont pas terminées.
-class EcranMesDemandesVisite extends ConsumerWidget {
-  const EcranMesDemandesVisite({super.key});
+/// « Mes demandes » : les visites de logement et les réservations de
+/// véhicule du client, avec leur statut, le motif d'un refus, et
+/// l'annulation tant qu'elles ne sont pas terminées.
+class EcranMesDemandes extends ConsumerWidget {
+  const EcranMesDemandes({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,7 +29,7 @@ class EcranMesDemandesVisite extends ConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Mes demandes de visite')),
+      appBar: AppBar(title: const Text('Mes demandes')),
       body: async.when(
         skipLoadingOnReload: true,
         loading: () => const SqueletteCartes(),
@@ -54,7 +56,7 @@ class EcranMesDemandesVisite extends ConsumerWidget {
                           padding: const EdgeInsets.all(32),
                           children: const [
                             Text(
-                              "Vous n'avez pas encore demandé de visite.",
+                              "Vous n'avez encore aucune demande de visite ni de réservation.",
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -177,13 +179,25 @@ class _CarteDemandeState extends ConsumerState<_CarteDemande> {
                 ),
               ),
             const SizedBox(height: 6),
-            Row(
-              children: [
-                const Icon(Icons.event_outlined, size: 16),
-                const SizedBox(width: 6),
-                Expanded(child: Text('Visite souhaitée le ${d.dateLisible}')),
-              ],
-            ),
+            if (d.estReservation) ...[
+              _Info(Icons.date_range_outlined, d.periodeLisible),
+              if (d.avecChauffeur)
+                const _Info(Icons.person_outline, 'Avec chauffeur'),
+              if (d.lieuPriseEnCharge.isNotEmpty)
+                _Info(
+                  Icons.place_outlined,
+                  'Prise en charge : ${d.lieuPriseEnCharge}',
+                ),
+              if (d.montantEstime != null)
+                _Info(
+                  Icons.payments_outlined,
+                  'Montant estimé : ${formatMontant(d.montantEstime!)}',
+                ),
+            ] else
+              _Info(
+                Icons.event_outlined,
+                'Visite souhaitée le ${d.dateLisible}',
+              ),
             if (d.numero.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 2),
@@ -214,6 +228,28 @@ class _CarteDemandeState extends ConsumerState<_CarteDemande> {
               ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Ligne « icône + texte » d'une demande.
+class _Info extends StatelessWidget {
+  const _Info(this.icone, this.texte);
+
+  final IconData icone;
+  final String texte;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2),
+      child: Row(
+        children: [
+          Icon(icone, size: 16),
+          const SizedBox(width: 6),
+          Expanded(child: Text(texte)),
+        ],
       ),
     );
   }

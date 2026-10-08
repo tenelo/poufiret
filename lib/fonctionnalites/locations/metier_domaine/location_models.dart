@@ -7,17 +7,29 @@ import '../../geo/metier_domaine/localisation.dart';
 part 'location_models.freezed.dart';
 part 'location_models.g.dart';
 
-/// Type de partenaire servi par l'expérience « location » (page loueur,
-/// fiche logement) au lieu de la vitrine générique.
+/// Types de partenaire servis par l'expérience « location » (page loueur,
+/// fiche du bien) au lieu de la vitrine générique.
 const typeLoueurMaison = 'loueur_maison';
+const typeLoueurVoiture = 'loueur_voiture';
 
-/// Vrai si une catégorie portant ces types de partenaire relève de la
-/// location de logements.
-bool estLocation(Iterable<String> typesPartenaire) =>
-    typesPartenaire.contains(typeLoueurMaison);
+/// Ce que loue un loueur : la page loueur est la même, seuls la liste, ses
+/// filtres et la fiche ouverte en dépendent.
+enum TypeLocation { logement, vehicule }
+
+/// Type de location d'une catégorie portant ces types de partenaire, ou
+/// null si elle n'en relève pas.
+TypeLocation? typeLocation(Iterable<String> typesPartenaire) =>
+    typesPartenaire.contains(typeLoueurMaison)
+    ? TypeLocation.logement
+    : typesPartenaire.contains(typeLoueurVoiture)
+    ? TypeLocation.vehicule
+    : null;
 
 /// « 50 000 F/mois ».
 String formatLoyer(int loyer) => '${formatMontant(loyer)}/mois';
+
+/// « 25 000 F/jour ».
+String formatPrixJour(int prix) => '${formatMontant(prix)}/jour';
 
 /// « 1 chambre », « 3 chambres ».
 String pluriel(int nombre, String singulier, [String? plurielle]) =>
@@ -46,13 +58,27 @@ abstract class MetaLocations with _$MetaLocations {
     List<OptionMeta> typesLogement,
     @Default(<OptionMeta>[]) List<OptionMeta> equipements,
     @Default(<OptionMeta>[]) List<OptionMeta> disponibilites,
+    @JsonKey(name: 'categories_vehicule')
+    @Default(<OptionMeta>[])
+    List<OptionMeta> categoriesVehicule,
+    @Default(<OptionMeta>[]) List<OptionMeta> boites,
+    @Default(<OptionMeta>[]) List<OptionMeta> carburants,
+    @JsonKey(name: 'equipements_vehicule')
+    @Default(<OptionMeta>[])
+    List<OptionMeta> equipementsVehicule,
   }) = _MetaLocations;
 
   factory MetaLocations.fromJson(Map<String, dynamic> json) =>
       _$MetaLocationsFromJson(json);
 
-  /// Libellé d'un équipement ; à défaut, sa valeur brute.
-  String libelleEquipement(String valeur) => equipements
+  /// Libellé d'un équipement de logement ; à défaut, sa valeur brute.
+  String libelleEquipement(String valeur) => _libelle(equipements, valeur);
+
+  /// Libellé d'un équipement de véhicule ; à défaut, sa valeur brute.
+  String libelleEquipementVehicule(String valeur) =>
+      _libelle(equipementsVehicule, valeur);
+
+  static String _libelle(List<OptionMeta> options, String valeur) => options
       .firstWhere(
         (e) => e.valeur == valeur,
         orElse: () => OptionMeta(valeur: valeur, libelle: valeur),
@@ -259,7 +285,8 @@ class FiltreLogements {
   int get hashCode => cle.hashCode;
 }
 
-/// Une demande (de visite) faite par le client.
+/// Une demande faite par le client : visite d'un logement ou réservation
+/// d'un véhicule.
 @freezed
 abstract class DemandeReservation with _$DemandeReservation {
   const DemandeReservation._();
@@ -267,10 +294,24 @@ abstract class DemandeReservation with _$DemandeReservation {
   const factory DemandeReservation({
     required int id,
     @Default('') String numero,
+
+    /// visite | reservation
+    @Default('') String nature,
     @JsonKey(name: 'nature_libelle') @Default('') String natureLibelle,
+
+    /// logement | vehicule
+    @JsonKey(name: 'objet_type') @Default('') String objetType,
     @JsonKey(name: 'objet_nom') @Default('') String objetNom,
     @JsonKey(name: 'partenaire_nom') @Default('') String partenaireNom,
     @JsonKey(name: 'date_souhaitee') String? dateSouhaitee,
+    @JsonKey(name: 'date_debut') String? dateDebut,
+    @JsonKey(name: 'date_fin') String? dateFin,
+    @JsonKey(name: 'avec_chauffeur') @Default(false) bool avecChauffeur,
+    @JsonKey(name: 'lieu_prise_en_charge')
+    @Default('')
+    String lieuPriseEnCharge,
+    @JsonKey(name: 'montant_estime', fromJson: versIntNullable)
+    int? montantEstime,
     @Default('') String statut,
     @JsonKey(name: 'statut_libelle') @Default('') String statutLibelle,
     @JsonKey(name: 'raison_refus') @Default('') String raisonRefus,
@@ -292,8 +333,20 @@ abstract class DemandeReservation with _$DemandeReservation {
   /// Annulable tant qu'elle n'est pas terminée (le serveur reste l'arbitre).
   bool get peutAnnuler => !_termines.contains(statut);
 
+  /// Réservation (plage de dates), par opposition à une visite (un jour).
+  bool get estReservation =>
+      nature == 'reservation' || (dateDebut ?? '').isNotEmpty;
+
   /// Date souhaitée au format « 07/10/2026 ».
   String get dateLisible => formatDateCourte(dateSouhaitee);
+
+  /// « Du 20/10/2026 au 22/10/2026 », ou « Le 20/10/2026 » sur un jour.
+  String get periodeLisible {
+    final du = formatDateCourte(dateDebut);
+    final au = formatDateCourte(dateFin);
+    if (au.isEmpty || au == du) return 'Le $du';
+    return 'Du $du au $au';
+  }
 }
 
 /// « 2026-10-07 » ou « 2026-10-07T10:00:00Z » → « 07/10/2026 ».

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show ProviderOrFamily;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../global/cache/contexte_cache.dart';
@@ -12,20 +13,27 @@ import '../../../global/widgets/message_erreur.dart';
 import '../../analytics/donnees/analytics_providers.dart';
 import '../donnees/locations_providers.dart';
 import '../metier_domaine/location_models.dart';
+import '../metier_domaine/vehicule_models.dart';
 import '../widgets/carte_logement.dart';
+import '../widgets/carte_vehicule.dart';
 import '../widgets/feuille_filtre_logements.dart';
+import '../widgets/feuille_filtre_vehicules.dart';
 
 /// Page d'un loueur : en-tête (couverture, logo, nom, appel, WhatsApp) puis
-/// ses logements disponibles, filtrables.
+/// ses biens disponibles, filtrables. La page est la même pour tous les
+/// loueurs ; seuls la liste, son filtre et la fiche ouverte dépendent de ce
+/// qu'il loue ([type]).
 class EcranLoueur extends ConsumerStatefulWidget {
   const EcranLoueur({
     super.key,
     required this.partenaireId,
+    this.type = TypeLocation.logement,
     this.nom = '',
     this.siIntrouvable,
   });
 
   final int partenaireId;
+  final TypeLocation type;
 
   /// Nom déjà connu de l'écran précédent, affiché pendant le chargement.
   final String nom;
@@ -38,29 +46,137 @@ class EcranLoueur extends ConsumerStatefulWidget {
   ConsumerState<EcranLoueur> createState() => _EcranLoueurState();
 }
 
+/// Ce que la page affiche, une fois la liste du type choisie.
+class _Liste {
+  const _Liste({
+    required this.async,
+    required this.provider,
+    required this.loueur,
+    required this.cartes,
+    required this.nombreFiltres,
+    required this.filtrer,
+    required this.textes,
+  });
+
+  final AsyncValue<Object?> async;
+  final ProviderOrFamily provider;
+  final Loueur? loueur;
+
+  /// Cartes des biens ; null tant que la liste n'est pas arrivée.
+  final List<Widget>? cartes;
+  final int nombreFiltres;
+  final VoidCallback filtrer;
+  final _Textes textes;
+}
+
+/// Libellés propres à un type de location.
+class _Textes {
+  const _Textes({
+    required this.singulier,
+    required this.pluriel,
+    required this.titre,
+    required this.vide,
+    required this.videFiltre,
+    required this.erreur,
+    required this.icone,
+  });
+
+  final String singulier;
+  final String pluriel;
+  final String titre;
+  final String vide;
+  final String videFiltre;
+  final String erreur;
+  final IconData icone;
+
+  static const logements = _Textes(
+    singulier: 'logement disponible',
+    pluriel: 'logements disponibles',
+    titre: 'Logements disponibles',
+    vide: 'Aucun logement disponible pour le moment.',
+    videFiltre: 'Aucun logement ne correspond à ces critères.',
+    erreur: 'Impossible de charger les logements.',
+    icone: Icons.home_work_outlined,
+  );
+
+  static const vehicules = _Textes(
+    singulier: 'véhicule disponible',
+    pluriel: 'véhicules disponibles',
+    titre: 'Véhicules disponibles',
+    vide: 'Aucun véhicule disponible pour le moment.',
+    videFiltre: 'Aucun véhicule ne correspond à ces critères.',
+    erreur: 'Impossible de charger les véhicules.',
+    icone: Icons.car_rental_outlined,
+  );
+}
+
 class _EcranLoueurState extends ConsumerState<EcranLoueur> {
-  FiltreLogements _filtre = const FiltreLogements();
+  FiltreLogements _filtreLogements = const FiltreLogements();
+  FiltreVehicules _filtreVehicules = const FiltreVehicules();
 
   /// Dernier loueur reçu : l'en-tête reste affiché pendant qu'un nouveau
   /// filtre charge.
   Loueur? _loueur;
 
-  Future<void> _filtrer() async {
-    final choisi = await ouvrirFiltreLogements(context, _filtre);
-    if (choisi != null && mounted) setState(() => _filtre = choisi);
+  _Liste _logements() {
+    final provider = pageLoueurProvider(
+      partenaireId: widget.partenaireId,
+      filtre: _filtreLogements,
+    );
+    final async = ref.watch(provider);
+    return _Liste(
+      async: async,
+      provider: provider,
+      loueur: async.value?.loueur,
+      cartes: async.value?.resultats
+          .map((l) => CarteLogement(key: ValueKey(l.id), logement: l))
+          .toList(),
+      nombreFiltres: _filtreLogements.nombre,
+      filtrer: () async {
+        final choisi = await ouvrirFiltreLogements(context, _filtreLogements);
+        if (choisi != null && mounted) {
+          setState(() => _filtreLogements = choisi);
+        }
+      },
+      textes: _Textes.logements,
+    );
+  }
+
+  _Liste _vehicules() {
+    final provider = pageLoueurVehiculesProvider(
+      partenaireId: widget.partenaireId,
+      filtre: _filtreVehicules,
+    );
+    final async = ref.watch(provider);
+    return _Liste(
+      async: async,
+      provider: provider,
+      loueur: async.value?.loueur,
+      cartes: async.value?.resultats
+          .map((v) => CarteVehicule(key: ValueKey(v.id), vehicule: v))
+          .toList(),
+      nombreFiltres: _filtreVehicules.nombre,
+      filtrer: () async {
+        final choisi = await ouvrirFiltreVehicules(context, _filtreVehicules);
+        if (choisi != null && mounted) {
+          setState(() => _filtreVehicules = choisi);
+        }
+      },
+      textes: _Textes.vehicules,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     // L'ouverture de la page = une consultation de la fiche du partenaire.
     ref.watch(vueVitrineProvider(partenaireId: widget.partenaireId));
-    final provider = pageLoueurProvider(
-      partenaireId: widget.partenaireId,
-      filtre: _filtre,
-    );
-    final async = ref.watch(provider);
-    final page = async.value;
-    final loueur = page?.loueur ?? _loueur;
+    final liste = switch (widget.type) {
+      TypeLocation.logement => _logements(),
+      TypeLocation.vehicule => _vehicules(),
+    };
+    final async = liste.async;
+    final textes = liste.textes;
+    final loueur = liste.loueur ?? _loueur;
     _loueur = loueur;
 
     if (loueur == null) {
@@ -76,7 +192,7 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
               async.error!,
               repli: 'Impossible de charger ce loueur.',
             ),
-            onReessayer: () => ref.invalidate(provider),
+            onReessayer: () => ref.invalidate(liste.provider),
           ),
         );
       }
@@ -86,7 +202,7 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
       );
     }
 
-    final logements = page?.resultats;
+    final cartes = liste.cartes;
     return Scaffold(
       appBar: AppBar(title: Text(loueur.nom)),
       body: LayoutBuilder(
@@ -98,72 +214,74 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
             child: SizedBox(
               width: largeur,
               child: RefreshIndicator(
-                onRefresh: () => rafraichir(ref, provider),
+                onRefresh: () => rafraichir(ref, liste.provider),
                 child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.only(bottom: 24),
                   children: [
-                    _Entete(loueur: loueur, largeur: largeur),
+                    _Entete(
+                      loueur: loueur,
+                      largeur: largeur,
+                      icone: textes.icone,
+                    ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 4, 12, 4),
                       child: Row(
                         children: [
                           Expanded(
                             child: Text(
-                              logements == null
-                                  ? 'Logements disponibles'
+                              cartes == null
+                                  ? textes.titre
                                   : pluriel(
-                                      logements.length,
-                                      'logement disponible',
-                                      'logements disponibles',
+                                      cartes.length,
+                                      textes.singulier,
+                                      textes.pluriel,
                                     ),
                               style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(fontWeight: FontWeight.w700),
                             ),
                           ),
                           OutlinedButton.icon(
-                            onPressed: _filtrer,
+                            onPressed: liste.filtrer,
                             icon: const Icon(Icons.tune, size: 18),
                             label: Text(
-                              _filtre.nombre == 0
+                              liste.nombreFiltres == 0
                                   ? 'Filtrer'
-                                  : 'Filtrer (${_filtre.nombre})',
+                                  : 'Filtrer (${liste.nombreFiltres})',
                             ),
                           ),
                         ],
                       ),
                     ),
-                    if (logements == null)
+                    if (cartes == null)
                       async.hasError && !async.isLoading
                           ? Padding(
                               padding: const EdgeInsets.all(24),
                               child: MessageErreur(
                                 message: messageErreurApi(
                                   async.error!,
-                                  repli: 'Impossible de charger les logements.',
+                                  repli: textes.erreur,
                                 ),
-                                onReessayer: () => ref.invalidate(provider),
+                                onReessayer: () =>
+                                    ref.invalidate(liste.provider),
                               ),
                             )
-                          : const _SqueletteLogements()
-                    else if (logements.isEmpty)
+                          : const _SqueletteBiens()
+                    else if (cartes.isEmpty)
                       Padding(
                         padding: const EdgeInsets.all(32),
                         child: Text(
-                          _filtre.nombre == 0
-                              ? 'Aucun logement disponible pour le moment.'
-                              : 'Aucun logement ne correspond à ces critères.',
+                          liste.nombreFiltres == 0
+                              ? textes.vide
+                              : textes.videFiltre,
                           textAlign: TextAlign.center,
                         ),
                       )
                     else
-                      for (final logement in logements)
+                      for (final carte in cartes)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
-                          child: CarteLogement(
-                            key: ValueKey(logement.id),
-                            logement: logement,
-                          ),
+                          child: carte,
                         ),
                   ],
                 ),
@@ -178,10 +296,17 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
 
 /// Couverture, logo, nom et boutons de contact du loueur.
 class _Entete extends StatelessWidget {
-  const _Entete({required this.loueur, required this.largeur});
+  const _Entete({
+    required this.loueur,
+    required this.largeur,
+    required this.icone,
+  });
 
   final Loueur loueur;
   final double largeur;
+
+  /// Couverture absente : icône du type de location.
+  final IconData icone;
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +321,7 @@ class _Entete extends StatelessWidget {
               ? ColoredBox(
                   color: theme.colorScheme.surfaceContainerHighest,
                   child: Icon(
-                    Icons.home_work_outlined,
+                    icone,
                     size: 48,
                     color: theme.colorScheme.outline,
                   ),
@@ -272,9 +397,9 @@ class _Entete extends StatelessWidget {
   }
 }
 
-/// Cartes de logements en attente (photo à gauche, lignes à droite).
-class _SqueletteLogements extends StatelessWidget {
-  const _SqueletteLogements();
+/// Cartes de biens en attente (photo à gauche, lignes à droite).
+class _SqueletteBiens extends StatelessWidget {
+  const _SqueletteBiens();
 
   @override
   Widget build(BuildContext context) {
