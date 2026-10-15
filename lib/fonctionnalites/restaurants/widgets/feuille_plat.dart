@@ -218,10 +218,14 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
     );
     final peutAjouter = motif == null && erreurChoix == null && !_envoi;
 
+    // La feuille prend la hauteur de son contenu (plein écran au plus) : un
+    // plat sans photo ni description ne laisse pas de grand vide.
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Expanded(
+        Flexible(
           child: ListView(
+            shrinkWrap: true,
             padding: EdgeInsets.zero,
             children: [
               _Photos(plat: plat),

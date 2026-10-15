@@ -15,10 +15,14 @@ import 'package:poufiret/fonctionnalites/restaurants/metier_domaine/restaurant_m
 import 'package:poufiret/fonctionnalites/restaurants/screens/ecran_restaurant.dart';
 import 'package:poufiret/fonctionnalites/restaurants/widgets/feuille_infos_restaurant.dart';
 import 'package:poufiret/fonctionnalites/restaurants/widgets/feuille_plat.dart';
+import 'package:poufiret/fonctionnalites/restaurants/widgets/tuile_plat.dart';
 import 'package:poufiret/global/carte/carte_poufiret.dart';
 import 'package:poufiret/global/carte/services_google.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
 import 'package:poufiret/global/ui/format_montant.dart';
+import 'package:poufiret/global/widgets/barre_onglets.dart';
+import 'package:poufiret/global/widgets/carrousel_images.dart';
+import 'package:poufiret/global/widgets/image_reseau.dart';
 import 'package:dio/dio.dart';
 
 /// Réponses RÉELLES de production, capturées le 2026-10-05 et rangées telles
@@ -164,25 +168,34 @@ void main() {
   });
 
   group('parsing', () {
-    test('fiche réelle (Chez Capi) : statut à la racine, carte vide', () {
+    test('fiche réelle (Chez Capi) : carte publiée, menu du midi vide', () {
       final r = _repo.detailDepuis(_capture('fiche_53'));
       expect(r.id, 53);
       expect(r.nom, 'Chez Capi');
-      expect(r.logo, '');
-      expect(r.couverture, '');
-      expect(r.quartier, 'Résidencetiel');
       expect(r.ville, 'Ferké');
       expect(r.whatsapp, '0777782290');
-      expect(r.latitude, isNull);
-      expect(r.fiche.delaiPreparationMin, 20);
-      expect(r.fiche.horaires, isEmpty);
-      expect(r.menus, isEmpty);
-      expect(r.carte, isEmpty);
-      // Sans horaires : fermé, et le serveur dit pourquoi.
       expect(r.estOuvert, isFalse);
-      expect(r.prochaineOuverture, isNull);
       expect(r.messageStatut, 'Horaires non renseignés');
       expect(r.estFerme, isTrue);
+      // Sections dans l'ordre du serveur.
+      expect(r.carte.take(3).map((s) => s.nom), [
+        "P'tit déj",
+        'Entrées & salades',
+        'Grillades',
+      ]);
+      expect(r.carte.length, greaterThanOrEqualTo(8));
+      // Photo d'un plat : champ « image » (URL absolue) de la carte publique.
+      final plats = [for (final s in r.carte) ...s.plats];
+      final illustres = plats.where((p) => p.image.isNotEmpty).toList();
+      expect(illustres, isNotEmpty);
+      expect(illustres.first.image, startsWith('https://'));
+      expect(illustres.first.images, [illustres.first.image]);
+      expect(plats.where((p) => p.image.isEmpty), isNotEmpty);
+      // Pas de prix_effectif dans la carte publique : le prix sert.
+      expect(plats.first.prixEffectif, plats.first.prix);
+      // Le menu du midi existe mais n'a aucun plat.
+      expect(r.menus.single.service, 'midi');
+      expect(r.menus.single.lignes, isEmpty);
     });
 
     test('fiche complète : carte, variantes, options, menus', () {
@@ -538,7 +551,7 @@ void main() {
       expect(boutonAjout(tester).onPressed, isNull);
     });
 
-    testWidgets('page restaurant : menu du jour, carte, onglets, recherche', (
+    testWidgets('page restaurant : une section à la fois, onglets, balayage', (
       tester,
     ) async {
       await monter(
@@ -546,48 +559,205 @@ void main() {
         sansPhotos,
         (_) => const EcranRestaurant(restaurantId: 53),
       );
-      expect(find.text('Ouvert'), findsNothing);
-      expect(find.text('Ferme à 22h'), findsNothing);
       // « Commandable jusqu'à 14h » ou « Commandes closes depuis 14h »,
       // selon l'heure à laquelle le test tourne.
       expect(find.textContaining('14h'), findsOneWidget);
       expect(find.text('Plus que 3'), findsOneWidget);
-      expect(find.text('Épuisé'), findsWidgets);
 
-      // Onglet « Boissons » : la carte défile jusqu'à la section.
-      await tester.dragUntilVisible(
-        find.text('Boissons').first,
-        find.byType(CustomScrollView),
-        const Offset(0, -200),
+      // Seule la première section est affichée, et la liste s'arrête à sa
+      // fin.
+      expect(find.text('🔥 Grillades'), findsOneWidget);
+      expect(find.text('Bissap'), findsNothing);
+
+      // Onglet « Boissons » : sa section remplace la précédente.
+      await tester.tap(
+        find.descendant(
+          of: find.byType(BarreOnglets),
+          matching: find.text('Boissons'),
+        ),
       );
-      await tester.tap(find.text('Boissons').first);
       await tester.pumpAndSettle();
       expect(find.text('Bissap'), findsOneWidget);
-      // L'onglet de la section atteinte est l'onglet actif.
-      FontWeight? graisse(String onglet) =>
-          tester.widget<Text>(find.text(onglet).first).style?.fontWeight;
+      expect(find.text('🔥 Grillades'), findsNothing);
+      FontWeight? graisse(String onglet) => tester
+          .widget<Text>(
+            find.descendant(
+              of: find.byType(BarreOnglets),
+              matching: find.text(onglet),
+            ),
+          )
+          .style
+          ?.fontWeight;
       expect(graisse('Boissons'), FontWeight.w700);
       expect(graisse('Grillades'), FontWeight.w600);
 
-      // Suivi du défilement : revenir en haut de la carte réactive le
-      // premier onglet.
-      await tester.drag(find.byType(CustomScrollView), const Offset(0, 150));
+      // Balayage vers la droite : section précédente.
+      await tester.ensureVisible(find.text('Bissap'));
       await tester.pumpAndSettle();
+      await tester.fling(find.text('Bissap'), const Offset(300, 0), 1000);
+      await tester.pumpAndSettle();
+      expect(find.text('🔥 Grillades'), findsOneWidget);
+      expect(find.text('Bissap'), findsNothing);
       expect(graisse('Grillades'), FontWeight.w700);
-      expect(graisse('Boissons'), FontWeight.w600);
-      await tester.tap(find.text('Boissons').first);
-      await tester.pumpAndSettle();
+    });
 
-      // Recherche dans la carte : seules les sections concernées restent.
+    testWidgets('recherche : toutes les sections, à la place de la section', (
+      tester,
+    ) async {
+      await monter(
+        tester,
+        sansPhotos,
+        (_) => const EcranRestaurant(restaurantId: 53),
+      );
+      // Section active : Grillades ; Bissap est dans Boissons.
+      expect(find.text('Bissap'), findsNothing);
       await tester.enterText(find.byType(TextField), 'bissap');
       await tester.pumpAndSettle();
       expect(find.text('Bissap'), findsOneWidget);
       expect(find.text('🔥 Grillades'), findsNothing);
+      expect(find.text('Boissons'), findsNothing); // onglets effacés
 
-      // Un tap sur un plat ouvre sa fiche.
+      await tester.enterText(find.byType(TextField), 'introuvable');
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Aucun plat ne correspond à votre recherche.'),
+        findsOneWidget,
+      );
+
+      await tester.enterText(find.byType(TextField), '');
+      await tester.pumpAndSettle();
+      expect(find.text('🔥 Grillades'), findsOneWidget);
+
+      // Un tap sur un résultat ouvre sa fiche.
+      await tester.enterText(find.byType(TextField), 'bissap');
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Bissap'));
       await tester.pumpAndSettle();
-      expect(find.text('Ajouter au panier · 500 F'), findsOneWidget);
+      expect(find.text('Ajouter au panier · 500\u00A0F'), findsOneWidget);
+    });
+
+    testWidgets('menu du jour sans plat : bloc masqué', (tester) async {
+      final menuVide = sansPhotos.copyWith(
+        menus: [sansPhotos.menus.single.copyWith(lignes: const [])],
+      );
+      await monter(
+        tester,
+        menuVide,
+        (_) => const EcranRestaurant(restaurantId: 53),
+      );
+      expect(find.text('Menu du jour'), findsNothing);
+      expect(find.textContaining('14h'), findsNothing);
+      expect(find.textContaining('Aucun plat dans ce menu'), findsNothing);
+      expect(find.text('🔥 Grillades'), findsOneWidget);
+    });
+
+    testWidgets('vignette à gauche si le plat a une photo, rien sinon', (
+      tester,
+    ) async {
+      const url = 'https://exemple.test/media/articles/poulet.jpg';
+      final avecPhoto = sansPhotos.copyWith(
+        menus: const [],
+        carte: [
+          for (final s in sansPhotos.carte)
+            s.copyWith(
+              plats: [
+                for (final p in s.plats)
+                  p.id == 101 ? p.copyWith(images: const [url]) : p,
+              ],
+            ),
+        ],
+      );
+      await monter(
+        tester,
+        avecPhoto,
+        (_) => const EcranRestaurant(restaurantId: 53),
+      );
+      final ligne = find.ancestor(
+        of: find.text('Poulet braisé'),
+        matching: find.byType(TuilePlat),
+      );
+      final vignette = find.descendant(
+        of: ligne,
+        matching: find.byType(ImageReseau),
+      );
+      expect(tester.widget<ImageReseau>(vignette).url, url);
+      // Décodée à la taille affichée, à gauche du texte.
+      expect(tester.widget<ImageReseau>(vignette).largeurAffichee, 84);
+      expect(
+        tester.getTopRight(vignette).dx,
+        lessThan(tester.getTopLeft(find.text('Poulet braisé')).dx),
+      );
+
+      // Plat sans photo : aucune zone d'image.
+      await tester.tap(find.text('Boissons'));
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(
+          of: find.ancestor(
+            of: find.text('Bissap'),
+            matching: find.byType(TuilePlat),
+          ),
+          matching: find.byType(ImageReseau),
+        ),
+        findsNothing,
+      );
+    });
+
+    testWidgets('fiche plat sans photo ni description : hauteur au contenu', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            restaurantDetailProvider(
+              id: 53,
+            ).overrideWith((ref) => Stream.value(sansPhotos)),
+            paniersProvider.overrideWith((ref) async => const <Panier>[]),
+          ],
+          child: MaterialApp(
+            home: Builder(
+              builder: (context) => Scaffold(
+                body: TextButton(
+                  onPressed: () =>
+                      ouvrirFeuillePlat(context, restaurantId: 53, platId: 103),
+                  child: const Text('Ouvrir'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Ouvrir'));
+      await tester.pumpAndSettle();
+      expect(find.text('Bissap'), findsOneWidget);
+      // Pas de grande zone vide : la feuille n'occupe que son contenu.
+      expect(tester.getSize(find.byType(FeuillePlat)).height, lessThan(400));
+    });
+
+    testWidgets('fiche plat avec photo : photo en grand', (tester) async {
+      const url = 'https://exemple.test/media/articles/poulet.jpg';
+      final avecPhoto = sansPhotos.copyWith(
+        carte: [
+          for (final s in sansPhotos.carte)
+            s.copyWith(
+              plats: [
+                for (final p in s.plats)
+                  p.id == 101 ? p.copyWith(images: const [url]) : p,
+              ],
+            ),
+        ],
+      );
+      await monter(
+        tester,
+        avecPhoto,
+        (_) => Scaffold(body: FeuillePlat(restaurantId: 53, platId: 101)),
+      );
+      final photo = find.byType(CarrouselImages);
+      expect(tester.widget<CarrouselImages>(photo).images, [url]);
+      expect(tester.getSize(photo).width, 400);
     });
 
     testWidgets('page restaurant fermée : ni badge ni bandeau, carte lisible', (

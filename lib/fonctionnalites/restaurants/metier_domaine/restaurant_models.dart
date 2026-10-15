@@ -9,12 +9,21 @@ part 'restaurant_models.g.dart';
 // Les modèles ci-dessous décodent un JSON déjà passé par normalisation.dart,
 // qui ramène la liste, la fiche et le flux « menus du jour » à cette forme.
 
-/// Photos d'un plat : liste d'URL, ou liste d'objets `{image: url}`.
-Object? _lireImages(Map<dynamic, dynamic> json, String cle) => [
-  for (final e in json[cle] as List? ?? const [])
-    if ((e is Map ? e['image'] : e) case final String url when url.isNotEmpty)
-      url,
-];
+/// Photos d'un plat : `image` (URL absolue, carte publique), ou une liste
+/// `images` d'URL ou d'objets `{image: url}`. Dans l'ordre reçu.
+Object? _lireImages(Map<dynamic, dynamic> json, String cle) {
+  final liste = json[cle];
+  if (liste is List) {
+    return [
+      for (final e in liste)
+        if ((e is Map ? e['image'] : e) case final String url
+            when url.isNotEmpty)
+          url,
+    ];
+  }
+  final image = json['image'];
+  return [if (image is String && image.isNotEmpty) image];
+}
 
 /// Prix réellement appliqué ; à défaut, le prix normal.
 Object? _lirePrixEffectif(Map<dynamic, dynamic> json, String cle) =>

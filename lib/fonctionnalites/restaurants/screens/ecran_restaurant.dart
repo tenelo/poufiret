@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../global/cache/contexte_cache.dart';
@@ -90,77 +89,33 @@ class _PageRestaurant extends ConsumerStatefulWidget {
 }
 
 class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
-  final _defilement = ScrollController();
   final _champRecherche = TextEditingController();
 
-  /// Clé de l'en-tête de chaque section (par id), pour la retrouver dans la
-  /// zone défilante.
-  final _cles = <int, GlobalKey>{};
-
-  /// Sections affichées (après recherche), dans l'ordre des onglets.
-  List<SectionCarte> _sections = const [];
-
   String _recherche = '';
+
+  /// Section affichée (une seule à la fois), par son rang dans la carte.
   int _sectionActive = 0;
 
   /// Service du menu du jour choisi par l'utilisateur (null = automatique).
   String? _service;
 
-  /// Vrai pendant un défilement lancé par un tap sur un onglet : évite que
-  /// les sections traversées fassent « sauter » la sélection.
-  bool _defilementParTap = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _defilement.addListener(_suivreDefilement);
-  }
-
   @override
   void dispose() {
-    _defilement.dispose();
     _champRecherche.dispose();
     super.dispose();
   }
 
-  /// Position de défilement qui amène l'en-tête d'une section juste sous les
-  /// barres épinglées (le viewport tient compte de leur hauteur).
-  double? _positionSection(SectionCarte section) {
-    final objet = _cles[section.id]?.currentContext?.findRenderObject();
-    if (objet == null || !objet.attached) return null;
-    return RenderAbstractViewport.of(objet).getOffsetToReveal(objet, 0).offset;
-  }
-
-  /// Onglet actif = dernière section dont l'en-tête a atteint le haut.
-  void _suivreDefilement() {
-    if (_defilementParTap || !_defilement.hasClients) return;
-    final position = _defilement.position;
-    var active = 0;
-    if (_sections.isNotEmpty &&
-        position.pixels >= position.maxScrollExtent - 1) {
-      // Bas de page : la dernière section, même trop courte pour atteindre
-      // le haut de l'écran.
-      active = _sections.length - 1;
-    } else {
-      for (var i = 0; i < _sections.length; i++) {
-        final cible = _positionSection(_sections[i]);
-        if (cible != null && cible <= position.pixels + 1) active = i;
-      }
-    }
-    if (active != _sectionActive) setState(() => _sectionActive = active);
-  }
-
-  Future<void> _allerASection(int index) async {
-    final position = _positionSection(_sections[index]);
-    if (position == null) return;
+  void _choisirSection(int index) {
+    final nb = widget.restaurant.carte.length;
+    if (index < 0 || index >= nb || index == _sectionActive) return;
     setState(() => _sectionActive = index);
-    _defilementParTap = true;
-    await _defilement.animateTo(
-      position.clamp(0, _defilement.position.maxScrollExtent),
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeOut,
-    );
-    _defilementParTap = false;
+  }
+
+  /// Balayage horizontal sur la liste : section suivante ou précédente.
+  void _balayer(DragEndDetails details) {
+    final vitesse = details.primaryVelocity ?? 0;
+    if (vitesse.abs() < 300) return;
+    _choisirSection(_sectionActive + (vitesse < 0 ? 1 : -1));
   }
 
   void _ouvrirPlat({int? platId, int? ligneId}) => ouvrirFeuillePlat(
@@ -174,15 +129,20 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
   Widget build(BuildContext context) {
     final r = widget.restaurant;
     final enRecherche = _recherche.trim().isNotEmpty;
-    final sections = [
-      for (final s in r.carte)
-        if (filtrerPlats(s.plats, _recherche).isNotEmpty)
-          s.copyWith(plats: filtrerPlats(s.plats, _recherche)),
-    ];
-    _sections = sections;
-    final active = sections.isEmpty
+    // Recherche : les plats de toutes les sections, dans l'ordre de la carte.
+    final resultats = enRecherche
+        ? [for (final s in r.carte) ...filtrerPlats(s.plats, _recherche)]
+        : const <Plat>[];
+    final active = r.carte.isEmpty
         ? 0
-        : _sectionActive.clamp(0, sections.length - 1);
+        : _sectionActive.clamp(0, r.carte.length - 1);
+    final section = r.carte.isEmpty ? null : r.carte[active];
+    final plats = enRecherche ? resultats : section?.plats ?? const <Plat>[];
+    // Un menu sans plat n'est pas affiché.
+    final menus = [
+      for (final m in r.menus)
+        if (m.lignes.isNotEmpty) m,
+    ];
 
     return Scaffold(
       bottomNavigationBar: _BarrePanier(restaurantId: r.id),
@@ -198,7 +158,6 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
             onRefresh: () =>
                 rafraichir(ref, restaurantDetailProvider(id: r.id)),
             child: CustomScrollView(
-              controller: _defilement,
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 _BarreCouverture(
@@ -209,12 +168,13 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                   padding: marge,
                   sliver: SliverToBoxAdapter(child: _Entete(restaurant: r)),
                 ),
-                if (!enRecherche && r.menus.isNotEmpty)
+                if (!enRecherche && menus.isNotEmpty)
                   SliverPadding(
                     padding: marge,
                     sliver: SliverToBoxAdapter(
                       child: _SectionMenuDuJour(
                         restaurant: r,
+                        menus: menus,
                         service: _service,
                         onService: (s) => setState(() => _service = s),
                         onLigne: (ligne) => _ouvrirPlat(ligneId: ligne.id),
@@ -228,37 +188,40 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                       marge: marge,
                       champRecherche: _champRecherche,
                       onRecherche: (v) => setState(() => _recherche = v),
-                      libelles: [for (final s in sections) s.nom],
+                      // Pendant une recherche, ses résultats remplacent la
+                      // section : les onglets s'effacent.
+                      libelles: enRecherche
+                          ? const []
+                          : [for (final s in r.carte) s.nom],
                       sectionActive: active,
-                      onSection: _allerASection,
+                      onSection: _choisirSection,
                     ),
                   ),
-                for (final section in sections) ...[
+                if (section != null && !enRecherche)
                   SliverPadding(
                     padding: marge,
                     sliver: SliverToBoxAdapter(
-                      child: _TitreSection(
-                        key: _cles.putIfAbsent(section.id, GlobalKey.new),
-                        section: section,
+                      child: _TitreSection(section: section),
+                    ),
+                  ),
+                // Seule la section active (ou les résultats de recherche) :
+                // la liste s'arrête à sa fin. Un balayage horizontal change
+                // de section.
+                SliverPadding(
+                  padding: marge,
+                  sliver: SliverList.builder(
+                    itemCount: plats.length,
+                    itemBuilder: (context, i) => GestureDetector(
+                      onHorizontalDragEnd: enRecherche ? null : _balayer,
+                      child: _TuilePlatCarte(
+                        key: ValueKey(plats[i].id),
+                        plat: plats[i],
+                        onTap: () => _ouvrirPlat(platId: plats[i].id),
                       ),
                     ),
                   ),
-                  SliverPadding(
-                    padding: marge,
-                    // Toutes les lignes ont la hauteur du gabarit : les
-                    // plats hors écran ne sont pas construits, et la
-                    // position de chaque section reste exacte.
-                    sliver: SliverPrototypeExtentList.builder(
-                      prototypeItem: TuilePlat.gabarit,
-                      itemCount: section.plats.length,
-                      itemBuilder: (context, i) => _TuilePlatCarte(
-                        plat: section.plats[i],
-                        onTap: () => _ouvrirPlat(platId: section.plats[i].id),
-                      ),
-                    ),
-                  ),
-                ],
-                if (r.carte.isNotEmpty && sections.isEmpty)
+                ),
+                if (enRecherche && resultats.isEmpty)
                   const SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.all(32),
@@ -268,7 +231,7 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                       ),
                     ),
                   ),
-                if (r.carte.isEmpty && r.menus.isEmpty)
+                if (r.carte.isEmpty && menus.isEmpty)
                   const SliverToBoxAdapter(
                     child: Padding(
                       padding: EdgeInsets.all(32),
@@ -419,12 +382,16 @@ class _Entete extends StatelessWidget {
 class _SectionMenuDuJour extends StatelessWidget {
   const _SectionMenuDuJour({
     required this.restaurant,
+    required this.menus,
     required this.service,
     required this.onService,
     required this.onLigne,
   });
 
   final Restaurant restaurant;
+
+  /// Menus à proposer, chacun avec au moins un plat.
+  final List<MenuDuJour> menus;
   final String? service;
   final ValueChanged<String> onService;
   final ValueChanged<LigneMenu> onLigne;
@@ -432,7 +399,6 @@ class _SectionMenuDuJour extends StatelessWidget {
   /// Menu affiché : celui choisi, sinon celui en vigueur maintenant, sinon
   /// le premier.
   MenuDuJour get _menu {
-    final menus = restaurant.menus;
     MenuDuJour? pour(bool Function(MenuDuJour) test) =>
         menus.where(test).firstOrNull;
     return pour((m) => m.service == service) ??
@@ -474,13 +440,13 @@ class _SectionMenuDuJour extends StatelessWidget {
               ],
             ),
           ),
-          if (restaurant.menus.length > 1)
+          if (menus.length > 1)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: SegmentedButton<String>(
                 showSelectedIcon: false,
                 segments: [
-                  for (final m in restaurant.menus)
+                  for (final m in menus)
                     ButtonSegment(
                       value: m.service,
                       label: Text(libellesServiceMenu[m.service] ?? m.service),
@@ -506,11 +472,6 @@ class _SectionMenuDuJour extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            ),
-          if (menu.lignes.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('Aucun plat dans ce menu pour le moment.'),
             ),
           for (final ligne in menu.lignes) _tuile(ligne, clos: clos),
           const SizedBox(height: 6),
@@ -540,8 +501,8 @@ class _SectionMenuDuJour extends StatelessWidget {
   }
 }
 
-/// Barre collante de la carte : recherche, puis onglets des sections qui
-/// suivent le défilement.
+/// Barre collante de la carte : recherche, puis onglets des sections (un
+/// onglet = une section affichée).
 class _EnteteCarte extends SliverPersistentHeaderDelegate {
   _EnteteCarte({
     required this.marge,
@@ -624,7 +585,7 @@ class _EnteteCarte extends SliverPersistentHeaderDelegate {
 }
 
 class _TitreSection extends StatelessWidget {
-  const _TitreSection({super.key, required this.section});
+  const _TitreSection({required this.section});
 
   final SectionCarte section;
 
@@ -660,7 +621,7 @@ class _TitreSection extends StatelessWidget {
 /// Un plat de la carte : « à partir de » si le prix dépend de la variante,
 /// badges Promo / Épuisé.
 class _TuilePlatCarte extends StatelessWidget {
-  const _TuilePlatCarte({required this.plat, required this.onTap});
+  const _TuilePlatCarte({super.key, required this.plat, required this.onTap});
 
   final Plat plat;
   final VoidCallback onTap;
