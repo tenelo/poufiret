@@ -8,6 +8,8 @@ import 'global/notifications/fcm_service.dart';
 import 'global/notifications/routeur_notifications.dart';
 import 'global/carte/services_google.dart';
 import 'global/reseau/etat_reseau.dart';
+import 'global/config/config.dart';
+import 'global/ui/mode_theme.dart';
 import 'global/ui/theme_poufiret.dart';
 import 'fonctionnalites/analytics/donnees/analytics_providers.dart';
 import 'fonctionnalites/auth/screens/auth_notifier.dart';
@@ -24,32 +26,68 @@ Future<void> main() async {
   // Préchauffage : le contrôle de version part tout de suite (ouvre la
   // connexion TLS du pool partagé) pendant que Firebase s'initialise.
   final controleVersion = VersionRepository().verifier();
+  final modeTheme = ModeThemeNotifier.lire();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(fcmBackgroundHandler);
   runApp(
     ProviderScope(
       overrides: [
         controleVersionProvider.overrideWith((ref) => controleVersion),
+        modeThemeInitialProvider.overrideWithValue(await modeTheme),
       ],
       child: const PoufiretApp(),
     ),
   );
 }
 
-class PoufiretApp extends StatelessWidget {
+class PoufiretApp extends ConsumerWidget {
   const PoufiretApp({super.key});
 
+  static final _themeClair = ThemePoufiret.clair;
+  static final _themeSombre = ThemePoufiret.sombre;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp(
       title: 'Poufiret',
       navigatorKey: navigatorNotifications,
-      theme: ThemePoufiret.clair,
+      theme: _themeClair,
+      darkTheme: _themeSombre,
+      themeMode: ref.watch(modeThemeProvider),
+      // Bascule nette : les couleurs de Config ne s'interpolent pas.
+      themeAnimationDuration: Duration.zero,
       debugShowCheckedModeBanner: false,
       navigatorObservers: [observateurNavigation],
-      builder: (context, enfant) => _AvecBandeauHorsLigne(enfant: enfant!),
+      builder: (context, enfant) =>
+          _SynchroPalette(enfant: _AvecBandeauHorsLigne(enfant: enfant!)),
       home: const CoucheMiseAJour(enfant: _Racine()),
     );
+  }
+}
+
+/// Aligne [Config.sombre] sur le thème réellement affiché (choix utilisateur
+/// ou réglage du téléphone). Au changement, tout l'arbre est reconstruit :
+/// les widgets `const` qui lisent Config sans dépendre du Theme ne se
+/// reconstruiraient pas d'eux-mêmes.
+class _SynchroPalette extends StatelessWidget {
+  const _SynchroPalette({required this.enfant});
+  final Widget enfant;
+
+  static void _reconstruire(Element element) {
+    element.markNeedsBuild();
+    element.visitChildren(_reconstruire);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final sombre = Theme.of(context).brightness == Brightness.dark;
+    if (Config.sombre != sombre) {
+      Config.sombre = sombre;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (context.mounted) (context as Element).visitChildren(_reconstruire);
+      });
+    }
+    return enfant;
   }
 }
 

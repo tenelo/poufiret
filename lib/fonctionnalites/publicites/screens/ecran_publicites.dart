@@ -138,7 +138,7 @@ class _CarteAfficheState extends ConsumerState<_CarteAffiche> {
               child: url.isEmpty
                   ? Container(
                       color: Config.couleurFond,
-                      child: const Icon(Icons.image_outlined,
+                      child: Icon(Icons.image_outlined,
                           color: Config.couleurTexteSecondaire),
                     )
                   : ImageReseau(
@@ -146,7 +146,7 @@ class _CarteAfficheState extends ConsumerState<_CarteAffiche> {
                       fit: BoxFit.cover,
                       errorBuilder: (_, e, s) => Container(
                         color: Config.couleurFond,
-                        child: const Icon(Icons.image_not_supported_outlined,
+                        child: Icon(Icons.image_not_supported_outlined,
                             color: Config.couleurTexteSecondaire),
                       ),
                       loadingBuilder: (_, enfant, progres) => progres == null

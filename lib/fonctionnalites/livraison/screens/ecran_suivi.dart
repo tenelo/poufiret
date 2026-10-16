@@ -188,7 +188,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
     if (envoyee) {
       return Card(
         color: Config.couleurSucces.withValues(alpha: 0.12),
-        child: const Padding(
+        child: Padding(
           padding: EdgeInsets.all(16),
           child: Row(
             children: [

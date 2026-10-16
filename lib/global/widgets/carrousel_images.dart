@@ -17,11 +17,20 @@ class CarrouselImages extends StatefulWidget {
     this.titre,
     this.intervalle = const Duration(milliseconds: 3500),
     this.constructeurVide,
+    this.points = false,
+    this.largeurAffichee,
   });
 
   final List<String> images;
   final String? titre;
   final Duration intervalle;
+
+  /// Affiche des points indicateurs (un par photo) en bas, au centre.
+  final bool points;
+
+  /// Largeur logique affichée : les images sont alors décodées à cette
+  /// taille (voir [ImageReseau.largeurAffichee]).
+  final double? largeurAffichee;
 
   /// Affiche a la place du carrousel quand la liste est vide.
   final WidgetBuilder? constructeurVide;
@@ -92,9 +101,39 @@ class _CarrouselImagesState extends State<CarrouselImages> {
             controller: _pages,
             itemCount: widget.images.length,
             onPageChanged: _surChangement,
-            itemBuilder: (context, i) =>
-                ImageReseau(widget.images[i], fit: BoxFit.cover),
+            itemBuilder: (context, i) => ImageReseau(
+              widget.images[i],
+              fit: BoxFit.cover,
+              largeurAffichee: widget.largeurAffichee,
+            ),
           ),
+          if (widget.points && widget.images.length > 1)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 12,
+              child: IgnorePointer(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (var i = 0; i < widget.images.length; i++)
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: i == _index ? 18 : 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: i == _index ? Colors.white : Colors.white54,
+                          borderRadius: BorderRadius.circular(3),
+                          boxShadow: const [
+                            BoxShadow(color: Colors.black26, blurRadius: 4),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
           Positioned(
             right: 10,
             bottom: 10,

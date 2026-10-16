@@ -76,23 +76,29 @@ class Notificateur {
       TypeNotification.erreur => (Config.couleurErreur, Icons.error_outline),
     };
 
+    // Texte foncé sur l'accent soleil, sinon la couleur « sur primaire »
+    // (blanc en clair, bleu nuit en sombre où les fonds s'éclaircissent).
+    final encre = type == TypeNotification.avertissement
+        ? const Color(0xFF0F2038)
+        : Config.couleurSurPrimaire;
+
     return SnackBar(
       behavior: SnackBarBehavior.floating,
       backgroundColor: couleur,
       duration: _duree,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       action: action,
       content: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icone, color: Colors.white, size: 20),
+          Icon(icone, color: encre, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: encre,
                 fontWeight: FontWeight.w600,
               ),
             ),

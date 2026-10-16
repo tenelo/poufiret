@@ -147,7 +147,7 @@ class _Diapositive extends StatelessWidget {
                   ImageReseau(
                     url,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, e, s) => const Center(
+                    errorBuilder: (_, e, s) => Center(
                       child: Icon(
                         Icons.image_not_supported_outlined,
                         color: Config.couleurTexteSecondaire,

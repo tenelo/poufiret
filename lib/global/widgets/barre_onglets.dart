@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// Barre d'onglets horizontale défilante. L'onglet actif est en couleur
-/// d'accent avec un court trait dessous ; les autres sont en gris. Quand la
+/// Barre d'onglets horizontale défilante, en pastilles : l'onglet actif est
+/// plein (couleur de marque), les autres sur fond de surface bordé. Quand la
 /// sélection change (glissement de page, défilement suivi), l'onglet actif
 /// est ramené dans la zone visible.
 class BarreOnglets extends StatefulWidget {
@@ -48,10 +48,10 @@ class _BarreOngletsState extends State<BarreOnglets> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 44,
+      height: 46,
       child: ListView(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
           for (var i = 0; i < widget.libelles.length; i++)
             _Onglet(
@@ -81,35 +81,35 @@ class _Onglet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final couleur = actif
-        ? theme.colorScheme.primary
-        : theme.colorScheme.onSurfaceVariant;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              libelle,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: couleur,
-                fontWeight: actif ? FontWeight.w700 : FontWeight.w600,
+    final schema = theme.colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        decoration: ShapeDecoration(
+          color: actif ? schema.primary : schema.surface,
+          shape: StadiumBorder(
+            side: BorderSide(
+              color: actif ? schema.primary : schema.outline,
+            ),
+          ),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const StadiumBorder(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Center(
+              widthFactor: 1,
+              child: Text(
+                libelle,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: actif ? schema.onPrimary : schema.onSurface,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
-            const SizedBox(height: 4),
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              height: 2,
-              width: 28,
-              decoration: BoxDecoration(
-                color: actif ? theme.colorScheme.primary : Colors.transparent,
-                borderRadius: BorderRadius.circular(1),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

@@ -159,6 +159,12 @@ void _attendreAnnuaire() {
   expect(find.text('Fermé'), findsNothing);
 }
 
+/// Tuile de la grille d'accueil (le nom figure aussi dans les onglets).
+Finder _tuile(String nom) => find.ancestor(
+  of: find.text(nom),
+  matching: find.byWidgetPredicate((w) => w.runtimeType.toString() == '_TuileCategorie'),
+);
+
 void main() {
   test('données réelles : catégorie et annuaire Restaurants', () {
     final c = _categories.feuilles.firstWhere((c) => c.slug == 'restaurants');
@@ -174,8 +180,8 @@ void main() {
       await _monter(tester, const EcranCategories());
       expect(find.byType(CarrouselPublicites), findsOneWidget);
       expect(find.byType(BarreOnglets), findsOneWidget);
-      expect(find.widgetWithText(Card, 'Restaurants'), findsOneWidget);
-      expect(find.widgetWithText(Card, 'Pharmacie'), findsOneWidget);
+      expect(_tuile('Restaurants'), findsOneWidget);
+      expect(_tuile('Pharmacie'), findsOneWidget);
       expect(find.text('Chez Capi'), findsNothing);
       expect(find.text('Tout voir'), findsNothing);
       expect(find.textContaining('Menus du jour'), findsNothing);
@@ -195,7 +201,7 @@ void main() {
 
     testWidgets('tuile « Restaurants » : annuaire d\'origine', (tester) async {
       await _monter(tester, const EcranCategories());
-      await tester.tap(find.widgetWithText(Card, 'Restaurants'));
+      await tester.tap(_tuile('Restaurants'));
       await tester.pumpAndSettle();
       expect(find.byType(EcranPrestataires), findsOneWidget);
       expect(find.widgetWithText(AppBar, 'Restaurants'), findsOneWidget);

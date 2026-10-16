@@ -198,6 +198,26 @@ void main() {
       expect(r.menus.single.lignes, isEmpty);
     });
 
+    test('galerie d\'un plat : image principale en premier, sans doublon', () {
+      final plat = Plat.fromJson({
+        'id': 1,
+        'image': 'https://exemple.test/a.jpg',
+        'images': [
+          'https://exemple.test/b.jpg',
+          {'image': 'https://exemple.test/a.jpg'},
+          {'image': 'https://exemple.test/c.jpg'},
+          '',
+        ],
+      });
+      expect(plat.images, [
+        'https://exemple.test/a.jpg',
+        'https://exemple.test/b.jpg',
+        'https://exemple.test/c.jpg',
+      ]);
+      expect(plat.image, 'https://exemple.test/a.jpg');
+      expect(Plat.fromJson({'id': 2}).images, isEmpty);
+    });
+
     test('fiche complète : carte, variantes, options, menus', () {
       expect(restaurant.estOuvert, isTrue);
       expect(restaurant.messageStatut, 'Ferme à 22h');
@@ -579,7 +599,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Bissap'), findsOneWidget);
       expect(find.text('🔥 Grillades'), findsNothing);
-      FontWeight? graisse(String onglet) => tester
+      // Onglet actif : pastille pleine, texte sur la couleur de marque.
+      Color? couleur(String onglet) => tester
           .widget<Text>(
             find.descendant(
               of: find.byType(BarreOnglets),
@@ -587,9 +608,11 @@ void main() {
             ),
           )
           .style
-          ?.fontWeight;
-      expect(graisse('Boissons'), FontWeight.w700);
-      expect(graisse('Grillades'), FontWeight.w600);
+          ?.color;
+      final schema =
+          Theme.of(tester.element(find.byType(BarreOnglets))).colorScheme;
+      expect(couleur('Boissons'), schema.onPrimary);
+      expect(couleur('Grillades'), schema.onSurface);
 
       // Balayage vers la droite : section précédente.
       await tester.ensureVisible(find.text('Bissap'));
@@ -598,7 +621,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('🔥 Grillades'), findsOneWidget);
       expect(find.text('Bissap'), findsNothing);
-      expect(graisse('Grillades'), FontWeight.w700);
+      expect(couleur('Grillades'), schema.onPrimary);
     });
 
     testWidgets('recherche : toutes les sections, à la place de la section', (

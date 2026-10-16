@@ -451,7 +451,7 @@ class _SectionLocalisationState extends ConsumerState<_SectionLocalisation> {
               ],
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Ce point precis aide les clients a vous trouver sur la carte.',
               style: TextStyle(
                 fontSize: 12,
@@ -486,7 +486,7 @@ class _SectionLocalisationState extends ConsumerState<_SectionLocalisation> {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 'Touchez la carte pour ajuster précisément l\'emplacement.',
                 style: TextStyle(
                   fontSize: 11,
@@ -517,7 +517,7 @@ class _SectionLocalisationState extends ConsumerState<_SectionLocalisation> {
                     onPressed: _envoi ? null : _retirerPoint,
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Config.couleurErreur,
-                      side: const BorderSide(color: Config.couleurErreur),
+                      side: BorderSide(color: Config.couleurErreur),
                     ),
                     icon: const Icon(Icons.delete_outline, size: 18),
                     label: const Text('Retirer le point GPS'),
@@ -651,7 +651,7 @@ class _ZoneImage extends StatelessWidget {
               ImageReseau(url, fit: BoxFit.cover,
                   errorBuilder: (_, e, s) => const SizedBox.shrink())
             else
-              const Center(
+              Center(
                 child: Icon(Icons.add_photo_alternate_outlined,
                     color: Config.couleurTexteSecondaire),
               ),

@@ -158,7 +158,7 @@ class _BoiteInterstitielState extends State<_BoiteInterstitiel> {
                           fit: BoxFit.cover,
                           errorBuilder: (_, e, s) => Container(
                             color: Config.couleurFond,
-                            child: const Center(
+                            child: Center(
                               child: Icon(Icons.image_not_supported_outlined,
                                   color: Config.couleurTexteSecondaire),
                             ),
@@ -192,7 +192,7 @@ class _BoiteInterstitielState extends State<_BoiteInterstitiel> {
                       widget.pub.titre,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: Config.couleurTexte,
                       ),
@@ -203,7 +203,7 @@ class _BoiteInterstitielState extends State<_BoiteInterstitiel> {
                         widget.pub.nomPartenaire,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: Config.couleurTexteSecondaire,
                         ),

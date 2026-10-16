@@ -530,7 +530,7 @@ class _BlocFacultatif extends StatelessWidget {
             'Ces informations ne sont pas obligatoires, mais elles nous '
             'aident à vous proposer les commerces les plus pertinents près '
             'de chez vous.',
-            style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey[700]),
+            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 14),
           DropdownButtonFormField<String>(

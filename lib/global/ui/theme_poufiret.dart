@@ -2,257 +2,358 @@ import 'package:flutter/material.dart';
 
 import '../config/config.dart';
 
-/// Design system clair et aéré de Poufiret, façon « feed » (Facebook/
-/// Instagram) : fond gris très clair, cartes blanches, bordures fines,
-/// typographie nette. La couleur de marque (terracotta) reste l'accent
-/// unique — boutons d'action, états actifs, liens — mais s'utilise avec
-/// parcimonie sur cette base claire.
+/// Design system de Poufiret (maquette Figma « Poufiret clair / sombre ») :
+/// fond bleuté très clair (ou bleu nuit), cartes blanches (ou bleu ardoise)
+/// aux grands rayons et à l'ombre douce, bleu de marque pour les actions,
+/// accent soleil pour les étiquettes, police Plus Jakarta Sans.
 ///
-/// Thème unique de l'app : appliqué via `MaterialApp.theme` dans main.dart.
-/// Tous les écrans qui s'appuient sur `Theme.of(context)` (couleurs de
-/// texte, `Card`, boutons, champs, barres de navigation…) en héritent
-/// automatiquement, sans modification écran par écran.
+/// Appliqué via `MaterialApp.theme` / `darkTheme` dans main.dart. Tous les
+/// écrans qui s'appuient sur `Theme.of(context)` (couleurs de texte, `Card`,
+/// boutons, champs, barres de navigation…) en héritent automatiquement.
 class ThemePoufiret {
   ThemePoufiret._();
 
-  static const double _rayon = 14;
-  static const double _rayonChamps = 10;
+  static const String police = 'PlusJakartaSans';
 
-  static const ColorScheme _schema = ColorScheme.light(
-    brightness: Brightness.light,
-    primary: Config.couleurPrimaire,
-    onPrimary: Colors.white,
-    primaryContainer: Config.couleurClaire,
-    onPrimaryContainer: Config.couleurPrimaireFoncee,
-    secondary: Config.couleurSecondaire,
-    onSecondary: Colors.white,
-    surface: Config.couleurSurface,
-    onSurface: Config.couleurTexte,
-    onSurfaceVariant: Config.couleurTexteSecondaire,
-    surfaceContainerHighest: Config.couleurFond,
-    outline: Config.couleurBordure,
-    outlineVariant: Config.couleurBordure,
-    error: Config.couleurErreur,
-    onError: Colors.white,
-  );
+  static const double rayonCarte = 22;
+  static const double rayonBouton = 16;
 
-  static const TextTheme _texte = TextTheme(
-    headlineLarge: TextStyle(
-        fontSize: 28, fontWeight: FontWeight.w700, color: Config.couleurTexte, height: 1.25),
-    headlineMedium: TextStyle(
-        fontSize: 24, fontWeight: FontWeight.w700, color: Config.couleurTexte, height: 1.25),
-    headlineSmall: TextStyle(
-        fontSize: 20, fontWeight: FontWeight.w700, color: Config.couleurTexte, height: 1.3),
-    titleLarge: TextStyle(
-        fontSize: 18, fontWeight: FontWeight.w700, color: Config.couleurTexte, height: 1.3),
-    titleMedium: TextStyle(
-        fontSize: 16, fontWeight: FontWeight.w600, color: Config.couleurTexte, height: 1.35),
-    titleSmall: TextStyle(
-        fontSize: 14, fontWeight: FontWeight.w600, color: Config.couleurTexte, height: 1.35),
-    bodyLarge: TextStyle(
-        fontSize: 16, fontWeight: FontWeight.w400, color: Config.couleurTexte, height: 1.45),
-    bodyMedium: TextStyle(
-        fontSize: 14, fontWeight: FontWeight.w400, color: Config.couleurTexte, height: 1.45),
-    bodySmall: TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-        color: Config.couleurTexteSecondaire,
-        height: 1.4),
-    labelLarge: TextStyle(
-        fontSize: 14, fontWeight: FontWeight.w600, color: Config.couleurTexte, height: 1.3),
-    labelMedium: TextStyle(
-        fontSize: 12, fontWeight: FontWeight.w600, color: Config.couleurTexte, height: 1.3),
-    labelSmall: TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w600,
-        color: Config.couleurTexteSecondaire,
-        height: 1.3),
-  );
+  static ThemeData get clair => _avecPalette(false);
+  static ThemeData get sombre => _avecPalette(true);
 
-  /// Thème clair unique de l'application.
-  static ThemeData get clair {
+  /// Les couleurs de [Config] suivent le thème affiché : on bascule la
+  /// palette le temps de construire le ThemeData demandé.
+  static ThemeData _avecPalette(bool sombre) {
+    final avant = Config.sombre;
+    Config.sombre = sombre;
+    try {
+      return _construire(sombre ? Brightness.dark : Brightness.light);
+    } finally {
+      Config.sombre = avant;
+    }
+  }
+
+  static TextTheme _texte() {
+    final texte = Config.couleurTexte;
+    final secondaire = Config.couleurTexteSecondaire;
+    TextStyle s(double taille, FontWeight graisse, double hauteur,
+            {Color? couleur, double espacement = 0}) =>
+        TextStyle(
+          fontFamily: police,
+          fontSize: taille,
+          fontWeight: graisse,
+          height: hauteur,
+          letterSpacing: espacement,
+          color: couleur ?? texte,
+        );
+    return TextTheme(
+      headlineLarge: s(29, FontWeight.w800, 1.15, espacement: -1),
+      headlineMedium: s(24, FontWeight.w800, 1.2, espacement: -0.8),
+      headlineSmall: s(20, FontWeight.w800, 1.25, espacement: -0.6),
+      titleLarge: s(18, FontWeight.w800, 1.3, espacement: -0.5),
+      titleMedium: s(16, FontWeight.w700, 1.35, espacement: -0.3),
+      titleSmall: s(14, FontWeight.w700, 1.35, espacement: -0.2),
+      bodyLarge: s(16, FontWeight.w500, 1.45),
+      bodyMedium: s(14, FontWeight.w500, 1.45),
+      bodySmall: s(12, FontWeight.w500, 1.4, couleur: secondaire),
+      labelLarge: s(14, FontWeight.w700, 1.3),
+      labelMedium: s(12, FontWeight.w700, 1.3),
+      labelSmall: s(11, FontWeight.w700, 1.3, couleur: secondaire),
+    );
+  }
+
+  static ThemeData _construire(Brightness luminosite) {
+    final primaire = Config.couleurPrimaire;
+    final surPrimaire = Config.couleurSurPrimaire;
+    final fond = Config.couleurFond;
+    final surface = Config.couleurSurface;
+    final bordure = Config.couleurBordure;
+    final texte = Config.couleurTexte;
+    final secondaire = Config.couleurTexteSecondaire;
+    final erreur = Config.couleurErreur;
+    final ombre = Config.ombre.first.color;
+    final textes = _texte();
+
+    final schema = ColorScheme(
+      brightness: luminosite,
+      primary: primaire,
+      onPrimary: surPrimaire,
+      primaryContainer: Config.couleurClaire,
+      onPrimaryContainer: texte,
+      secondary: Config.couleurSecondaire,
+      onSecondary: surPrimaire,
+      tertiary: Config.couleurSoleil,
+      onTertiary: const Color(0xFF0F2038),
+      surface: surface,
+      onSurface: texte,
+      onSurfaceVariant: secondaire,
+      surfaceContainerLowest: surface,
+      surfaceContainerLow: surface,
+      surfaceContainer: surface,
+      surfaceContainerHigh: Config.couleurClaire,
+      surfaceContainerHighest: fond,
+      outline: bordure,
+      outlineVariant: bordure,
+      error: erreur,
+      onError: luminosite == Brightness.dark
+          ? const Color(0xFF0F2038)
+          : Colors.white,
+      shadow: ombre,
+    );
+
+    final formeBouton = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(rayonBouton),
+    );
+    const paddingBouton = EdgeInsets.symmetric(horizontal: 22, vertical: 15);
+    final texteBouton = textes.labelLarge?.copyWith(
+      fontSize: 15,
+      letterSpacing: -0.15,
+    );
+
+    OutlineInputBorder bordureChamp(Color couleur, [double largeur = 1.5]) =>
+        OutlineInputBorder(
+          borderRadius: BorderRadius.circular(rayonBouton),
+          borderSide: BorderSide(color: couleur, width: largeur),
+        );
+
     final base = ThemeData(
       useMaterial3: true,
-      colorScheme: _schema,
-      textTheme: _texte,
-      scaffoldBackgroundColor: Config.couleurFond,
-      dividerColor: Config.couleurBordure,
+      brightness: luminosite,
+      colorScheme: schema,
+      fontFamily: police,
+      textTheme: textes,
+      scaffoldBackgroundColor: fond,
+      canvasColor: fond,
+      dividerColor: bordure,
+      shadowColor: ombre,
       splashFactory: InkRipple.splashFactory,
     );
 
     return base.copyWith(
-      // ── Barre du haut : plate, blanche, texte foncé ─────────────────
+      // ── Barre du haut : fondue dans le fond, titre très gras ────────
       appBarTheme: AppBarTheme(
-        backgroundColor: Config.couleurSurface,
-        foregroundColor: Config.couleurTexte,
+        backgroundColor: fond,
+        foregroundColor: texte,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
-        scrolledUnderElevation: 0.5,
+        scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: _texte.titleLarge,
-        iconTheme: const IconThemeData(color: Config.couleurTexte),
+        titleTextStyle: textes.titleLarge?.copyWith(fontSize: 20),
+        // Pas d'iconTheme ici : il primerait sur le `foregroundColor` des
+        // barres qui le fixent (visionneuse d'images sur fond noir…).
       ),
 
-      // ── Cartes : blanches, coins arrondis, bordure fine, plates ─────
+      // ── Cartes : grands rayons, ombre douce, sans bordure ───────────
       cardTheme: CardThemeData(
-        color: Config.couleurSurface,
+        color: surface,
         surfaceTintColor: Colors.transparent,
-        elevation: 0,
+        shadowColor: ombre,
+        elevation: 3,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_rayon),
-          side: const BorderSide(color: Config.couleurBordure),
+          borderRadius: BorderRadius.circular(rayonCarte),
         ),
       ),
 
-      // ── Separateurs fins ─────────────────────────────────────────────
-      dividerTheme: const DividerThemeData(
-        color: Config.couleurBordure,
-        thickness: 1,
-        space: 1,
-      ),
+      dividerTheme: DividerThemeData(color: bordure, thickness: 1, space: 1),
 
-      // ── Boutons pleins : accent, coins arrondis ─────────────────────
+      // ── Boutons pleins : bleu de marque, rayon 16 ───────────────────
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: Config.couleurPrimaire,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(_rayonChamps),
-          ),
-          textStyle: _texte.labelLarge,
+          backgroundColor: primaire,
+          foregroundColor: surPrimaire,
+          padding: paddingBouton,
+          shape: formeBouton,
+          textStyle: texteBouton,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Config.couleurPrimaire,
-          foregroundColor: Colors.white,
+          backgroundColor: primaire,
+          foregroundColor: surPrimaire,
           elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(_rayonChamps),
-          ),
-          textStyle: _texte.labelLarge,
+          padding: paddingBouton,
+          shape: formeBouton,
+          textStyle: texteBouton,
         ),
       ),
-      // ── Boutons contour : discrets, bordure neutre ──────────────────
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: Config.couleurTexte,
-          side: const BorderSide(color: Config.couleurBordure),
-          padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(_rayonChamps),
-          ),
-          textStyle: _texte.labelLarge,
+          foregroundColor: texte,
+          backgroundColor: surface,
+          side: BorderSide(color: bordure, width: 1.5),
+          padding: paddingBouton,
+          shape: formeBouton,
+          textStyle: texteBouton,
         ),
       ),
-      // ── Boutons texte : couleur d'accent, façon lien ────────────────
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: Config.couleurPrimaire,
-          textStyle: _texte.labelLarge,
+          foregroundColor: Config.couleurSecondaire,
+          textStyle: textes.labelLarge,
+        ),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(foregroundColor: texte),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: primaire,
+        foregroundColor: surPrimaire,
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(rayonBouton),
         ),
       ),
 
-      // ── Champs de formulaire : fond clair, bordure fine, focus accent ─
+      // ── Champs : surface, bordure 1.5, focus bleu ───────────────────
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Config.couleurFond,
+        fillColor: surface,
         contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(_rayonChamps),
-          borderSide: const BorderSide(color: Config.couleurBordure),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(_rayonChamps),
-          borderSide: const BorderSide(color: Config.couleurBordure),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(_rayonChamps),
-          borderSide: const BorderSide(color: Config.couleurPrimaire, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(_rayonChamps),
-          borderSide: const BorderSide(color: Config.couleurErreur),
-        ),
-        labelStyle: const TextStyle(color: Config.couleurTexteSecondaire),
-        hintStyle: const TextStyle(color: Config.couleurTexteSecondaire),
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: bordureChamp(bordure),
+        enabledBorder: bordureChamp(bordure),
+        focusedBorder: bordureChamp(Config.couleurSecondaire),
+        errorBorder: bordureChamp(erreur),
+        focusedErrorBorder: bordureChamp(erreur),
+        labelStyle: TextStyle(color: secondaire),
+        hintStyle: TextStyle(color: secondaire),
       ),
 
-      // ── Puces (Chip) : fond clair, bordure fine ─────────────────────
+      // ── Puces : pilule, surface ; sélection pleine bleue ────────────
       chipTheme: ChipThemeData(
-        backgroundColor: Config.couleurFond,
-        side: const BorderSide(color: Config.couleurBordure),
-        labelStyle: _texte.labelMedium,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+        backgroundColor: surface,
+        selectedColor: primaire,
+        checkmarkColor: surPrimaire,
+        side: BorderSide(color: bordure),
+        labelStyle: textes.labelLarge,
+        secondaryLabelStyle: textes.labelLarge?.copyWith(color: surPrimaire),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        shape: const StadiumBorder(),
+      ),
+
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: SegmentedButton.styleFrom(
+          backgroundColor: Config.couleurClaire,
+          foregroundColor: secondaire,
+          selectedBackgroundColor: surface,
+          selectedForegroundColor: texte,
+          side: BorderSide.none,
+          textStyle: textes.labelLarge,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       ),
 
-      // ── Barre de navigation basse : blanche, icone active en accent ─
+      badgeTheme: const BadgeThemeData(
+        backgroundColor: Config.couleurSoleil,
+        textColor: Color(0xFF0F2038),
+      ),
+
+      // ── Barre de navigation basse : pastille active bleue pleine ────
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: Config.couleurSurface,
+        backgroundColor: surface,
         surfaceTintColor: Colors.transparent,
-        indicatorColor: Config.couleurPrimaire.withValues(alpha: 0.12),
+        indicatorColor: primaire,
+        indicatorShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
         elevation: 0,
-        height: 64,
+        height: 66,
         labelTextStyle: WidgetStateProperty.resolveWith(
-          (states) => _texte.labelSmall?.copyWith(
+          (states) => textes.labelSmall?.copyWith(
             color: states.contains(WidgetState.selected)
-                ? Config.couleurPrimaire
-                : Config.couleurTexteSecondaire,
-            fontWeight: states.contains(WidgetState.selected)
-                ? FontWeight.w700
-                : FontWeight.w600,
+                ? primaire
+                : secondaire,
           ),
         ),
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
+            size: 22,
             color: states.contains(WidgetState.selected)
-                ? Config.couleurPrimaire
-                : Config.couleurTexteSecondaire,
+                ? surPrimaire
+                : secondaire,
           ),
         ),
       ),
 
-      // ── Rail lateral (tablette/web) : meme logique que la barre basse ─
+      // ── Rail latéral (tablette/web) : même logique ──────────────────
       navigationRailTheme: NavigationRailThemeData(
-        backgroundColor: Config.couleurSurface,
-        indicatorColor: Config.couleurPrimaire.withValues(alpha: 0.12),
-        selectedIconTheme: const IconThemeData(color: Config.couleurPrimaire),
-        unselectedIconTheme:
-            const IconThemeData(color: Config.couleurTexteSecondaire),
-        selectedLabelTextStyle:
-            _texte.labelMedium?.copyWith(color: Config.couleurPrimaire),
-        unselectedLabelTextStyle: _texte.labelMedium,
+        backgroundColor: surface,
+        indicatorColor: primaire,
+        selectedIconTheme: IconThemeData(color: surPrimaire),
+        unselectedIconTheme: IconThemeData(color: secondaire),
+        selectedLabelTextStyle: textes.labelMedium?.copyWith(color: primaire),
+        unselectedLabelTextStyle:
+            textes.labelMedium?.copyWith(color: secondaire),
+      ),
+
+      drawerTheme: DrawerThemeData(
+        backgroundColor: fond,
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.horizontal(right: Radius.circular(28)),
+        ),
       ),
 
       // ── Divers ───────────────────────────────────────────────────────
       dialogTheme: DialogThemeData(
-        backgroundColor: Config.couleurSurface,
+        backgroundColor: surface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(_rayon),
+          borderRadius: BorderRadius.circular(26),
         ),
       ),
       bottomSheetTheme: BottomSheetThemeData(
-        backgroundColor: Config.couleurSurface,
+        backgroundColor: fond,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(_rayon)),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
         ),
       ),
-      listTileTheme: const ListTileThemeData(
-        iconColor: Config.couleurTexteSecondaire,
-        textColor: Config.couleurTexte,
+      popupMenuTheme: PopupMenuThemeData(
+        color: surface,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(rayonBouton),
+        ),
       ),
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: Config.couleurPrimaire,
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: texte,
+        contentTextStyle: textes.bodyMedium?.copyWith(
+          color: fond,
+          fontWeight: FontWeight.w600,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
       ),
+      tabBarTheme: TabBarThemeData(
+        labelColor: primaire,
+        unselectedLabelColor: secondaire,
+        indicatorColor: primaire,
+        dividerColor: bordure,
+        labelStyle: textes.titleSmall,
+        unselectedLabelStyle: textes.titleSmall,
+      ),
+      listTileTheme: ListTileThemeData(
+        iconColor: secondaire,
+        textColor: texte,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected) ? surPrimaire : secondaire,
+        ),
+        trackColor: WidgetStateProperty.resolveWith(
+          (s) => s.contains(WidgetState.selected) ? primaire : bordure,
+        ),
+      ),
+      progressIndicatorTheme: ProgressIndicatorThemeData(color: primaire),
     );
   }
 }

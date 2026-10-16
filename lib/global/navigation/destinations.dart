@@ -22,7 +22,7 @@ const List<AppDestination> kDestinations = [
     selectedIcon: Icons.home,
   ),
   AppDestination(
-    label: 'Publicités',
+    label: 'Pubs',
     icon: Icons.campaign_outlined,
     selectedIcon: Icons.campaign,
   ),
@@ -37,7 +37,7 @@ const List<AppDestination> kDestinations = [
     selectedIcon: Icons.two_wheeler_sharp,
   ),
   AppDestination(
-    label: 'Map',
+    label: 'Carte',
     icon: Icons.location_on_outlined,
     selectedIcon: Icons.location_on,
   ),

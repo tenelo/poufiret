@@ -62,7 +62,7 @@ class EcranMesPublicites extends ConsumerWidget {
         ),
         data: (pubs) {
           if (pubs.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
                 child: Text(
@@ -156,7 +156,7 @@ class _CartePub extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               'Forfait ${stats.formule}',
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 12, color: Config.couleurTexteSecondaire),
             ),
             const SizedBox(height: 12),
@@ -164,7 +164,7 @@ class _CartePub extends StatelessWidget {
             if (!stats.statsDisponibles)
               Text(
                 stats.message ?? 'Statistiques bientôt disponibles.',
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 13, color: Config.couleurTexteSecondaire),
               )
             else ...[
@@ -237,7 +237,7 @@ class _Chiffre extends StatelessWidget {
             fit: BoxFit.scaleDown,
             child: Text(
               valeur,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
                 color: Config.couleurPrimaire,
@@ -248,7 +248,7 @@ class _Chiffre extends StatelessWidget {
           Text(
             libelle,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
                 fontSize: 10, color: Config.couleurTexteSecondaire),
           ),
         ],

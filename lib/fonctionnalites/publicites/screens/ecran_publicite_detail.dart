@@ -126,7 +126,7 @@ class _Contenu extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.storefront_outlined, size: 16,
+                      Icon(Icons.storefront_outlined, size: 16,
                           color: Config.couleurTexteSecondaire),
                       const SizedBox(width: 6),
                       Flexible(
@@ -195,7 +195,7 @@ class _ImageIndisponible extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         height: 200,
         color: Config.couleurFond,
-        child: const Center(
+        child: Center(
           child: Icon(Icons.image_not_supported_outlined,
               size: 40, color: Config.couleurTexteSecondaire),
         ),

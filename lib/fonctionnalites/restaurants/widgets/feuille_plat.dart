@@ -128,7 +128,7 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
             'Ajouté au panier.',
             action: SnackBarAction(
               label: 'Voir',
-              textColor: Colors.white,
+              textColor: Config.couleurSurPrimaire,
               onPressed: () => navigator.push(
                 MaterialPageRoute(builder: (_) => const EcranPanier()),
               ),
@@ -244,7 +244,7 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.schedule_outlined,
                             size: 15,
                             color: Config.couleurTexteSecondaire,
@@ -426,7 +426,14 @@ class _Photos extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          CarrouselImages(images: plat.images, titre: plat.nom),
+          LayoutBuilder(
+            builder: (context, contraintes) => CarrouselImages(
+              images: plat.images,
+              titre: plat.nom,
+              points: true,
+              largeurAffichee: contraintes.maxWidth,
+            ),
+          ),
           Align(alignment: Alignment.topRight, child: fermer),
         ],
       ),
@@ -452,7 +459,7 @@ class _Explication extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.info_outline, color: Config.couleurErreur, size: 20),
+          Icon(Icons.info_outline, color: Config.couleurErreur, size: 20),
           const SizedBox(width: 8),
           Expanded(
             child: Text(

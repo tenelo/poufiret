@@ -54,7 +54,7 @@ class EcranMiseAJour extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.system_update,
+                        Icon(Icons.system_update,
                             size: 72, color: Config.couleurPrimaire),
                         const SizedBox(height: 24),
                         Text(
@@ -69,7 +69,7 @@ class EcranMiseAJour extends StatelessWidget {
                         Text(
                           message,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 15,
                             color: Config.couleurTexteSecondaire,
                             height: 1.4,

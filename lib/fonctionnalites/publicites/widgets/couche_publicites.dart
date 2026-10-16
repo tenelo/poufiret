@@ -71,7 +71,7 @@ class CouchePublicites extends StatefulWidget {
   const CouchePublicites({
     super.key,
     required this.enfant,
-    this.hauteurBarreOnglets = 80,
+    this.hauteurBarreOnglets = 84,
   });
 
   final Widget enfant;

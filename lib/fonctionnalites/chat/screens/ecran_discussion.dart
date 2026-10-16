@@ -276,7 +276,7 @@ class _Bandeau extends StatelessWidget {
       child: Text(
         texte,
         textAlign: TextAlign.center,
-        style: const TextStyle(
+        style: TextStyle(
           color: Config.couleurErreur,
           fontWeight: FontWeight.w600,
         ),

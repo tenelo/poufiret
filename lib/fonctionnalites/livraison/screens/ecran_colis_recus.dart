@@ -104,7 +104,7 @@ class EcranColisRecus extends ConsumerWidget {
                                   ),
                                 ),
                                 if (actif && c.positionBDeposee)
-                                  const Padding(
+                                  Padding(
                                     padding: EdgeInsets.fromLTRB(12, 0, 12, 12),
                                     child: Row(
                                       children: [

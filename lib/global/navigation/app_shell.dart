@@ -4,6 +4,7 @@ import '../../fonctionnalites/analytics/donnees/analytics_providers.dart';
 import 'package:poufiret/fonctionnalites/chat/screens/ecran_conversations.dart';
 
 import '../../fonctionnalites/chat/donnees/chat_providers.dart';
+import '../config/config.dart';
 import 'destinations.dart';
 import '../../fonctionnalites/catalogue/screens/ecran_categories.dart';
 import '../../fonctionnalites/publicites/screens/ecran_publicites.dart';
@@ -98,20 +99,43 @@ class _AppShellState extends ConsumerState<AppShell> {
           );
         }
 
+        // Barre basse flottante : détachée des bords, coins arrondis,
+        // ombre douce ; l'onglet actif est une pastille bleue pleine.
         return Scaffold(
           body: body,
-          bottomNavigationBar: NavigationBar(
-            height: 64,
-            selectedIndex: _index,
-            onDestinationSelected: _onTap,
-            destinations: [
-              for (final d in kDestinations)
-                NavigationDestination(
-                  icon: Icon(d.icon),
-                  selectedIcon: Icon(d.selectedIcon),
-                  label: d.label,
+          bottomNavigationBar: SafeArea(
+            minimum: const EdgeInsets.only(bottom: 10),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Config.couleurSurface,
+                  borderRadius: BorderRadius.circular(26),
+                  border: Border.all(color: Config.couleurBordure),
+                  boxShadow: Config.ombre,
                 ),
-            ],
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(26),
+                  child: MediaQuery.removePadding(
+                    context: context,
+                    removeBottom: true,
+                    child: NavigationBar(
+                      backgroundColor: Colors.transparent,
+                      selectedIndex: _index,
+                      onDestinationSelected: _onTap,
+                      destinations: [
+                        for (final d in kDestinations)
+                          NavigationDestination(
+                            icon: Icon(d.icon),
+                            selectedIcon: Icon(d.selectedIcon),
+                            label: d.label,
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         );
       },

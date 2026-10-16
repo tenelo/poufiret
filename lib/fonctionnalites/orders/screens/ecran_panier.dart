@@ -216,7 +216,7 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
               widget.titre,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
-                color: Colors.grey[400],
+                color: Config.couleurTexteSecondaire,
               ),
             ),
             const Divider(),
@@ -293,7 +293,7 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
                 'Réglez comme vous voulez à la remise (espèces, Wave, '
                 'Mobile Money…).',
                 style: theme.textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
+                  color: Config.couleurTexteSecondaire,
                 ),
               ),
             ),
@@ -401,7 +401,7 @@ class _LigneTuileState extends ConsumerState<_LigneTuile> {
                 Text(
                   'chez ${widget.commercant}',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
+                    color: Config.couleurTexteSecondaire,
                   ),
                 ),
                 Text(

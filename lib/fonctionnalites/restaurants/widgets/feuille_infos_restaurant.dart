@@ -122,14 +122,14 @@ class _Infos extends StatelessWidget {
               leading: const Icon(Icons.phone_outlined),
               title: Text(t.key),
               subtitle: t.value.isEmpty ? null : Text(t.value),
-              trailing: const Icon(Icons.call, color: Config.couleurSucces),
+              trailing: Icon(Icons.call, color: Config.couleurSucces),
               onTap: () => ouvrirLien(context, uriAppel(t.key)),
             ),
           if (r.whatsapp.isNotEmpty)
             ListTile(
               contentPadding: EdgeInsets.zero,
               dense: true,
-              leading: const FaIcon(
+              leading: FaIcon(
                 FontAwesomeIcons.whatsapp,
                 color: Config.couleurSucces,
               ),

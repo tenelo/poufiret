@@ -89,7 +89,7 @@ class PrixPromo extends StatelessWidget {
                 style: TextStyle(
                   fontSize: taillePrix * 0.65,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white,
+                  color: Config.couleurSurPrimaire,
                 ),
               ),
             ),

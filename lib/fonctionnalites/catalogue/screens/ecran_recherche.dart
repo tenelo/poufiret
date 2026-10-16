@@ -207,7 +207,7 @@ class _TitreSection extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               titre,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w700,
                 color: Config.couleurPrimaire,
                 letterSpacing: 0.3,
@@ -256,7 +256,7 @@ class _LignePartenaire extends StatelessWidget {
             ? imageReseauProvider(partenaire.logo)
             : null,
         child: partenaire.logo.isEmpty
-            ? const Icon(Icons.storefront_outlined,
+            ? Icon(Icons.storefront_outlined,
                 color: Config.couleurTexteSecondaire)
             : null,
       ),
@@ -342,7 +342,7 @@ class _Vignette extends StatelessWidget {
           color: Config.couleurFond,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Icon(Icons.image_outlined,
+        child: Icon(Icons.image_outlined,
             size: 22, color: Config.couleurTexteSecondaire),
       );
 }

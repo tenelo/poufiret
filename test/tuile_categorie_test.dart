@@ -64,7 +64,11 @@ Future<void> _monter(WidgetTester tester, List<Categorie> categories) async {
   await tester.pump();
 }
 
-Finder get _tuile => find.widgetWithText(Card, 'Viande de Ferké');
+// La tuile de la grille (le nom figure aussi dans la barre d'onglets).
+Finder get _tuile => find.ancestor(
+  of: find.text('Viande de Ferké'),
+  matching: find.byWidgetPredicate((w) => w.runtimeType.toString() == '_TuileCategorie'),
+);
 Finder _dansTuile(Finder f) => find.descendant(of: _tuile, matching: f);
 
 void main() {
@@ -122,7 +126,7 @@ void main() {
     final cadre = tester.widget<ClipRRect>(
       find.ancestor(of: zone, matching: find.byType(ClipRRect)).first,
     );
-    expect(cadre.borderRadius, BorderRadius.circular(12));
+    expect(cadre.borderRadius, BorderRadius.circular(14));
     // Le nom reste sous l'image.
     final nom = _dansTuile(find.text('Viande de Ferké'));
     expect(
@@ -133,12 +137,12 @@ void main() {
     expect(_dansTuile(find.text('🥩')), findsOneWidget);
   });
 
-  testWidgets('chargement sans emoji : fond neutre', (tester) async {
+  testWidgets('chargement sans emoji : fond pastel de la tuile', (tester) async {
     await _monter(tester, [_categorie(couverture: _url, icone: '')]);
     final image = tester.widget<ImageReseau>(
       _dansTuile(find.byType(ImageReseau)),
     );
-    expect(image.attente, isA<ColoredBox>());
+    expect(image.attente, isA<SizedBox>());
     expect(_dansTuile(find.text('📦')), findsNothing);
   });
 

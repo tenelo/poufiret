@@ -64,37 +64,45 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: 70,
+        centerTitle: true,
+        leadingWidth: 70,
+        leading: Builder(
+          builder: (context) => Center(
+            child: _BoutonCarre(
+              icone: Icons.menu_rounded,
+              tooltip: 'Menu',
+              onTap: () => Scaffold.of(context).openDrawer(),
+            ),
+          ),
+        ),
         title: const Text('Poufiret'),
         actions: [
-          IconButton(
-            icon: nbPanier > 0
-                ? Badge(
-                    label: Text('$nbPanier'),
-                    child: const Icon(Icons.shopping_cart_outlined),
-                  )
-                : const Icon(Icons.shopping_cart_outlined),
+          _BoutonCarre(
+            icone: Icons.shopping_cart_outlined,
             tooltip: 'Mon panier',
-            onPressed: () => Navigator.of(
+            badge: nbPanier,
+            onTap: () => Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (_) => const EcranPanier())),
           ),
+          const SizedBox(width: 20),
         ],
       ),
       drawer: const AppDrawer(),
       floatingActionButton: const _BoutonRecherche(),
       body: Column(
         children: [
-          const SizedBox(height: 4),
+          const _BarreRecherche(),
+          const SizedBox(height: 14),
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2),
+            padding: EdgeInsets.symmetric(horizontal: 20),
             child: ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(12)),
+              borderRadius: BorderRadius.all(Radius.circular(26)),
               child: CarrouselPublicites(),
             ),
           ),
-          const SizedBox(height: 8),
-          const _BarreRecherche(),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           Expanded(
             child: categoriesAsync.when(
               // Rechargement (tirer pour rafraichir, reessayer) : la grille
@@ -184,16 +192,16 @@ class _GrilleCategories extends StatelessWidget {
           onRefresh: onRefresh,
           child: GridView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: nbColonnes,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 1,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 1.1,
             ),
             itemCount: categories.length,
             itemBuilder: (context, i) =>
-                _TuileCategorie(categorie: categories[i]),
+                _TuileCategorie(categorie: categories[i], rang: i),
           ),
         );
       },
@@ -213,36 +221,43 @@ class _BarreRecherche extends StatelessWidget {
       context,
     ).push(MaterialPageRoute(builder: (_) => const EcranRecherche()));
 
+    final forme = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    );
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Material(
-        color: theme.colorScheme.surface,
-        shape: StadiumBorder(
-          side: BorderSide(color: theme.colorScheme.outline),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: Config.ombre,
         ),
-        child: InkWell(
-          customBorder: const StadiumBorder(),
-          onTap: ouvrir,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 2, 2, 2),
-            child: Row(
-              children: [
-                Expanded(
-                  // L'invite defile si elle ne tient pas en entier.
-                  child: TexteDefilant(
-                    'Que recherchez-vous ? Tapez votre recherche...',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+        child: Material(
+          color: theme.colorScheme.surface,
+          shape: forme,
+          child: InkWell(
+            customBorder: forme,
+            onTap: ouvrir,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.search_rounded,
+                    size: 20,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    // L'invite defile si elle ne tient pas en entier.
+                    child: TexteDefilant(
+                      'Un plat, une pharmacie, une boutique…',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                CircleAvatar(
-                  radius: 18,
-                  //backgroundColor: theme.colorScheme.primary,
-                  child: Icon(Icons.search, size: 20, color: Colors.white),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -361,9 +376,12 @@ class _ActionEventail extends StatelessWidget {
   }
 }
 
+/// Tuile « Explorer » : fond pastel (bleu, vert, ambre, sarcelle en
+/// rotation selon [rang]), emoji ou image en haut, nom en bas à gauche.
 class _TuileCategorie extends StatelessWidget {
   final Categorie categorie;
-  const _TuileCategorie({required this.categorie});
+  final int rang;
+  const _TuileCategorie({required this.categorie, required this.rang});
 
   /// Grisée si désactivée par l'admin OU si aucun partenaire enregistré.
   bool get _bientot =>
@@ -374,14 +392,19 @@ class _TuileCategorie extends StatelessWidget {
   Widget build(BuildContext context) {
     final bientot = _bientot;
     final image = categorie.imageTuile;
+    final pastels = Config.pastels;
+    final (fond, encre) = pastels[rang % pastels.length];
     final emoji = FittedBox(
       fit: BoxFit.scaleDown,
+      alignment: Alignment.topLeft,
       child: Text(
         categorie.icone.isNotEmpty ? categorie.icone : '📦',
-        style: const TextStyle(fontSize: 48),
+        style: const TextStyle(fontSize: 40, height: 1),
       ),
     );
-    return Card(
+    return Material(
+      color: fond,
+      borderRadius: BorderRadius.circular(22),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: bientot
@@ -395,18 +418,18 @@ class _TuileCategorie extends StatelessWidget {
         child: Opacity(
           opacity: bientot ? 0.45 : 1.0,
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(16),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (image.isEmpty)
-                  Flexible(child: emoji)
+                  Expanded(child: emoji)
                 else
                   // Image reelle : elle remplit la zone visuelle. L'emoji
                   // la remplace pendant le chargement et en cas d'erreur.
                   Expanded(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(14),
                       child: LayoutBuilder(
                         builder: (context, contraintes) => ImageReseau(
                           image,
@@ -415,28 +438,94 @@ class _TuileCategorie extends StatelessWidget {
                           height: contraintes.maxHeight,
                           largeurAffichee: contraintes.maxWidth,
                           attente: categorie.icone.isNotEmpty
-                              ? Center(child: emoji)
-                              : const ColoredBox(color: Config.couleurFond),
-                          errorBuilder: (_, _, _) => Center(child: emoji),
+                              ? Align(
+                                  alignment: Alignment.topLeft,
+                                  child: emoji,
+                                )
+                              : const SizedBox.shrink(),
+                          errorBuilder: (_, _, _) =>
+                              Align(alignment: Alignment.topLeft, child: emoji),
                         ),
                       ),
                     ),
                   ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 Text(
-                  bientot
-                      ? '${categorie.nom}\nBientôt disponible'
-                      : categorie.nom,
-                  textAlign: TextAlign.center,
-                  maxLines: bientot ? 3 : 2,
+                  categorie.nom,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: encre,
+                    fontWeight: FontWeight.w800,
+                    height: 1.15,
+                  ),
                 ),
+                if (bientot)
+                  Text(
+                    'Bientôt disponible',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: encre.withValues(alpha: 0.7),
+                    ),
+                  ),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Bouton carré arrondi de la barre du haut (menu, panier) : surface,
+/// ombre douce, pastille soleil pour un compteur.
+class _BoutonCarre extends StatelessWidget {
+  const _BoutonCarre({
+    required this.icone,
+    required this.tooltip,
+    required this.onTap,
+    this.badge = 0,
+  });
+
+  final IconData icone;
+  final String tooltip;
+  final VoidCallback onTap;
+  final int badge;
+
+  @override
+  Widget build(BuildContext context) {
+    final forme = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(14),
+    );
+    final bouton = DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: Config.ombre,
+      ),
+      child: Material(
+        color: Config.couleurSurface,
+        shape: forme,
+        child: InkWell(
+          customBorder: forme,
+          onTap: onTap,
+          child: SizedBox(
+            width: 42,
+            height: 42,
+            child: Icon(icone, size: 21, color: Config.couleurTexte),
+          ),
+        ),
+      ),
+    );
+    return Tooltip(
+      message: tooltip,
+      child: badge > 0
+          ? Badge(
+              label: Text('$badge'),
+              offset: const Offset(4, -4),
+              child: bouton,
+            )
+          : bouton,
     );
   }
 }

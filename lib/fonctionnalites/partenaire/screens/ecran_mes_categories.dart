@@ -67,7 +67,7 @@ class EcranMesCategories extends ConsumerWidget {
                     child: ListView(
                       padding: const EdgeInsets.all(12),
                       children: [
-                        const Padding(
+                        Padding(
                           padding: EdgeInsets.fromLTRB(4, 0, 4, 12),
                           child: Text(
                             'Choisissez une image par catégorie. C\'est '
@@ -174,7 +174,7 @@ class _CarteCategorieState extends ConsumerState<_CarteCategorie> {
                 ),
                 if (c.estPrincipale) ...[
                   const SizedBox(width: 6),
-                  const Icon(Icons.star,
+                  Icon(Icons.star,
                       size: 16, color: Config.couleurPrimaire),
                 ],
               ],
@@ -201,7 +201,7 @@ class _Vide extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         color: Config.couleurFond,
-        child: const Center(
+        child: Center(
           child: Icon(Icons.image_outlined,
               size: 36, color: Config.couleurTexteSecondaire),
         ),

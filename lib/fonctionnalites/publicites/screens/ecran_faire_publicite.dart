@@ -106,7 +106,7 @@ class _EtapeForfaits extends ConsumerWidget {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: 4),
-                      const Text(
+                      Text(
                         'Le paiement se fait auprès de l\'administration '
                         'après validation de votre publicité.',
                         style: TextStyle(
@@ -200,7 +200,7 @@ class _CarteForfait extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.card_giftcard,
+                        Icon(Icons.card_giftcard,
                             size: 13, color: Config.couleurSucces),
                         const SizedBox(width: 4),
                         Text(
@@ -292,7 +292,7 @@ class _CarteForfait extends StatelessWidget {
                       onPressed: () => onChoisir(formule, credit!.id),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Config.couleurSucces,
-                        side: const BorderSide(color: Config.couleurSucces),
+                        side: BorderSide(color: Config.couleurSucces),
                       ),
                       child: const Text('Utiliser mon crédit (gratuit)'),
                     ),
@@ -501,7 +501,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                               '${f.nbImagesMax} image'
                               '${f.nbImagesMax > 1 ? 's' : ''}'
                               '${f.videoAutorisee ? ' + vidéo' : ''}',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 12,
                                 color: Config.couleurTexteSecondaire,
                               ),
@@ -522,7 +522,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Icon(Icons.card_giftcard,
+                              Icon(Icons.card_giftcard,
                                   color: Config.couleurSucces),
                               const SizedBox(width: 10),
                               Expanded(
@@ -530,7 +530,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                                   crossAxisAlignment:
                                       CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
+                                    Text(
                                       'Publicité offerte',
                                       style: TextStyle(
                                         fontWeight: FontWeight.w700,
@@ -564,7 +564,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.place_outlined, size: 18,
+                                Icon(Icons.place_outlined, size: 18,
                                     color: Config.couleurPrimaire),
                                 const SizedBox(width: 8),
                                 Text(
@@ -584,7 +584,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                                   crossAxisAlignment:
                                       CrossAxisAlignment.start,
                                   children: [
-                                    const Icon(Icons.check,
+                                    Icon(Icons.check,
                                         size: 15,
                                         color: Config.couleurSucces),
                                     const SizedBox(width: 8),
@@ -692,7 +692,7 @@ class _ZoneAffiche extends StatelessWidget {
         ),
         clipBehavior: Clip.antiAlias,
         child: affiche == null
-            ? const Column(
+            ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.add_photo_alternate_outlined,
@@ -762,7 +762,7 @@ class CartePortee extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.travel_explore_outlined,
+                Icon(Icons.travel_explore_outlined,
                     size: 18, color: Config.couleurPrimaire),
                 const SizedBox(width: 8),
                 Expanded(
@@ -774,7 +774,7 @@ class CartePortee extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Une publicité peut porter plus loin que votre forfait. '
               'Élargir peut faire l\'objet d\'un supplément.',
               style: TextStyle(

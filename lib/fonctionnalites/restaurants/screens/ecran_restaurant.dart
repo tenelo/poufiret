@@ -490,7 +490,7 @@ class _SectionMenuDuJour extends StatelessWidget {
       prix: formatMontant(ligne.prixEffectif),
       badges: [
         if (ligne.epuisee)
-          const BadgeTexte('Épuisé', couleur: Config.couleurTexteSecondaire),
+          BadgeTexte('Épuisé', couleur: Config.couleurTexteSecondaire),
       ],
       mention: !ligne.epuisee && stock != null && stock <= _seuilStockBas
           ? 'Plus que $stock'
@@ -521,7 +521,7 @@ class _EnteteCarte extends SliverPersistentHeaderDelegate {
   final ValueChanged<int> onSection;
 
   static const double _hauteurRecherche = 56;
-  static const double _hauteurOnglets = 45;
+  static const double _hauteurOnglets = 47; // BarreOnglets (46) + Divider (1)
 
   /// Les onglets n'ont de sens qu'à partir de deux sections.
   bool get _avecOnglets => libelles.length > 1;
@@ -636,9 +636,9 @@ class _TuilePlatCarte extends StatelessWidget {
       prix: aPrixVariable(plat) ? 'à partir de $prix' : prix,
       badges: [
         if (plat.estEnPromotion && !plat.indisponible)
-          const BadgeTexte('Promo', couleur: Config.couleurPrimaire),
+          BadgeTexte('Promo', couleur: Config.couleurPrimaire),
         if (plat.indisponible)
-          const BadgeTexte('Épuisé', couleur: Config.couleurTexteSecondaire),
+          BadgeTexte('Épuisé', couleur: Config.couleurTexteSecondaire),
       ],
       attenue: plat.indisponible,
       onTap: onTap,

@@ -39,7 +39,7 @@ class EcranMesFaveursPub extends ConsumerWidget {
         ),
         data: (credits) {
           if (credits.isEmpty) {
-            return const Center(
+            return Center(
               child: Padding(
                 padding: EdgeInsets.all(24),
                 child: Text(
@@ -137,20 +137,20 @@ class _CarteCredit extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               'Valeur : ${credit.formulePrix} FCFA',
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 12, color: Config.couleurTexteSecondaire),
             ),
             const SizedBox(height: 2),
             Text(
               'Octroyée le ${_dateLisible(credit.creeLe)}',
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 12, color: Config.couleurTexteSecondaire),
             ),
             if (!credit.estDisponible && credit.consommeLe != null) ...[
               const SizedBox(height: 2),
               Text(
                 'Utilisée le ${_dateLisible(credit.consommeLe)}',
-                style: const TextStyle(
+                style: TextStyle(
                     fontSize: 12, color: Config.couleurTexteSecondaire),
               ),
             ],
