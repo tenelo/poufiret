@@ -99,12 +99,14 @@ final class PaniersProvider
 
 String _$paniersHash() => r'74fc4c7640afa98f8b937f8cd416006f7b735cef';
 
-/// Mes commandes (option filtre statut).
+/// Mes commandes. Filtres optionnels : statut, recherche [q], dates [du] /
+/// [au] (AAAA-MM-JJ).
 
 @ProviderFor(commandes)
 final commandesProvider = CommandesFamily._();
 
-/// Mes commandes (option filtre statut).
+/// Mes commandes. Filtres optionnels : statut, recherche [q], dates [du] /
+/// [au] (AAAA-MM-JJ).
 
 final class CommandesProvider
     extends
@@ -114,10 +116,12 @@ final class CommandesProvider
           FutureOr<List<Commande>>
         >
     with $FutureModifier<List<Commande>>, $FutureProvider<List<Commande>> {
-  /// Mes commandes (option filtre statut).
+  /// Mes commandes. Filtres optionnels : statut, recherche [q], dates [du] /
+  /// [au] (AAAA-MM-JJ).
   CommandesProvider._({
     required CommandesFamily super.from,
-    required String? super.argument,
+    required ({String? statut, String? q, String? du, String? au})
+    super.argument,
   }) : super(
          retry: null,
          name: r'commandesProvider',
@@ -133,7 +137,7 @@ final class CommandesProvider
   String toString() {
     return r'commandesProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -144,8 +148,15 @@ final class CommandesProvider
 
   @override
   FutureOr<List<Commande>> create(Ref ref) {
-    final argument = this.argument as String?;
-    return commandes(ref, statut: argument);
+    final argument =
+        this.argument as ({String? statut, String? q, String? du, String? au});
+    return commandes(
+      ref,
+      statut: argument.statut,
+      q: argument.q,
+      du: argument.du,
+      au: argument.au,
+    );
   }
 
   @override
@@ -159,12 +170,17 @@ final class CommandesProvider
   }
 }
 
-String _$commandesHash() => r'4bf066ddadfed7747bbe8880f2f68b3beab2e124';
+String _$commandesHash() => r'cadb2313c9325a570542abe392711e03a2551f59';
 
-/// Mes commandes (option filtre statut).
+/// Mes commandes. Filtres optionnels : statut, recherche [q], dates [du] /
+/// [au] (AAAA-MM-JJ).
 
 final class CommandesFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<Commande>>, String?> {
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<List<Commande>>,
+          ({String? statut, String? q, String? du, String? au})
+        > {
   CommandesFamily._()
     : super(
         retry: null,
@@ -174,10 +190,14 @@ final class CommandesFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Mes commandes (option filtre statut).
+  /// Mes commandes. Filtres optionnels : statut, recherche [q], dates [du] /
+  /// [au] (AAAA-MM-JJ).
 
-  CommandesProvider call({String? statut}) =>
-      CommandesProvider._(argument: statut, from: this);
+  CommandesProvider call({String? statut, String? q, String? du, String? au}) =>
+      CommandesProvider._(
+        argument: (statut: statut, q: q, du: du, au: au),
+        from: this,
+      );
 
   @override
   String toString() => r'commandesProvider';

@@ -193,9 +193,6 @@ class ThemePoufiret {
           textStyle: textes.labelLarge,
         ),
       ),
-      iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(foregroundColor: texte),
-      ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primaire,
         foregroundColor: surPrimaire,

@@ -45,6 +45,7 @@ _LignePanier _$LignePanierFromJson(Map<String, dynamic> json) => _LignePanier(
       : _versInt(json['prix_unitaire']),
   prixLigne: json['prix_ligne'] == null ? 0 : _versInt(json['prix_ligne']),
   noteSpeciale: json['note_speciale'] as String? ?? '',
+  image: json['image'] as String?,
 );
 
 Map<String, dynamic> _$LignePanierToJson(_LignePanier instance) =>
@@ -61,6 +62,7 @@ Map<String, dynamic> _$LignePanierToJson(_LignePanier instance) =>
       'prix_unitaire': instance.prixUnitaire,
       'prix_ligne': instance.prixLigne,
       'note_speciale': instance.noteSpeciale,
+      'image': instance.image,
     };
 
 _Panier _$PanierFromJson(Map<String, dynamic> json) => _Panier(
@@ -106,6 +108,7 @@ _LigneCommande _$LigneCommandeFromJson(Map<String, dynamic> json) =>
           : _versInt(json['prix_unitaire']),
       prixLigne: json['prix_ligne'] == null ? 0 : _versInt(json['prix_ligne']),
       noteSpeciale: json['note_speciale'] as String? ?? '',
+      image: json['image'] as String?,
     );
 
 Map<String, dynamic> _$LigneCommandeToJson(_LigneCommande instance) =>
@@ -119,6 +122,7 @@ Map<String, dynamic> _$LigneCommandeToJson(_LigneCommande instance) =>
       'prix_unitaire': instance.prixUnitaire,
       'prix_ligne': instance.prixLigne,
       'note_speciale': instance.noteSpeciale,
+      'image': instance.image,
     };
 
 _Commande _$CommandeFromJson(Map<String, dynamic> json) => _Commande(

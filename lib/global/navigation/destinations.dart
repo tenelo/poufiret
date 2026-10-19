@@ -37,7 +37,7 @@ const List<AppDestination> kDestinations = [
     selectedIcon: Icons.two_wheeler_sharp,
   ),
   AppDestination(
-    label: 'Carte',
+    label: 'Map',
     icon: Icons.location_on_outlined,
     selectedIcon: Icons.location_on,
   ),

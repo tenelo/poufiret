@@ -7,6 +7,7 @@ import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/format_montant.dart';
 import '../../../global/ui/notificateur.dart';
+import '../../../global/widgets/image_reseau.dart';
 import '../../publicites/widgets/couche_publicites.dart';
 import '../../map/donnees/map_providers.dart';
 import '../../map/donnees/service_position.dart';
@@ -379,10 +380,15 @@ class _LigneTuileState extends ConsumerState<_LigneTuile> {
     final theme = Theme.of(context);
     final l = widget.ligne;
 
-    return Padding(
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => _ouvrirApercu(context, l, widget.commercant),
+      child: Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
+          _Vignette(url: l.image, taille: 52),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -399,7 +405,7 @@ class _LigneTuileState extends ConsumerState<_LigneTuile> {
                 if (l.detailChoix.isNotEmpty)
                   Text(l.detailChoix, style: theme.textTheme.bodySmall),
                 Text(
-                  'chez ${widget.commercant}',
+                  chezCommercant(widget.commercant),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: Config.couleurTexteSecondaire,
                   ),
@@ -426,6 +432,129 @@ class _LigneTuileState extends ConsumerState<_LigneTuile> {
           IconButton(
             onPressed: _occupe ? null : _supprimer,
             icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
+          ),
+        ],
+      ),
+      ),
+    );
+  }
+}
+
+/// « chez Capi », sans doubler le mot quand le nom le contient déjà
+/// (« Chez Capi » reste « Chez Capi »).
+String chezCommercant(String nom) =>
+    RegExp(r'\bchez\b', caseSensitive: false).hasMatch(nom) ? nom : 'chez $nom';
+
+/// Vignette carrée d'une ligne : photo en cache, décodée à la taille
+/// affichée ; icône neutre sans photo.
+class _Vignette extends StatelessWidget {
+  const _Vignette({required this.url, required this.taille});
+  final String? url;
+  final double taille;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(taille >= 100 ? 16 : 10),
+      child: ImageReseau(
+        url ?? '',
+        width: taille,
+        height: taille,
+        fit: BoxFit.cover,
+        largeurAffichee: taille,
+      ),
+    );
+  }
+}
+
+/// Aperçu d'une ligne du panier : grande photo, nom, commerçant, variante
+/// et options, prix unitaire, quantité et total.
+Future<void> _ouvrirApercu(
+  BuildContext context,
+  LignePanier ligne,
+  String commercant,
+) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    constraints: const BoxConstraints(maxWidth: 700),
+    builder: (context) => _ApercuLigne(ligne: ligne, commercant: commercant),
+  );
+}
+
+class _ApercuLigne extends StatelessWidget {
+  const _ApercuLigne({required this.ligne, required this.commercant});
+  final LignePanier ligne;
+  final String commercant;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l = ligne;
+    final secondaire = theme.textTheme.bodyMedium?.copyWith(
+      color: Config.couleurTexteSecondaire,
+    );
+
+    Widget info(String libelle, String valeur, {TextStyle? style}) => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: [
+          Expanded(child: Text(libelle, style: secondaire)),
+          Text(valeur, style: style ?? theme.textTheme.bodyMedium),
+        ],
+      ),
+    );
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          LayoutBuilder(
+            builder: (context, contraintes) => AspectRatio(
+              aspectRatio: 16 / 10,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: ImageReseau(
+                  l.image ?? '',
+                  fit: BoxFit.cover,
+                  largeurAffichee: contraintes.maxWidth,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(l.articleNom, style: theme.textTheme.titleLarge),
+          if (commercant.isNotEmpty)
+            Text(chezCommercant(commercant), style: secondaire),
+          if (l.varianteNom.isNotEmpty || l.choix.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            if (l.varianteNom.isNotEmpty)
+              Text(l.varianteNom, style: theme.textTheme.titleSmall),
+            for (final o in l.choix)
+              Text(
+                o.prix > 0
+                    ? '+ ${o.nom} (${formatSupplement(o.prix)})'
+                    : '+ ${o.nom}',
+                style: theme.textTheme.bodyMedium,
+              ),
+          ],
+          if (l.noteSpeciale.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text('Note : ${l.noteSpeciale}', style: secondaire),
+          ],
+          const Divider(height: 28),
+          info('Prix unitaire', formatMontant(l.prixUnitaire)),
+          info('Quantité', '${l.quantite}'),
+          info(
+            'Total',
+            formatMontant(l.prixLigne),
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: theme.colorScheme.primary,
+              fontWeight: FontWeight.w800,
+            ),
           ),
         ],
       ),
@@ -466,7 +595,7 @@ class _RefusValidation extends StatelessWidget {
           Text(
             commercant.isEmpty
                 ? 'Commande non envoyée'
-                : 'Commande chez $commercant non envoyée',
+                : 'Commande ${chezCommercant(commercant)} non envoyée',
             style: theme.textTheme.titleSmall?.copyWith(
               color: Config.couleurErreur,
               fontWeight: FontWeight.w700,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,42 +9,172 @@ import '../../../global/ui/notificateur.dart';
 import '../../../global/ui/squelette.dart';
 import '../metier_domaine/orders_models.dart';
 
-/// Liste des commandes du client.
-class EcranCommandes extends ConsumerWidget {
+const _mois = [
+  'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
+  'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.',
+];
+
+/// « 19 oct. 2026 · 11:25 ».
+String formatDateHeure(DateTime d) {
+  String deux(int n) => n.toString().padLeft(2, '0');
+  return '${d.day} ${_mois[d.month - 1]} ${d.year} · '
+      '${deux(d.hour)}:${deux(d.minute)}';
+}
+
+/// « 19 oct. 2026 ».
+String _formatJour(DateTime d) => '${d.day} ${_mois[d.month - 1]} ${d.year}';
+
+/// AAAA-MM-JJ, format attendu par les filtres `du` / `au` du serveur.
+String _versIso(DateTime d) =>
+    '${d.year.toString().padLeft(4, '0')}-'
+    '${d.month.toString().padLeft(2, '0')}-'
+    '${d.day.toString().padLeft(2, '0')}';
+
+/// Liste des commandes du client, avec recherche et filtre de dates.
+class EcranCommandes extends ConsumerStatefulWidget {
   const EcranCommandes({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final async = ref.watch(commandesProvider());
+  ConsumerState<EcranCommandes> createState() => _EcranCommandesState();
+}
+
+class _EcranCommandesState extends ConsumerState<EcranCommandes> {
+  final _champ = TextEditingController();
+  Timer? _attente;
+
+  /// Terme envoyé au serveur (après 400 ms sans frappe).
+  String _q = '';
+  DateTimeRange? _plage;
+
+  @override
+  void dispose() {
+    _attente?.cancel();
+    _champ.dispose();
+    super.dispose();
+  }
+
+  void _surSaisie(String valeur) {
+    _attente?.cancel();
+    _attente = Timer(const Duration(milliseconds: 400), () {
+      if (mounted) setState(() => _q = valeur.trim());
+    });
+    setState(() {}); // bouton d'effacement
+  }
+
+  void _effacer() {
+    _attente?.cancel();
+    _champ.clear();
+    setState(() => _q = '');
+  }
+
+  Future<void> _choisirDates() async {
+    final aujourdhui = DateTime.now();
+    final plage = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(aujourdhui.year, aujourdhui.month, aujourdhui.day),
+      initialDateRange: _plage,
+      helpText: 'Période des commandes',
+      fieldStartLabelText: 'Du',
+      fieldEndLabelText: 'Au',
+    );
+    if (plage != null && mounted) setState(() => _plage = plage);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = commandesProvider(
+      q: _q.isEmpty ? null : _q,
+      du: _plage == null ? null : _versIso(_plage!.start),
+      au: _plage == null ? null : _versIso(_plage!.end),
+    );
+    final async = ref.watch(provider);
+    final plage = _plage;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Mes commandes')),
-      body: async.when(
-        loading: () => const SqueletteCartes(),
-        error: (e, _) =>
-            _Erreur(onRetry: () => ref.invalidate(commandesProvider())),
-        data: (commandes) {
-          if (commandes.isEmpty) return const _Vide();
-          return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(commandesProvider()),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final maxWidth = constraints.maxWidth > 700
-                    ? 700.0
-                    : constraints.maxWidth;
-                return Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: maxWidth),
-                    child: ListView.separated(
-                      padding: const EdgeInsets.all(12),
-                      itemCount: commandes.length,
-                      separatorBuilder: (_, i) => const SizedBox(height: 8),
-                      itemBuilder: (context, i) =>
-                          _CarteCommande(commande: commandes[i]),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final maxWidth = constraints.maxWidth > 700
+              ? 700.0
+              : constraints.maxWidth;
+          return Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: maxWidth),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _champ,
+                            onChanged: _surSaisie,
+                            textInputAction: TextInputAction.search,
+                            decoration: InputDecoration(
+                              hintText: 'Référence, produit, partenaire…',
+                              prefixIcon: const Icon(Icons.search),
+                              suffixIcon: _champ.text.isEmpty
+                                  ? null
+                                  : IconButton(
+                                      icon: const Icon(Icons.close),
+                                      tooltip: 'Effacer',
+                                      onPressed: _effacer,
+                                    ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton.filledTonal(
+                          icon: Icon(
+                            plage == null
+                                ? Icons.date_range_outlined
+                                : Icons.date_range,
+                          ),
+                          tooltip: 'Filtrer par dates',
+                          onPressed: _choisirDates,
+                        ),
+                      ],
                     ),
                   ),
-                );
-              },
+                  if (plage != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: InputChip(
+                          label: Text(
+                            'Du ${_formatJour(plage.start)} '
+                            'au ${_formatJour(plage.end)}',
+                          ),
+                          onPressed: _choisirDates,
+                          onDeleted: () => setState(() => _plage = null),
+                        ),
+                      ),
+                    ),
+                  Expanded(
+                    child: async.when(
+                      loading: () => const SqueletteCartes(),
+                      error: (e, _) =>
+                          _Erreur(onRetry: () => ref.invalidate(provider)),
+                      data: (commandes) => RefreshIndicator(
+                        onRefresh: () async => ref.invalidate(provider),
+                        child: commandes.isEmpty
+                            ? const _Vide()
+                            : ListView.separated(
+                                padding: const EdgeInsets.all(12),
+                                itemCount: commandes.length,
+                                separatorBuilder: (_, i) =>
+                                    const SizedBox(height: 8),
+                                itemBuilder: (context, i) =>
+                                    _CarteCommande(commande: commandes[i]),
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -84,6 +216,8 @@ class _CarteCommande extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(c.partenaireNom),
+            if (c.creeLe case final date?)
+              Text(formatDateHeure(date), style: theme.textTheme.bodySmall),
             const SizedBox(height: 4),
             Row(
               children: [
@@ -170,7 +304,8 @@ class _EcranCommandeDetailState extends ConsumerState<EcranCommandeDetail> {
           .read(ordersRepositoryProvider)
           .transition(commandeId: widget.commandeId, statut: 'annulee');
       ref.invalidate(commandeDetailProvider(id: widget.commandeId));
-      ref.invalidate(commandesProvider());
+      // Toutes les listes (quels que soient recherche et dates).
+      ref.invalidate(commandesProvider);
       messenger.showSnackBar(
         Notificateur.snackSucces('Commande annulée.'),
       );
@@ -360,14 +495,16 @@ class _Vide extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
+      // Défilable pour garder le « tirer pour rafraîchir ».
+      physics: const AlwaysScrollableScrollPhysics(),
       children: [
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.7,
+          height: MediaQuery.of(context).size.height * 0.5,
           child: const Center(
             child: Padding(
               padding: EdgeInsets.all(24),
               child: Text(
-                'Aucune commande pour le moment.',
+                'Aucune commande trouvée',
                 textAlign: TextAlign.center,
               ),
             ),

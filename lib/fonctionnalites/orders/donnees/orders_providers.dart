@@ -17,10 +17,19 @@ Future<List<Panier>> paniers(Ref ref) {
   return ref.watch(ordersRepositoryProvider).paniers();
 }
 
-/// Mes commandes (option filtre statut).
+/// Mes commandes. Filtres optionnels : statut, recherche [q], dates [du] /
+/// [au] (AAAA-MM-JJ).
 @riverpod
-Future<List<Commande>> commandes(Ref ref, {String? statut}) {
-  return ref.watch(ordersRepositoryProvider).commandes(statut: statut);
+Future<List<Commande>> commandes(
+  Ref ref, {
+  String? statut,
+  String? q,
+  String? du,
+  String? au,
+}) {
+  return ref
+      .watch(ordersRepositoryProvider)
+      .commandes(statut: statut, q: q, du: du, au: au);
 }
 
 /// Détail d'une commande par id.

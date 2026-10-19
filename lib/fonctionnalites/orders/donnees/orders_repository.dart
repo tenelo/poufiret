@@ -116,11 +116,23 @@ class OrdersRepository {
     return Commande.fromJson(r.data as Map<String, dynamic>);
   }
 
-  /// GET /orders/commandes/ — mes commandes (option filtre statut).
-  Future<List<Commande>> commandes({String? statut}) async {
+  /// GET /orders/commandes/ — mes commandes. Filtres optionnels : statut,
+  /// recherche [q] (référence, produit, partenaire), dates [du] / [au]
+  /// au format AAAA-MM-JJ.
+  Future<List<Commande>> commandes({
+    String? statut,
+    String? q,
+    String? du,
+    String? au,
+  }) async {
     final r = await _dio.get(
       '${Env.apiPrefix}/orders/commandes/',
-      queryParameters: {if (statut != null) 'statut': statut},
+      queryParameters: {
+        if (statut != null) 'statut': statut,
+        if (q != null && q.isNotEmpty) 'q': q,
+        if (du != null) 'du': du,
+        if (au != null) 'au': au,
+      },
     );
     return (r.data as List)
         .cast<Map<String, dynamic>>()

@@ -271,14 +271,26 @@ class _BarreCouverture extends StatelessWidget {
       leading: Padding(
         padding: const EdgeInsets.all(6),
         child: IconButton.filledTonal(
-          icon: const Icon(Icons.arrow_back),
+          style: IconButton.styleFrom(
+            backgroundColor: Colors.black.withOpacity(0.5),
+          ),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Color.fromARGB(255, 227, 227, 227),
+          ),
           tooltip: 'Retour',
           onPressed: () => Navigator.of(context).maybePop(),
         ),
       ),
       actions: [
         IconButton.filledTonal(
-          icon: const Icon(Icons.info_outline),
+          style: IconButton.styleFrom(
+            backgroundColor: Colors.black.withOpacity(0.5),
+          ),
+          icon: const Icon(
+            Icons.info_outline,
+            color: Color.fromARGB(255, 227, 227, 227),
+          ),
           tooltip: 'Infos',
           onPressed: () => ouvrirFeuilleInfos(context, r),
         ),

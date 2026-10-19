@@ -286,7 +286,8 @@ mixin _$LignePanier {
 
  int get id; int? get article;/// Ligne de menu du jour d'où vient le plat (restaurants).
 @JsonKey(name: 'ligne_menu') int? get ligneMenu;@JsonKey(name: 'article_nom') String get articleNom;@JsonKey(name: 'variante_id') int? get varianteId;@JsonKey(name: 'variante_nom') String get varianteNom; List<SupplementSnapshot> get supplements;/// Options de plat choisies (restaurants) : `{nom, prix_supplement}`.
- List<SupplementSnapshot> get options; int get quantite;@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int get prixUnitaire;@JsonKey(name: 'prix_ligne', fromJson: _versInt) int get prixLigne;@JsonKey(name: 'note_speciale') String get noteSpeciale;
+ List<SupplementSnapshot> get options; int get quantite;@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int get prixUnitaire;@JsonKey(name: 'prix_ligne', fromJson: _versInt) int get prixLigne;@JsonKey(name: 'note_speciale') String get noteSpeciale;/// Photo de l'article (URL absolue), null si aucune.
+ String? get image;
 /// Create a copy of LignePanier
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -299,16 +300,16 @@ $LignePanierCopyWith<LignePanier> get copyWith => _$LignePanierCopyWithImpl<Lign
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LignePanier&&(identical(other.id, id) || other.id == id)&&(identical(other.article, article) || other.article == article)&&(identical(other.ligneMenu, ligneMenu) || other.ligneMenu == ligneMenu)&&(identical(other.articleNom, articleNom) || other.articleNom == articleNom)&&(identical(other.varianteId, varianteId) || other.varianteId == varianteId)&&(identical(other.varianteNom, varianteNom) || other.varianteNom == varianteNom)&&const DeepCollectionEquality().equals(other.supplements, supplements)&&const DeepCollectionEquality().equals(other.options, options)&&(identical(other.quantite, quantite) || other.quantite == quantite)&&(identical(other.prixUnitaire, prixUnitaire) || other.prixUnitaire == prixUnitaire)&&(identical(other.prixLigne, prixLigne) || other.prixLigne == prixLigne)&&(identical(other.noteSpeciale, noteSpeciale) || other.noteSpeciale == noteSpeciale));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LignePanier&&(identical(other.id, id) || other.id == id)&&(identical(other.article, article) || other.article == article)&&(identical(other.ligneMenu, ligneMenu) || other.ligneMenu == ligneMenu)&&(identical(other.articleNom, articleNom) || other.articleNom == articleNom)&&(identical(other.varianteId, varianteId) || other.varianteId == varianteId)&&(identical(other.varianteNom, varianteNom) || other.varianteNom == varianteNom)&&const DeepCollectionEquality().equals(other.supplements, supplements)&&const DeepCollectionEquality().equals(other.options, options)&&(identical(other.quantite, quantite) || other.quantite == quantite)&&(identical(other.prixUnitaire, prixUnitaire) || other.prixUnitaire == prixUnitaire)&&(identical(other.prixLigne, prixLigne) || other.prixLigne == prixLigne)&&(identical(other.noteSpeciale, noteSpeciale) || other.noteSpeciale == noteSpeciale)&&(identical(other.image, image) || other.image == image));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,article,ligneMenu,articleNom,varianteId,varianteNom,const DeepCollectionEquality().hash(supplements),const DeepCollectionEquality().hash(options),quantite,prixUnitaire,prixLigne,noteSpeciale);
+int get hashCode => Object.hash(runtimeType,id,article,ligneMenu,articleNom,varianteId,varianteNom,const DeepCollectionEquality().hash(supplements),const DeepCollectionEquality().hash(options),quantite,prixUnitaire,prixLigne,noteSpeciale,image);
 
 @override
 String toString() {
-  return 'LignePanier(id: $id, article: $article, ligneMenu: $ligneMenu, articleNom: $articleNom, varianteId: $varianteId, varianteNom: $varianteNom, supplements: $supplements, options: $options, quantite: $quantite, prixUnitaire: $prixUnitaire, prixLigne: $prixLigne, noteSpeciale: $noteSpeciale)';
+  return 'LignePanier(id: $id, article: $article, ligneMenu: $ligneMenu, articleNom: $articleNom, varianteId: $varianteId, varianteNom: $varianteNom, supplements: $supplements, options: $options, quantite: $quantite, prixUnitaire: $prixUnitaire, prixLigne: $prixLigne, noteSpeciale: $noteSpeciale, image: $image)';
 }
 
 
@@ -319,7 +320,7 @@ abstract mixin class $LignePanierCopyWith<$Res>  {
   factory $LignePanierCopyWith(LignePanier value, $Res Function(LignePanier) _then) = _$LignePanierCopyWithImpl;
 @useResult
 $Res call({
- int id, int? article,@JsonKey(name: 'ligne_menu') int? ligneMenu,@JsonKey(name: 'article_nom') String articleNom,@JsonKey(name: 'variante_id') int? varianteId,@JsonKey(name: 'variante_nom') String varianteNom, List<SupplementSnapshot> supplements, List<SupplementSnapshot> options, int quantite,@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int prixUnitaire,@JsonKey(name: 'prix_ligne', fromJson: _versInt) int prixLigne,@JsonKey(name: 'note_speciale') String noteSpeciale
+ int id, int? article,@JsonKey(name: 'ligne_menu') int? ligneMenu,@JsonKey(name: 'article_nom') String articleNom,@JsonKey(name: 'variante_id') int? varianteId,@JsonKey(name: 'variante_nom') String varianteNom, List<SupplementSnapshot> supplements, List<SupplementSnapshot> options, int quantite,@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int prixUnitaire,@JsonKey(name: 'prix_ligne', fromJson: _versInt) int prixLigne,@JsonKey(name: 'note_speciale') String noteSpeciale, String? image
 });
 
 
@@ -336,7 +337,7 @@ class _$LignePanierCopyWithImpl<$Res>
 
 /// Create a copy of LignePanier
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? article = freezed,Object? ligneMenu = freezed,Object? articleNom = null,Object? varianteId = freezed,Object? varianteNom = null,Object? supplements = null,Object? options = null,Object? quantite = null,Object? prixUnitaire = null,Object? prixLigne = null,Object? noteSpeciale = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? article = freezed,Object? ligneMenu = freezed,Object? articleNom = null,Object? varianteId = freezed,Object? varianteNom = null,Object? supplements = null,Object? options = null,Object? quantite = null,Object? prixUnitaire = null,Object? prixLigne = null,Object? noteSpeciale = null,Object? image = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,article: freezed == article ? _self.article : article // ignore: cast_nullable_to_non_nullable
@@ -350,7 +351,8 @@ as List<SupplementSnapshot>,quantite: null == quantite ? _self.quantite : quanti
 as int,prixUnitaire: null == prixUnitaire ? _self.prixUnitaire : prixUnitaire // ignore: cast_nullable_to_non_nullable
 as int,prixLigne: null == prixLigne ? _self.prixLigne : prixLigne // ignore: cast_nullable_to_non_nullable
 as int,noteSpeciale: null == noteSpeciale ? _self.noteSpeciale : noteSpeciale // ignore: cast_nullable_to_non_nullable
-as String,
+as String,image: freezed == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -435,10 +437,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int? article, @JsonKey(name: 'ligne_menu')  int? ligneMenu, @JsonKey(name: 'article_nom')  String articleNom, @JsonKey(name: 'variante_id')  int? varianteId, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  List<SupplementSnapshot> options,  int quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int? article, @JsonKey(name: 'ligne_menu')  int? ligneMenu, @JsonKey(name: 'article_nom')  String articleNom, @JsonKey(name: 'variante_id')  int? varianteId, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  List<SupplementSnapshot> options,  int quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale,  String? image)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LignePanier() when $default != null:
-return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.varianteId,_that.varianteNom,_that.supplements,_that.options,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale);case _:
+return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.varianteId,_that.varianteNom,_that.supplements,_that.options,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale,_that.image);case _:
   return orElse();
 
 }
@@ -456,10 +458,10 @@ return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.va
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int? article, @JsonKey(name: 'ligne_menu')  int? ligneMenu, @JsonKey(name: 'article_nom')  String articleNom, @JsonKey(name: 'variante_id')  int? varianteId, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  List<SupplementSnapshot> options,  int quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int? article, @JsonKey(name: 'ligne_menu')  int? ligneMenu, @JsonKey(name: 'article_nom')  String articleNom, @JsonKey(name: 'variante_id')  int? varianteId, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  List<SupplementSnapshot> options,  int quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale,  String? image)  $default,) {final _that = this;
 switch (_that) {
 case _LignePanier():
-return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.varianteId,_that.varianteNom,_that.supplements,_that.options,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale);case _:
+return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.varianteId,_that.varianteNom,_that.supplements,_that.options,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale,_that.image);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -476,10 +478,10 @@ return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.va
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int? article, @JsonKey(name: 'ligne_menu')  int? ligneMenu, @JsonKey(name: 'article_nom')  String articleNom, @JsonKey(name: 'variante_id')  int? varianteId, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  List<SupplementSnapshot> options,  int quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int? article, @JsonKey(name: 'ligne_menu')  int? ligneMenu, @JsonKey(name: 'article_nom')  String articleNom, @JsonKey(name: 'variante_id')  int? varianteId, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  List<SupplementSnapshot> options,  int quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale,  String? image)?  $default,) {final _that = this;
 switch (_that) {
 case _LignePanier() when $default != null:
-return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.varianteId,_that.varianteNom,_that.supplements,_that.options,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale);case _:
+return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.varianteId,_that.varianteNom,_that.supplements,_that.options,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale,_that.image);case _:
   return null;
 
 }
@@ -491,7 +493,7 @@ return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.va
 @JsonSerializable()
 
 class _LignePanier extends LignePanier {
-  const _LignePanier({required this.id, this.article, @JsonKey(name: 'ligne_menu') this.ligneMenu, @JsonKey(name: 'article_nom') this.articleNom = '', @JsonKey(name: 'variante_id') this.varianteId, @JsonKey(name: 'variante_nom') this.varianteNom = '', final  List<SupplementSnapshot> supplements = const <SupplementSnapshot>[], final  List<SupplementSnapshot> options = const <SupplementSnapshot>[], this.quantite = 1, @JsonKey(name: 'prix_unitaire', fromJson: _versInt) this.prixUnitaire = 0, @JsonKey(name: 'prix_ligne', fromJson: _versInt) this.prixLigne = 0, @JsonKey(name: 'note_speciale') this.noteSpeciale = ''}): _supplements = supplements,_options = options,super._();
+  const _LignePanier({required this.id, this.article, @JsonKey(name: 'ligne_menu') this.ligneMenu, @JsonKey(name: 'article_nom') this.articleNom = '', @JsonKey(name: 'variante_id') this.varianteId, @JsonKey(name: 'variante_nom') this.varianteNom = '', final  List<SupplementSnapshot> supplements = const <SupplementSnapshot>[], final  List<SupplementSnapshot> options = const <SupplementSnapshot>[], this.quantite = 1, @JsonKey(name: 'prix_unitaire', fromJson: _versInt) this.prixUnitaire = 0, @JsonKey(name: 'prix_ligne', fromJson: _versInt) this.prixLigne = 0, @JsonKey(name: 'note_speciale') this.noteSpeciale = '', this.image}): _supplements = supplements,_options = options,super._();
   factory _LignePanier.fromJson(Map<String, dynamic> json) => _$LignePanierFromJson(json);
 
 @override final  int id;
@@ -521,6 +523,8 @@ class _LignePanier extends LignePanier {
 @override@JsonKey(name: 'prix_unitaire', fromJson: _versInt) final  int prixUnitaire;
 @override@JsonKey(name: 'prix_ligne', fromJson: _versInt) final  int prixLigne;
 @override@JsonKey(name: 'note_speciale') final  String noteSpeciale;
+/// Photo de l'article (URL absolue), null si aucune.
+@override final  String? image;
 
 /// Create a copy of LignePanier
 /// with the given fields replaced by the non-null parameter values.
@@ -535,16 +539,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LignePanier&&(identical(other.id, id) || other.id == id)&&(identical(other.article, article) || other.article == article)&&(identical(other.ligneMenu, ligneMenu) || other.ligneMenu == ligneMenu)&&(identical(other.articleNom, articleNom) || other.articleNom == articleNom)&&(identical(other.varianteId, varianteId) || other.varianteId == varianteId)&&(identical(other.varianteNom, varianteNom) || other.varianteNom == varianteNom)&&const DeepCollectionEquality().equals(other._supplements, _supplements)&&const DeepCollectionEquality().equals(other._options, _options)&&(identical(other.quantite, quantite) || other.quantite == quantite)&&(identical(other.prixUnitaire, prixUnitaire) || other.prixUnitaire == prixUnitaire)&&(identical(other.prixLigne, prixLigne) || other.prixLigne == prixLigne)&&(identical(other.noteSpeciale, noteSpeciale) || other.noteSpeciale == noteSpeciale));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LignePanier&&(identical(other.id, id) || other.id == id)&&(identical(other.article, article) || other.article == article)&&(identical(other.ligneMenu, ligneMenu) || other.ligneMenu == ligneMenu)&&(identical(other.articleNom, articleNom) || other.articleNom == articleNom)&&(identical(other.varianteId, varianteId) || other.varianteId == varianteId)&&(identical(other.varianteNom, varianteNom) || other.varianteNom == varianteNom)&&const DeepCollectionEquality().equals(other._supplements, _supplements)&&const DeepCollectionEquality().equals(other._options, _options)&&(identical(other.quantite, quantite) || other.quantite == quantite)&&(identical(other.prixUnitaire, prixUnitaire) || other.prixUnitaire == prixUnitaire)&&(identical(other.prixLigne, prixLigne) || other.prixLigne == prixLigne)&&(identical(other.noteSpeciale, noteSpeciale) || other.noteSpeciale == noteSpeciale)&&(identical(other.image, image) || other.image == image));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,article,ligneMenu,articleNom,varianteId,varianteNom,const DeepCollectionEquality().hash(_supplements),const DeepCollectionEquality().hash(_options),quantite,prixUnitaire,prixLigne,noteSpeciale);
+int get hashCode => Object.hash(runtimeType,id,article,ligneMenu,articleNom,varianteId,varianteNom,const DeepCollectionEquality().hash(_supplements),const DeepCollectionEquality().hash(_options),quantite,prixUnitaire,prixLigne,noteSpeciale,image);
 
 @override
 String toString() {
-  return 'LignePanier(id: $id, article: $article, ligneMenu: $ligneMenu, articleNom: $articleNom, varianteId: $varianteId, varianteNom: $varianteNom, supplements: $supplements, options: $options, quantite: $quantite, prixUnitaire: $prixUnitaire, prixLigne: $prixLigne, noteSpeciale: $noteSpeciale)';
+  return 'LignePanier(id: $id, article: $article, ligneMenu: $ligneMenu, articleNom: $articleNom, varianteId: $varianteId, varianteNom: $varianteNom, supplements: $supplements, options: $options, quantite: $quantite, prixUnitaire: $prixUnitaire, prixLigne: $prixLigne, noteSpeciale: $noteSpeciale, image: $image)';
 }
 
 
@@ -555,7 +559,7 @@ abstract mixin class _$LignePanierCopyWith<$Res> implements $LignePanierCopyWith
   factory _$LignePanierCopyWith(_LignePanier value, $Res Function(_LignePanier) _then) = __$LignePanierCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int? article,@JsonKey(name: 'ligne_menu') int? ligneMenu,@JsonKey(name: 'article_nom') String articleNom,@JsonKey(name: 'variante_id') int? varianteId,@JsonKey(name: 'variante_nom') String varianteNom, List<SupplementSnapshot> supplements, List<SupplementSnapshot> options, int quantite,@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int prixUnitaire,@JsonKey(name: 'prix_ligne', fromJson: _versInt) int prixLigne,@JsonKey(name: 'note_speciale') String noteSpeciale
+ int id, int? article,@JsonKey(name: 'ligne_menu') int? ligneMenu,@JsonKey(name: 'article_nom') String articleNom,@JsonKey(name: 'variante_id') int? varianteId,@JsonKey(name: 'variante_nom') String varianteNom, List<SupplementSnapshot> supplements, List<SupplementSnapshot> options, int quantite,@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int prixUnitaire,@JsonKey(name: 'prix_ligne', fromJson: _versInt) int prixLigne,@JsonKey(name: 'note_speciale') String noteSpeciale, String? image
 });
 
 
@@ -572,7 +576,7 @@ class __$LignePanierCopyWithImpl<$Res>
 
 /// Create a copy of LignePanier
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? article = freezed,Object? ligneMenu = freezed,Object? articleNom = null,Object? varianteId = freezed,Object? varianteNom = null,Object? supplements = null,Object? options = null,Object? quantite = null,Object? prixUnitaire = null,Object? prixLigne = null,Object? noteSpeciale = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? article = freezed,Object? ligneMenu = freezed,Object? articleNom = null,Object? varianteId = freezed,Object? varianteNom = null,Object? supplements = null,Object? options = null,Object? quantite = null,Object? prixUnitaire = null,Object? prixLigne = null,Object? noteSpeciale = null,Object? image = freezed,}) {
   return _then(_LignePanier(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,article: freezed == article ? _self.article : article // ignore: cast_nullable_to_non_nullable
@@ -586,7 +590,8 @@ as List<SupplementSnapshot>,quantite: null == quantite ? _self.quantite : quanti
 as int,prixUnitaire: null == prixUnitaire ? _self.prixUnitaire : prixUnitaire // ignore: cast_nullable_to_non_nullable
 as int,prixLigne: null == prixLigne ? _self.prixLigne : prixLigne // ignore: cast_nullable_to_non_nullable
 as int,noteSpeciale: null == noteSpeciale ? _self.noteSpeciale : noteSpeciale // ignore: cast_nullable_to_non_nullable
-as String,
+as String,image: freezed == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -884,7 +889,8 @@ as int,
 /// @nodoc
 mixin _$LigneCommande {
 
- int get id; int? get article;@JsonKey(name: 'nom_article') String get nomArticle;@JsonKey(name: 'variante_nom') String get varianteNom; List<SupplementSnapshot> get supplements; int get quantite;@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int get prixUnitaire;@JsonKey(name: 'prix_ligne', fromJson: _versInt) int get prixLigne;@JsonKey(name: 'note_speciale') String get noteSpeciale;
+ int get id; int? get article;@JsonKey(name: 'nom_article') String get nomArticle;@JsonKey(name: 'variante_nom') String get varianteNom; List<SupplementSnapshot> get supplements; int get quantite;@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int get prixUnitaire;@JsonKey(name: 'prix_ligne', fromJson: _versInt) int get prixLigne;@JsonKey(name: 'note_speciale') String get noteSpeciale;/// Photo de l'article (URL absolue), null si aucune.
+ String? get image;
 /// Create a copy of LigneCommande
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -897,16 +903,16 @@ $LigneCommandeCopyWith<LigneCommande> get copyWith => _$LigneCommandeCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LigneCommande&&(identical(other.id, id) || other.id == id)&&(identical(other.article, article) || other.article == article)&&(identical(other.nomArticle, nomArticle) || other.nomArticle == nomArticle)&&(identical(other.varianteNom, varianteNom) || other.varianteNom == varianteNom)&&const DeepCollectionEquality().equals(other.supplements, supplements)&&(identical(other.quantite, quantite) || other.quantite == quantite)&&(identical(other.prixUnitaire, prixUnitaire) || other.prixUnitaire == prixUnitaire)&&(identical(other.prixLigne, prixLigne) || other.prixLigne == prixLigne)&&(identical(other.noteSpeciale, noteSpeciale) || other.noteSpeciale == noteSpeciale));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LigneCommande&&(identical(other.id, id) || other.id == id)&&(identical(other.article, article) || other.article == article)&&(identical(other.nomArticle, nomArticle) || other.nomArticle == nomArticle)&&(identical(other.varianteNom, varianteNom) || other.varianteNom == varianteNom)&&const DeepCollectionEquality().equals(other.supplements, supplements)&&(identical(other.quantite, quantite) || other.quantite == quantite)&&(identical(other.prixUnitaire, prixUnitaire) || other.prixUnitaire == prixUnitaire)&&(identical(other.prixLigne, prixLigne) || other.prixLigne == prixLigne)&&(identical(other.noteSpeciale, noteSpeciale) || other.noteSpeciale == noteSpeciale)&&(identical(other.image, image) || other.image == image));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,article,nomArticle,varianteNom,const DeepCollectionEquality().hash(supplements),quantite,prixUnitaire,prixLigne,noteSpeciale);
+int get hashCode => Object.hash(runtimeType,id,article,nomArticle,varianteNom,const DeepCollectionEquality().hash(supplements),quantite,prixUnitaire,prixLigne,noteSpeciale,image);
 
 @override
 String toString() {
-  return 'LigneCommande(id: $id, article: $article, nomArticle: $nomArticle, varianteNom: $varianteNom, supplements: $supplements, quantite: $quantite, prixUnitaire: $prixUnitaire, prixLigne: $prixLigne, noteSpeciale: $noteSpeciale)';
+  return 'LigneCommande(id: $id, article: $article, nomArticle: $nomArticle, varianteNom: $varianteNom, supplements: $supplements, quantite: $quantite, prixUnitaire: $prixUnitaire, prixLigne: $prixLigne, noteSpeciale: $noteSpeciale, image: $image)';
 }
 
 
@@ -917,7 +923,7 @@ abstract mixin class $LigneCommandeCopyWith<$Res>  {
   factory $LigneCommandeCopyWith(LigneCommande value, $Res Function(LigneCommande) _then) = _$LigneCommandeCopyWithImpl;
 @useResult
 $Res call({
- int id, int? article,@JsonKey(name: 'nom_article') String nomArticle,@JsonKey(name: 'variante_nom') String varianteNom, List<SupplementSnapshot> supplements, int quantite,@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int prixUnitaire,@JsonKey(name: 'prix_ligne', fromJson: _versInt) int prixLigne,@JsonKey(name: 'note_speciale') String noteSpeciale
+ int id, int? article,@JsonKey(name: 'nom_article') String nomArticle,@JsonKey(name: 'variante_nom') String varianteNom, List<SupplementSnapshot> supplements, int quantite,@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int prixUnitaire,@JsonKey(name: 'prix_ligne', fromJson: _versInt) int prixLigne,@JsonKey(name: 'note_speciale') String noteSpeciale, String? image
 });
 
 
@@ -934,7 +940,7 @@ class _$LigneCommandeCopyWithImpl<$Res>
 
 /// Create a copy of LigneCommande
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? article = freezed,Object? nomArticle = null,Object? varianteNom = null,Object? supplements = null,Object? quantite = null,Object? prixUnitaire = null,Object? prixLigne = null,Object? noteSpeciale = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? article = freezed,Object? nomArticle = null,Object? varianteNom = null,Object? supplements = null,Object? quantite = null,Object? prixUnitaire = null,Object? prixLigne = null,Object? noteSpeciale = null,Object? image = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,article: freezed == article ? _self.article : article // ignore: cast_nullable_to_non_nullable
@@ -945,7 +951,8 @@ as List<SupplementSnapshot>,quantite: null == quantite ? _self.quantite : quanti
 as int,prixUnitaire: null == prixUnitaire ? _self.prixUnitaire : prixUnitaire // ignore: cast_nullable_to_non_nullable
 as int,prixLigne: null == prixLigne ? _self.prixLigne : prixLigne // ignore: cast_nullable_to_non_nullable
 as int,noteSpeciale: null == noteSpeciale ? _self.noteSpeciale : noteSpeciale // ignore: cast_nullable_to_non_nullable
-as String,
+as String,image: freezed == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -1030,10 +1037,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int? article, @JsonKey(name: 'nom_article')  String nomArticle, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  int quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int? article, @JsonKey(name: 'nom_article')  String nomArticle, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  int quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale,  String? image)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LigneCommande() when $default != null:
-return $default(_that.id,_that.article,_that.nomArticle,_that.varianteNom,_that.supplements,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale);case _:
+return $default(_that.id,_that.article,_that.nomArticle,_that.varianteNom,_that.supplements,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale,_that.image);case _:
   return orElse();
 
 }
@@ -1051,10 +1058,10 @@ return $default(_that.id,_that.article,_that.nomArticle,_that.varianteNom,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int? article, @JsonKey(name: 'nom_article')  String nomArticle, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  int quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int? article, @JsonKey(name: 'nom_article')  String nomArticle, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  int quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale,  String? image)  $default,) {final _that = this;
 switch (_that) {
 case _LigneCommande():
-return $default(_that.id,_that.article,_that.nomArticle,_that.varianteNom,_that.supplements,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale);case _:
+return $default(_that.id,_that.article,_that.nomArticle,_that.varianteNom,_that.supplements,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale,_that.image);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1071,10 +1078,10 @@ return $default(_that.id,_that.article,_that.nomArticle,_that.varianteNom,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int? article, @JsonKey(name: 'nom_article')  String nomArticle, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  int quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int? article, @JsonKey(name: 'nom_article')  String nomArticle, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  int quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale,  String? image)?  $default,) {final _that = this;
 switch (_that) {
 case _LigneCommande() when $default != null:
-return $default(_that.id,_that.article,_that.nomArticle,_that.varianteNom,_that.supplements,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale);case _:
+return $default(_that.id,_that.article,_that.nomArticle,_that.varianteNom,_that.supplements,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale,_that.image);case _:
   return null;
 
 }
@@ -1086,7 +1093,7 @@ return $default(_that.id,_that.article,_that.nomArticle,_that.varianteNom,_that.
 @JsonSerializable()
 
 class _LigneCommande implements LigneCommande {
-  const _LigneCommande({required this.id, this.article, @JsonKey(name: 'nom_article') this.nomArticle = '', @JsonKey(name: 'variante_nom') this.varianteNom = '', final  List<SupplementSnapshot> supplements = const <SupplementSnapshot>[], this.quantite = 1, @JsonKey(name: 'prix_unitaire', fromJson: _versInt) this.prixUnitaire = 0, @JsonKey(name: 'prix_ligne', fromJson: _versInt) this.prixLigne = 0, @JsonKey(name: 'note_speciale') this.noteSpeciale = ''}): _supplements = supplements;
+  const _LigneCommande({required this.id, this.article, @JsonKey(name: 'nom_article') this.nomArticle = '', @JsonKey(name: 'variante_nom') this.varianteNom = '', final  List<SupplementSnapshot> supplements = const <SupplementSnapshot>[], this.quantite = 1, @JsonKey(name: 'prix_unitaire', fromJson: _versInt) this.prixUnitaire = 0, @JsonKey(name: 'prix_ligne', fromJson: _versInt) this.prixLigne = 0, @JsonKey(name: 'note_speciale') this.noteSpeciale = '', this.image}): _supplements = supplements;
   factory _LigneCommande.fromJson(Map<String, dynamic> json) => _$LigneCommandeFromJson(json);
 
 @override final  int id;
@@ -1104,6 +1111,8 @@ class _LigneCommande implements LigneCommande {
 @override@JsonKey(name: 'prix_unitaire', fromJson: _versInt) final  int prixUnitaire;
 @override@JsonKey(name: 'prix_ligne', fromJson: _versInt) final  int prixLigne;
 @override@JsonKey(name: 'note_speciale') final  String noteSpeciale;
+/// Photo de l'article (URL absolue), null si aucune.
+@override final  String? image;
 
 /// Create a copy of LigneCommande
 /// with the given fields replaced by the non-null parameter values.
@@ -1118,16 +1127,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LigneCommande&&(identical(other.id, id) || other.id == id)&&(identical(other.article, article) || other.article == article)&&(identical(other.nomArticle, nomArticle) || other.nomArticle == nomArticle)&&(identical(other.varianteNom, varianteNom) || other.varianteNom == varianteNom)&&const DeepCollectionEquality().equals(other._supplements, _supplements)&&(identical(other.quantite, quantite) || other.quantite == quantite)&&(identical(other.prixUnitaire, prixUnitaire) || other.prixUnitaire == prixUnitaire)&&(identical(other.prixLigne, prixLigne) || other.prixLigne == prixLigne)&&(identical(other.noteSpeciale, noteSpeciale) || other.noteSpeciale == noteSpeciale));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LigneCommande&&(identical(other.id, id) || other.id == id)&&(identical(other.article, article) || other.article == article)&&(identical(other.nomArticle, nomArticle) || other.nomArticle == nomArticle)&&(identical(other.varianteNom, varianteNom) || other.varianteNom == varianteNom)&&const DeepCollectionEquality().equals(other._supplements, _supplements)&&(identical(other.quantite, quantite) || other.quantite == quantite)&&(identical(other.prixUnitaire, prixUnitaire) || other.prixUnitaire == prixUnitaire)&&(identical(other.prixLigne, prixLigne) || other.prixLigne == prixLigne)&&(identical(other.noteSpeciale, noteSpeciale) || other.noteSpeciale == noteSpeciale)&&(identical(other.image, image) || other.image == image));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,article,nomArticle,varianteNom,const DeepCollectionEquality().hash(_supplements),quantite,prixUnitaire,prixLigne,noteSpeciale);
+int get hashCode => Object.hash(runtimeType,id,article,nomArticle,varianteNom,const DeepCollectionEquality().hash(_supplements),quantite,prixUnitaire,prixLigne,noteSpeciale,image);
 
 @override
 String toString() {
-  return 'LigneCommande(id: $id, article: $article, nomArticle: $nomArticle, varianteNom: $varianteNom, supplements: $supplements, quantite: $quantite, prixUnitaire: $prixUnitaire, prixLigne: $prixLigne, noteSpeciale: $noteSpeciale)';
+  return 'LigneCommande(id: $id, article: $article, nomArticle: $nomArticle, varianteNom: $varianteNom, supplements: $supplements, quantite: $quantite, prixUnitaire: $prixUnitaire, prixLigne: $prixLigne, noteSpeciale: $noteSpeciale, image: $image)';
 }
 
 
@@ -1138,7 +1147,7 @@ abstract mixin class _$LigneCommandeCopyWith<$Res> implements $LigneCommandeCopy
   factory _$LigneCommandeCopyWith(_LigneCommande value, $Res Function(_LigneCommande) _then) = __$LigneCommandeCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int? article,@JsonKey(name: 'nom_article') String nomArticle,@JsonKey(name: 'variante_nom') String varianteNom, List<SupplementSnapshot> supplements, int quantite,@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int prixUnitaire,@JsonKey(name: 'prix_ligne', fromJson: _versInt) int prixLigne,@JsonKey(name: 'note_speciale') String noteSpeciale
+ int id, int? article,@JsonKey(name: 'nom_article') String nomArticle,@JsonKey(name: 'variante_nom') String varianteNom, List<SupplementSnapshot> supplements, int quantite,@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int prixUnitaire,@JsonKey(name: 'prix_ligne', fromJson: _versInt) int prixLigne,@JsonKey(name: 'note_speciale') String noteSpeciale, String? image
 });
 
 
@@ -1155,7 +1164,7 @@ class __$LigneCommandeCopyWithImpl<$Res>
 
 /// Create a copy of LigneCommande
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? article = freezed,Object? nomArticle = null,Object? varianteNom = null,Object? supplements = null,Object? quantite = null,Object? prixUnitaire = null,Object? prixLigne = null,Object? noteSpeciale = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? article = freezed,Object? nomArticle = null,Object? varianteNom = null,Object? supplements = null,Object? quantite = null,Object? prixUnitaire = null,Object? prixLigne = null,Object? noteSpeciale = null,Object? image = freezed,}) {
   return _then(_LigneCommande(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,article: freezed == article ? _self.article : article // ignore: cast_nullable_to_non_nullable
@@ -1166,7 +1175,8 @@ as List<SupplementSnapshot>,quantite: null == quantite ? _self.quantite : quanti
 as int,prixUnitaire: null == prixUnitaire ? _self.prixUnitaire : prixUnitaire // ignore: cast_nullable_to_non_nullable
 as int,prixLigne: null == prixLigne ? _self.prixLigne : prixLigne // ignore: cast_nullable_to_non_nullable
 as int,noteSpeciale: null == noteSpeciale ? _self.noteSpeciale : noteSpeciale // ignore: cast_nullable_to_non_nullable
-as String,
+as String,image: freezed == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

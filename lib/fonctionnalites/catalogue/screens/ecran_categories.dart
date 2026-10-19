@@ -399,7 +399,7 @@ class _TuileCategorie extends StatelessWidget {
       alignment: Alignment.topLeft,
       child: Text(
         categorie.icone.isNotEmpty ? categorie.icone : '📦',
-        style: const TextStyle(fontSize: 40, height: 1),
+        style: const TextStyle(fontSize: 60, height: 1),
       ),
     );
     return Material(

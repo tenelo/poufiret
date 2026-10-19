@@ -57,17 +57,30 @@ abstract class LignePanier with _$LignePanier {
     int prixUnitaire,
     @JsonKey(name: 'prix_ligne', fromJson: _versInt) @Default(0) int prixLigne,
     @JsonKey(name: 'note_speciale') @Default('') String noteSpeciale,
+
+    /// Photo de l'article (URL absolue), null si aucune.
+    String? image,
   }) = _LignePanier;
 
   const LignePanier._();
+
+  /// Options et suppléments choisis, chacun une seule fois : le serveur
+  /// peut renvoyer une même option dans `options` et dans `supplements`
+  /// (identifiants de natures différentes : on compare nom et prix).
+  List<SupplementSnapshot> get choix {
+    final vus = <String>{};
+    return [
+      for (final o in [...options, ...supplements])
+        if (o.nom.isNotEmpty && vus.add('${o.nom}|${o.prix}')) o,
+    ];
+  }
 
   /// Variante et options de la ligne, à afficher après le nom du plat :
   /// « Demi · Alloco (+1 000 F) ». Vide pour un article simple.
   String get detailChoix => [
     if (varianteNom.isNotEmpty) varianteNom,
-    for (final o in [...options, ...supplements])
-      if (o.nom.isNotEmpty)
-        o.prix > 0 ? '${o.nom} (${formatSupplement(o.prix)})' : o.nom,
+    for (final o in choix)
+      o.prix > 0 ? '${o.nom} (${formatSupplement(o.prix)})' : o.nom,
   ].join(' · ');
 
   factory LignePanier.fromJson(Map<String, dynamic> json) =>
@@ -105,6 +118,9 @@ abstract class LigneCommande with _$LigneCommande {
     int prixUnitaire,
     @JsonKey(name: 'prix_ligne', fromJson: _versInt) @Default(0) int prixLigne,
     @JsonKey(name: 'note_speciale') @Default('') String noteSpeciale,
+
+    /// Photo de l'article (URL absolue), null si aucune.
+    String? image,
   }) = _LigneCommande;
 
   factory LigneCommande.fromJson(Map<String, dynamic> json) =>
@@ -169,6 +185,9 @@ abstract class Commande with _$Commande {
   String get modePaiementLibelle =>
       const {'cash': 'Espèces', 'mobile_money': 'Mobile Money'}[modePaiement] ??
       modePaiement;
+
+  /// Date de création, à l'heure locale (null si absente ou illisible).
+  DateTime? get creeLe => DateTime.tryParse(createdAt ?? '')?.toLocal();
 
   /// Le client ne peut annuler qu'une commande encore "nouvelle".
   bool get peutAnnuler => statut == 'nouvelle';

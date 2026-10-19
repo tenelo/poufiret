@@ -11,7 +11,6 @@ import '../../fonctionnalites/publicites/screens/ecran_publicites.dart';
 import '../../fonctionnalites/livraison/screens/ecran_livraison.dart';
 import '../../fonctionnalites/map/screens/ecran_map.dart';
 
-
 /// Coquille principale : héberge les onglets et bascule entre
 /// barre basse (mobile) et rail latéral (tablette / web) selon la largeur.
 class AppShell extends ConsumerStatefulWidget {
@@ -104,9 +103,10 @@ class _AppShellState extends ConsumerState<AppShell> {
         return Scaffold(
           body: body,
           bottomNavigationBar: SafeArea(
-            minimum: const EdgeInsets.only(bottom: 10),
+            // Evite que la barre basse chevauche le bandeau hors-ligne.
+            minimum: const EdgeInsets.only(bottom: 5),
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(14, 4, 14, 0),
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 0),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   color: Config.couleurSurface,
@@ -120,6 +120,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                     context: context,
                     removeBottom: true,
                     child: NavigationBar(
+                      height: 62,
                       backgroundColor: Colors.transparent,
                       selectedIndex: _index,
                       onDestinationSelected: _onTap,
