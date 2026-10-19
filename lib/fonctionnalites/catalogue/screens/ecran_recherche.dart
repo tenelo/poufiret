@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../widgets/prix_promo.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show ProviderListenable;
 
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
@@ -16,6 +17,8 @@ import '../../../global/widgets/image_reseau.dart';
 import '../../auth/widgets/mur_inscription.dart';
 import '../../auth/screens/auth_notifier.dart';
 import '../../../global/ui/notificateur.dart';
+import '../../restaurants/donnees/restaurants_providers.dart';
+import '../../restaurants/metier_domaine/restaurant_models.dart';
 import '../../restaurants/screens/ecran_restaurant.dart';
 import '../../restaurants/widgets/feuille_plat.dart';
 import '../metier_domaine/article_detail.dart';
@@ -300,69 +303,171 @@ class _LigneArticle extends ConsumerStatefulWidget {
   ConsumerState<_LigneArticle> createState() => _LigneArticleState();
 }
 
+/// Où ajouter un plat trouvé par la recherche : la carte du restaurant, ou
+/// une ligne de ses menus du jour (plat réservé aux menus, absent de la
+/// carte publique). null : ni l'un ni l'autre aujourd'hui.
+@visibleForTesting
+({int? platId, int? ligneId})? cibleAjoutPlat(Restaurant r, int platId) {
+  if (r.platParId(platId) != null) return (platId: platId, ligneId: null);
+  final lignes = [
+    for (final m in r.menus)
+      for (final l in m.lignes)
+        if (l.platId == platId) (menu: m, ligne: l),
+  ];
+  if (lignes.isEmpty) return null;
+  // De préférence la ligne d'un menu en vigueur en ce moment.
+  final choisie =
+      lignes
+          .where((t) => r.servicesEnVigueur.contains(t.menu.service))
+          .firstOrNull ??
+      lignes.first;
+  return (platId: null, ligneId: choisie.ligne.id);
+}
+
 class _LigneArticleState extends ConsumerState<_LigneArticle> {
   bool _chargement = false;
 
-  /// Fiche détaillée (cache d'abord) : elle seule dit s'il s'agit d'un plat
-  /// et chez quel partenaire.
-  Future<ArticleDetail?> _detail() async {
-    if (_chargement) return null;
-    setState(() => _chargement = true);
+  /// Au-delà, le chargement est abandonné avec un message.
+  static const _delaiMax = Duration(seconds: 10);
+
+  /// Lit un provider « cache d'abord » en l'écoutant le temps de l'attente.
+  /// Riverpod met en pause un flux que personne n'écoute : un simple
+  /// `ref.read(... .future)` peut alors ne jamais aboutir.
+  Future<T> _lire<T>(
+    ProviderListenable<Object?> provider,
+    Future<T> Function() valeur,
+  ) async {
+    final abonnement = ref.listenManual(provider, (_, _) {});
     try {
-      return await ref.read(
-        articleDetailProvider(slug: widget.article.slug).future,
-      );
-    } catch (e) {
-      if (mounted) {
-        Notificateur.erreur(
-          context,
-          e is ApiException ? e.messageLisible : 'Erreur de chargement.',
-        );
-      }
-      return null;
+      return await valeur().timeout(_delaiMax);
     } finally {
-      if (mounted) setState(() => _chargement = false);
+      abonnement.close();
     }
+  }
+
+  /// Fiche détaillée : elle seule dit s'il s'agit d'un plat et chez quel
+  /// partenaire.
+  Future<ArticleDetail> _detail() {
+    final provider = articleDetailProvider(slug: widget.article.slug);
+    return _lire(provider, () => ref.read(provider.future));
   }
 
   static bool _estPlat(ArticleDetail d) =>
       d.type == 'plat' && d.partenaire != null;
 
-  Future<void> _ajouter() async {
-    final detail = await _detail();
-    if (detail == null || !mounted) return;
-    if (_estPlat(detail)) {
-      await ouvrirFeuillePlat(
-        context,
-        restaurantId: detail.partenaire!,
-        platId: detail.id,
-      );
-      return;
-    }
-    // Autre produit : la fiche produit, avec le mode de sa catégorie (son
-    // bouton « Commander » ajoute au panier).
-    String mode = '';
+  static String _messageEchec(Object e) => e is TimeoutException
+      ? 'Le chargement prend trop de temps. Réessayez.'
+      : messageErreurApi(
+          e,
+          repli: 'Impossible de charger ce produit. Réessayez.',
+        );
+
+  /// Exécute [etape] avec l'indicateur de chargement, qui s'arrête toujours.
+  /// En cas d'échec : message clair et accès au partenaire.
+  Future<void> _avecChargement(Future<void> Function() etape) async {
+    if (_chargement) return;
+    setState(() => _chargement = true);
+    Object? echec;
     try {
-      final categories = await ref.read(categoriesProvider.future);
-      mode = categories.feuilles
-              .where((c) => c.id == detail.categorie)
-              .firstOrNull
-              ?.modeTransaction ??
-          '';
-    } catch (_) {
-      // Catégories indisponibles : fiche en mode « Contacter ».
+      await etape();
+    } catch (e) {
+      echec = e;
+    } finally {
+      if (mounted) setState(() => _chargement = false);
     }
-    if (!mounted) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) =>
-            EcranArticleDetail(slug: detail.slug, modeTransaction: mode),
+    if (echec != null && mounted) {
+      Notificateur.erreur(
+        context,
+        _messageEchec(echec),
+        action: SnackBarAction(
+          label: 'Voir le partenaire',
+          onPressed: () => _siConnecte(_voirPartenaire),
+        ),
+      );
+    }
+  }
+
+  Future<void> _ajouter() async {
+    // Ce qu'il faut ouvrir, décidé pendant le chargement, fait après.
+    Future<void> Function()? suite;
+    await _avecChargement(() async {
+      final detail = await _detail();
+      if (_estPlat(detail)) {
+        final restaurantId = detail.partenaire!;
+        final provider = restaurantDetailProvider(id: restaurantId);
+        final restaurant = await _lire(
+          provider,
+          () => ref.read(provider.future),
+        );
+        final cible = cibleAjoutPlat(restaurant, detail.id);
+        suite = cible == null
+            ? () async => _platHorsMenu(
+                restaurantId,
+                restaurant.nom.isNotEmpty
+                    ? restaurant.nom
+                    : detail.partenaireNom,
+              )
+            : () => ouvrirFeuillePlat(
+                context,
+                restaurantId: restaurantId,
+                platId: cible.platId,
+                ligneId: cible.ligneId,
+              );
+        return;
+      }
+      // Autre produit : la fiche produit, avec le mode de sa catégorie (son
+      // bouton « Commander » ajoute au panier).
+      String mode = '';
+      try {
+        final categories = await _lire(
+          categoriesProvider,
+          () => ref.read(categoriesProvider.future),
+        );
+        mode =
+            categories.feuilles
+                .where((c) => c.id == detail.categorie)
+                .firstOrNull
+                ?.modeTransaction ??
+            '';
+      } catch (_) {
+        // Catégories indisponibles : fiche en mode « Contacter ».
+      }
+      suite = () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) =>
+              EcranArticleDetail(slug: detail.slug, modeTransaction: mode),
+        ),
+      );
+    });
+    if (mounted) await suite?.call();
+  }
+
+  /// Plat ni à la carte ni dans un menu du jour publié aujourd'hui.
+  void _platHorsMenu(int restaurantId, String nom) {
+    Notificateur.info(
+      context,
+      'Ce plat est proposé uniquement dans le menu du jour de $nom.',
+      action: SnackBarAction(
+        label: 'Voir le restaurant',
+        onPressed: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => EcranRestaurant(
+              restaurantId: restaurantId,
+              nom: nom,
+              siIntrouvable: EcranVitrinePartenaire(
+                partenaireId: restaurantId,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
   Future<void> _voirPartenaire() async {
-    final detail = await _detail();
+    ArticleDetail? lu;
+    await _avecChargement(() async => lu = await _detail());
+    final detail = lu;
     final id = detail?.partenaire;
     if (detail == null || id == null || !mounted) return;
     await Navigator.of(context).push(

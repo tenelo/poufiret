@@ -43,7 +43,9 @@ class _EcranDiscussionState extends ConsumerState<EcranDiscussion> {
     // 1) Historique REST (une fois).
     try {
       final histo = await ref.read(
-        historiqueMessagesProvider(conversationId: widget.conversationId).future,
+        historiqueMessagesProvider(
+          conversationId: widget.conversationId,
+        ).future,
       );
       _messages.addAll(histo);
     } catch (_) {
@@ -78,6 +80,7 @@ class _EcranDiscussionState extends ConsumerState<EcranDiscussion> {
     final monId = ref.read(monUtilisateurIdProvider);
     if (monId != null && !m.estDeMoi(monId)) _socket?.marquerLu();
   }
+
   void _surMessagesLus(List<int> ids) {
     if (!mounted || ids.isEmpty) return;
     setState(() {
@@ -126,9 +129,7 @@ class _EcranDiscussionState extends ConsumerState<EcranDiscussion> {
       body: Column(
         children: [
           if (_etat == EtatSocket.refuse)
-            const _Bandeau(
-              texte: 'Connexion impossible à cette conversation.',
-            ),
+            const _Bandeau(texte: 'Connexion impossible à cette conversation.'),
           Expanded(
             child: !_historiqueCharge
                 ? const Center(child: CircularProgressIndicator())
@@ -146,8 +147,8 @@ class _EcranDiscussionState extends ConsumerState<EcranDiscussion> {
                             itemCount: _messages.length,
                             itemBuilder: (context, i) => _Bulle(
                               message: _messages[i],
-                              estDeMoi: monId != null &&
-                                  _messages[i].estDeMoi(monId),
+                              estDeMoi:
+                                  monId != null && _messages[i].estDeMoi(monId),
                             ),
                           ),
                         ),
@@ -255,6 +256,17 @@ class _Saisie extends StatelessWidget {
             IconButton.filled(
               onPressed: actif ? onEnvoyer : null,
               icon: const Icon(Icons.send),
+              style: IconButton.styleFrom(
+                backgroundColor: const Color.fromARGB(
+                  197,
+                  246,
+                  170,
+                  47,
+                ), // fond du rond
+                foregroundColor: const Color(
+                  0xFF0F2038,
+                ), // couleur de la flèche
+              ),
             ),
           ],
         ),
