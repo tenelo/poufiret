@@ -295,6 +295,8 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
                         RadioListTile<int>(
                           value: v.id,
                           dense: true,
+                          // Variante épuisée : grisée, non sélectionnable.
+                          enabled: !v.epuisee,
                           title: Text(v.nom),
                           secondary: Text(
                             formatMontant(prixVariante(plat, v)),
@@ -320,83 +322,86 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
             ],
           ),
         ),
-        const Divider(height: 1),
-        SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Refus du serveur en priorité, sinon ce qu'il reste à choisir.
-                if (_erreur != null || (motif == null && erreurChoix != null))
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      _erreur ?? erreurChoix!,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: _erreur != null
-                            ? Config.couleurErreur
-                            : Config.couleurTexteSecondaire,
-                        fontWeight: FontWeight.w600,
+        // Non commandable : la fiche reste consultable, sans ajout.
+        if (plat.commandable) ...[
+          const Divider(height: 1),
+          SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Refus du serveur en priorité, sinon ce qu'il reste à choisir.
+                  if (_erreur != null || (motif == null && erreurChoix != null))
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        _erreur ?? erreurChoix!,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: _erreur != null
+                              ? Config.couleurErreur
+                              : Config.couleurTexteSecondaire,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
-                Row(
-                  children: [
-                    IconButton(
-                      tooltip: 'Moins',
-                      onPressed: motif == null && quantite > 1
-                          ? () => setState(() => _quantite = quantite - 1)
-                          : null,
-                      icon: const Icon(Icons.remove_circle_outline),
-                    ),
-                    Text('$quantite', style: theme.textTheme.titleMedium),
-                    IconButton(
-                      tooltip: 'Plus',
-                      // Menu du jour : jamais plus que le stock restant.
-                      onPressed:
-                          motif == null && (stock == null || quantite < stock)
-                          ? () => setState(() => _quantite = quantite + 1)
-                          : null,
-                      icon: const Icon(Icons.add_circle_outline),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: FilledButton(
-                        onPressed: peutAjouter
-                            ? () => _ajouter(
-                                plat: plat,
-                                ligne: ligne,
-                                variante: variante,
-                                quantite: quantite,
-                              )
+                  Row(
+                    children: [
+                      IconButton(
+                        tooltip: 'Moins',
+                        onPressed: motif == null && quantite > 1
+                            ? () => setState(() => _quantite = quantite - 1)
                             : null,
-                        child: _envoi
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(
-                                motif != null
-                                    ? 'Indisponible'
-                                    : 'Ajouter au panier · '
-                                          '${formatMontant(total)}',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                        icon: const Icon(Icons.remove_circle_outline),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      Text('$quantite', style: theme.textTheme.titleMedium),
+                      IconButton(
+                        tooltip: 'Plus',
+                        // Menu du jour : jamais plus que le stock restant.
+                        onPressed:
+                            motif == null && (stock == null || quantite < stock)
+                            ? () => setState(() => _quantite = quantite + 1)
+                            : null,
+                        icon: const Icon(Icons.add_circle_outline),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: FilledButton(
+                          onPressed: peutAjouter
+                              ? () => _ajouter(
+                                  plat: plat,
+                                  ligne: ligne,
+                                  variante: variante,
+                                  quantite: quantite,
+                                )
+                              : null,
+                          child: _envoi
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(
+                                  motif != null
+                                      ? 'Indisponible'
+                                      : 'Ajouter au panier · '
+                                            '${formatMontant(total)}',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ],
     );
   }

@@ -23,6 +23,12 @@ _PartenaireCategorie _$PartenaireCategorieFromJson(Map<String, dynamic> json) =>
       secteur: json['secteur'] as String? ?? '',
       localiteNom: json['localite_nom'] as String?,
       quartierNom: json['quartier_nom'] as String?,
+      gabarit: json['gabarit'] as String? ?? '',
+      typesPartenaire:
+          (_lireTypes(json, 'typesPartenaire') as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const <String>[],
     );
 
 Map<String, dynamic> _$PartenaireCategorieToJson(
@@ -43,4 +49,6 @@ Map<String, dynamic> _$PartenaireCategorieToJson(
   'secteur': instance.secteur,
   'localite_nom': instance.localiteNom,
   'quartier_nom': instance.quartierNom,
+  'gabarit': instance.gabarit,
+  'typesPartenaire': instance.typesPartenaire,
 };

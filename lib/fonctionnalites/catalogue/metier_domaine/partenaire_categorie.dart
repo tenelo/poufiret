@@ -5,6 +5,15 @@ import '../../geo/metier_domaine/localisation.dart' as geo;
 part 'partenaire_categorie.freezed.dart';
 part 'partenaire_categorie.g.dart';
 
+/// Type(s) de partenaire de la carte : `type_partenaire` (texte ou liste),
+/// ou `types_partenaire`.
+Object? _lireTypes(Map<dynamic, dynamic> json, String _) {
+  final brut = json['type_partenaire'] ?? json['types_partenaire'];
+  if (brut is List) return [for (final t in brut) if (t != null) '$t'];
+  if (brut is String && brut.isNotEmpty) return [brut];
+  return const <String>[];
+}
+
 /// Prestataire/commerce listé dans l'annuaire d'une catégorie.
 @freezed
 abstract class PartenaireCategorie with _$PartenaireCategorie {
@@ -27,6 +36,12 @@ abstract class PartenaireCategorie with _$PartenaireCategorie {
     // ci-dessus sont les anciens textes, gardes en repli.
     @JsonKey(name: 'localite_nom') String? localiteNom,
     @JsonKey(name: 'quartier_nom') String? quartierNom,
+
+    /// Gabarit de page dédiée (« pharmacie », « mode »...) ; vide sinon.
+    @Default('') String gabarit,
+    @JsonKey(readValue: _lireTypes)
+    @Default(<String>[])
+    List<String> typesPartenaire,
   }) = _PartenaireCategorie;
 
   const PartenaireCategorie._();

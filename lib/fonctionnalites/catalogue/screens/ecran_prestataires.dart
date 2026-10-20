@@ -14,6 +14,8 @@ import 'package:poufiret/fonctionnalites/chat/screens/ecran_discussion.dart';
 import '../../../global/widgets/image_reseau.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../auth/widgets/mur_inscription.dart';
+import '../../commerces/metier_domaine/gabarits.dart';
+import '../../commerces/screens/page_gabarit.dart';
 import '../../geo/widgets/filtre_localites.dart';
 import '../../locations/metier_domaine/location_models.dart';
 import '../../locations/screens/ecran_loueur.dart';
@@ -78,8 +80,8 @@ class ContenuPrestataires extends ConsumerWidget {
 
   /// Types de partenaire de la categorie. L'affichage est le meme pour
   /// toutes ; seul l'ecran ouvert par une tuile en depend (un restaurant
-  /// ouvre sa page avec menu du jour et carte, un loueur ses logements ou
-  /// ses vehicules).
+  /// ouvre sa page avec menu du jour et carte, une pharmacie son catalogue,
+  /// un loueur ses logements ou ses vehicules).
   final List<String> typesPartenaire;
   final int categorieId;
   final String categorieNom;
@@ -149,13 +151,28 @@ class ContenuPrestataires extends ConsumerWidget {
                           apercu: prestataire,
                         );
                   final location = typeLocation(typesPartenaire);
+                  // Gabarit de la carte, sinon deduit du type du partenaire
+                  // ou de la categorie (fast-food, boulangerie, pharmacie,
+                  // mode, librairie).
+                  final gabarit = gabaritPartenaire(
+                    gabarit: prestataire.gabarit,
+                    typesPartenaire: prestataire.typesPartenaire,
+                    typesCategorie: typesPartenaire,
+                  );
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      // Restaurateur ou loueur (logements, vehicules) : sa
-                      // page dediee. Un partenaire de la categorie que le
+                      // Commerce a gabarit ou loueur (logements, vehicules) :
+                      // sa page dediee. Un partenaire de la categorie que le
                       // serveur ne connait pas sous ce type garde sa fiche
                       // habituelle.
-                      builder: (_) => estRestauration(typesPartenaire)
+                      builder: (_) => gabarit != null
+                          ? pageGabarit(
+                              gabarit,
+                              commerceId: prestataire.id,
+                              nom: prestataire.nomCommerce,
+                              siIntrouvable: fiche,
+                            )
+                          : estRestauration(typesPartenaire)
                           ? EcranRestaurant(
                               restaurantId: prestataire.id,
                               nom: prestataire.nomCommerce,
