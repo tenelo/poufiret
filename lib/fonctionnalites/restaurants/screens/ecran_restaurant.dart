@@ -24,6 +24,12 @@ import '../widgets/carte_restaurant.dart';
 import '../widgets/feuille_infos_restaurant.dart';
 import '../widgets/feuille_plat.dart';
 import '../widgets/tuile_plat.dart';
+import '../../commerces/metier_domaine/catalogue_commerce.dart';
+import '../../commerces/metier_domaine/fiche_produit.dart';
+import '../../commerces/metier_domaine/gabarits.dart';
+import '../../commerces/screens/ecran_produit.dart';
+import '../../commerces/widgets/liste_produits_paginee.dart';
+import '../../commerces/widgets/tuiles_produits.dart';
 
 /// Largeur maximale du contenu sur grand écran.
 const double _largeurContenu = 700;
@@ -32,15 +38,20 @@ const double _largeurContenu = 700;
 const int _seuilStockBas = 5;
 
 /// Page d'un restaurant : en-tête, menu du jour, carte par sections.
+///
+/// En [grille] (boulangerie), un rayon à la fois : les onglets changent de
+/// rayon au lieu de faire défiler, et les produits sont en grille 2 colonnes.
 class EcranRestaurant extends ConsumerWidget {
   const EcranRestaurant({
     super.key,
     required this.restaurantId,
     this.nom = '',
     this.siIntrouvable,
+    this.grille = false,
   });
 
   final int restaurantId;
+  final bool grille;
 
   /// Nom déjà connu de l'écran précédent, affiché pendant le chargement.
   final String nom;
@@ -75,15 +86,17 @@ class EcranRestaurant extends ConsumerWidget {
                   onReessayer: () => ref.invalidate(provider),
                 ),
               ),
-          data: (restaurant) => _PageRestaurant(restaurant: restaurant),
+          data: (restaurant) =>
+              _PageRestaurant(restaurant: restaurant, grille: grille),
         );
   }
 }
 
 class _PageRestaurant extends ConsumerStatefulWidget {
-  const _PageRestaurant({required this.restaurant});
+  const _PageRestaurant({required this.restaurant, this.grille = false});
 
   final Restaurant restaurant;
+  final bool grille;
 
   @override
   ConsumerState<_PageRestaurant> createState() => _PageRestaurantState();
@@ -133,6 +146,8 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
 
   /// Onglet actif = dernière section dont l'en-tête a atteint le haut.
   void _suivreDefilement() {
+    // En grille, l'onglet ne suit pas le défilement : il choisit le rayon.
+    if (widget.grille) return;
     if (_defilementParTap || !_defilement.hasClients) return;
     final position = _defilement.position;
     var active = 0;
@@ -151,6 +166,10 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
   }
 
   Future<void> _allerASection(int index) async {
+    if (widget.grille) {
+      setState(() => _sectionActive = index);
+      return;
+    }
     final position = _positionSection(_sections[index]);
     if (position == null) return;
     setState(() => _sectionActive = index);
@@ -161,6 +180,74 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
       curve: Curves.easeOut,
     );
     _defilementParTap = false;
+  }
+
+  /// Grille d'un seul rayon (ou des résultats de recherche). Rayon sans
+  /// produits joints (pagination publique) : chargé page par page.
+  List<Widget> _rayonEnGrille(
+    Restaurant r,
+    List<SectionCarte> sections,
+    int active,
+    EdgeInsets marge,
+  ) {
+    final enRecherche = _recherche.trim().isNotEmpty;
+    Widget tuile(Plat p, VoidCallback onTap) => TuileGrilleProduit(
+      key: ValueKey(p.id),
+      produit: p,
+      mention: p.mentionSurCommande,
+      icone: Icons.bakery_dining_outlined,
+      onTap: onTap,
+    );
+    if (r.paginationPublique) {
+      final rayon = r.carte.isEmpty
+          ? null
+          : r.carte[_sectionActive.clamp(0, r.carte.length - 1)];
+      final requete = RequeteProduits(
+        commerceId: r.id,
+        sectionId: enRecherche ? null : rayon?.id,
+        recherche: _recherche,
+      );
+      return [
+        SliverPadding(
+          padding: marge,
+          sliver: SliverProduitsPagines(
+            key: ValueKey(requete.cle),
+            requete: requete,
+            presentation: Presentation.grille,
+            tuile: (context, p) => tuile(
+              p,
+              () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => EcranProduit(
+                    produitId: p.id,
+                    gabarit: Gabarit.boulangerie,
+                    titre: p.nom,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ];
+    }
+    final plats = enRecherche
+        ? [for (final s in sections) ...s.plats]
+        : sections.isEmpty
+        ? const <Plat>[]
+        : sections[active].plats;
+    return [
+      SliverPadding(
+        padding: marge.add(const EdgeInsets.fromLTRB(12, 12, 12, 0)),
+        sliver: SliverLayoutBuilder(
+          builder: (context, contraintes) => SliverGrid.builder(
+            gridDelegate: grilleProduits(context, contraintes.crossAxisExtent),
+            itemCount: plats.length,
+            itemBuilder: (context, i) =>
+                tuile(plats[i], () => _ouvrirPlat(platId: plats[i].id)),
+          ),
+        ),
+      ),
+    ];
   }
 
   void _ouvrirPlat({int? platId, int? ligneId}) => ouvrirFeuillePlat(
@@ -174,11 +261,15 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
   Widget build(BuildContext context) {
     final r = widget.restaurant;
     final enRecherche = _recherche.trim().isNotEmpty;
-    final sections = [
-      for (final s in r.carte)
-        if (filtrerPlats(s.plats, _recherche).isNotEmpty)
-          s.copyWith(plats: filtrerPlats(s.plats, _recherche)),
-    ];
+    // Rayons chargés page par page : la recherche passe par le serveur.
+    final pagine = widget.grille && r.paginationPublique;
+    final sections = pagine
+        ? r.carte
+        : [
+            for (final s in r.carte)
+              if (filtrerPlats(s.plats, _recherche).isNotEmpty)
+                s.copyWith(plats: filtrerPlats(s.plats, _recherche)),
+          ];
     _sections = sections;
     final active = sections.isEmpty
         ? 0
@@ -228,36 +319,42 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                       marge: marge,
                       champRecherche: _champRecherche,
                       onRecherche: (v) => setState(() => _recherche = v),
-                      libelles: [for (final s in sections) s.nom],
+                      // Grille en recherche : résultats de tous les rayons.
+                      libelles: widget.grille && enRecherche
+                          ? const []
+                          : [for (final s in sections) s.nom],
                       sectionActive: active,
                       onSection: _allerASection,
                     ),
                   ),
-                for (final section in sections) ...[
-                  SliverPadding(
-                    padding: marge,
-                    sliver: SliverToBoxAdapter(
-                      child: _TitreSection(
-                        key: _cles.putIfAbsent(section.id, GlobalKey.new),
-                        section: section,
+                if (widget.grille)
+                  ..._rayonEnGrille(r, sections, active, marge)
+                else
+                  for (final section in sections) ...[
+                    SliverPadding(
+                      padding: marge,
+                      sliver: SliverToBoxAdapter(
+                        child: _TitreSection(
+                          key: _cles.putIfAbsent(section.id, GlobalKey.new),
+                          section: section,
+                        ),
                       ),
                     ),
-                  ),
-                  SliverPadding(
-                    padding: marge,
-                    // Toutes les lignes ont la hauteur du gabarit : les
-                    // plats hors écran ne sont pas construits, et la
-                    // position de chaque section reste exacte.
-                    sliver: SliverPrototypeExtentList.builder(
-                      prototypeItem: TuilePlat.gabarit,
-                      itemCount: section.plats.length,
-                      itemBuilder: (context, i) => _TuilePlatCarte(
-                        plat: section.plats[i],
-                        onTap: () => _ouvrirPlat(platId: section.plats[i].id),
+                    SliverPadding(
+                      padding: marge,
+                      // Toutes les lignes ont la hauteur du gabarit : les
+                      // plats hors écran ne sont pas construits, et la
+                      // position de chaque section reste exacte.
+                      sliver: SliverPrototypeExtentList.builder(
+                        prototypeItem: TuilePlat.gabarit,
+                        itemCount: section.plats.length,
+                        itemBuilder: (context, i) => _TuilePlatCarte(
+                          plat: section.plats[i],
+                          onTap: () => _ouvrirPlat(platId: section.plats[i].id),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
                 if (r.carte.isNotEmpty && sections.isEmpty)
                   const SliverToBoxAdapter(
                     child: Padding(

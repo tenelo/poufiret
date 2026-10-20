@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PartenaireCategorie {
 
- int get id;@JsonKey(name: 'nom_commerce') String get nomCommerce; String get description; String get logo;@JsonKey(name: 'photo_couverture') String get photoCouverture; String get departement; String get region; double? get latitude; double? get longitude; String get adresse; String get quartier; String get ville; String get secteur;@JsonKey(name: 'localite_nom') String? get localiteNom;@JsonKey(name: 'quartier_nom') String? get quartierNom;
+ int get id;@JsonKey(name: 'nom_commerce') String get nomCommerce; String get description; String get logo;@JsonKey(name: 'photo_couverture') String get photoCouverture; String get departement; String get region; double? get latitude; double? get longitude; String get adresse; String get quartier; String get ville; String get secteur;@JsonKey(name: 'localite_nom') String? get localiteNom;@JsonKey(name: 'quartier_nom') String? get quartierNom;/// Gabarit de page dédiée (« pharmacie », « mode »...) ; vide sinon.
+ String get gabarit;@JsonKey(readValue: _lireTypes) List<String> get typesPartenaire;
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $PartenaireCategorieCopyWith<PartenaireCategorie> get copyWith => _$PartenaireCa
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.secteur, secteur) || other.secteur == secteur)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.secteur, secteur) || other.secteur == secteur)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.gabarit, gabarit) || other.gabarit == gabarit)&&const DeepCollectionEquality().equals(other.typesPartenaire, typesPartenaire));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region,latitude,longitude,adresse,quartier,ville,secteur,localiteNom,quartierNom);
+int get hashCode => Object.hash(runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region,latitude,longitude,adresse,quartier,ville,secteur,localiteNom,quartierNom,gabarit,const DeepCollectionEquality().hash(typesPartenaire));
 
 @override
 String toString() {
-  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region, latitude: $latitude, longitude: $longitude, adresse: $adresse, quartier: $quartier, ville: $ville, secteur: $secteur, localiteNom: $localiteNom, quartierNom: $quartierNom)';
+  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region, latitude: $latitude, longitude: $longitude, adresse: $adresse, quartier: $quartier, ville: $ville, secteur: $secteur, localiteNom: $localiteNom, quartierNom: $quartierNom, gabarit: $gabarit, typesPartenaire: $typesPartenaire)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $PartenaireCategorieCopyWith<$Res>  {
   factory $PartenaireCategorieCopyWith(PartenaireCategorie value, $Res Function(PartenaireCategorie) _then) = _$PartenaireCategorieCopyWithImpl;
 @useResult
 $Res call({
- int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region, double? latitude, double? longitude, String adresse, String quartier, String ville, String secteur,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom
+ int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region, double? latitude, double? longitude, String adresse, String quartier, String ville, String secteur,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom, String gabarit,@JsonKey(readValue: _lireTypes) List<String> typesPartenaire
 });
 
 
@@ -65,7 +66,7 @@ class _$PartenaireCategorieCopyWithImpl<$Res>
 
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,Object? latitude = freezed,Object? longitude = freezed,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? secteur = null,Object? localiteNom = freezed,Object? quartierNom = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,Object? latitude = freezed,Object? longitude = freezed,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? secteur = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? gabarit = null,Object? typesPartenaire = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nomCommerce: null == nomCommerce ? _self.nomCommerce : nomCommerce // ignore: cast_nullable_to_non_nullable
@@ -82,7 +83,9 @@ as String,ville: null == ville ? _self.ville : ville // ignore: cast_nullable_to
 as String,secteur: null == secteur ? _self.secteur : secteur // ignore: cast_nullable_to_non_nullable
 as String,localiteNom: freezed == localiteNom ? _self.localiteNom : localiteNom // ignore: cast_nullable_to_non_nullable
 as String?,quartierNom: freezed == quartierNom ? _self.quartierNom : quartierNom // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,gabarit: null == gabarit ? _self.gabarit : gabarit // ignore: cast_nullable_to_non_nullable
+as String,typesPartenaire: null == typesPartenaire ? _self.typesPartenaire : typesPartenaire // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 
@@ -167,10 +170,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier,  String ville,  String secteur, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier,  String ville,  String secteur, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String gabarit, @JsonKey(readValue: _lireTypes)  List<String> typesPartenaire)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PartenaireCategorie() when $default != null:
-return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier,_that.ville,_that.secteur,_that.localiteNom,_that.quartierNom);case _:
+return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier,_that.ville,_that.secteur,_that.localiteNom,_that.quartierNom,_that.gabarit,_that.typesPartenaire);case _:
   return orElse();
 
 }
@@ -188,10 +191,10 @@ return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.ph
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier,  String ville,  String secteur, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier,  String ville,  String secteur, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String gabarit, @JsonKey(readValue: _lireTypes)  List<String> typesPartenaire)  $default,) {final _that = this;
 switch (_that) {
 case _PartenaireCategorie():
-return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier,_that.ville,_that.secteur,_that.localiteNom,_that.quartierNom);case _:
+return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier,_that.ville,_that.secteur,_that.localiteNom,_that.quartierNom,_that.gabarit,_that.typesPartenaire);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +211,10 @@ return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.ph
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier,  String ville,  String secteur, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier,  String ville,  String secteur, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String gabarit, @JsonKey(readValue: _lireTypes)  List<String> typesPartenaire)?  $default,) {final _that = this;
 switch (_that) {
 case _PartenaireCategorie() when $default != null:
-return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier,_that.ville,_that.secteur,_that.localiteNom,_that.quartierNom);case _:
+return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier,_that.ville,_that.secteur,_that.localiteNom,_that.quartierNom,_that.gabarit,_that.typesPartenaire);case _:
   return null;
 
 }
@@ -223,7 +226,7 @@ return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.ph
 @JsonSerializable()
 
 class _PartenaireCategorie extends PartenaireCategorie {
-  const _PartenaireCategorie({required this.id, @JsonKey(name: 'nom_commerce') this.nomCommerce = '', this.description = '', this.logo = '', @JsonKey(name: 'photo_couverture') this.photoCouverture = '', this.departement = '', this.region = '', this.latitude, this.longitude, this.adresse = '', this.quartier = '', this.ville = '', this.secteur = '', @JsonKey(name: 'localite_nom') this.localiteNom, @JsonKey(name: 'quartier_nom') this.quartierNom}): super._();
+  const _PartenaireCategorie({required this.id, @JsonKey(name: 'nom_commerce') this.nomCommerce = '', this.description = '', this.logo = '', @JsonKey(name: 'photo_couverture') this.photoCouverture = '', this.departement = '', this.region = '', this.latitude, this.longitude, this.adresse = '', this.quartier = '', this.ville = '', this.secteur = '', @JsonKey(name: 'localite_nom') this.localiteNom, @JsonKey(name: 'quartier_nom') this.quartierNom, this.gabarit = '', @JsonKey(readValue: _lireTypes) final  List<String> typesPartenaire = const <String>[]}): _typesPartenaire = typesPartenaire,super._();
   factory _PartenaireCategorie.fromJson(Map<String, dynamic> json) => _$PartenaireCategorieFromJson(json);
 
 @override final  int id;
@@ -241,6 +244,15 @@ class _PartenaireCategorie extends PartenaireCategorie {
 @override@JsonKey() final  String secteur;
 @override@JsonKey(name: 'localite_nom') final  String? localiteNom;
 @override@JsonKey(name: 'quartier_nom') final  String? quartierNom;
+/// Gabarit de page dédiée (« pharmacie », « mode »...) ; vide sinon.
+@override@JsonKey() final  String gabarit;
+ final  List<String> _typesPartenaire;
+@override@JsonKey(readValue: _lireTypes) List<String> get typesPartenaire {
+  if (_typesPartenaire is EqualUnmodifiableListView) return _typesPartenaire;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_typesPartenaire);
+}
+
 
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
@@ -255,16 +267,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.secteur, secteur) || other.secteur == secteur)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.secteur, secteur) || other.secteur == secteur)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.gabarit, gabarit) || other.gabarit == gabarit)&&const DeepCollectionEquality().equals(other._typesPartenaire, _typesPartenaire));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region,latitude,longitude,adresse,quartier,ville,secteur,localiteNom,quartierNom);
+int get hashCode => Object.hash(runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region,latitude,longitude,adresse,quartier,ville,secteur,localiteNom,quartierNom,gabarit,const DeepCollectionEquality().hash(_typesPartenaire));
 
 @override
 String toString() {
-  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region, latitude: $latitude, longitude: $longitude, adresse: $adresse, quartier: $quartier, ville: $ville, secteur: $secteur, localiteNom: $localiteNom, quartierNom: $quartierNom)';
+  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region, latitude: $latitude, longitude: $longitude, adresse: $adresse, quartier: $quartier, ville: $ville, secteur: $secteur, localiteNom: $localiteNom, quartierNom: $quartierNom, gabarit: $gabarit, typesPartenaire: $typesPartenaire)';
 }
 
 
@@ -275,7 +287,7 @@ abstract mixin class _$PartenaireCategorieCopyWith<$Res> implements $PartenaireC
   factory _$PartenaireCategorieCopyWith(_PartenaireCategorie value, $Res Function(_PartenaireCategorie) _then) = __$PartenaireCategorieCopyWithImpl;
 @override @useResult
 $Res call({
- int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region, double? latitude, double? longitude, String adresse, String quartier, String ville, String secteur,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom
+ int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region, double? latitude, double? longitude, String adresse, String quartier, String ville, String secteur,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom, String gabarit,@JsonKey(readValue: _lireTypes) List<String> typesPartenaire
 });
 
 
@@ -292,7 +304,7 @@ class __$PartenaireCategorieCopyWithImpl<$Res>
 
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,Object? latitude = freezed,Object? longitude = freezed,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? secteur = null,Object? localiteNom = freezed,Object? quartierNom = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,Object? latitude = freezed,Object? longitude = freezed,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? secteur = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? gabarit = null,Object? typesPartenaire = null,}) {
   return _then(_PartenaireCategorie(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nomCommerce: null == nomCommerce ? _self.nomCommerce : nomCommerce // ignore: cast_nullable_to_non_nullable
@@ -309,7 +321,9 @@ as String,ville: null == ville ? _self.ville : ville // ignore: cast_nullable_to
 as String,secteur: null == secteur ? _self.secteur : secteur // ignore: cast_nullable_to_non_nullable
 as String,localiteNom: freezed == localiteNom ? _self.localiteNom : localiteNom // ignore: cast_nullable_to_non_nullable
 as String?,quartierNom: freezed == quartierNom ? _self.quartierNom : quartierNom // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,gabarit: null == gabarit ? _self.gabarit : gabarit // ignore: cast_nullable_to_non_nullable
+as String,typesPartenaire: null == typesPartenaire ? _self._typesPartenaire : typesPartenaire // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 

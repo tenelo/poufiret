@@ -40,6 +40,8 @@ Map<String, dynamic> _$TelephoneRestaurantToJson(
 _FicheRestaurant _$FicheRestaurantFromJson(
   Map<String, dynamic> json,
 ) => _FicheRestaurant(
+  deGarde: json['de_garde'] as bool? ?? false,
+  deGardeJusquAu: json['de_garde_jusqu_au'] as String?,
   services:
       (json['services'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const <String>[],
@@ -67,6 +69,8 @@ _FicheRestaurant _$FicheRestaurantFromJson(
 
 Map<String, dynamic> _$FicheRestaurantToJson(_FicheRestaurant instance) =>
     <String, dynamic>{
+      'de_garde': instance.deGarde,
+      'de_garde_jusqu_au': instance.deGardeJusquAu,
       'services': instance.services,
       'delai_preparation_min': instance.delaiPreparationMin,
       'adresse_reperes': instance.adresseReperes,
@@ -128,6 +132,8 @@ _VariantePlat _$VariantePlatFromJson(Map<String, dynamic> json) =>
           : versInt(json['prix_supplement']),
       estParDefaut: json['est_par_defaut'] as bool? ?? false,
       estActive: json['est_active'] as bool? ?? true,
+      stock: versIntNullable(json['stock']),
+      estEpuise: json['est_epuise'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$VariantePlatToJson(_VariantePlat instance) =>
@@ -137,6 +143,8 @@ Map<String, dynamic> _$VariantePlatToJson(_VariantePlat instance) =>
       'prix_supplement': instance.prixSupplement,
       'est_par_defaut': instance.estParDefaut,
       'est_active': instance.estActive,
+      'stock': instance.stock,
+      'est_epuise': instance.estEpuise,
     };
 
 _Plat _$PlatFromJson(Map<String, dynamic> json) => _Plat(
@@ -166,6 +174,10 @@ _Plat _$PlatFromJson(Map<String, dynamic> json) => _Plat(
           ?.map((e) => GroupeOptions.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <GroupeOptions>[],
+  commandable: json['commandable'] as bool? ?? true,
+  ficheSpecifique: _lireFicheSpecifique(json, 'fiche_specifique') == null
+      ? const <String, dynamic>{}
+      : _versObjet(_lireFicheSpecifique(json, 'fiche_specifique')),
 );
 
 Map<String, dynamic> _$PlatToJson(_Plat instance) => <String, dynamic>{
@@ -181,6 +193,8 @@ Map<String, dynamic> _$PlatToJson(_Plat instance) => <String, dynamic>{
   'images': instance.images,
   'variantes': instance.variantes,
   'groupes_options': instance.groupesOptions,
+  'commandable': instance.commandable,
+  'fiche_specifique': instance.ficheSpecifique,
 };
 
 _SectionCarte _$SectionCarteFromJson(Map<String, dynamic> json) =>
@@ -194,6 +208,7 @@ _SectionCarte _$SectionCarteFromJson(Map<String, dynamic> json) =>
               ?.map((e) => Plat.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const <Plat>[],
+      nbProduits: versIntNullable(json['nb_produits']),
     );
 
 Map<String, dynamic> _$SectionCarteToJson(_SectionCarte instance) =>
@@ -203,6 +218,7 @@ Map<String, dynamic> _$SectionCarteToJson(_SectionCarte instance) =>
       'description': instance.description,
       'icone': instance.icone,
       'plats': instance.plats,
+      'nb_produits': instance.nbProduits,
     };
 
 _LigneMenu _$LigneMenuFromJson(Map<String, dynamic> json) => _LigneMenu(
@@ -257,6 +273,8 @@ Map<String, dynamic> _$MenuDuJourToJson(_MenuDuJour instance) =>
 
 _Restaurant _$RestaurantFromJson(Map<String, dynamic> json) => _Restaurant(
   id: (json['id'] as num).toInt(),
+  gabarit: json['gabarit'] as String? ?? '',
+  paginationPublique: json['pagination_publique'] as bool? ?? false,
   nom: json['nom'] as String? ?? '',
   description: json['description'] as String? ?? '',
   logo: json['logo'] as String? ?? '',
@@ -296,6 +314,8 @@ _Restaurant _$RestaurantFromJson(Map<String, dynamic> json) => _Restaurant(
 Map<String, dynamic> _$RestaurantToJson(_Restaurant instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'gabarit': instance.gabarit,
+      'pagination_publique': instance.paginationPublique,
       'nom': instance.nom,
       'description': instance.description,
       'logo': instance.logo,

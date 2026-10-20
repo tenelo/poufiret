@@ -20,6 +20,29 @@ Object? _lireImages(Map<dynamic, dynamic> json, String cle) => [
 Object? _lirePrixEffectif(Map<dynamic, dynamic> json, String cle) =>
     json[cle] ?? json['prix'];
 
+/// Champs de gabarit qu'un produit peut aussi porter à sa racine.
+const _champsGabarit = [
+  'sur_ordonnance', 'forme', 'dosage', 'laboratoire', //
+  'marque', 'couleur', 'matiere', 'genre', //
+  'auteur', 'editeur', 'annee', 'isbn', 'langue', 'niveau', 'classe',
+  'etat', 'genre_livre', //
+  'sur_commande', 'delai_heures',
+];
+
+/// Fiche spécifique, complétée des champs de gabarit trouvés à la racine.
+Object? _lireFicheSpecifique(Map<dynamic, dynamic> json, String cle) => {
+  for (final champ in _champsGabarit)
+    if (json[champ] != null) champ: json[champ],
+  for (final champ in _champsGabarit)
+    if (json['${champ}_libelle'] != null)
+      '${champ}_libelle': json['${champ}_libelle'],
+  if (json[cle] is Map) ...Map<String, dynamic>.from(json[cle] as Map),
+};
+
+/// Objet JSON quelconque (null ou autre chose → vide).
+Map<String, dynamic> _versObjet(Object? valeur) =>
+    valeur is Map ? Map<String, dynamic>.from(valeur) : const {};
+
 /// Plat d'une ligne de menu : son id (ou l'objet qui le porte).
 int? _versIdPlat(Object? valeur) =>
     versIntNullable(valeur is Map ? valeur['id'] : valeur);
@@ -52,10 +75,13 @@ abstract class TelephoneRestaurant with _$TelephoneRestaurant {
       _$TelephoneRestaurantFromJson(json);
 }
 
-/// Fiche pratique : horaires, services, contacts.
+/// Fiche pratique : horaires, services, contacts ; pour une pharmacie, la
+/// garde.
 @freezed
 abstract class FicheRestaurant with _$FicheRestaurant {
   const factory FicheRestaurant({
+    @JsonKey(name: 'de_garde') @Default(false) bool deGarde,
+    @JsonKey(name: 'de_garde_jusqu_au') String? deGardeJusquAu,
     @Default(<String>[]) List<String> services,
     @JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable)
     int? delaiPreparationMin,
@@ -118,10 +144,19 @@ abstract class VariantePlat with _$VariantePlat {
     int prixSupplement,
     @JsonKey(name: 'est_par_defaut') @Default(false) bool estParDefaut,
     @JsonKey(name: 'est_active') @Default(true) bool estActive,
+
+    /// null = stock non suivi.
+    @JsonKey(fromJson: versIntNullable) int? stock,
+    @JsonKey(name: 'est_epuise') @Default(false) bool estEpuise,
   }) = _VariantePlat;
+
+  const VariantePlat._();
 
   factory VariantePlat.fromJson(Map<String, dynamic> json) =>
       _$VariantePlatFromJson(json);
+
+  /// Épuisée (pointure plus en stock) : affichée grisée, non sélectionnable.
+  bool get epuisee => estEpuise || (stock != null && stock! <= 0);
 }
 
 @freezed
@@ -150,6 +185,19 @@ abstract class Plat with _$Plat {
     @JsonKey(name: 'groupes_options')
     @Default(<GroupeOptions>[])
     List<GroupeOptions> groupesOptions,
+
+    /// Faux : consultable seulement (pas de bouton d'ajout).
+    @Default(true) bool commandable,
+
+    /// Champs propres au gabarit du commerce (forme et dosage d'un
+    /// médicament, marque d'une chaussure, auteur d'un livre...).
+    @JsonKey(
+      name: 'fiche_specifique',
+      readValue: _lireFicheSpecifique,
+      fromJson: _versObjet,
+    )
+    @Default(<String, dynamic>{})
+    Map<String, dynamic> ficheSpecifique,
   }) = _Plat;
 
   factory Plat.fromJson(Map<String, dynamic> json) => _$PlatFromJson(json);
@@ -178,6 +226,10 @@ abstract class SectionCarte with _$SectionCarte {
     @Default('') String description,
     @Default('') String icone,
     @Default(<Plat>[]) List<Plat> plats,
+
+    /// Nombre de produits, quand ils ne sont pas envoyés avec la fiche
+    /// (pagination publique) : ils se chargent alors page par page.
+    @JsonKey(name: 'nb_produits', fromJson: versIntNullable) int? nbProduits,
   }) = _SectionCarte;
 
   factory SectionCarte.fromJson(Map<String, dynamic> json) =>
@@ -239,6 +291,16 @@ abstract class Restaurant with _$Restaurant {
 
   const factory Restaurant({
     required int id,
+
+    /// Gabarit de page : restaurant, boulangerie, pharmacie, mode,
+    /// librairie... (vide pour une fiche d'avant les gabarits).
+    @Default('') String gabarit,
+
+    /// Vrai : les sections arrivent sans leurs produits, chargés page par
+    /// page (`/restaurants/<id>/produits/`).
+    @JsonKey(name: 'pagination_publique')
+    @Default(false)
+    bool paginationPublique,
     @Default('') String nom,
     @Default('') String description,
     @Default('') String logo,

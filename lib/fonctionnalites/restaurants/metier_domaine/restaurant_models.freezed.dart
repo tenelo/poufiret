@@ -562,7 +562,7 @@ as String,
 /// @nodoc
 mixin _$FicheRestaurant {
 
- List<String> get services;@JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable) int? get delaiPreparationMin;@JsonKey(name: 'adresse_reperes') String get adresseReperes; String get facebook; String get instagram; String get tiktok; List<String> get specialites; List<HoraireJour> get horaires; List<TelephoneRestaurant> get telephones;
+@JsonKey(name: 'de_garde') bool get deGarde;@JsonKey(name: 'de_garde_jusqu_au') String? get deGardeJusquAu; List<String> get services;@JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable) int? get delaiPreparationMin;@JsonKey(name: 'adresse_reperes') String get adresseReperes; String get facebook; String get instagram; String get tiktok; List<String> get specialites; List<HoraireJour> get horaires; List<TelephoneRestaurant> get telephones;
 /// Create a copy of FicheRestaurant
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -575,16 +575,16 @@ $FicheRestaurantCopyWith<FicheRestaurant> get copyWith => _$FicheRestaurantCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FicheRestaurant&&const DeepCollectionEquality().equals(other.services, services)&&(identical(other.delaiPreparationMin, delaiPreparationMin) || other.delaiPreparationMin == delaiPreparationMin)&&(identical(other.adresseReperes, adresseReperes) || other.adresseReperes == adresseReperes)&&(identical(other.facebook, facebook) || other.facebook == facebook)&&(identical(other.instagram, instagram) || other.instagram == instagram)&&(identical(other.tiktok, tiktok) || other.tiktok == tiktok)&&const DeepCollectionEquality().equals(other.specialites, specialites)&&const DeepCollectionEquality().equals(other.horaires, horaires)&&const DeepCollectionEquality().equals(other.telephones, telephones));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FicheRestaurant&&(identical(other.deGarde, deGarde) || other.deGarde == deGarde)&&(identical(other.deGardeJusquAu, deGardeJusquAu) || other.deGardeJusquAu == deGardeJusquAu)&&const DeepCollectionEquality().equals(other.services, services)&&(identical(other.delaiPreparationMin, delaiPreparationMin) || other.delaiPreparationMin == delaiPreparationMin)&&(identical(other.adresseReperes, adresseReperes) || other.adresseReperes == adresseReperes)&&(identical(other.facebook, facebook) || other.facebook == facebook)&&(identical(other.instagram, instagram) || other.instagram == instagram)&&(identical(other.tiktok, tiktok) || other.tiktok == tiktok)&&const DeepCollectionEquality().equals(other.specialites, specialites)&&const DeepCollectionEquality().equals(other.horaires, horaires)&&const DeepCollectionEquality().equals(other.telephones, telephones));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(services),delaiPreparationMin,adresseReperes,facebook,instagram,tiktok,const DeepCollectionEquality().hash(specialites),const DeepCollectionEquality().hash(horaires),const DeepCollectionEquality().hash(telephones));
+int get hashCode => Object.hash(runtimeType,deGarde,deGardeJusquAu,const DeepCollectionEquality().hash(services),delaiPreparationMin,adresseReperes,facebook,instagram,tiktok,const DeepCollectionEquality().hash(specialites),const DeepCollectionEquality().hash(horaires),const DeepCollectionEquality().hash(telephones));
 
 @override
 String toString() {
-  return 'FicheRestaurant(services: $services, delaiPreparationMin: $delaiPreparationMin, adresseReperes: $adresseReperes, facebook: $facebook, instagram: $instagram, tiktok: $tiktok, specialites: $specialites, horaires: $horaires, telephones: $telephones)';
+  return 'FicheRestaurant(deGarde: $deGarde, deGardeJusquAu: $deGardeJusquAu, services: $services, delaiPreparationMin: $delaiPreparationMin, adresseReperes: $adresseReperes, facebook: $facebook, instagram: $instagram, tiktok: $tiktok, specialites: $specialites, horaires: $horaires, telephones: $telephones)';
 }
 
 
@@ -595,7 +595,7 @@ abstract mixin class $FicheRestaurantCopyWith<$Res>  {
   factory $FicheRestaurantCopyWith(FicheRestaurant value, $Res Function(FicheRestaurant) _then) = _$FicheRestaurantCopyWithImpl;
 @useResult
 $Res call({
- List<String> services,@JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable) int? delaiPreparationMin,@JsonKey(name: 'adresse_reperes') String adresseReperes, String facebook, String instagram, String tiktok, List<String> specialites, List<HoraireJour> horaires, List<TelephoneRestaurant> telephones
+@JsonKey(name: 'de_garde') bool deGarde,@JsonKey(name: 'de_garde_jusqu_au') String? deGardeJusquAu, List<String> services,@JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable) int? delaiPreparationMin,@JsonKey(name: 'adresse_reperes') String adresseReperes, String facebook, String instagram, String tiktok, List<String> specialites, List<HoraireJour> horaires, List<TelephoneRestaurant> telephones
 });
 
 
@@ -612,9 +612,11 @@ class _$FicheRestaurantCopyWithImpl<$Res>
 
 /// Create a copy of FicheRestaurant
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? services = null,Object? delaiPreparationMin = freezed,Object? adresseReperes = null,Object? facebook = null,Object? instagram = null,Object? tiktok = null,Object? specialites = null,Object? horaires = null,Object? telephones = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? deGarde = null,Object? deGardeJusquAu = freezed,Object? services = null,Object? delaiPreparationMin = freezed,Object? adresseReperes = null,Object? facebook = null,Object? instagram = null,Object? tiktok = null,Object? specialites = null,Object? horaires = null,Object? telephones = null,}) {
   return _then(_self.copyWith(
-services: null == services ? _self.services : services // ignore: cast_nullable_to_non_nullable
+deGarde: null == deGarde ? _self.deGarde : deGarde // ignore: cast_nullable_to_non_nullable
+as bool,deGardeJusquAu: freezed == deGardeJusquAu ? _self.deGardeJusquAu : deGardeJusquAu // ignore: cast_nullable_to_non_nullable
+as String?,services: null == services ? _self.services : services // ignore: cast_nullable_to_non_nullable
 as List<String>,delaiPreparationMin: freezed == delaiPreparationMin ? _self.delaiPreparationMin : delaiPreparationMin // ignore: cast_nullable_to_non_nullable
 as int?,adresseReperes: null == adresseReperes ? _self.adresseReperes : adresseReperes // ignore: cast_nullable_to_non_nullable
 as String,facebook: null == facebook ? _self.facebook : facebook // ignore: cast_nullable_to_non_nullable
@@ -708,10 +710,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<String> services, @JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable)  int? delaiPreparationMin, @JsonKey(name: 'adresse_reperes')  String adresseReperes,  String facebook,  String instagram,  String tiktok,  List<String> specialites,  List<HoraireJour> horaires,  List<TelephoneRestaurant> telephones)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'de_garde')  bool deGarde, @JsonKey(name: 'de_garde_jusqu_au')  String? deGardeJusquAu,  List<String> services, @JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable)  int? delaiPreparationMin, @JsonKey(name: 'adresse_reperes')  String adresseReperes,  String facebook,  String instagram,  String tiktok,  List<String> specialites,  List<HoraireJour> horaires,  List<TelephoneRestaurant> telephones)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FicheRestaurant() when $default != null:
-return $default(_that.services,_that.delaiPreparationMin,_that.adresseReperes,_that.facebook,_that.instagram,_that.tiktok,_that.specialites,_that.horaires,_that.telephones);case _:
+return $default(_that.deGarde,_that.deGardeJusquAu,_that.services,_that.delaiPreparationMin,_that.adresseReperes,_that.facebook,_that.instagram,_that.tiktok,_that.specialites,_that.horaires,_that.telephones);case _:
   return orElse();
 
 }
@@ -729,10 +731,10 @@ return $default(_that.services,_that.delaiPreparationMin,_that.adresseReperes,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<String> services, @JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable)  int? delaiPreparationMin, @JsonKey(name: 'adresse_reperes')  String adresseReperes,  String facebook,  String instagram,  String tiktok,  List<String> specialites,  List<HoraireJour> horaires,  List<TelephoneRestaurant> telephones)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'de_garde')  bool deGarde, @JsonKey(name: 'de_garde_jusqu_au')  String? deGardeJusquAu,  List<String> services, @JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable)  int? delaiPreparationMin, @JsonKey(name: 'adresse_reperes')  String adresseReperes,  String facebook,  String instagram,  String tiktok,  List<String> specialites,  List<HoraireJour> horaires,  List<TelephoneRestaurant> telephones)  $default,) {final _that = this;
 switch (_that) {
 case _FicheRestaurant():
-return $default(_that.services,_that.delaiPreparationMin,_that.adresseReperes,_that.facebook,_that.instagram,_that.tiktok,_that.specialites,_that.horaires,_that.telephones);case _:
+return $default(_that.deGarde,_that.deGardeJusquAu,_that.services,_that.delaiPreparationMin,_that.adresseReperes,_that.facebook,_that.instagram,_that.tiktok,_that.specialites,_that.horaires,_that.telephones);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -749,10 +751,10 @@ return $default(_that.services,_that.delaiPreparationMin,_that.adresseReperes,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<String> services, @JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable)  int? delaiPreparationMin, @JsonKey(name: 'adresse_reperes')  String adresseReperes,  String facebook,  String instagram,  String tiktok,  List<String> specialites,  List<HoraireJour> horaires,  List<TelephoneRestaurant> telephones)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'de_garde')  bool deGarde, @JsonKey(name: 'de_garde_jusqu_au')  String? deGardeJusquAu,  List<String> services, @JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable)  int? delaiPreparationMin, @JsonKey(name: 'adresse_reperes')  String adresseReperes,  String facebook,  String instagram,  String tiktok,  List<String> specialites,  List<HoraireJour> horaires,  List<TelephoneRestaurant> telephones)?  $default,) {final _that = this;
 switch (_that) {
 case _FicheRestaurant() when $default != null:
-return $default(_that.services,_that.delaiPreparationMin,_that.adresseReperes,_that.facebook,_that.instagram,_that.tiktok,_that.specialites,_that.horaires,_that.telephones);case _:
+return $default(_that.deGarde,_that.deGardeJusquAu,_that.services,_that.delaiPreparationMin,_that.adresseReperes,_that.facebook,_that.instagram,_that.tiktok,_that.specialites,_that.horaires,_that.telephones);case _:
   return null;
 
 }
@@ -764,9 +766,11 @@ return $default(_that.services,_that.delaiPreparationMin,_that.adresseReperes,_t
 @JsonSerializable()
 
 class _FicheRestaurant implements FicheRestaurant {
-  const _FicheRestaurant({final  List<String> services = const <String>[], @JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable) this.delaiPreparationMin, @JsonKey(name: 'adresse_reperes') this.adresseReperes = '', this.facebook = '', this.instagram = '', this.tiktok = '', final  List<String> specialites = const <String>[], final  List<HoraireJour> horaires = const <HoraireJour>[], final  List<TelephoneRestaurant> telephones = const <TelephoneRestaurant>[]}): _services = services,_specialites = specialites,_horaires = horaires,_telephones = telephones;
+  const _FicheRestaurant({@JsonKey(name: 'de_garde') this.deGarde = false, @JsonKey(name: 'de_garde_jusqu_au') this.deGardeJusquAu, final  List<String> services = const <String>[], @JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable) this.delaiPreparationMin, @JsonKey(name: 'adresse_reperes') this.adresseReperes = '', this.facebook = '', this.instagram = '', this.tiktok = '', final  List<String> specialites = const <String>[], final  List<HoraireJour> horaires = const <HoraireJour>[], final  List<TelephoneRestaurant> telephones = const <TelephoneRestaurant>[]}): _services = services,_specialites = specialites,_horaires = horaires,_telephones = telephones;
   factory _FicheRestaurant.fromJson(Map<String, dynamic> json) => _$FicheRestaurantFromJson(json);
 
+@override@JsonKey(name: 'de_garde') final  bool deGarde;
+@override@JsonKey(name: 'de_garde_jusqu_au') final  String? deGardeJusquAu;
  final  List<String> _services;
 @override@JsonKey() List<String> get services {
   if (_services is EqualUnmodifiableListView) return _services;
@@ -814,16 +818,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FicheRestaurant&&const DeepCollectionEquality().equals(other._services, _services)&&(identical(other.delaiPreparationMin, delaiPreparationMin) || other.delaiPreparationMin == delaiPreparationMin)&&(identical(other.adresseReperes, adresseReperes) || other.adresseReperes == adresseReperes)&&(identical(other.facebook, facebook) || other.facebook == facebook)&&(identical(other.instagram, instagram) || other.instagram == instagram)&&(identical(other.tiktok, tiktok) || other.tiktok == tiktok)&&const DeepCollectionEquality().equals(other._specialites, _specialites)&&const DeepCollectionEquality().equals(other._horaires, _horaires)&&const DeepCollectionEquality().equals(other._telephones, _telephones));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FicheRestaurant&&(identical(other.deGarde, deGarde) || other.deGarde == deGarde)&&(identical(other.deGardeJusquAu, deGardeJusquAu) || other.deGardeJusquAu == deGardeJusquAu)&&const DeepCollectionEquality().equals(other._services, _services)&&(identical(other.delaiPreparationMin, delaiPreparationMin) || other.delaiPreparationMin == delaiPreparationMin)&&(identical(other.adresseReperes, adresseReperes) || other.adresseReperes == adresseReperes)&&(identical(other.facebook, facebook) || other.facebook == facebook)&&(identical(other.instagram, instagram) || other.instagram == instagram)&&(identical(other.tiktok, tiktok) || other.tiktok == tiktok)&&const DeepCollectionEquality().equals(other._specialites, _specialites)&&const DeepCollectionEquality().equals(other._horaires, _horaires)&&const DeepCollectionEquality().equals(other._telephones, _telephones));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_services),delaiPreparationMin,adresseReperes,facebook,instagram,tiktok,const DeepCollectionEquality().hash(_specialites),const DeepCollectionEquality().hash(_horaires),const DeepCollectionEquality().hash(_telephones));
+int get hashCode => Object.hash(runtimeType,deGarde,deGardeJusquAu,const DeepCollectionEquality().hash(_services),delaiPreparationMin,adresseReperes,facebook,instagram,tiktok,const DeepCollectionEquality().hash(_specialites),const DeepCollectionEquality().hash(_horaires),const DeepCollectionEquality().hash(_telephones));
 
 @override
 String toString() {
-  return 'FicheRestaurant(services: $services, delaiPreparationMin: $delaiPreparationMin, adresseReperes: $adresseReperes, facebook: $facebook, instagram: $instagram, tiktok: $tiktok, specialites: $specialites, horaires: $horaires, telephones: $telephones)';
+  return 'FicheRestaurant(deGarde: $deGarde, deGardeJusquAu: $deGardeJusquAu, services: $services, delaiPreparationMin: $delaiPreparationMin, adresseReperes: $adresseReperes, facebook: $facebook, instagram: $instagram, tiktok: $tiktok, specialites: $specialites, horaires: $horaires, telephones: $telephones)';
 }
 
 
@@ -834,7 +838,7 @@ abstract mixin class _$FicheRestaurantCopyWith<$Res> implements $FicheRestaurant
   factory _$FicheRestaurantCopyWith(_FicheRestaurant value, $Res Function(_FicheRestaurant) _then) = __$FicheRestaurantCopyWithImpl;
 @override @useResult
 $Res call({
- List<String> services,@JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable) int? delaiPreparationMin,@JsonKey(name: 'adresse_reperes') String adresseReperes, String facebook, String instagram, String tiktok, List<String> specialites, List<HoraireJour> horaires, List<TelephoneRestaurant> telephones
+@JsonKey(name: 'de_garde') bool deGarde,@JsonKey(name: 'de_garde_jusqu_au') String? deGardeJusquAu, List<String> services,@JsonKey(name: 'delai_preparation_min', fromJson: versIntNullable) int? delaiPreparationMin,@JsonKey(name: 'adresse_reperes') String adresseReperes, String facebook, String instagram, String tiktok, List<String> specialites, List<HoraireJour> horaires, List<TelephoneRestaurant> telephones
 });
 
 
@@ -851,9 +855,11 @@ class __$FicheRestaurantCopyWithImpl<$Res>
 
 /// Create a copy of FicheRestaurant
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? services = null,Object? delaiPreparationMin = freezed,Object? adresseReperes = null,Object? facebook = null,Object? instagram = null,Object? tiktok = null,Object? specialites = null,Object? horaires = null,Object? telephones = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? deGarde = null,Object? deGardeJusquAu = freezed,Object? services = null,Object? delaiPreparationMin = freezed,Object? adresseReperes = null,Object? facebook = null,Object? instagram = null,Object? tiktok = null,Object? specialites = null,Object? horaires = null,Object? telephones = null,}) {
   return _then(_FicheRestaurant(
-services: null == services ? _self._services : services // ignore: cast_nullable_to_non_nullable
+deGarde: null == deGarde ? _self.deGarde : deGarde // ignore: cast_nullable_to_non_nullable
+as bool,deGardeJusquAu: freezed == deGardeJusquAu ? _self.deGardeJusquAu : deGardeJusquAu // ignore: cast_nullable_to_non_nullable
+as String?,services: null == services ? _self._services : services // ignore: cast_nullable_to_non_nullable
 as List<String>,delaiPreparationMin: freezed == delaiPreparationMin ? _self.delaiPreparationMin : delaiPreparationMin // ignore: cast_nullable_to_non_nullable
 as int?,adresseReperes: null == adresseReperes ? _self.adresseReperes : adresseReperes // ignore: cast_nullable_to_non_nullable
 as String,facebook: null == facebook ? _self.facebook : facebook // ignore: cast_nullable_to_non_nullable
@@ -1431,7 +1437,8 @@ as List<OptionPlat>,
 /// @nodoc
 mixin _$VariantePlat {
 
- int get id; String get nom;@JsonKey(name: 'prix_supplement', fromJson: versInt) int get prixSupplement;@JsonKey(name: 'est_par_defaut') bool get estParDefaut;@JsonKey(name: 'est_active') bool get estActive;
+ int get id; String get nom;@JsonKey(name: 'prix_supplement', fromJson: versInt) int get prixSupplement;@JsonKey(name: 'est_par_defaut') bool get estParDefaut;@JsonKey(name: 'est_active') bool get estActive;/// null = stock non suivi.
+@JsonKey(fromJson: versIntNullable) int? get stock;@JsonKey(name: 'est_epuise') bool get estEpuise;
 /// Create a copy of VariantePlat
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1444,16 +1451,16 @@ $VariantePlatCopyWith<VariantePlat> get copyWith => _$VariantePlatCopyWithImpl<V
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VariantePlat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prixSupplement, prixSupplement) || other.prixSupplement == prixSupplement)&&(identical(other.estParDefaut, estParDefaut) || other.estParDefaut == estParDefaut)&&(identical(other.estActive, estActive) || other.estActive == estActive));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VariantePlat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prixSupplement, prixSupplement) || other.prixSupplement == prixSupplement)&&(identical(other.estParDefaut, estParDefaut) || other.estParDefaut == estParDefaut)&&(identical(other.estActive, estActive) || other.estActive == estActive)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,prixSupplement,estParDefaut,estActive);
+int get hashCode => Object.hash(runtimeType,id,nom,prixSupplement,estParDefaut,estActive,stock,estEpuise);
 
 @override
 String toString() {
-  return 'VariantePlat(id: $id, nom: $nom, prixSupplement: $prixSupplement, estParDefaut: $estParDefaut, estActive: $estActive)';
+  return 'VariantePlat(id: $id, nom: $nom, prixSupplement: $prixSupplement, estParDefaut: $estParDefaut, estActive: $estActive, stock: $stock, estEpuise: $estEpuise)';
 }
 
 
@@ -1464,7 +1471,7 @@ abstract mixin class $VariantePlatCopyWith<$Res>  {
   factory $VariantePlatCopyWith(VariantePlat value, $Res Function(VariantePlat) _then) = _$VariantePlatCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom,@JsonKey(name: 'prix_supplement', fromJson: versInt) int prixSupplement,@JsonKey(name: 'est_par_defaut') bool estParDefaut,@JsonKey(name: 'est_active') bool estActive
+ int id, String nom,@JsonKey(name: 'prix_supplement', fromJson: versInt) int prixSupplement,@JsonKey(name: 'est_par_defaut') bool estParDefaut,@JsonKey(name: 'est_active') bool estActive,@JsonKey(fromJson: versIntNullable) int? stock,@JsonKey(name: 'est_epuise') bool estEpuise
 });
 
 
@@ -1481,13 +1488,15 @@ class _$VariantePlatCopyWithImpl<$Res>
 
 /// Create a copy of VariantePlat
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? prixSupplement = null,Object? estParDefaut = null,Object? estActive = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? prixSupplement = null,Object? estParDefaut = null,Object? estActive = null,Object? stock = freezed,Object? estEpuise = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
 as String,prixSupplement: null == prixSupplement ? _self.prixSupplement : prixSupplement // ignore: cast_nullable_to_non_nullable
 as int,estParDefaut: null == estParDefaut ? _self.estParDefaut : estParDefaut // ignore: cast_nullable_to_non_nullable
 as bool,estActive: null == estActive ? _self.estActive : estActive // ignore: cast_nullable_to_non_nullable
+as bool,stock: freezed == stock ? _self.stock : stock // ignore: cast_nullable_to_non_nullable
+as int?,estEpuise: null == estEpuise ? _self.estEpuise : estEpuise // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -1573,10 +1582,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom, @JsonKey(name: 'prix_supplement', fromJson: versInt)  int prixSupplement, @JsonKey(name: 'est_par_defaut')  bool estParDefaut, @JsonKey(name: 'est_active')  bool estActive)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom, @JsonKey(name: 'prix_supplement', fromJson: versInt)  int prixSupplement, @JsonKey(name: 'est_par_defaut')  bool estParDefaut, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(fromJson: versIntNullable)  int? stock, @JsonKey(name: 'est_epuise')  bool estEpuise)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VariantePlat() when $default != null:
-return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut,_that.estActive);case _:
+return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut,_that.estActive,_that.stock,_that.estEpuise);case _:
   return orElse();
 
 }
@@ -1594,10 +1603,10 @@ return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom, @JsonKey(name: 'prix_supplement', fromJson: versInt)  int prixSupplement, @JsonKey(name: 'est_par_defaut')  bool estParDefaut, @JsonKey(name: 'est_active')  bool estActive)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom, @JsonKey(name: 'prix_supplement', fromJson: versInt)  int prixSupplement, @JsonKey(name: 'est_par_defaut')  bool estParDefaut, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(fromJson: versIntNullable)  int? stock, @JsonKey(name: 'est_epuise')  bool estEpuise)  $default,) {final _that = this;
 switch (_that) {
 case _VariantePlat():
-return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut,_that.estActive);case _:
+return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut,_that.estActive,_that.stock,_that.estEpuise);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1614,10 +1623,10 @@ return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom, @JsonKey(name: 'prix_supplement', fromJson: versInt)  int prixSupplement, @JsonKey(name: 'est_par_defaut')  bool estParDefaut, @JsonKey(name: 'est_active')  bool estActive)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom, @JsonKey(name: 'prix_supplement', fromJson: versInt)  int prixSupplement, @JsonKey(name: 'est_par_defaut')  bool estParDefaut, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(fromJson: versIntNullable)  int? stock, @JsonKey(name: 'est_epuise')  bool estEpuise)?  $default,) {final _that = this;
 switch (_that) {
 case _VariantePlat() when $default != null:
-return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut,_that.estActive);case _:
+return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut,_that.estActive,_that.stock,_that.estEpuise);case _:
   return null;
 
 }
@@ -1628,8 +1637,8 @@ return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut,_that
 /// @nodoc
 @JsonSerializable()
 
-class _VariantePlat implements VariantePlat {
-  const _VariantePlat({required this.id, this.nom = '', @JsonKey(name: 'prix_supplement', fromJson: versInt) this.prixSupplement = 0, @JsonKey(name: 'est_par_defaut') this.estParDefaut = false, @JsonKey(name: 'est_active') this.estActive = true});
+class _VariantePlat extends VariantePlat {
+  const _VariantePlat({required this.id, this.nom = '', @JsonKey(name: 'prix_supplement', fromJson: versInt) this.prixSupplement = 0, @JsonKey(name: 'est_par_defaut') this.estParDefaut = false, @JsonKey(name: 'est_active') this.estActive = true, @JsonKey(fromJson: versIntNullable) this.stock, @JsonKey(name: 'est_epuise') this.estEpuise = false}): super._();
   factory _VariantePlat.fromJson(Map<String, dynamic> json) => _$VariantePlatFromJson(json);
 
 @override final  int id;
@@ -1637,6 +1646,9 @@ class _VariantePlat implements VariantePlat {
 @override@JsonKey(name: 'prix_supplement', fromJson: versInt) final  int prixSupplement;
 @override@JsonKey(name: 'est_par_defaut') final  bool estParDefaut;
 @override@JsonKey(name: 'est_active') final  bool estActive;
+/// null = stock non suivi.
+@override@JsonKey(fromJson: versIntNullable) final  int? stock;
+@override@JsonKey(name: 'est_epuise') final  bool estEpuise;
 
 /// Create a copy of VariantePlat
 /// with the given fields replaced by the non-null parameter values.
@@ -1651,16 +1663,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VariantePlat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prixSupplement, prixSupplement) || other.prixSupplement == prixSupplement)&&(identical(other.estParDefaut, estParDefaut) || other.estParDefaut == estParDefaut)&&(identical(other.estActive, estActive) || other.estActive == estActive));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VariantePlat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prixSupplement, prixSupplement) || other.prixSupplement == prixSupplement)&&(identical(other.estParDefaut, estParDefaut) || other.estParDefaut == estParDefaut)&&(identical(other.estActive, estActive) || other.estActive == estActive)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,prixSupplement,estParDefaut,estActive);
+int get hashCode => Object.hash(runtimeType,id,nom,prixSupplement,estParDefaut,estActive,stock,estEpuise);
 
 @override
 String toString() {
-  return 'VariantePlat(id: $id, nom: $nom, prixSupplement: $prixSupplement, estParDefaut: $estParDefaut, estActive: $estActive)';
+  return 'VariantePlat(id: $id, nom: $nom, prixSupplement: $prixSupplement, estParDefaut: $estParDefaut, estActive: $estActive, stock: $stock, estEpuise: $estEpuise)';
 }
 
 
@@ -1671,7 +1683,7 @@ abstract mixin class _$VariantePlatCopyWith<$Res> implements $VariantePlatCopyWi
   factory _$VariantePlatCopyWith(_VariantePlat value, $Res Function(_VariantePlat) _then) = __$VariantePlatCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom,@JsonKey(name: 'prix_supplement', fromJson: versInt) int prixSupplement,@JsonKey(name: 'est_par_defaut') bool estParDefaut,@JsonKey(name: 'est_active') bool estActive
+ int id, String nom,@JsonKey(name: 'prix_supplement', fromJson: versInt) int prixSupplement,@JsonKey(name: 'est_par_defaut') bool estParDefaut,@JsonKey(name: 'est_active') bool estActive,@JsonKey(fromJson: versIntNullable) int? stock,@JsonKey(name: 'est_epuise') bool estEpuise
 });
 
 
@@ -1688,13 +1700,15 @@ class __$VariantePlatCopyWithImpl<$Res>
 
 /// Create a copy of VariantePlat
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? prixSupplement = null,Object? estParDefaut = null,Object? estActive = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? prixSupplement = null,Object? estParDefaut = null,Object? estActive = null,Object? stock = freezed,Object? estEpuise = null,}) {
   return _then(_VariantePlat(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
 as String,prixSupplement: null == prixSupplement ? _self.prixSupplement : prixSupplement // ignore: cast_nullable_to_non_nullable
 as int,estParDefaut: null == estParDefaut ? _self.estParDefaut : estParDefaut // ignore: cast_nullable_to_non_nullable
 as bool,estActive: null == estActive ? _self.estActive : estActive // ignore: cast_nullable_to_non_nullable
+as bool,stock: freezed == stock ? _self.stock : stock // ignore: cast_nullable_to_non_nullable
+as int?,estEpuise: null == estEpuise ? _self.estEpuise : estEpuise // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -1706,7 +1720,10 @@ as bool,
 /// @nodoc
 mixin _$Plat {
 
- int get id; String get nom; String get description;@JsonKey(fromJson: versInt) int get prix;@JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) int get prixEffectif;@JsonKey(name: 'est_en_promotion') bool get estEnPromotion;@JsonKey(name: 'est_disponible') bool get estDisponible;@JsonKey(name: 'est_epuise') bool get estEpuise;@JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) int? get tempsPreparationMin;@JsonKey(readValue: _lireImages) List<String> get images; List<VariantePlat> get variantes;@JsonKey(name: 'groupes_options') List<GroupeOptions> get groupesOptions;
+ int get id; String get nom; String get description;@JsonKey(fromJson: versInt) int get prix;@JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) int get prixEffectif;@JsonKey(name: 'est_en_promotion') bool get estEnPromotion;@JsonKey(name: 'est_disponible') bool get estDisponible;@JsonKey(name: 'est_epuise') bool get estEpuise;@JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) int? get tempsPreparationMin;@JsonKey(readValue: _lireImages) List<String> get images; List<VariantePlat> get variantes;@JsonKey(name: 'groupes_options') List<GroupeOptions> get groupesOptions;/// Faux : consultable seulement (pas de bouton d'ajout).
+ bool get commandable;/// Champs propres au gabarit du commerce (forme et dosage d'un
+/// médicament, marque d'une chaussure, auteur d'un livre...).
+@JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet) Map<String, dynamic> get ficheSpecifique;
 /// Create a copy of Plat
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1719,16 +1736,16 @@ $PlatCopyWith<Plat> get copyWith => _$PlatCopyWithImpl<Plat>(this as Plat, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Plat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixEffectif, prixEffectif) || other.prixEffectif == prixEffectif)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.estDisponible, estDisponible) || other.estDisponible == estDisponible)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise)&&(identical(other.tempsPreparationMin, tempsPreparationMin) || other.tempsPreparationMin == tempsPreparationMin)&&const DeepCollectionEquality().equals(other.images, images)&&const DeepCollectionEquality().equals(other.variantes, variantes)&&const DeepCollectionEquality().equals(other.groupesOptions, groupesOptions));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Plat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixEffectif, prixEffectif) || other.prixEffectif == prixEffectif)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.estDisponible, estDisponible) || other.estDisponible == estDisponible)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise)&&(identical(other.tempsPreparationMin, tempsPreparationMin) || other.tempsPreparationMin == tempsPreparationMin)&&const DeepCollectionEquality().equals(other.images, images)&&const DeepCollectionEquality().equals(other.variantes, variantes)&&const DeepCollectionEquality().equals(other.groupesOptions, groupesOptions)&&(identical(other.commandable, commandable) || other.commandable == commandable)&&const DeepCollectionEquality().equals(other.ficheSpecifique, ficheSpecifique));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,description,prix,prixEffectif,estEnPromotion,estDisponible,estEpuise,tempsPreparationMin,const DeepCollectionEquality().hash(images),const DeepCollectionEquality().hash(variantes),const DeepCollectionEquality().hash(groupesOptions));
+int get hashCode => Object.hash(runtimeType,id,nom,description,prix,prixEffectif,estEnPromotion,estDisponible,estEpuise,tempsPreparationMin,const DeepCollectionEquality().hash(images),const DeepCollectionEquality().hash(variantes),const DeepCollectionEquality().hash(groupesOptions),commandable,const DeepCollectionEquality().hash(ficheSpecifique));
 
 @override
 String toString() {
-  return 'Plat(id: $id, nom: $nom, description: $description, prix: $prix, prixEffectif: $prixEffectif, estEnPromotion: $estEnPromotion, estDisponible: $estDisponible, estEpuise: $estEpuise, tempsPreparationMin: $tempsPreparationMin, images: $images, variantes: $variantes, groupesOptions: $groupesOptions)';
+  return 'Plat(id: $id, nom: $nom, description: $description, prix: $prix, prixEffectif: $prixEffectif, estEnPromotion: $estEnPromotion, estDisponible: $estDisponible, estEpuise: $estEpuise, tempsPreparationMin: $tempsPreparationMin, images: $images, variantes: $variantes, groupesOptions: $groupesOptions, commandable: $commandable, ficheSpecifique: $ficheSpecifique)';
 }
 
 
@@ -1739,7 +1756,7 @@ abstract mixin class $PlatCopyWith<$Res>  {
   factory $PlatCopyWith(Plat value, $Res Function(Plat) _then) = _$PlatCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom, String description,@JsonKey(fromJson: versInt) int prix,@JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) int prixEffectif,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'est_disponible') bool estDisponible,@JsonKey(name: 'est_epuise') bool estEpuise,@JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) int? tempsPreparationMin,@JsonKey(readValue: _lireImages) List<String> images, List<VariantePlat> variantes,@JsonKey(name: 'groupes_options') List<GroupeOptions> groupesOptions
+ int id, String nom, String description,@JsonKey(fromJson: versInt) int prix,@JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) int prixEffectif,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'est_disponible') bool estDisponible,@JsonKey(name: 'est_epuise') bool estEpuise,@JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) int? tempsPreparationMin,@JsonKey(readValue: _lireImages) List<String> images, List<VariantePlat> variantes,@JsonKey(name: 'groupes_options') List<GroupeOptions> groupesOptions, bool commandable,@JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet) Map<String, dynamic> ficheSpecifique
 });
 
 
@@ -1756,7 +1773,7 @@ class _$PlatCopyWithImpl<$Res>
 
 /// Create a copy of Plat
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? prix = null,Object? prixEffectif = null,Object? estEnPromotion = null,Object? estDisponible = null,Object? estEpuise = null,Object? tempsPreparationMin = freezed,Object? images = null,Object? variantes = null,Object? groupesOptions = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? prix = null,Object? prixEffectif = null,Object? estEnPromotion = null,Object? estDisponible = null,Object? estEpuise = null,Object? tempsPreparationMin = freezed,Object? images = null,Object? variantes = null,Object? groupesOptions = null,Object? commandable = null,Object? ficheSpecifique = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -1770,7 +1787,9 @@ as bool,tempsPreparationMin: freezed == tempsPreparationMin ? _self.tempsPrepara
 as int?,images: null == images ? _self.images : images // ignore: cast_nullable_to_non_nullable
 as List<String>,variantes: null == variantes ? _self.variantes : variantes // ignore: cast_nullable_to_non_nullable
 as List<VariantePlat>,groupesOptions: null == groupesOptions ? _self.groupesOptions : groupesOptions // ignore: cast_nullable_to_non_nullable
-as List<GroupeOptions>,
+as List<GroupeOptions>,commandable: null == commandable ? _self.commandable : commandable // ignore: cast_nullable_to_non_nullable
+as bool,ficheSpecifique: null == ficheSpecifique ? _self.ficheSpecifique : ficheSpecifique // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>,
   ));
 }
 
@@ -1855,10 +1874,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String description, @JsonKey(fromJson: versInt)  int prix, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt)  int prixEffectif, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_epuise')  bool estEpuise, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable)  int? tempsPreparationMin, @JsonKey(readValue: _lireImages)  List<String> images,  List<VariantePlat> variantes, @JsonKey(name: 'groupes_options')  List<GroupeOptions> groupesOptions)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String description, @JsonKey(fromJson: versInt)  int prix, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt)  int prixEffectif, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_epuise')  bool estEpuise, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable)  int? tempsPreparationMin, @JsonKey(readValue: _lireImages)  List<String> images,  List<VariantePlat> variantes, @JsonKey(name: 'groupes_options')  List<GroupeOptions> groupesOptions,  bool commandable, @JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet)  Map<String, dynamic> ficheSpecifique)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Plat() when $default != null:
-return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffectif,_that.estEnPromotion,_that.estDisponible,_that.estEpuise,_that.tempsPreparationMin,_that.images,_that.variantes,_that.groupesOptions);case _:
+return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffectif,_that.estEnPromotion,_that.estDisponible,_that.estEpuise,_that.tempsPreparationMin,_that.images,_that.variantes,_that.groupesOptions,_that.commandable,_that.ficheSpecifique);case _:
   return orElse();
 
 }
@@ -1876,10 +1895,10 @@ return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffect
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String description, @JsonKey(fromJson: versInt)  int prix, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt)  int prixEffectif, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_epuise')  bool estEpuise, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable)  int? tempsPreparationMin, @JsonKey(readValue: _lireImages)  List<String> images,  List<VariantePlat> variantes, @JsonKey(name: 'groupes_options')  List<GroupeOptions> groupesOptions)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String description, @JsonKey(fromJson: versInt)  int prix, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt)  int prixEffectif, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_epuise')  bool estEpuise, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable)  int? tempsPreparationMin, @JsonKey(readValue: _lireImages)  List<String> images,  List<VariantePlat> variantes, @JsonKey(name: 'groupes_options')  List<GroupeOptions> groupesOptions,  bool commandable, @JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet)  Map<String, dynamic> ficheSpecifique)  $default,) {final _that = this;
 switch (_that) {
 case _Plat():
-return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffectif,_that.estEnPromotion,_that.estDisponible,_that.estEpuise,_that.tempsPreparationMin,_that.images,_that.variantes,_that.groupesOptions);case _:
+return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffectif,_that.estEnPromotion,_that.estDisponible,_that.estEpuise,_that.tempsPreparationMin,_that.images,_that.variantes,_that.groupesOptions,_that.commandable,_that.ficheSpecifique);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1896,10 +1915,10 @@ return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffect
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String description, @JsonKey(fromJson: versInt)  int prix, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt)  int prixEffectif, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_epuise')  bool estEpuise, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable)  int? tempsPreparationMin, @JsonKey(readValue: _lireImages)  List<String> images,  List<VariantePlat> variantes, @JsonKey(name: 'groupes_options')  List<GroupeOptions> groupesOptions)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String description, @JsonKey(fromJson: versInt)  int prix, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt)  int prixEffectif, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_epuise')  bool estEpuise, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable)  int? tempsPreparationMin, @JsonKey(readValue: _lireImages)  List<String> images,  List<VariantePlat> variantes, @JsonKey(name: 'groupes_options')  List<GroupeOptions> groupesOptions,  bool commandable, @JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet)  Map<String, dynamic> ficheSpecifique)?  $default,) {final _that = this;
 switch (_that) {
 case _Plat() when $default != null:
-return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffectif,_that.estEnPromotion,_that.estDisponible,_that.estEpuise,_that.tempsPreparationMin,_that.images,_that.variantes,_that.groupesOptions);case _:
+return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffectif,_that.estEnPromotion,_that.estDisponible,_that.estEpuise,_that.tempsPreparationMin,_that.images,_that.variantes,_that.groupesOptions,_that.commandable,_that.ficheSpecifique);case _:
   return null;
 
 }
@@ -1911,7 +1930,7 @@ return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffect
 @JsonSerializable()
 
 class _Plat extends Plat {
-  const _Plat({required this.id, this.nom = '', this.description = '', @JsonKey(fromJson: versInt) this.prix = 0, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) this.prixEffectif = 0, @JsonKey(name: 'est_en_promotion') this.estEnPromotion = false, @JsonKey(name: 'est_disponible') this.estDisponible = true, @JsonKey(name: 'est_epuise') this.estEpuise = false, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) this.tempsPreparationMin, @JsonKey(readValue: _lireImages) final  List<String> images = const <String>[], final  List<VariantePlat> variantes = const <VariantePlat>[], @JsonKey(name: 'groupes_options') final  List<GroupeOptions> groupesOptions = const <GroupeOptions>[]}): _images = images,_variantes = variantes,_groupesOptions = groupesOptions,super._();
+  const _Plat({required this.id, this.nom = '', this.description = '', @JsonKey(fromJson: versInt) this.prix = 0, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) this.prixEffectif = 0, @JsonKey(name: 'est_en_promotion') this.estEnPromotion = false, @JsonKey(name: 'est_disponible') this.estDisponible = true, @JsonKey(name: 'est_epuise') this.estEpuise = false, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) this.tempsPreparationMin, @JsonKey(readValue: _lireImages) final  List<String> images = const <String>[], final  List<VariantePlat> variantes = const <VariantePlat>[], @JsonKey(name: 'groupes_options') final  List<GroupeOptions> groupesOptions = const <GroupeOptions>[], this.commandable = true, @JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet) final  Map<String, dynamic> ficheSpecifique = const <String, dynamic>{}}): _images = images,_variantes = variantes,_groupesOptions = groupesOptions,_ficheSpecifique = ficheSpecifique,super._();
   factory _Plat.fromJson(Map<String, dynamic> json) => _$PlatFromJson(json);
 
 @override final  int id;
@@ -1944,6 +1963,19 @@ class _Plat extends Plat {
   return EqualUnmodifiableListView(_groupesOptions);
 }
 
+/// Faux : consultable seulement (pas de bouton d'ajout).
+@override@JsonKey() final  bool commandable;
+/// Champs propres au gabarit du commerce (forme et dosage d'un
+/// médicament, marque d'une chaussure, auteur d'un livre...).
+ final  Map<String, dynamic> _ficheSpecifique;
+/// Champs propres au gabarit du commerce (forme et dosage d'un
+/// médicament, marque d'une chaussure, auteur d'un livre...).
+@override@JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet) Map<String, dynamic> get ficheSpecifique {
+  if (_ficheSpecifique is EqualUnmodifiableMapView) return _ficheSpecifique;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_ficheSpecifique);
+}
+
 
 /// Create a copy of Plat
 /// with the given fields replaced by the non-null parameter values.
@@ -1958,16 +1990,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Plat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixEffectif, prixEffectif) || other.prixEffectif == prixEffectif)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.estDisponible, estDisponible) || other.estDisponible == estDisponible)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise)&&(identical(other.tempsPreparationMin, tempsPreparationMin) || other.tempsPreparationMin == tempsPreparationMin)&&const DeepCollectionEquality().equals(other._images, _images)&&const DeepCollectionEquality().equals(other._variantes, _variantes)&&const DeepCollectionEquality().equals(other._groupesOptions, _groupesOptions));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Plat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixEffectif, prixEffectif) || other.prixEffectif == prixEffectif)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.estDisponible, estDisponible) || other.estDisponible == estDisponible)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise)&&(identical(other.tempsPreparationMin, tempsPreparationMin) || other.tempsPreparationMin == tempsPreparationMin)&&const DeepCollectionEquality().equals(other._images, _images)&&const DeepCollectionEquality().equals(other._variantes, _variantes)&&const DeepCollectionEquality().equals(other._groupesOptions, _groupesOptions)&&(identical(other.commandable, commandable) || other.commandable == commandable)&&const DeepCollectionEquality().equals(other._ficheSpecifique, _ficheSpecifique));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,description,prix,prixEffectif,estEnPromotion,estDisponible,estEpuise,tempsPreparationMin,const DeepCollectionEquality().hash(_images),const DeepCollectionEquality().hash(_variantes),const DeepCollectionEquality().hash(_groupesOptions));
+int get hashCode => Object.hash(runtimeType,id,nom,description,prix,prixEffectif,estEnPromotion,estDisponible,estEpuise,tempsPreparationMin,const DeepCollectionEquality().hash(_images),const DeepCollectionEquality().hash(_variantes),const DeepCollectionEquality().hash(_groupesOptions),commandable,const DeepCollectionEquality().hash(_ficheSpecifique));
 
 @override
 String toString() {
-  return 'Plat(id: $id, nom: $nom, description: $description, prix: $prix, prixEffectif: $prixEffectif, estEnPromotion: $estEnPromotion, estDisponible: $estDisponible, estEpuise: $estEpuise, tempsPreparationMin: $tempsPreparationMin, images: $images, variantes: $variantes, groupesOptions: $groupesOptions)';
+  return 'Plat(id: $id, nom: $nom, description: $description, prix: $prix, prixEffectif: $prixEffectif, estEnPromotion: $estEnPromotion, estDisponible: $estDisponible, estEpuise: $estEpuise, tempsPreparationMin: $tempsPreparationMin, images: $images, variantes: $variantes, groupesOptions: $groupesOptions, commandable: $commandable, ficheSpecifique: $ficheSpecifique)';
 }
 
 
@@ -1978,7 +2010,7 @@ abstract mixin class _$PlatCopyWith<$Res> implements $PlatCopyWith<$Res> {
   factory _$PlatCopyWith(_Plat value, $Res Function(_Plat) _then) = __$PlatCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom, String description,@JsonKey(fromJson: versInt) int prix,@JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) int prixEffectif,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'est_disponible') bool estDisponible,@JsonKey(name: 'est_epuise') bool estEpuise,@JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) int? tempsPreparationMin,@JsonKey(readValue: _lireImages) List<String> images, List<VariantePlat> variantes,@JsonKey(name: 'groupes_options') List<GroupeOptions> groupesOptions
+ int id, String nom, String description,@JsonKey(fromJson: versInt) int prix,@JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) int prixEffectif,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'est_disponible') bool estDisponible,@JsonKey(name: 'est_epuise') bool estEpuise,@JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) int? tempsPreparationMin,@JsonKey(readValue: _lireImages) List<String> images, List<VariantePlat> variantes,@JsonKey(name: 'groupes_options') List<GroupeOptions> groupesOptions, bool commandable,@JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet) Map<String, dynamic> ficheSpecifique
 });
 
 
@@ -1995,7 +2027,7 @@ class __$PlatCopyWithImpl<$Res>
 
 /// Create a copy of Plat
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? prix = null,Object? prixEffectif = null,Object? estEnPromotion = null,Object? estDisponible = null,Object? estEpuise = null,Object? tempsPreparationMin = freezed,Object? images = null,Object? variantes = null,Object? groupesOptions = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? prix = null,Object? prixEffectif = null,Object? estEnPromotion = null,Object? estDisponible = null,Object? estEpuise = null,Object? tempsPreparationMin = freezed,Object? images = null,Object? variantes = null,Object? groupesOptions = null,Object? commandable = null,Object? ficheSpecifique = null,}) {
   return _then(_Plat(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -2009,7 +2041,9 @@ as bool,tempsPreparationMin: freezed == tempsPreparationMin ? _self.tempsPrepara
 as int?,images: null == images ? _self._images : images // ignore: cast_nullable_to_non_nullable
 as List<String>,variantes: null == variantes ? _self._variantes : variantes // ignore: cast_nullable_to_non_nullable
 as List<VariantePlat>,groupesOptions: null == groupesOptions ? _self._groupesOptions : groupesOptions // ignore: cast_nullable_to_non_nullable
-as List<GroupeOptions>,
+as List<GroupeOptions>,commandable: null == commandable ? _self.commandable : commandable // ignore: cast_nullable_to_non_nullable
+as bool,ficheSpecifique: null == ficheSpecifique ? _self._ficheSpecifique : ficheSpecifique // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>,
   ));
 }
 
@@ -2020,7 +2054,9 @@ as List<GroupeOptions>,
 /// @nodoc
 mixin _$SectionCarte {
 
- int get id; String get nom; String get description; String get icone; List<Plat> get plats;
+ int get id; String get nom; String get description; String get icone; List<Plat> get plats;/// Nombre de produits, quand ils ne sont pas envoyés avec la fiche
+/// (pagination publique) : ils se chargent alors page par page.
+@JsonKey(name: 'nb_produits', fromJson: versIntNullable) int? get nbProduits;
 /// Create a copy of SectionCarte
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -2033,16 +2069,16 @@ $SectionCarteCopyWith<SectionCarte> get copyWith => _$SectionCarteCopyWithImpl<S
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SectionCarte&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.icone, icone) || other.icone == icone)&&const DeepCollectionEquality().equals(other.plats, plats));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SectionCarte&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.icone, icone) || other.icone == icone)&&const DeepCollectionEquality().equals(other.plats, plats)&&(identical(other.nbProduits, nbProduits) || other.nbProduits == nbProduits));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,description,icone,const DeepCollectionEquality().hash(plats));
+int get hashCode => Object.hash(runtimeType,id,nom,description,icone,const DeepCollectionEquality().hash(plats),nbProduits);
 
 @override
 String toString() {
-  return 'SectionCarte(id: $id, nom: $nom, description: $description, icone: $icone, plats: $plats)';
+  return 'SectionCarte(id: $id, nom: $nom, description: $description, icone: $icone, plats: $plats, nbProduits: $nbProduits)';
 }
 
 
@@ -2053,7 +2089,7 @@ abstract mixin class $SectionCarteCopyWith<$Res>  {
   factory $SectionCarteCopyWith(SectionCarte value, $Res Function(SectionCarte) _then) = _$SectionCarteCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom, String description, String icone, List<Plat> plats
+ int id, String nom, String description, String icone, List<Plat> plats,@JsonKey(name: 'nb_produits', fromJson: versIntNullable) int? nbProduits
 });
 
 
@@ -2070,14 +2106,15 @@ class _$SectionCarteCopyWithImpl<$Res>
 
 /// Create a copy of SectionCarte
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? icone = null,Object? plats = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? icone = null,Object? plats = null,Object? nbProduits = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,icone: null == icone ? _self.icone : icone // ignore: cast_nullable_to_non_nullable
 as String,plats: null == plats ? _self.plats : plats // ignore: cast_nullable_to_non_nullable
-as List<Plat>,
+as List<Plat>,nbProduits: freezed == nbProduits ? _self.nbProduits : nbProduits // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -2162,10 +2199,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String icone,  List<Plat> plats)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String icone,  List<Plat> plats, @JsonKey(name: 'nb_produits', fromJson: versIntNullable)  int? nbProduits)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SectionCarte() when $default != null:
-return $default(_that.id,_that.nom,_that.description,_that.icone,_that.plats);case _:
+return $default(_that.id,_that.nom,_that.description,_that.icone,_that.plats,_that.nbProduits);case _:
   return orElse();
 
 }
@@ -2183,10 +2220,10 @@ return $default(_that.id,_that.nom,_that.description,_that.icone,_that.plats);ca
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String icone,  List<Plat> plats)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String icone,  List<Plat> plats, @JsonKey(name: 'nb_produits', fromJson: versIntNullable)  int? nbProduits)  $default,) {final _that = this;
 switch (_that) {
 case _SectionCarte():
-return $default(_that.id,_that.nom,_that.description,_that.icone,_that.plats);case _:
+return $default(_that.id,_that.nom,_that.description,_that.icone,_that.plats,_that.nbProduits);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -2203,10 +2240,10 @@ return $default(_that.id,_that.nom,_that.description,_that.icone,_that.plats);ca
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String description,  String icone,  List<Plat> plats)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String description,  String icone,  List<Plat> plats, @JsonKey(name: 'nb_produits', fromJson: versIntNullable)  int? nbProduits)?  $default,) {final _that = this;
 switch (_that) {
 case _SectionCarte() when $default != null:
-return $default(_that.id,_that.nom,_that.description,_that.icone,_that.plats);case _:
+return $default(_that.id,_that.nom,_that.description,_that.icone,_that.plats,_that.nbProduits);case _:
   return null;
 
 }
@@ -2218,7 +2255,7 @@ return $default(_that.id,_that.nom,_that.description,_that.icone,_that.plats);ca
 @JsonSerializable()
 
 class _SectionCarte implements SectionCarte {
-  const _SectionCarte({required this.id, this.nom = '', this.description = '', this.icone = '', final  List<Plat> plats = const <Plat>[]}): _plats = plats;
+  const _SectionCarte({required this.id, this.nom = '', this.description = '', this.icone = '', final  List<Plat> plats = const <Plat>[], @JsonKey(name: 'nb_produits', fromJson: versIntNullable) this.nbProduits}): _plats = plats;
   factory _SectionCarte.fromJson(Map<String, dynamic> json) => _$SectionCarteFromJson(json);
 
 @override final  int id;
@@ -2232,6 +2269,9 @@ class _SectionCarte implements SectionCarte {
   return EqualUnmodifiableListView(_plats);
 }
 
+/// Nombre de produits, quand ils ne sont pas envoyés avec la fiche
+/// (pagination publique) : ils se chargent alors page par page.
+@override@JsonKey(name: 'nb_produits', fromJson: versIntNullable) final  int? nbProduits;
 
 /// Create a copy of SectionCarte
 /// with the given fields replaced by the non-null parameter values.
@@ -2246,16 +2286,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SectionCarte&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.icone, icone) || other.icone == icone)&&const DeepCollectionEquality().equals(other._plats, _plats));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SectionCarte&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.icone, icone) || other.icone == icone)&&const DeepCollectionEquality().equals(other._plats, _plats)&&(identical(other.nbProduits, nbProduits) || other.nbProduits == nbProduits));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,description,icone,const DeepCollectionEquality().hash(_plats));
+int get hashCode => Object.hash(runtimeType,id,nom,description,icone,const DeepCollectionEquality().hash(_plats),nbProduits);
 
 @override
 String toString() {
-  return 'SectionCarte(id: $id, nom: $nom, description: $description, icone: $icone, plats: $plats)';
+  return 'SectionCarte(id: $id, nom: $nom, description: $description, icone: $icone, plats: $plats, nbProduits: $nbProduits)';
 }
 
 
@@ -2266,7 +2306,7 @@ abstract mixin class _$SectionCarteCopyWith<$Res> implements $SectionCarteCopyWi
   factory _$SectionCarteCopyWith(_SectionCarte value, $Res Function(_SectionCarte) _then) = __$SectionCarteCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom, String description, String icone, List<Plat> plats
+ int id, String nom, String description, String icone, List<Plat> plats,@JsonKey(name: 'nb_produits', fromJson: versIntNullable) int? nbProduits
 });
 
 
@@ -2283,14 +2323,15 @@ class __$SectionCarteCopyWithImpl<$Res>
 
 /// Create a copy of SectionCarte
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? icone = null,Object? plats = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? icone = null,Object? plats = null,Object? nbProduits = freezed,}) {
   return _then(_SectionCarte(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,icone: null == icone ? _self.icone : icone // ignore: cast_nullable_to_non_nullable
 as String,plats: null == plats ? _self._plats : plats // ignore: cast_nullable_to_non_nullable
-as List<Plat>,
+as List<Plat>,nbProduits: freezed == nbProduits ? _self.nbProduits : nbProduits // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -2878,7 +2919,11 @@ as List<LigneMenu>,
 /// @nodoc
 mixin _$Restaurant {
 
- int get id; String get nom; String get description; String get logo; String get couverture; String get adresse; String get quartier; String get ville;@JsonKey(name: 'localite_nom') String? get localiteNom;@JsonKey(name: 'quartier_nom') String? get quartierNom;@JsonKey(name: 'telephone_pro') String get telephonePro; String get whatsapp;@JsonKey(fromJson: versDoubleNullable) double? get latitude;@JsonKey(fromJson: versDoubleNullable) double? get longitude;/// Toujours fourni par le serveur (liste, fiche, flux). Sans horaires
+ int get id;/// Gabarit de page : restaurant, boulangerie, pharmacie, mode,
+/// librairie... (vide pour une fiche d'avant les gabarits).
+ String get gabarit;/// Vrai : les sections arrivent sans leurs produits, chargés page par
+/// page (`/restaurants/<id>/produits/`).
+@JsonKey(name: 'pagination_publique') bool get paginationPublique; String get nom; String get description; String get logo; String get couverture; String get adresse; String get quartier; String get ville;@JsonKey(name: 'localite_nom') String? get localiteNom;@JsonKey(name: 'quartier_nom') String? get quartierNom;@JsonKey(name: 'telephone_pro') String get telephonePro; String get whatsapp;@JsonKey(fromJson: versDoubleNullable) double? get latitude;@JsonKey(fromJson: versDoubleNullable) double? get longitude;/// Toujours fourni par le serveur (liste, fiche, flux). Sans horaires
 /// renseignés : fermé, avec « Horaires non renseignés » en message. Non
 /// affiché : sert seulement à expliquer un refus de commande.
 @JsonKey(name: 'est_ouvert') bool get estOuvert;@JsonKey(name: 'message_statut') String get messageStatut;@JsonKey(name: 'prochaine_ouverture') String? get prochaineOuverture; FicheRestaurant get fiche;/// Menus du jour présents, dans l'ordre midi, soir, journée.
@@ -2896,16 +2941,16 @@ $RestaurantCopyWith<Restaurant> get copyWith => _$RestaurantCopyWithImpl<Restaur
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Restaurant&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.estOuvert, estOuvert) || other.estOuvert == estOuvert)&&(identical(other.messageStatut, messageStatut) || other.messageStatut == messageStatut)&&(identical(other.prochaineOuverture, prochaineOuverture) || other.prochaineOuverture == prochaineOuverture)&&(identical(other.fiche, fiche) || other.fiche == fiche)&&const DeepCollectionEquality().equals(other.menus, menus)&&const DeepCollectionEquality().equals(other.servicesEnVigueur, servicesEnVigueur)&&const DeepCollectionEquality().equals(other.carte, carte));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Restaurant&&(identical(other.id, id) || other.id == id)&&(identical(other.gabarit, gabarit) || other.gabarit == gabarit)&&(identical(other.paginationPublique, paginationPublique) || other.paginationPublique == paginationPublique)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.estOuvert, estOuvert) || other.estOuvert == estOuvert)&&(identical(other.messageStatut, messageStatut) || other.messageStatut == messageStatut)&&(identical(other.prochaineOuverture, prochaineOuverture) || other.prochaineOuverture == prochaineOuverture)&&(identical(other.fiche, fiche) || other.fiche == fiche)&&const DeepCollectionEquality().equals(other.menus, menus)&&const DeepCollectionEquality().equals(other.servicesEnVigueur, servicesEnVigueur)&&const DeepCollectionEquality().equals(other.carte, carte));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,nom,description,logo,couverture,adresse,quartier,ville,localiteNom,quartierNom,telephonePro,whatsapp,latitude,longitude,estOuvert,messageStatut,prochaineOuverture,fiche,const DeepCollectionEquality().hash(menus),const DeepCollectionEquality().hash(servicesEnVigueur),const DeepCollectionEquality().hash(carte)]);
+int get hashCode => Object.hashAll([runtimeType,id,gabarit,paginationPublique,nom,description,logo,couverture,adresse,quartier,ville,localiteNom,quartierNom,telephonePro,whatsapp,latitude,longitude,estOuvert,messageStatut,prochaineOuverture,fiche,const DeepCollectionEquality().hash(menus),const DeepCollectionEquality().hash(servicesEnVigueur),const DeepCollectionEquality().hash(carte)]);
 
 @override
 String toString() {
-  return 'Restaurant(id: $id, nom: $nom, description: $description, logo: $logo, couverture: $couverture, adresse: $adresse, quartier: $quartier, ville: $ville, localiteNom: $localiteNom, quartierNom: $quartierNom, telephonePro: $telephonePro, whatsapp: $whatsapp, latitude: $latitude, longitude: $longitude, estOuvert: $estOuvert, messageStatut: $messageStatut, prochaineOuverture: $prochaineOuverture, fiche: $fiche, menus: $menus, servicesEnVigueur: $servicesEnVigueur, carte: $carte)';
+  return 'Restaurant(id: $id, gabarit: $gabarit, paginationPublique: $paginationPublique, nom: $nom, description: $description, logo: $logo, couverture: $couverture, adresse: $adresse, quartier: $quartier, ville: $ville, localiteNom: $localiteNom, quartierNom: $quartierNom, telephonePro: $telephonePro, whatsapp: $whatsapp, latitude: $latitude, longitude: $longitude, estOuvert: $estOuvert, messageStatut: $messageStatut, prochaineOuverture: $prochaineOuverture, fiche: $fiche, menus: $menus, servicesEnVigueur: $servicesEnVigueur, carte: $carte)';
 }
 
 
@@ -2916,7 +2961,7 @@ abstract mixin class $RestaurantCopyWith<$Res>  {
   factory $RestaurantCopyWith(Restaurant value, $Res Function(Restaurant) _then) = _$RestaurantCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom, String description, String logo, String couverture, String adresse, String quartier, String ville,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude,@JsonKey(name: 'est_ouvert') bool estOuvert,@JsonKey(name: 'message_statut') String messageStatut,@JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture, FicheRestaurant fiche, List<MenuDuJour> menus,@JsonKey(name: 'services_en_vigueur') List<String> servicesEnVigueur, List<SectionCarte> carte
+ int id, String gabarit,@JsonKey(name: 'pagination_publique') bool paginationPublique, String nom, String description, String logo, String couverture, String adresse, String quartier, String ville,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude,@JsonKey(name: 'est_ouvert') bool estOuvert,@JsonKey(name: 'message_statut') String messageStatut,@JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture, FicheRestaurant fiche, List<MenuDuJour> menus,@JsonKey(name: 'services_en_vigueur') List<String> servicesEnVigueur, List<SectionCarte> carte
 });
 
 
@@ -2933,10 +2978,12 @@ class _$RestaurantCopyWithImpl<$Res>
 
 /// Create a copy of Restaurant
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? logo = null,Object? couverture = null,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? telephonePro = null,Object? whatsapp = null,Object? latitude = freezed,Object? longitude = freezed,Object? estOuvert = null,Object? messageStatut = null,Object? prochaineOuverture = freezed,Object? fiche = null,Object? menus = null,Object? servicesEnVigueur = null,Object? carte = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? gabarit = null,Object? paginationPublique = null,Object? nom = null,Object? description = null,Object? logo = null,Object? couverture = null,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? telephonePro = null,Object? whatsapp = null,Object? latitude = freezed,Object? longitude = freezed,Object? estOuvert = null,Object? messageStatut = null,Object? prochaineOuverture = freezed,Object? fiche = null,Object? menus = null,Object? servicesEnVigueur = null,Object? carte = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
+as int,gabarit: null == gabarit ? _self.gabarit : gabarit // ignore: cast_nullable_to_non_nullable
+as String,paginationPublique: null == paginationPublique ? _self.paginationPublique : paginationPublique // ignore: cast_nullable_to_non_nullable
+as bool,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,logo: null == logo ? _self.logo : logo // ignore: cast_nullable_to_non_nullable
 as String,couverture: null == couverture ? _self.couverture : couverture // ignore: cast_nullable_to_non_nullable
@@ -3050,10 +3097,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String gabarit, @JsonKey(name: 'pagination_publique')  bool paginationPublique,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Restaurant() when $default != null:
-return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte);case _:
+return $default(_that.id,_that.gabarit,_that.paginationPublique,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte);case _:
   return orElse();
 
 }
@@ -3071,10 +3118,10 @@ return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String gabarit, @JsonKey(name: 'pagination_publique')  bool paginationPublique,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte)  $default,) {final _that = this;
 switch (_that) {
 case _Restaurant():
-return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte);case _:
+return $default(_that.id,_that.gabarit,_that.paginationPublique,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -3091,10 +3138,10 @@ return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String gabarit, @JsonKey(name: 'pagination_publique')  bool paginationPublique,  String nom,  String description,  String logo,  String couverture,  String adresse,  String quartier,  String ville, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude, @JsonKey(name: 'est_ouvert')  bool estOuvert, @JsonKey(name: 'message_statut')  String messageStatut, @JsonKey(name: 'prochaine_ouverture')  String? prochaineOuverture,  FicheRestaurant fiche,  List<MenuDuJour> menus, @JsonKey(name: 'services_en_vigueur')  List<String> servicesEnVigueur,  List<SectionCarte> carte)?  $default,) {final _that = this;
 switch (_that) {
 case _Restaurant() when $default != null:
-return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte);case _:
+return $default(_that.id,_that.gabarit,_that.paginationPublique,_that.nom,_that.description,_that.logo,_that.couverture,_that.adresse,_that.quartier,_that.ville,_that.localiteNom,_that.quartierNom,_that.telephonePro,_that.whatsapp,_that.latitude,_that.longitude,_that.estOuvert,_that.messageStatut,_that.prochaineOuverture,_that.fiche,_that.menus,_that.servicesEnVigueur,_that.carte);case _:
   return null;
 
 }
@@ -3106,10 +3153,16 @@ return $default(_that.id,_that.nom,_that.description,_that.logo,_that.couverture
 @JsonSerializable()
 
 class _Restaurant extends Restaurant {
-  const _Restaurant({required this.id, this.nom = '', this.description = '', this.logo = '', this.couverture = '', this.adresse = '', this.quartier = '', this.ville = '', @JsonKey(name: 'localite_nom') this.localiteNom, @JsonKey(name: 'quartier_nom') this.quartierNom, @JsonKey(name: 'telephone_pro') this.telephonePro = '', this.whatsapp = '', @JsonKey(fromJson: versDoubleNullable) this.latitude, @JsonKey(fromJson: versDoubleNullable) this.longitude, @JsonKey(name: 'est_ouvert') required this.estOuvert, @JsonKey(name: 'message_statut') this.messageStatut = '', @JsonKey(name: 'prochaine_ouverture') this.prochaineOuverture, this.fiche = const FicheRestaurant(), final  List<MenuDuJour> menus = const <MenuDuJour>[], @JsonKey(name: 'services_en_vigueur') final  List<String> servicesEnVigueur = const <String>[], final  List<SectionCarte> carte = const <SectionCarte>[]}): _menus = menus,_servicesEnVigueur = servicesEnVigueur,_carte = carte,super._();
+  const _Restaurant({required this.id, this.gabarit = '', @JsonKey(name: 'pagination_publique') this.paginationPublique = false, this.nom = '', this.description = '', this.logo = '', this.couverture = '', this.adresse = '', this.quartier = '', this.ville = '', @JsonKey(name: 'localite_nom') this.localiteNom, @JsonKey(name: 'quartier_nom') this.quartierNom, @JsonKey(name: 'telephone_pro') this.telephonePro = '', this.whatsapp = '', @JsonKey(fromJson: versDoubleNullable) this.latitude, @JsonKey(fromJson: versDoubleNullable) this.longitude, @JsonKey(name: 'est_ouvert') required this.estOuvert, @JsonKey(name: 'message_statut') this.messageStatut = '', @JsonKey(name: 'prochaine_ouverture') this.prochaineOuverture, this.fiche = const FicheRestaurant(), final  List<MenuDuJour> menus = const <MenuDuJour>[], @JsonKey(name: 'services_en_vigueur') final  List<String> servicesEnVigueur = const <String>[], final  List<SectionCarte> carte = const <SectionCarte>[]}): _menus = menus,_servicesEnVigueur = servicesEnVigueur,_carte = carte,super._();
   factory _Restaurant.fromJson(Map<String, dynamic> json) => _$RestaurantFromJson(json);
 
 @override final  int id;
+/// Gabarit de page : restaurant, boulangerie, pharmacie, mode,
+/// librairie... (vide pour une fiche d'avant les gabarits).
+@override@JsonKey() final  String gabarit;
+/// Vrai : les sections arrivent sans leurs produits, chargés page par
+/// page (`/restaurants/<id>/produits/`).
+@override@JsonKey(name: 'pagination_publique') final  bool paginationPublique;
 @override@JsonKey() final  String nom;
 @override@JsonKey() final  String description;
 @override@JsonKey() final  String logo;
@@ -3169,16 +3222,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Restaurant&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.estOuvert, estOuvert) || other.estOuvert == estOuvert)&&(identical(other.messageStatut, messageStatut) || other.messageStatut == messageStatut)&&(identical(other.prochaineOuverture, prochaineOuverture) || other.prochaineOuverture == prochaineOuverture)&&(identical(other.fiche, fiche) || other.fiche == fiche)&&const DeepCollectionEquality().equals(other._menus, _menus)&&const DeepCollectionEquality().equals(other._servicesEnVigueur, _servicesEnVigueur)&&const DeepCollectionEquality().equals(other._carte, _carte));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Restaurant&&(identical(other.id, id) || other.id == id)&&(identical(other.gabarit, gabarit) || other.gabarit == gabarit)&&(identical(other.paginationPublique, paginationPublique) || other.paginationPublique == paginationPublique)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.estOuvert, estOuvert) || other.estOuvert == estOuvert)&&(identical(other.messageStatut, messageStatut) || other.messageStatut == messageStatut)&&(identical(other.prochaineOuverture, prochaineOuverture) || other.prochaineOuverture == prochaineOuverture)&&(identical(other.fiche, fiche) || other.fiche == fiche)&&const DeepCollectionEquality().equals(other._menus, _menus)&&const DeepCollectionEquality().equals(other._servicesEnVigueur, _servicesEnVigueur)&&const DeepCollectionEquality().equals(other._carte, _carte));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,nom,description,logo,couverture,adresse,quartier,ville,localiteNom,quartierNom,telephonePro,whatsapp,latitude,longitude,estOuvert,messageStatut,prochaineOuverture,fiche,const DeepCollectionEquality().hash(_menus),const DeepCollectionEquality().hash(_servicesEnVigueur),const DeepCollectionEquality().hash(_carte)]);
+int get hashCode => Object.hashAll([runtimeType,id,gabarit,paginationPublique,nom,description,logo,couverture,adresse,quartier,ville,localiteNom,quartierNom,telephonePro,whatsapp,latitude,longitude,estOuvert,messageStatut,prochaineOuverture,fiche,const DeepCollectionEquality().hash(_menus),const DeepCollectionEquality().hash(_servicesEnVigueur),const DeepCollectionEquality().hash(_carte)]);
 
 @override
 String toString() {
-  return 'Restaurant(id: $id, nom: $nom, description: $description, logo: $logo, couverture: $couverture, adresse: $adresse, quartier: $quartier, ville: $ville, localiteNom: $localiteNom, quartierNom: $quartierNom, telephonePro: $telephonePro, whatsapp: $whatsapp, latitude: $latitude, longitude: $longitude, estOuvert: $estOuvert, messageStatut: $messageStatut, prochaineOuverture: $prochaineOuverture, fiche: $fiche, menus: $menus, servicesEnVigueur: $servicesEnVigueur, carte: $carte)';
+  return 'Restaurant(id: $id, gabarit: $gabarit, paginationPublique: $paginationPublique, nom: $nom, description: $description, logo: $logo, couverture: $couverture, adresse: $adresse, quartier: $quartier, ville: $ville, localiteNom: $localiteNom, quartierNom: $quartierNom, telephonePro: $telephonePro, whatsapp: $whatsapp, latitude: $latitude, longitude: $longitude, estOuvert: $estOuvert, messageStatut: $messageStatut, prochaineOuverture: $prochaineOuverture, fiche: $fiche, menus: $menus, servicesEnVigueur: $servicesEnVigueur, carte: $carte)';
 }
 
 
@@ -3189,7 +3242,7 @@ abstract mixin class _$RestaurantCopyWith<$Res> implements $RestaurantCopyWith<$
   factory _$RestaurantCopyWith(_Restaurant value, $Res Function(_Restaurant) _then) = __$RestaurantCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom, String description, String logo, String couverture, String adresse, String quartier, String ville,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude,@JsonKey(name: 'est_ouvert') bool estOuvert,@JsonKey(name: 'message_statut') String messageStatut,@JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture, FicheRestaurant fiche, List<MenuDuJour> menus,@JsonKey(name: 'services_en_vigueur') List<String> servicesEnVigueur, List<SectionCarte> carte
+ int id, String gabarit,@JsonKey(name: 'pagination_publique') bool paginationPublique, String nom, String description, String logo, String couverture, String adresse, String quartier, String ville,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude,@JsonKey(name: 'est_ouvert') bool estOuvert,@JsonKey(name: 'message_statut') String messageStatut,@JsonKey(name: 'prochaine_ouverture') String? prochaineOuverture, FicheRestaurant fiche, List<MenuDuJour> menus,@JsonKey(name: 'services_en_vigueur') List<String> servicesEnVigueur, List<SectionCarte> carte
 });
 
 
@@ -3206,10 +3259,12 @@ class __$RestaurantCopyWithImpl<$Res>
 
 /// Create a copy of Restaurant
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? logo = null,Object? couverture = null,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? telephonePro = null,Object? whatsapp = null,Object? latitude = freezed,Object? longitude = freezed,Object? estOuvert = null,Object? messageStatut = null,Object? prochaineOuverture = freezed,Object? fiche = null,Object? menus = null,Object? servicesEnVigueur = null,Object? carte = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? gabarit = null,Object? paginationPublique = null,Object? nom = null,Object? description = null,Object? logo = null,Object? couverture = null,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? telephonePro = null,Object? whatsapp = null,Object? latitude = freezed,Object? longitude = freezed,Object? estOuvert = null,Object? messageStatut = null,Object? prochaineOuverture = freezed,Object? fiche = null,Object? menus = null,Object? servicesEnVigueur = null,Object? carte = null,}) {
   return _then(_Restaurant(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
+as int,gabarit: null == gabarit ? _self.gabarit : gabarit // ignore: cast_nullable_to_non_nullable
+as String,paginationPublique: null == paginationPublique ? _self.paginationPublique : paginationPublique // ignore: cast_nullable_to_non_nullable
+as bool,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,logo: null == logo ? _self.logo : logo // ignore: cast_nullable_to_non_nullable
 as String,couverture: null == couverture ? _self.couverture : couverture // ignore: cast_nullable_to_non_nullable
