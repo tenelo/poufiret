@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../screens/auth_notifier.dart';
 import '../screens/ecran_connexion.dart';
+import 'cadre_auth.dart';
 
 /// Mur d'inscription : le visiteur peut parcourir l'ecran principal et la
 /// liste des partenaires, mais toute action qui mene a une fiche exige un
@@ -42,30 +43,21 @@ void murInscriptionSi(
 void _afficherDialogue(BuildContext context) {
   showDialog<void>(
     context: context,
-    builder: (ctx) => AlertDialog(
-      icon: Icon(Icons.lock_outline,
-          color: Theme.of(ctx).colorScheme.primary, size: 32),
-      title: const Text('Enregistrez-vous pour continuer'),
-      content: const Text(
-        'Créez un compte gratuit pour découvrir les commerces, '
-        'consulter les articles et contacter les vendeurs près de '
-        'chez vous.',
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx),
-          child: const Text('Plus tard'),
-        ),
-        FilledButton(
-          onPressed: () {
-            Navigator.pop(ctx);
-            Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const EcranConnexion()),
-            );
-          },
-          child: const Text('S\'enregistrer'),
-        ),
-      ],
+    builder: (ctx) => DialogueAuth(
+      icone: Icons.lock_open_rounded,
+      titre: 'Enregistrez-vous pour continuer',
+      texte: 'Créez un compte gratuit pour découvrir les commerces, '
+          'consulter les articles et contacter les vendeurs près de '
+          'chez vous.',
+      actionPrincipale: 'S\'enregistrer',
+      onPrincipale: () {
+        Navigator.pop(ctx);
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const EcranConnexion()),
+        );
+      },
+      actionSecondaire: 'Plus tard',
+      onSecondaire: () => Navigator.pop(ctx),
     ),
   );
 }

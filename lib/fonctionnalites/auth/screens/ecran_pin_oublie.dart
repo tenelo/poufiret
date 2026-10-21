@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
-import 'package:poufiret/global/responsive/conteneur_adaptatif.dart';
+import 'package:poufiret/fonctionnalites/auth/widgets/cadre_auth.dart';
 import 'package:poufiret/global/ui/notificateur.dart';
 import 'package:poufiret/fonctionnalites/auth/donnees/service_auth_firebase.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
@@ -34,7 +34,8 @@ class _EcranPinOublieState extends ConsumerState<EcranPinOublie> {
 
   // Firebase Phone Auth : une instance par tentative de vérification, et
   // l'idToken obtenu une fois le numéro prouvé, consommé à l'étape finale.
-  final _serviceFirebase = ServiceAuthFirebase();
+  // Créé au premier envoi de SMS (pas à l'ouverture de l'écran).
+  late final _serviceFirebase = ServiceAuthFirebase();
   String? _idToken;
 
   @override
@@ -236,17 +237,60 @@ class _EcranPinOublieState extends ConsumerState<EcranPinOublie> {
       }
     });
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Code PIN oublié')),
-      body: SafeArea(
-        child: ConteneurAdaptatif(
-          child: switch (_etape) {
-            _Etape.telephone => _buildTelephone(),
-            _Etape.otp => _buildOtp(),
-            _Etape.nouveauPin ||
-            _Etape.confirmerPin => _buildNouveauPin(),
-          },
-        ),
+    final (titre, sousTitre) = switch (_etape) {
+      _Etape.telephone => (
+        'Code PIN oublié',
+        'Entrez votre numéro pour recevoir un code SMS.',
+      ),
+      _Etape.otp => (
+        'Code de vérification',
+        'Saisissez le code reçu par SMS.',
+      ),
+      _Etape.nouveauPin => (
+        'Nouveau code PIN',
+        'Choisissez un code à 4 chiffres.',
+      ),
+      _Etape.confirmerPin => (
+        'Confirmez votre PIN',
+        'Saisissez à nouveau votre code.',
+      ),
+    };
+    final numero = switch (_etape) {
+      _Etape.telephone => 1,
+      _Etape.otp => 2,
+      _Etape.nouveauPin || _Etape.confirmerPin => 3,
+    };
+    // Retour : étape précédente quand elle a un sens, sinon l'écran
+    // précédent.
+    final VoidCallback? retour = _enCours
+        ? null
+        : switch (_etape) {
+            _Etape.otp => () => setState(() {
+              _etape = _Etape.telephone;
+              _otp = '';
+              _erreur = false;
+            }),
+            _Etape.confirmerPin => () => setState(() {
+              _etape = _Etape.nouveauPin;
+              _nouveauPin = '';
+              _confirmation = '';
+              _erreur = false;
+            }),
+            _ => () => Navigator.of(context).pop(),
+          };
+
+    return CadreAuth(
+      titre: titre,
+      sousTitre: sousTitre,
+      etape: (numero: numero, total: 3),
+      onRetour: retour,
+      child: TransitionEtapes(
+        etape: _etape,
+        child: switch (_etape) {
+          _Etape.telephone => _buildTelephone(),
+          _Etape.otp => _buildOtp(),
+          _Etape.nouveauPin || _Etape.confirmerPin => _buildNouveauPin(),
+        },
       ),
     );
   }
@@ -258,40 +302,35 @@ class _EcranPinOublieState extends ConsumerState<EcranPinOublie> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Icon(Icons.lock_reset,
-              size: 56, color: Theme.of(context).colorScheme.primary),
-          const SizedBox(height: 24),
-          Text('Réinitialiser votre PIN',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 8),
-          Text('Entrez votre numéro pour recevoir un code SMS',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium),
-          const SizedBox(height: 24),
           TextFormField(
             controller: _telephone,
             keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.done,
+            onFieldSubmitted: (_) => _enCours ? null : _demanderOtp(),
             maxLength: 10,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.2,
+            ),
             decoration: const InputDecoration(
-              labelText: 'Téléphone',
-              prefixText: '+225 ',
+              hintText: 'Numéro de téléphone',
+              prefixIcon: PrefixeTelephone(),
               counterText: '',
-              border: OutlineInputBorder(),
             ),
             validator: (v) => (v == null || v.trim().length != 10)
                 ? 'Entre tes 10 chiffres'
                 : null,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           FilledButton(
             onPressed: _enCours ? null : _demanderOtp,
             child: _enCours
                 ? const SizedBox(
                     height: 20,
                     width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2))
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
                 : const Text('Recevoir le code'),
           ),
         ],
@@ -303,36 +342,29 @@ class _EcranPinOublieState extends ConsumerState<EcranPinOublie> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.sms_outlined,
-            size: 56, color: Theme.of(context).colorScheme.primary),
+        PastilleTelephone(_telephoneComplet),
         const SizedBox(height: 24),
-        Text('Code de vérification',
-            style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8),
-        Text('Code envoyé au $_telephoneComplet',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                )),
-        const SizedBox(height: 32),
-        PointsPin(
-          remplis: _otp.length,
-          total: _longueurCodeSms,
-          erreur: _erreur,
-        ),
-        const SizedBox(height: 32),
+        CasesCode(code: _otp, longueur: _longueurCodeSms, erreur: _erreur),
+        const SizedBox(height: 24),
         if (_enCours)
-          const CircularProgressIndicator()
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: CircularProgressIndicator(),
+          )
         else ...[
-          ClavierNumerique(onChiffre: _onOtp, onSupprimer: () {
-            if (_otp.isNotEmpty) {
-              setState(() => _otp = _otp.substring(0, _otp.length - 1));
-            }
-          }),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: _renvoyerCode,
-            child: const Text('Renvoyer le code'),
+          ClavierNumerique(
+            onChiffre: _onOtp,
+            onSupprimer: () {
+              if (_otp.isNotEmpty) {
+                setState(() => _otp = _otp.substring(0, _otp.length - 1));
+              }
+            },
+          ),
+          const SizedBox(height: 4),
+          LienAuth(
+            question: 'Rien reçu ?',
+            action: 'Renvoyer le code',
+            onTap: _renvoyerCode,
           ),
         ],
       ],
@@ -345,26 +377,14 @@ class _EcranPinOublieState extends ConsumerState<EcranPinOublie> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(Icons.lock_outline,
-            size: 56, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(height: 24),
-        Text(
-          enConfirmation ? 'Confirmez votre PIN' : 'Nouveau code PIN',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
         const SizedBox(height: 8),
-        Text(
-          enConfirmation
-              ? 'Saisissez à nouveau votre code'
-              : 'Choisissez un code à 4 chiffres',
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        const SizedBox(height: 32),
         PointsPin(remplis: courant.length, erreur: _erreur),
-        const SizedBox(height: 32),
+        const SizedBox(height: 28),
         if (_enCours)
-          const CircularProgressIndicator()
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: CircularProgressIndicator(),
+          )
         else
           ClavierNumerique(onChiffre: _onPin, onSupprimer: _onSupprimerPin),
       ],

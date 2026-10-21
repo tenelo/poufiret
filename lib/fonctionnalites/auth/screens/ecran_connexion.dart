@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
 import 'package:poufiret/global/network/providers.dart';
-import 'package:poufiret/global/responsive/conteneur_adaptatif.dart';
+import 'package:poufiret/fonctionnalites/auth/widgets/cadre_auth.dart';
 import 'package:poufiret/global/ui/notificateur.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/ecran_inscription.dart';
@@ -153,16 +153,55 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
       }
     });
 
-    return Scaffold(
-      body: SafeArea(
-        child: ConteneurAdaptatif(
-          child: _etape == _Etape.telephone
-              ? _buildTelephone(enCours)
-              : _buildPin(enCours),
-        ),
+    final surPin = _etape == _Etape.pin;
+    // Étape PIN : retour au numéro. Étape numéro : retour à l'écran
+    // précédent s'il y en a un (connexion ouverte depuis le menu).
+    final VoidCallback? retour = surPin
+        ? (enCours ? null : _revenirAuTelephone)
+        : Navigator.of(context).canPop()
+        ? () => Navigator.of(context).pop()
+        : null;
+
+    return CadreAuth(
+      titre: surPin ? 'Votre code PIN' : 'Bienvenue',
+      sousTitre: surPin
+          ? 'Saisissez les 4 chiffres de votre code.'
+          : 'Connectez-vous avec votre numéro de téléphone.',
+      onRetour: retour,
+      pied: surPin
+          ? LienAuth(
+              action: 'Code PIN oublié ?',
+              onTap: enCours
+                  ? null
+                  : () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const EcranPinOublie()),
+                    ),
+            )
+          : LienAuth(
+              question: 'Pas encore de compte ?',
+              action: 'Créer un compte',
+              onTap: enCours
+                  ? null
+                  : () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const EcranInscription(),
+                      ),
+                    ),
+            ),
+      child: TransitionEtapes(
+        etape: _etape,
+        child: surPin ? _buildPin(enCours) : _buildTelephone(enCours),
       ),
     );
   }
+
+  void _revenirAuTelephone() => setState(() {
+    _etape = _Etape.telephone;
+    _pin = '';
+    _erreurPin = false;
+  });
 
   Widget _buildTelephone(bool enCours) {
     return Form(
@@ -171,28 +210,27 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            'Poufiret',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(height: 32),
           TextFormField(
             controller: _telephone,
             keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.done,
+            onFieldSubmitted: (_) => enCours ? null : _continuer(),
             maxLength: 10,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.2,
+            ),
             decoration: const InputDecoration(
-              labelText: 'Téléphone',
-              prefixText: '+225 ',
+              hintText: 'Numéro de téléphone',
+              prefixIcon: PrefixeTelephone(),
               counterText: '',
-              border: OutlineInputBorder(),
             ),
             validator: (v) => (v == null || v.trim().length != 10)
                 ? 'Entre tes 10 chiffres'
                 : null,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 20),
           FilledButton(
             onPressed: enCours ? null : _continuer,
             child: enCours
@@ -203,16 +241,6 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
                   )
                 : const Text('Continuer'),
           ),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: enCours
-                ? null
-                : () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const EcranInscription()),
-                  ),
-            child: const Text('Pas de compte ? Créer un compte'),
-          ),
         ],
       ),
     );
@@ -222,36 +250,10 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: enCours
-                ? null
-                : () => setState(() {
-                    _etape = _Etape.telephone;
-                    _pin = '';
-                    _erreurPin = false;
-                  }),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Entrez votre code PIN',
-          style: Theme.of(context).textTheme.titleLarge,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          _telephoneComplet,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.primary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 32),
+        PastilleTelephone(_telephoneComplet),
+        const SizedBox(height: 28),
         PointsPin(remplis: _pin.length, erreur: _erreurPin),
-        const SizedBox(height: 32),
+        const SizedBox(height: 28),
         if (enCours)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 24),
@@ -259,21 +261,49 @@ class _EcranConnexionState extends ConsumerState<EcranConnexion> {
           )
         else ...[
           ClavierNumerique(onChiffre: _onChiffre, onSupprimer: _onSupprimer),
-          const SizedBox(height: 16),
-          if (_empreinteVisible)
-            FilledButton.icon(
-              onPressed: _deverrouillerEmpreinte,
-              icon: const Icon(Icons.fingerprint),
-              label: const Text('Se connecter avec l\'empreinte'),
-            ),
-          TextButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const EcranPinOublie()),
-            ),
-            child: const Text('Code PIN oublié ?'),
-          ),
+          if (_empreinteVisible) ...[
+            const SizedBox(height: 16),
+            _BoutonEmpreinte(onTap: _deverrouillerEmpreinte),
+          ],
         ],
+      ],
+    );
+  }
+}
+
+/// Déverrouillage par empreinte : grand bouton rond, libellé dessous.
+class _BoutonEmpreinte extends StatelessWidget {
+  const _BoutonEmpreinte({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        Material(
+          color: theme.colorScheme.primaryContainer,
+          shape: const CircleBorder(),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Icon(
+                Icons.fingerprint_rounded,
+                size: 34,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          "Se connecter avec l'empreinte",
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
       ],
     );
   }

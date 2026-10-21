@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
-import 'package:poufiret/global/responsive/conteneur_adaptatif.dart';
+import 'package:poufiret/fonctionnalites/auth/widgets/cadre_auth.dart';
 import 'package:poufiret/global/ui/notificateur.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
 import 'package:poufiret/fonctionnalites/auth/widgets/clavier_numerique.dart';
@@ -147,41 +147,48 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
   @override
   Widget build(BuildContext context) {
 
+    final (titre, sousTitre, numero) = switch (_etape) {
+      _Etape.ancien => (
+        'Code PIN actuel',
+        widget.bloquant
+            ? 'Entrez le code fourni par l\'administrateur.'
+            : 'Entrez votre code PIN actuel.',
+        1,
+      ),
+      _Etape.nouveau => (
+        'Nouveau code PIN',
+        'Choisissez un nouveau code à 4 chiffres.',
+        2,
+      ),
+      _Etape.confirmer => (
+        'Confirmez le code',
+        'Saisissez à nouveau votre nouveau code.',
+        3,
+      ),
+    };
+
     return PopScope(
       canPop: !widget.bloquant,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Changer le code PIN'),
-          automaticallyImplyLeading: !widget.bloquant,
-        ),
-        body: SafeArea(
-          child: ConteneurAdaptatif(
-            child: _buildEtape(),
-          ),
-        ),
+      child: CadreAuth(
+        titre: titre,
+        sousTitre: sousTitre,
+        etape: (numero: numero, total: 3),
+        // Changement imposé : on ne peut pas quitter l'écran.
+        onRetour:
+            widget.bloquant || _enCours || !Navigator.of(context).canPop()
+            ? null
+            : () => Navigator.of(context).pop(),
+        child: TransitionEtapes(etape: _etape, child: _buildEtape()),
       ),
     );
   }
 
   Widget _buildEtape() {
-    final (titre, sousTitre, courant) = switch (_etape) {
-      _Etape.ancien => (
-          'Code PIN actuel',
-          widget.bloquant
-              ? 'Entrez le code fourni par l\'administrateur'
-              : 'Entrez votre code PIN actuel',
-          _ancien,
-        ),
-      _Etape.nouveau => (
-          'Nouveau code PIN',
-          'Choisissez un nouveau code à 4 chiffres',
-          _nouveau,
-        ),
-      _Etape.confirmer => (
-          'Confirmez le code',
-          'Saisissez à nouveau votre nouveau code',
-          _confirmation,
-        ),
+    final theme = Theme.of(context);
+    final courant = switch (_etape) {
+      _Etape.ancien => _ancien,
+      _Etape.nouveau => _nouveau,
+      _Etape.confirmer => _confirmation,
     };
 
     return Column(
@@ -191,37 +198,32 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context)
-                  .colorScheme
-                  .primaryContainer
-                  .withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(12),
+              color: theme.colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(14),
             ),
             child: Row(
               children: [
-                const Icon(Icons.info_outline, size: 20),
+                Icon(
+                  Icons.shield_outlined,
+                  size: 20,
+                  color: theme.colorScheme.primary,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     'Pour votre sécurité, vous devez définir votre propre '
                     'code PIN avant de continuer.',
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 24),
-        ],
-        Icon(Icons.lock_outline,
-            size: 56, color: Theme.of(context).colorScheme.primary),
-        const SizedBox(height: 24),
-        Text(titre, style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8),
-        Text(sousTitre,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium),
-        const SizedBox(height: 32),
+        ] else
+          const SizedBox(height: 8),
         PointsPin(remplis: courant.length, erreur: _erreur),
         if (_messageErr != null) ...[
           const SizedBox(height: 16),
@@ -230,16 +232,19 @@ class _EcranChangerPinState extends ConsumerState<EcranChangerPin> {
             child: Text(
               _messageErr!,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.error,
-                fontWeight: FontWeight.w500,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.error,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
         ],
-        const SizedBox(height: 32),
+        const SizedBox(height: 28),
         if (_enCours)
-          const CircularProgressIndicator()
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: CircularProgressIndicator(),
+          )
         else
           ClavierNumerique(onChiffre: _onChiffre, onSupprimer: _onSupprimer),
       ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:poufiret/fonctionnalites/auth/widgets/cadre_auth.dart';
 import 'package:poufiret/fonctionnalites/auth/widgets/service_biometrie.dart';
 
 /// Propose (une seule fois) d'activer le déverrouillage par empreinte,
@@ -21,26 +22,15 @@ Future<bool> proposerActivationBiometrie({
   final veutActiver = await showDialog<bool>(
     context: context,
     barrierDismissible: false,
-    builder: (ctx) => AlertDialog(
-      icon: Icon(Icons.fingerprint,
-          size: 48, color: Theme.of(ctx).colorScheme.primary),
-      title: const Text('Activer l\'empreinte ?'),
-      content: const Text(
-        'Déverrouillez Poufiret plus rapidement avec votre empreinte '
-        'digitale, sans retaper votre code PIN.',
-        textAlign: TextAlign.center,
-      ),
-      actionsAlignment: MainAxisAlignment.spaceEvenly,
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, false),
-          child: const Text('Non merci'),
-        ),
-        FilledButton(
-          onPressed: () => Navigator.pop(ctx, true),
-          child: const Text('Activer'),
-        ),
-      ],
+    builder: (ctx) => DialogueAuth(
+      icone: Icons.fingerprint_rounded,
+      titre: 'Activer l\'empreinte ?',
+      texte: 'Déverrouillez Poufiret plus rapidement avec votre empreinte '
+          'digitale, sans retaper votre code PIN.',
+      actionPrincipale: 'Activer',
+      onPrincipale: () => Navigator.pop(ctx, true),
+      actionSecondaire: 'Non merci',
+      onSecondaire: () => Navigator.pop(ctx, false),
     ),
   );
 

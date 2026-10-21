@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
-import 'package:poufiret/global/responsive/conteneur_adaptatif.dart';
+import 'package:poufiret/fonctionnalites/auth/widgets/cadre_auth.dart';
 import 'package:poufiret/global/ui/notificateur.dart';
 import 'package:poufiret/fonctionnalites/auth/donnees/service_auth_firebase.dart';
 import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
@@ -45,7 +45,8 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
   // Firebase Phone Auth : une instance par tentative de vérification, et
   // l'idToken obtenu une fois le numéro prouvé (saisie manuelle ou
   // vérification automatique Android), consommé à l'étape finale.
-  final _serviceFirebase = ServiceAuthFirebase();
+  // Créé au premier envoi de SMS (pas à l'ouverture de l'écran).
+  late final _serviceFirebase = ServiceAuthFirebase();
   String? _idToken;
 
   @override
@@ -294,16 +295,67 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
       }
     });
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Créer un compte'), centerTitle: true),
-      body: SafeArea(
-        child: ConteneurAdaptatif(
-          child: switch (_etape) {
-            _Etape.infos => _buildInfos(),
-            _Etape.otp => _buildOtp(),
-            _Etape.nouveauPin || _Etape.confirmerPin => _buildPin(),
-          },
-        ),
+    final (titre, sousTitre) = switch (_etape) {
+      _Etape.infos => (
+        'Créer un compte',
+        'Quelques informations et c\'est parti.',
+      ),
+      _Etape.otp => (
+        'Code de vérification',
+        'Saisissez le code reçu par SMS.',
+      ),
+      _Etape.nouveauPin => (
+        'Créez votre code PIN',
+        'Choisissez un code à 4 chiffres.',
+      ),
+      _Etape.confirmerPin => (
+        'Confirmez votre PIN',
+        'Saisissez à nouveau votre code.',
+      ),
+    };
+    final numero = switch (_etape) {
+      _Etape.infos => 1,
+      _Etape.otp => 2,
+      _Etape.nouveauPin || _Etape.confirmerPin => 3,
+    };
+    // Retour : étape précédente quand elle a un sens, sinon l'écran
+    // précédent.
+    final VoidCallback? retour = _enCours
+        ? null
+        : switch (_etape) {
+            _Etape.otp => () => setState(() {
+              _etape = _Etape.infos;
+              _otp = '';
+              _erreur = false;
+            }),
+            _Etape.confirmerPin => () => setState(() {
+              _etape = _Etape.nouveauPin;
+              _nouveauPin = '';
+              _confirmation = '';
+              _erreur = false;
+            }),
+            _ => () => Navigator.of(context).pop(),
+          };
+
+    return CadreAuth(
+      titre: titre,
+      sousTitre: sousTitre,
+      etape: (numero: numero, total: 3),
+      onRetour: retour,
+      pied: _etape == _Etape.infos
+          ? LienAuth(
+              question: 'Déjà un compte ?',
+              action: 'Se connecter',
+              onTap: _enCours ? null : () => Navigator.of(context).pop(),
+            )
+          : null,
+      child: TransitionEtapes(
+        etape: _etape,
+        child: switch (_etape) {
+          _Etape.infos => _buildInfos(),
+          _Etape.otp => _buildOtp(),
+          _Etape.nouveauPin || _Etape.confirmerPin => _buildPin(),
+        },
       ),
     );
   }
@@ -317,55 +369,60 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
           TextFormField(
             controller: _nom,
             textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.next,
             decoration: const InputDecoration(
-              labelText: 'Nom *',
-              border: OutlineInputBorder(),
+              labelText: 'Nom',
+              prefixIcon: Icon(Icons.person_outline_rounded),
             ),
             validator: (v) =>
                 (v == null || v.trim().isEmpty) ? 'Entre ton nom' : null,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           TextFormField(
             controller: _prenom,
             textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.next,
             decoration: const InputDecoration(
-              labelText: 'Prénoms *',
-              border: OutlineInputBorder(),
+              labelText: 'Prénoms',
+              prefixIcon: Icon(Icons.badge_outlined),
             ),
             validator: (v) =>
                 (v == null || v.trim().isEmpty) ? 'Entre ton prénom' : null,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           TextFormField(
             controller: _telephone,
             keyboardType: TextInputType.number,
             maxLength: 10,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.2,
+            ),
             decoration: const InputDecoration(
-              labelText: 'Téléphone *',
-              prefixText: '+225 ',
+              hintText: 'Numéro de téléphone',
+              prefixIcon: PrefixeTelephone(),
               counterText: '',
-              border: OutlineInputBorder(),
             ),
             validator: (v) => (v == null || v.trim().length != 10)
                 ? 'Entre tes 10 chiffres'
                 : null,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           ChampDepartement(
             valeur: _departement,
             libelle: 'Votre département',
             obligatoire: true,
             onChange: (v) => setState(() => _departement = v),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 18),
           _BlocFacultatif(
             trancheAge: _trancheAge,
             sexe: _sexe,
             onTrancheAge: (v) => setState(() => _trancheAge = v),
             onSexe: (v) => setState(() => _sexe = v),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 22),
           FilledButton(
             onPressed: _enCours ? null : _demarrer,
             child: _enCours
@@ -374,7 +431,7 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Text('Continuer'),
+                : const Text('Recevoir le code'),
           ),
         ],
       ),
@@ -385,33 +442,15 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          Icons.sms_outlined,
-          size: 56,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        PastilleTelephone(_telephoneComplet),
         const SizedBox(height: 24),
-        Text(
-          'Code de vérification',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Code envoyé au $_telephoneComplet',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.primary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 32),
-        PointsPin(
-          remplis: _otp.length,
-          total: _longueurCodeSms,
-          erreur: _erreur,
-        ),
-        const SizedBox(height: 32),
+        CasesCode(code: _otp, longueur: _longueurCodeSms, erreur: _erreur),
+        const SizedBox(height: 24),
         if (_enCours)
-          const CircularProgressIndicator()
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: CircularProgressIndicator(),
+          )
         else ...[
           ClavierNumerique(
             onChiffre: _onOtp,
@@ -421,10 +460,11 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
               }
             },
           ),
-          const SizedBox(height: 8),
-          TextButton(
-            onPressed: _renvoyerCode,
-            child: const Text('Renvoyer le code'),
+          const SizedBox(height: 4),
+          LienAuth(
+            question: 'Rien reçu ?',
+            action: 'Renvoyer le code',
+            onTap: _renvoyerCode,
           ),
         ],
       ],
@@ -437,29 +477,14 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          Icons.lock_outline,
-          size: 56,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-        const SizedBox(height: 24),
-        Text(
-          enConfirmation ? 'Confirmez votre PIN' : 'Créez votre code PIN',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
         const SizedBox(height: 8),
-        Text(
-          enConfirmation
-              ? 'Saisissez à nouveau votre code'
-              : 'Choisissez un code à 4 chiffres',
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        const SizedBox(height: 32),
         PointsPin(remplis: courant.length, erreur: _erreur),
-        const SizedBox(height: 32),
+        const SizedBox(height: 28),
         if (_enCours)
-          const CircularProgressIndicator()
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: CircularProgressIndicator(),
+          )
         else
           ClavierNumerique(onChiffre: _onPin, onSupprimer: _onSupprimerPin),
       ],
@@ -472,8 +497,8 @@ class _EcranInscriptionState extends ConsumerState<EcranInscription> {
 /// Volontairement mis a l'ecart du reste du formulaire et introduit par
 /// un rappel qu'il n'est pas obligatoire — mais utile pour proposer un
 /// contenu pertinent. Sans ce cadrage, demander l'age et le sexe fait
-/// fuir a l'inscription.
-class _BlocFacultatif extends StatelessWidget {
+/// fuir a l'inscription. Replie par defaut : le formulaire reste court.
+class _BlocFacultatif extends StatefulWidget {
   const _BlocFacultatif({
     required this.trancheAge,
     required this.sexe,
@@ -501,66 +526,122 @@ class _BlocFacultatif extends StatelessWidget {
   };
 
   @override
+  State<_BlocFacultatif> createState() => _BlocFacultatifState();
+}
+
+class _BlocFacultatifState extends State<_BlocFacultatif> {
+  late bool _ouvert = widget.trancheAge != null || widget.sexe != null;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(18),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Icon(Icons.tune, size: 18, color: theme.colorScheme.primary),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Pour mieux vous servir (facultatif)',
-                  style: theme.textTheme.titleSmall,
-                ),
+          InkWell(
+            onTap: () => setState(() => _ouvert = !_ouvert),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.tune_rounded,
+                    size: 20,
+                    color: theme.colorScheme.primary,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Pour mieux vous servir',
+                      style: theme.textTheme.titleSmall,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.surface,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                    child: Text(
+                      'Facultatif',
+                      style: theme.textTheme.labelSmall,
+                    ),
+                  ),
+                  AnimatedRotation(
+                    turns: _ouvert ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      Icons.expand_more_rounded,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Ces informations ne sont pas obligatoires, mais elles nous '
-            'aident à vous proposer les commerces les plus pertinents près '
-            'de chez vous.',
-            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(height: 14),
-          DropdownButtonFormField<String>(
-            initialValue: trancheAge,
-            isExpanded: true,
-            decoration: const InputDecoration(
-              labelText: 'Tranche d\'âge',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.cake_outlined),
             ),
-            items: [
-              for (final e in _tranches.entries)
-                DropdownMenuItem(value: e.key, child: Text(e.value)),
-            ],
-            onChanged: onTrancheAge,
           ),
-          const SizedBox(height: 12),
-          DropdownButtonFormField<String>(
-            initialValue: sexe,
-            isExpanded: true,
-            decoration: const InputDecoration(
-              labelText: 'Sexe',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.person_outline),
-            ),
-            items: [
-              for (final e in _sexes.entries)
-                DropdownMenuItem(value: e.key, child: Text(e.value)),
-            ],
-            onChanged: onSexe,
+          AnimatedSize(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOut,
+            alignment: Alignment.topCenter,
+            child: !_ouvert
+                ? const SizedBox(width: double.infinity)
+                : Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Ces informations ne sont pas obligatoires, mais '
+                          'elles nous aident à vous proposer les commerces '
+                          'les plus pertinents près de chez vous.',
+                          style: theme.textTheme.bodySmall,
+                        ),
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<String>(
+                          initialValue: widget.trancheAge,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Tranche d\'âge',
+                            prefixIcon: Icon(Icons.cake_outlined),
+                          ),
+                          items: [
+                            for (final e in _BlocFacultatif._tranches.entries)
+                              DropdownMenuItem(
+                                value: e.key,
+                                child: Text(e.value),
+                              ),
+                          ],
+                          onChanged: widget.onTrancheAge,
+                        ),
+                        const SizedBox(height: 12),
+                        DropdownButtonFormField<String>(
+                          initialValue: widget.sexe,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Sexe',
+                            prefixIcon: Icon(Icons.wc_outlined),
+                          ),
+                          items: [
+                            for (final e in _BlocFacultatif._sexes.entries)
+                              DropdownMenuItem(
+                                value: e.key,
+                                child: Text(e.value),
+                              ),
+                          ],
+                          onChanged: widget.onSexe,
+                        ),
+                      ],
+                    ),
+                  ),
           ),
         ],
       ),
