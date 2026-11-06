@@ -15,7 +15,7 @@ import 'package:poufiret/global/ui/theme_poufiret.dart';
 /// Charge la vraie police de l'appli (sinon les tests utilisent une police
 /// de substitution aux glyphes carrés, bien plus large).
 Future<void> _chargerPolice() async {
-  final police = FontLoader(ThemePoufiret.police);
+  final chargeur = FontLoader(police);
   for (final graisse in [
     'Regular',
     'Medium',
@@ -26,9 +26,9 @@ Future<void> _chargerPolice() async {
     final octets = File(
       'assets/fonts/PlusJakartaSans-$graisse.ttf',
     ).readAsBytesSync();
-    police.addFont(Future.value(ByteData.sublistView(octets)));
+    chargeur.addFont(Future.value(ByteData.sublistView(octets)));
   }
-  await police.load();
+  await chargeur.load();
 }
 
 final _produit = Plat.fromJson(const {
@@ -173,7 +173,7 @@ void main() {
           t.labelLarge, t.labelMedium, t.labelSmall,
         ];
         for (final style in tous) {
-          expect(style!.fontFamily, ThemePoufiret.police);
+          expect(style!.fontFamily, police);
           expect(style.fontWeight!.value, lessThanOrEqualTo(600));
         }
         for (final style in [t.bodyLarge, t.bodyMedium, t.bodySmall]) {

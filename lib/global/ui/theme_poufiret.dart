@@ -10,10 +10,15 @@ import '../config/config.dart';
 /// Appliqué via `MaterialApp.theme` / `darkTheme` dans main.dart. Tous les
 /// écrans qui s'appuient sur `Theme.of(context)` (couleurs de texte, `Card`,
 /// boutons, champs, barres de navigation…) en héritent automatiquement.
+// ===== CHOIX DE LA POLICE (décommenter UNE seule ligne) =====
+const String police = 'PlusJakartaSans';
+// const String police = 'Inter';
+// const String police = 'Manrope';
+// const String police = 'DMSans';
+// const String police = 'RobotoFlex';
+
 class ThemePoufiret {
   ThemePoufiret._();
-
-  static const String police = 'PlusJakartaSans';
 
   static const double rayonCarte = 22;
   static const double rayonBouton = 16;

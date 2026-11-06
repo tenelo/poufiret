@@ -117,6 +117,45 @@ flutter:
           weight: 700
         - asset: assets/fonts/PlusJakartaSans-ExtraBold.ttf
           weight: 800
+    # Polices au choix (voir `police` dans lib/global/ui/theme_poufiret.dart).
+    # Graisses fixes 400-700 extraites des polices variables de
+    # github.com/google/fonts ; licences dans assets/fonts/*-OFL.txt.
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope-Regular.ttf
+        - asset: assets/fonts/Manrope-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Manrope-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Manrope-Bold.ttf
+          weight: 700
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/DMSans-Regular.ttf
+        - asset: assets/fonts/DMSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/DMSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/DMSans-Bold.ttf
+          weight: 700
+    - family: RobotoFlex
+      fonts:
+        - asset: assets/fonts/RobotoFlex-Regular.ttf
+        - asset: assets/fonts/RobotoFlex-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/RobotoFlex-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/RobotoFlex-Bold.ttf
+          weight: 700
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
