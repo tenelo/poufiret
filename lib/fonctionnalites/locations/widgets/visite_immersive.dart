@@ -221,7 +221,7 @@ class _Miniature extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: theme.textTheme.labelSmall?.copyWith(
-                fontWeight: active ? FontWeight.w700 : FontWeight.w400,
+                fontWeight: active ? FontWeight.w600 : FontWeight.w400,
                 color: active ? couleur : null,
               ),
             ),

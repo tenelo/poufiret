@@ -115,7 +115,7 @@ class _Fiche extends ConsumerWidget {
                           Text(
                             l.titre,
                             style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           if (l.localisation.isNotEmpty) ...[
@@ -151,7 +151,7 @@ class _Fiche extends ConsumerWidget {
                                 formatLoyer(l.loyer),
                                 style: theme.textTheme.titleLarge?.copyWith(
                                   color: theme.colorScheme.primary,
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -202,7 +202,7 @@ class _Fiche extends ConsumerWidget {
                             ),
                           if (l.surfaceM2 != null && l.surfaceM2! > 0)
                             CaracteristiqueFiche(
-                              Icons.square_foot,
+                              Icons.square_foot_outlined,
                               '${l.surfaceM2} m²',
                             ),
                           CaracteristiqueFiche(

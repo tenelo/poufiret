@@ -200,14 +200,14 @@ class _CarteForfait extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.card_giftcard,
+                        Icon(Icons.card_giftcard_outlined,
                             size: 13, color: Config.couleurSucces),
                         const SizedBox(width: 4),
                         Text(
                           'Crédit disponible — offert',
                           style: TextStyle(
                             fontSize: 11,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                             color: Config.couleurSucces,
                           ),
                         ),
@@ -221,14 +221,14 @@ class _CarteForfait extends StatelessWidget {
                     child: Text(
                       formule.nom,
                       style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
+                          ?.copyWith(fontWeight: FontWeight.w600),
                     ),
                   ),
                   Text(
                     '${formule.prix} FCFA',
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: Config.couleurPrimaire,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
@@ -324,7 +324,7 @@ class _Ligne extends StatelessWidget {
             Icon(icone, size: 15, color: Config.couleurTexteSecondaire),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(texte, style: const TextStyle(fontSize: 13)),
+              child: Text(texte, style: const TextStyle(fontSize: 12)),
             ),
           ],
         ),
@@ -490,7 +490,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                                   ? 'Forfait ${f.nom} — Offert'
                                   : 'Forfait ${f.nom} — ${f.prix} FCFA',
                               style: const TextStyle(
-                                  fontWeight: FontWeight.w700),
+                                  fontWeight: FontWeight.w600),
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -522,7 +522,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Icon(Icons.card_giftcard,
+                              Icon(Icons.card_giftcard_outlined,
                                   color: Config.couleurSucces),
                               const SizedBox(width: 10),
                               Expanded(
@@ -533,7 +533,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                                     Text(
                                       'Publicité offerte',
                                       style: TextStyle(
-                                        fontWeight: FontWeight.w700,
+                                        fontWeight: FontWeight.w600,
                                         color: Config.couleurSucces,
                                       ),
                                     ),
@@ -543,7 +543,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                                       'à votre crédit "${f.nom}" : elle sera '
                                       'diffusée immédiatement, sans '
                                       'paiement.',
-                                      style: const TextStyle(fontSize: 13),
+                                      style: const TextStyle(fontSize: 12),
                                     ),
                                   ],
                                 ),
@@ -591,7 +591,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                                     Expanded(
                                       child: Text(
                                         _detailEmplacements[type] ?? type,
-                                        style: const TextStyle(fontSize: 13),
+                                        style: const TextStyle(fontSize: 12),
                                       ),
                                     ),
                                   ],
@@ -653,7 +653,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : Icon(_creditId != null
-                              ? Icons.card_giftcard
+                              ? Icons.card_giftcard_outlined
                               : Icons.send_outlined),
                       label: Text(_envoiEnCours
                           ? 'Envoi…'
@@ -701,7 +701,7 @@ class _ZoneAffiche extends StatelessWidget {
                   Text(
                     'Appuyez pour choisir votre affiche',
                     style: TextStyle(
-                        fontSize: 13,
+                        fontSize: 12,
                         color: Config.couleurTexteSecondaire),
                   ),
                 ],
@@ -717,7 +717,7 @@ class _ZoneAffiche extends StatelessWidget {
                       color: Colors.black54,
                       shape: const CircleBorder(),
                       child: IconButton(
-                        icon: const Icon(Icons.edit,
+                        icon: const Icon(Icons.edit_outlined,
                             size: 18, color: Colors.white),
                         tooltip: 'Changer',
                         onPressed: onChoisir,

@@ -208,7 +208,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
               height: 18,
               child: CircularProgressIndicator(strokeWidth: 2),
             )
-          : const Icon(Icons.my_location),
+          : const Icon(Icons.my_location_outlined),
       label: Text(_depotEnCours ? 'Envoi…' : 'Déposer ma localisation'),
     );
   }
@@ -402,7 +402,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
             texte,
             style: theme.textTheme.titleMedium?.copyWith(
               color: couleur,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -447,7 +447,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
             _libelleStatut[_ordreStatuts[i]] ?? _ordreStatuts[i],
             style: actif
                 ? theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   )
                 : theme.textTheme.bodyMedium?.copyWith(
                     color: atteint ? null : theme.disabledColor,
@@ -467,7 +467,7 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
       trailing: tel.isEmpty
           ? null
           : IconButton(
-              icon: const Icon(Icons.call),
+              icon: const Icon(Icons.call_outlined),
               onPressed: () => _appeler(tel),
             ),
     );

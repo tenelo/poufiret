@@ -226,7 +226,7 @@ class _PageState extends ConsumerState<_Page> {
                   ? null
                   : TextButton.icon(
                       onPressed: () => ouvrirLien(context, uriAppel(telephone)),
-                      icon: const Icon(Icons.call, size: 18),
+                      icon: const Icon(Icons.call_outlined, size: 18),
                       label: const Text('Appeler la pharmacie'),
                     ))
             : p.commandable && !p.toutEpuise && p.variantesActives.isEmpty
@@ -398,7 +398,7 @@ class _EnteteCommerce extends StatelessWidget {
                     Text(
                       c.nom,
                       style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     if (c.localisation.isNotEmpty)
@@ -431,7 +431,7 @@ class _EnteteCommerce extends StatelessWidget {
                           : "Pharmacie de garde jusqu'au ${formatGarde(jusquAu)}",
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -446,7 +446,7 @@ class _EnteteCommerce extends StatelessWidget {
                   Expanded(
                     child: OutlinedButton.icon(
                       onPressed: () => ouvrirLien(context, uriAppel(telephone)),
-                      icon: const Icon(Icons.call, size: 18),
+                      icon: const Icon(Icons.call_outlined, size: 18),
                       label: const Text('Appeler'),
                     ),
                   ),
@@ -603,7 +603,7 @@ class _BarreCatalogue extends SliverPersistentHeaderDelegate {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),

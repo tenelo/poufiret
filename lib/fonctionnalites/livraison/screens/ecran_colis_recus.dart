@@ -29,8 +29,8 @@ class EcranColisRecus extends ConsumerWidget {
 
   IconData _icone(String statut) {
     if (statut == 'livree') return Icons.check_circle;
-    if (statut == 'annulee' || statut == 'refusee') return Icons.cancel;
-    return Icons.inventory_2;
+    if (statut == 'annulee' || statut == 'refusee') return Icons.cancel_outlined;
+    return Icons.inventory_2_outlined;
   }
 
   Color _couleur(String statut, ThemeData theme) {
@@ -128,7 +128,7 @@ class EcranColisRecus extends ConsumerWidget {
                                         Expanded(
                                           child: OutlinedButton.icon(
                                             icon: const Icon(
-                                                Icons.my_location, size: 18),
+                                                Icons.my_location_outlined, size: 18),
                                             label: const Text(
                                                 'Déposer ma position'),
                                             onPressed: () =>

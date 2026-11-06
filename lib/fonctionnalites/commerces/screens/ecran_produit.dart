@@ -283,7 +283,7 @@ class _FicheState extends ConsumerState<_Fiche> {
                           Text(
                             p.nom,
                             style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -292,7 +292,7 @@ class _FicheState extends ConsumerState<_Fiche> {
                             key: const ValueKey('prix-produit'),
                             style: theme.textTheme.titleLarge?.copyWith(
                               color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           if (mention.isNotEmpty)
@@ -446,7 +446,7 @@ class _BarreAction extends StatelessWidget {
       if (telephone.isEmpty) return const SizedBox.shrink();
       bouton = FilledButton.icon(
         onPressed: () => ouvrirLien(context, uriAppel(telephone)),
-        icon: const Icon(Icons.call),
+        icon: const Icon(Icons.call_outlined),
         label: const Text('Appeler la pharmacie'),
       );
     } else if (!p.commandable && !elevage) {
@@ -528,7 +528,7 @@ class _Section extends StatelessWidget {
             titre,
             style: Theme.of(
               context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 10),
           child,
@@ -616,7 +616,7 @@ class _SelecteurQuantite extends StatelessWidget {
                 key: const ValueKey('quantite-elevage'),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -635,7 +635,7 @@ class _SelecteurQuantite extends StatelessWidget {
           key: const ValueKey('total-elevage'),
           style: theme.textTheme.bodyLarge?.copyWith(
             color: theme.colorScheme.primary,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ],

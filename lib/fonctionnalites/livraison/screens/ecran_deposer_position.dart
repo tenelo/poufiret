@@ -128,7 +128,7 @@ class _EcranDeposerPositionState extends ConsumerState<EcranDeposerPosition> {
                       ? const SizedBox(
                           width: 18, height: 18,
                           child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Icon(Icons.my_location),
+                      : const Icon(Icons.my_location_outlined),
                   label: Text(_envoi
                       ? 'Envoi…'
                       : 'Utiliser ma position actuelle'),

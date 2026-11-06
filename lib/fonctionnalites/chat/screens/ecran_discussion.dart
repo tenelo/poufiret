@@ -255,7 +255,7 @@ class _Saisie extends StatelessWidget {
             const SizedBox(width: 8),
             IconButton.filled(
               onPressed: actif ? onEnvoyer : null,
-              icon: const Icon(Icons.send),
+              icon: const Icon(Icons.send_outlined),
               style: IconButton.styleFrom(
                 backgroundColor: const Color.fromARGB(
                   197,

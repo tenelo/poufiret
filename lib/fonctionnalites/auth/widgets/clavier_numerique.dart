@@ -100,7 +100,7 @@ class _Touche extends StatelessWidget {
             child: DefaultTextStyle.merge(
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontSize: 26,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: actif
                     ? theme.colorScheme.onSurface
                     : theme.colorScheme.onSurface.withValues(alpha: 0.4),

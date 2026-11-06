@@ -156,7 +156,7 @@ class _CarteDemandeState extends ConsumerState<_CarteDemande> {
                   child: Text(
                     d.objetNom.isEmpty ? d.natureLibelle : d.objetNom,
                     style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),

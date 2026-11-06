@@ -216,7 +216,7 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
             Text(
               widget.titre,
               style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: Config.couleurTexteSecondaire,
               ),
             ),
@@ -308,7 +308,7 @@ class _BlocCategorieState extends ConsumerState<_BlocCategorie> {
                   formatMontant(_totalCategorie),
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -554,7 +554,7 @@ class _ApercuLigne extends StatelessWidget {
             formatMontant(l.prixLigne),
             style: theme.textTheme.titleMedium?.copyWith(
               color: theme.colorScheme.primary,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -599,7 +599,7 @@ class _RefusValidation extends StatelessWidget {
                 : 'Commande ${chezCommercant(commercant)} non envoyée',
             style: theme.textTheme.titleSmall?.copyWith(
               color: Config.couleurErreur,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
             ),
           ),
           const SizedBox(height: 4),

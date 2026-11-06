@@ -234,7 +234,7 @@ class _Puce extends StatelessWidget {
               color:
                   actif ? theme.colorScheme.onPrimary : theme.colorScheme.primary)
           : null,
-      label: Text(label, style: const TextStyle(fontSize: 13)),
+      label: Text(label, style: const TextStyle(fontSize: 12)),
       selected: actif,
       onSelected: (_) => onTap(),
       visualDensity: VisualDensity.compact,

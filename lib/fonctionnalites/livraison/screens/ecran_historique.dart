@@ -59,7 +59,7 @@ class _EcranHistoriqueState extends ConsumerState<EcranHistorique> {
 
   IconData _icone(String statut) {
     if (statut == 'livree') return Icons.check_circle;
-    if (statut == 'annulee' || statut == 'refusee') return Icons.cancel;
+    if (statut == 'annulee' || statut == 'refusee') return Icons.cancel_outlined;
     return Icons.two_wheeler;
   }
 

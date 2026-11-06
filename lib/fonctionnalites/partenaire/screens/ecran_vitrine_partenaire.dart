@@ -325,7 +325,7 @@ class _Infos extends ConsumerWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  _Compteur(icone: Icons.visibility, valeur: p.nbVues),
+                  _Compteur(icone: Icons.visibility_outlined, valeur: p.nbVues),
                   const SizedBox(width: 16),
                   BoutonSocial(
                     actifInitial: p.estLikeParMoi,
@@ -407,7 +407,7 @@ class _Infos extends ConsumerWidget {
                 if (p.localisationLisible.isNotEmpty)
                   Row(
                     children: [
-                      Icon(Icons.place,
+                      Icon(Icons.place_outlined,
                           size: 18, color: theme.colorScheme.primary),
                       const SizedBox(width: 6),
                       Expanded(

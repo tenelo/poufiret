@@ -120,7 +120,7 @@ class _Fiche extends ConsumerWidget {
                           Text(
                             h.titre,
                             style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           if ((h.etablissement?.nom ?? '').isNotEmpty)
@@ -139,7 +139,7 @@ class _Fiche extends ConsumerWidget {
                                 formatPrixNuit(h.prixNuit),
                                 style: theme.textTheme.titleLarge?.copyWith(
                                   color: theme.colorScheme.primary,
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -167,7 +167,7 @@ class _Fiche extends ConsumerWidget {
                             CaracteristiqueFiche(Icons.bed_outlined, h.lits),
                           if (h.surfaceM2 != null && h.surfaceM2! > 0)
                             CaracteristiqueFiche(
-                              Icons.square_foot,
+                              Icons.square_foot_outlined,
                               '${h.surfaceM2} m²',
                             ),
                         ],

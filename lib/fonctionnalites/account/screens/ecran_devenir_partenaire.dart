@@ -238,7 +238,7 @@ class _EcranDevenirPartenaireState
                           height: 18,
                           child:
                               CircularProgressIndicator(strokeWidth: 2))
-                      : const Icon(Icons.send),
+                      : const Icon(Icons.send_outlined),
                   label: const Text('Envoyer ma demande'),
                 ),
               ),

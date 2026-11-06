@@ -91,7 +91,7 @@ class _Infos extends StatelessWidget {
         Text(
           r.nom,
           style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
           ),
         ),
         if (r.description.isNotEmpty) ...[
@@ -122,7 +122,7 @@ class _Infos extends StatelessWidget {
               leading: const Icon(Icons.phone_outlined),
               title: Text(t.key),
               subtitle: t.value.isEmpty ? null : Text(t.value),
-              trailing: Icon(Icons.call, color: Config.couleurSucces),
+              trailing: Icon(Icons.call_outlined, color: Config.couleurSucces),
               onTap: () => ouvrirLien(context, uriAppel(t.key)),
             ),
           if (r.whatsapp.isNotEmpty)
@@ -221,7 +221,7 @@ class _Titre extends StatelessWidget {
         texte,
         style: Theme.of(
           context,
-        ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+        ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -257,7 +257,7 @@ class _LigneHoraire extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final style = theme.textTheme.bodyMedium?.copyWith(
-      fontWeight: aujourdhui ? FontWeight.w700 : FontWeight.w400,
+      fontWeight: aujourdhui ? FontWeight.w600 : FontWeight.w400,
       color: aujourdhui ? theme.colorScheme.primary : null,
     );
     final note = horaire?.note ?? '';

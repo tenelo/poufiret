@@ -150,7 +150,7 @@ class TuileGrilleProduit extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -247,7 +247,7 @@ class LigneProduit extends StatelessWidget {
                         color: epuise
                             ? Config.couleurErreur
                             : couleurMention ?? Config.couleurTexteSecondaire,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   const SizedBox(height: 2),
@@ -255,7 +255,7 @@ class LigneProduit extends StatelessWidget {
                     prixLisible(p),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   // Sous le texte : « Appeler la pharmacie » tient sur un

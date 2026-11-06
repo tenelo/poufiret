@@ -106,13 +106,13 @@ class _CarteCredit extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.card_giftcard, size: 18, color: couleur),
+                Icon(Icons.card_giftcard_outlined, size: 18, color: couleur),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     credit.formuleNom,
                     style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ),
                 const SizedBox(width: 8),

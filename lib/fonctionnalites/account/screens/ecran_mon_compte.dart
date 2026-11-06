@@ -84,7 +84,7 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
                         Card(
                           child: ListTile(
                             leading: const CircleAvatar(
-                              child: Icon(Icons.person),
+                              child: Icon(Icons.person_outlined),
                             ),
                             title: Text(utilisateur.telephone),
                             subtitle: Text(
@@ -138,7 +138,7 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
                                               strokeWidth: 2,
                                             ),
                                           )
-                                        : const Icon(Icons.save),
+                                        : const Icon(Icons.save_outlined),
                                     label: const Text('Enregistrer'),
                                   ),
                                 ),
@@ -172,7 +172,9 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
                               if (!utilisateur.estPartenaire) ...[
                                 const Divider(height: 1),
                                 ListTile(
-                                  leading: const Icon(Icons.storefront),
+                                  leading: const Icon(
+                                    Icons.storefront_outlined,
+                                  ),
                                   title: const Text('Devenir partenaire'),
                                   subtitle: const Text(
                                     'Vendez vos produits ou services sur Poufiret.',

@@ -295,7 +295,7 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
                                       textes.pluriel,
                                     ),
                               style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w700),
+                                  ?.copyWith(fontWeight: FontWeight.w600),
                             ),
                           ),
                           OutlinedButton.icon(
@@ -413,7 +413,7 @@ class _Entete extends StatelessWidget {
                 child: Text(
                   l.nom,
                   style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),

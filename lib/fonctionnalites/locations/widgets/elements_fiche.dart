@@ -26,7 +26,7 @@ class SectionFiche extends StatelessWidget {
             titre,
             style: Theme.of(
               context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 10),
           child,
@@ -204,7 +204,7 @@ class BoutonsContact extends StatelessWidget {
           Expanded(
             child: OutlinedButton.icon(
               onPressed: () => ouvrirLien(context, uriAppel(telephone)),
-              icon: const Icon(Icons.call, size: 18),
+              icon: const Icon(Icons.call_outlined, size: 18),
               label: const Text('Appeler'),
             ),
           ),
@@ -310,7 +310,7 @@ class EncadreMontant extends StatelessWidget {
                   )
                 : theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
                   ),
           ),
           if (texte != null)

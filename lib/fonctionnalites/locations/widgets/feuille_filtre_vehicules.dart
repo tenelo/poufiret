@@ -94,7 +94,7 @@ class _FeuilleFiltreState extends ConsumerState<_FeuilleFiltre> {
               'Filtrer les véhicules',
               style: Theme.of(
                 context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
             _choix(

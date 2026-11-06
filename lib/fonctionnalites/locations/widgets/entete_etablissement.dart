@@ -62,7 +62,7 @@ class EnteteEtablissement extends ConsumerWidget {
               Text(
                 e.nom,
                 style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               if (e.nbEtoiles > 0 || e.typeEtablissementLibelle.isNotEmpty)

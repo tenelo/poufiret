@@ -237,7 +237,7 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
                     Text(
                       plat.nom,
                       style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     if (plat.tempsPreparationMin != null) ...[
@@ -270,7 +270,7 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
                         '${stock != null && stock > 0 ? ' · plus que $stock' : ''}',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
@@ -301,7 +301,7 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
                           secondary: Text(
                             formatMontant(prixVariante(plat, v)),
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -501,7 +501,7 @@ class _TitreGroupe extends StatelessWidget {
             child: Text(
               titre,
               style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),

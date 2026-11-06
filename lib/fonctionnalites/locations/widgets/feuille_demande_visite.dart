@@ -147,7 +147,7 @@ class _FeuilleDemandeVisiteState extends ConsumerState<FeuilleDemandeVisite> {
               Text(
                 'Demander une visite',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               if (widget.titre.isNotEmpty)

@@ -36,29 +36,43 @@ class ThemePoufiret {
   static TextTheme _texte() {
     final texte = Config.couleurTexte;
     final secondaire = Config.couleurTexteSecondaire;
-    TextStyle s(double taille, FontWeight graisse, double hauteur,
-            {Color? couleur, double espacement = 0}) =>
-        TextStyle(
-          fontFamily: police,
-          fontSize: taille,
-          fontWeight: graisse,
-          height: hauteur,
-          letterSpacing: espacement,
-          color: couleur ?? texte,
-        );
+    TextStyle s(
+      double taille,
+      FontWeight graisse,
+      double hauteur, {
+      Color? couleur,
+      double espacement = 0,
+    }) => TextStyle(
+      fontFamily: police,
+      fontSize: taille,
+      fontWeight: graisse,
+      height: hauteur,
+      letterSpacing: espacement,
+      color: couleur ?? texte,
+    );
+    // Style léger : titres en semi-gras (w600), texte courant en normal
+    // (w400), étiquettes en medium (w500) ; échelle limitée à
+    // 11 · 12 · 14 · 16 · 18 · 20 · 24 · 28 ; texte courant aéré (1,5) ;
+    // grands titres légèrement resserrés, petites étiquettes espacées.
     return TextTheme(
-      headlineLarge: s(29, FontWeight.w800, 1.15, espacement: -1),
-      headlineMedium: s(24, FontWeight.w800, 1.2, espacement: -0.8),
-      headlineSmall: s(20, FontWeight.w800, 1.25, espacement: -0.6),
-      titleLarge: s(18, FontWeight.w800, 1.3, espacement: -0.5),
-      titleMedium: s(16, FontWeight.w700, 1.35, espacement: -0.3),
-      titleSmall: s(14, FontWeight.w700, 1.35, espacement: -0.2),
-      bodyLarge: s(16, FontWeight.w500, 1.45),
-      bodyMedium: s(14, FontWeight.w500, 1.45),
-      bodySmall: s(12, FontWeight.w500, 1.4, couleur: secondaire),
-      labelLarge: s(14, FontWeight.w700, 1.3),
-      labelMedium: s(12, FontWeight.w700, 1.3),
-      labelSmall: s(11, FontWeight.w700, 1.3, couleur: secondaire),
+      headlineLarge: s(28, FontWeight.w600, 1.2, espacement: -0.6),
+      headlineMedium: s(24, FontWeight.w600, 1.25, espacement: -0.5),
+      headlineSmall: s(20, FontWeight.w600, 1.3, espacement: -0.4),
+      titleLarge: s(18, FontWeight.w600, 1.35, espacement: -0.3),
+      titleMedium: s(16, FontWeight.w600, 1.4, espacement: -0.2),
+      titleSmall: s(14, FontWeight.w600, 1.4, espacement: -0.1),
+      bodyLarge: s(16, FontWeight.w400, 1.5),
+      bodyMedium: s(14, FontWeight.w400, 1.5),
+      bodySmall: s(12, FontWeight.w400, 1.45, couleur: secondaire),
+      labelLarge: s(14, FontWeight.w600, 1.3),
+      labelMedium: s(12, FontWeight.w500, 1.3, espacement: 0.1),
+      labelSmall: s(
+        11,
+        FontWeight.w500,
+        1.3,
+        couleur: secondaire,
+        espacement: 0.3,
+      ),
     );
   }
 
@@ -73,6 +87,9 @@ class ThemePoufiret {
     final erreur = Config.couleurErreur;
     final ombre = Config.ombre.first.color;
     final textes = _texte();
+
+    /// Séparateurs : la bordure existante, adoucie (opacité 70 %).
+    final bordureLegere = bordure.withValues(alpha: 0.7);
 
     final schema = ColorScheme(
       brightness: luminosite,
@@ -105,12 +122,9 @@ class ThemePoufiret {
       borderRadius: BorderRadius.circular(rayonBouton),
     );
     const paddingBouton = EdgeInsets.symmetric(horizontal: 22, vertical: 15);
-    final texteBouton = textes.labelLarge?.copyWith(
-      fontSize: 15,
-      letterSpacing: -0.15,
-    );
+    final texteBouton = textes.labelLarge;
 
-    OutlineInputBorder bordureChamp(Color couleur, [double largeur = 1.5]) =>
+    OutlineInputBorder bordureChamp(Color couleur, [double largeur = 1]) =>
         OutlineInputBorder(
           borderRadius: BorderRadius.circular(rayonBouton),
           borderSide: BorderSide(color: couleur, width: largeur),
@@ -124,13 +138,13 @@ class ThemePoufiret {
       textTheme: textes,
       scaffoldBackgroundColor: fond,
       canvasColor: fond,
-      dividerColor: bordure,
+      dividerColor: bordureLegere,
       shadowColor: ombre,
       splashFactory: InkRipple.splashFactory,
     );
 
     return base.copyWith(
-      // ── Barre du haut : fondue dans le fond, titre très gras ────────
+      // ── Barre du haut : fondue dans le fond, titre semi-gras ────────
       appBarTheme: AppBarTheme(
         backgroundColor: fond,
         foregroundColor: texte,
@@ -143,19 +157,23 @@ class ThemePoufiret {
         // barres qui le fixent (visionneuse d'images sur fond noir…).
       ),
 
-      // ── Cartes : grands rayons, ombre douce, sans bordure ───────────
+      // ── Cartes : grands rayons, ombre diffuse et basse, sans bordure ─
       cardTheme: CardThemeData(
         color: surface,
         surfaceTintColor: Colors.transparent,
         shadowColor: ombre,
-        elevation: 3,
+        elevation: 1,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(rayonCarte),
         ),
       ),
 
-      dividerTheme: DividerThemeData(color: bordure, thickness: 1, space: 1),
+      dividerTheme: DividerThemeData(
+        color: bordureLegere,
+        thickness: 0.8,
+        space: 1,
+      ),
 
       // ── Boutons pleins : bleu de marque, rayon 16 ───────────────────
       filledButtonTheme: FilledButtonThemeData(
@@ -181,7 +199,7 @@ class ThemePoufiret {
         style: OutlinedButton.styleFrom(
           foregroundColor: texte,
           backgroundColor: surface,
-          side: BorderSide(color: bordure, width: 1.5),
+          side: BorderSide(color: bordure),
           padding: paddingBouton,
           shape: formeBouton,
           textStyle: texteBouton,
@@ -196,25 +214,27 @@ class ThemePoufiret {
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: primaire,
         foregroundColor: surPrimaire,
-        elevation: 3,
+        elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(rayonBouton),
         ),
       ),
 
-      // ── Champs : surface, bordure 1.5, focus bleu ───────────────────
+      // ── Champs : surface, bordure fine (1), focus bleu ──────────────
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: surface,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         border: bordureChamp(bordure),
         enabledBorder: bordureChamp(bordure),
         focusedBorder: bordureChamp(Config.couleurSecondaire),
         errorBorder: bordureChamp(erreur),
         focusedErrorBorder: bordureChamp(erreur),
-        labelStyle: TextStyle(color: secondaire),
-        hintStyle: TextStyle(color: secondaire),
+        labelStyle: TextStyle(color: secondaire, fontWeight: FontWeight.w400),
+        hintStyle: TextStyle(color: secondaire, fontWeight: FontWeight.w400),
       ),
 
       // ── Puces : pilule, surface ; sélection pleine bleue ────────────
@@ -222,9 +242,12 @@ class ThemePoufiret {
         backgroundColor: surface,
         selectedColor: primaire,
         checkmarkColor: surPrimaire,
-        side: BorderSide(color: bordure),
-        labelStyle: textes.labelLarge,
-        secondaryLabelStyle: textes.labelLarge?.copyWith(color: surPrimaire),
+        side: BorderSide(color: bordure, width: 0.8),
+        labelStyle: textes.labelLarge?.copyWith(fontWeight: FontWeight.w500),
+        secondaryLabelStyle: textes.labelLarge?.copyWith(
+          color: surPrimaire,
+          fontWeight: FontWeight.w500,
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         shape: const StadiumBorder(),
       ),
@@ -282,8 +305,9 @@ class ThemePoufiret {
         selectedIconTheme: IconThemeData(color: surPrimaire),
         unselectedIconTheme: IconThemeData(color: secondaire),
         selectedLabelTextStyle: textes.labelMedium?.copyWith(color: primaire),
-        unselectedLabelTextStyle:
-            textes.labelMedium?.copyWith(color: secondaire),
+        unselectedLabelTextStyle: textes.labelMedium?.copyWith(
+          color: secondaire,
+        ),
       ),
 
       drawerTheme: DrawerThemeData(
@@ -298,9 +322,7 @@ class ThemePoufiret {
       dialogTheme: DialogThemeData(
         backgroundColor: surface,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(26),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(26)),
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: fond,
@@ -321,26 +343,24 @@ class ThemePoufiret {
         backgroundColor: texte,
         contentTextStyle: textes.bodyMedium?.copyWith(
           color: fond,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       tabBarTheme: TabBarThemeData(
         labelColor: primaire,
         unselectedLabelColor: secondaire,
         indicatorColor: primaire,
-        dividerColor: bordure,
+        dividerColor: bordureLegere,
         labelStyle: textes.titleSmall,
-        unselectedLabelStyle: textes.titleSmall,
+        unselectedLabelStyle: textes.titleSmall?.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
       ),
       listTileTheme: ListTileThemeData(
         iconColor: secondaire,
         textColor: texte,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       switchTheme: SwitchThemeData(
         thumbColor: WidgetStateProperty.resolveWith(

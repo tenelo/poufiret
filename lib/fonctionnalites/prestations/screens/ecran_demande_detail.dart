@@ -125,7 +125,7 @@ class _EcranDemandeDetailState extends ConsumerState<EcranDemandeDetail> {
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
-                icon: const Icon(Icons.event),
+                icon: const Icon(Icons.event_outlined),
                 label: Text(date == null
                     ? 'Proposer une date (optionnel)'
                     : '${date!.day}/${date!.month}/${date!.year} '
@@ -306,11 +306,11 @@ class _Contenu extends StatelessWidget {
         // ── Contact ────────────────────────────────────────────────
         ListTile(
           contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.person),
+          leading: const Icon(Icons.person_outlined),
           title: Text(autreNom),
           subtitle: Text(autreNumero),
           trailing: IconButton.filledTonal(
-            icon: const Icon(Icons.call),
+            icon: const Icon(Icons.call_outlined),
             onPressed:
                 autreNumero.isEmpty ? null : () => onAppeler(autreNumero),
           ),
@@ -322,7 +322,7 @@ class _Contenu extends StatelessWidget {
             title: const Text('Position du client'),
             subtitle: const Text('Ouvrir l\'itinéraire dans Maps'),
             trailing: IconButton.filledTonal(
-              icon: const Icon(Icons.directions),
+              icon: const Icon(Icons.directions_outlined),
               onPressed: () =>
                   onItineraire(demande.latitude!, demande.longitude!),
             ),
@@ -362,7 +362,7 @@ class _Contenu extends StatelessWidget {
                   errorBuilder: (_, e, s) => Container(
                     width: 110,
                     color: theme.colorScheme.surfaceContainerHighest,
-                    child: const Icon(Icons.broken_image),
+                    child: const Icon(Icons.broken_image_outlined),
                   ),
                 ),
               ),

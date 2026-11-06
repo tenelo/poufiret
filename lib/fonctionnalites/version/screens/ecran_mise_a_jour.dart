@@ -54,7 +54,7 @@ class EcranMiseAJour extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.system_update,
+                        Icon(Icons.system_update_outlined,
                             size: 72, color: Config.couleurPrimaire),
                         const SizedBox(height: 24),
                         Text(
@@ -63,14 +63,14 @@ class EcranMiseAJour extends StatelessWidget {
                           style: Theme.of(context)
                               .textTheme
                               .headlineSmall
-                              ?.copyWith(fontWeight: FontWeight.w700),
+                              ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         const SizedBox(height: 12),
                         Text(
                           message,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 15,
+                            fontSize: 14,
                             color: Config.couleurTexteSecondaire,
                             height: 1.4,
                           ),
@@ -82,7 +82,7 @@ class EcranMiseAJour extends StatelessWidget {
                             onPressed: info.lienStore.isEmpty
                                 ? null
                                 : () => ouvrirStore(context, info),
-                            icon: const Icon(Icons.download),
+                            icon: const Icon(Icons.download_outlined),
                             label: const Padding(
                               padding: EdgeInsets.symmetric(vertical: 4),
                               child: Text('Mettre à jour maintenant'),

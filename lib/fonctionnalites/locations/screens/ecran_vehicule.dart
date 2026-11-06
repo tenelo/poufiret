@@ -118,7 +118,7 @@ class _Fiche extends ConsumerWidget {
                           Text(
                             v.nomComplet,
                             style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           if (v.titre.isNotEmpty && v.titre != v.nomComplet)
@@ -165,7 +165,7 @@ class _Fiche extends ConsumerWidget {
                                 ),
                                 style: theme.textTheme.titleLarge?.copyWith(
                                   color: theme.colorScheme.primary,
-                                  fontWeight: FontWeight.w700,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
@@ -253,7 +253,7 @@ class _Fiche extends ConsumerWidget {
   static List<Widget> _caracteristiques(Vehicule v) => [
     if (v.nbPlaces > 0)
       CaracteristiqueFiche(
-        Icons.airline_seat_recline_normal,
+        Icons.airline_seat_recline_normal_outlined,
         pluriel(v.nbPlaces, 'place'),
       ),
     if (v.boiteLibelle.isNotEmpty)

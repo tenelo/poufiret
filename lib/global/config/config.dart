@@ -53,22 +53,29 @@ class Config {
   static Color get couleurBordure =>
       _c(const Color(0xFFE1E9F2), const Color(0xFF1E3350));
 
-  /// Ombre portée douce des cartes et boutons ronds.
+  /// Ombre portée douce des cartes et boutons ronds : mêmes teintes, plus
+  /// transparentes (clair 10 % → 6 %, sombre 45 % → 30 %) et plus diffuses.
   static List<BoxShadow> get ombre => [
     BoxShadow(
       color: sombre
-          ? const Color(0x73000000)
-          : const Color(0x1A143C78),
-      blurRadius: 24,
-      offset: const Offset(0, 8),
+          ? const Color(0x73000000).withValues(alpha: 0.30)
+          : const Color(0x1A143C78).withValues(alpha: 0.06),
+      blurRadius: 28,
+      offset: const Offset(0, 6),
     ),
   ];
 
   // ── Texte ────────────────────────────────────────────────────────
   static Color get couleurTexte =>
       _c(const Color(0xFF0F2038), const Color(0xFFEAF1FA));
-  static Color get couleurTexteSecondaire =>
-      _c(const Color(0xFF6B7C93), const Color(0xFF8FA3BC));
+
+  /// Texte secondaire. En sombre, opacité 88 % (contraste ≥ 4,5:1 sur le
+  /// fond et les cartes) ; en clair, inchangé : le contraste y est déjà
+  /// juste (≈ 4:1), l'alléger nuirait à la lecture.
+  static Color get couleurTexteSecondaire => _c(
+    const Color(0xFF6B7C93),
+    const Color(0xFF8FA3BC).withValues(alpha: 0.88),
+  );
   static Color get couleurTitre => couleurTexte;
 
   // ── Actions sociales ─────────────────────────────────────────────

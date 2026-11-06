@@ -216,7 +216,7 @@ class _FeuilleReservationHebergementState
               Text(
                 'Réserver un séjour',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               Text(
@@ -382,7 +382,7 @@ class _Disponibilite extends StatelessWidget {
         Config.couleurTexteSecondaire,
       ),
       _ => (
-        Icons.hourglass_empty,
+        Icons.hourglass_empty_outlined,
         'Vérification de la disponibilité…',
         Config.couleurTexteSecondaire,
       ),

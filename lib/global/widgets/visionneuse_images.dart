@@ -68,7 +68,7 @@ class _VisionneuseImagesState extends State<VisionneuseImages> {
           plusieurs
               ? '${_index + 1} / ${widget.images.length}'
               : (widget.titre ?? ''),
-          style: const TextStyle(color: Colors.white, fontSize: 15),
+          style: const TextStyle(color: Colors.white, fontSize: 14),
         ),
       ),
       body: PageView.builder(

@@ -100,7 +100,7 @@ class CarteLocation extends StatelessWidget {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         if (sousTitre.isNotEmpty) ...[
@@ -119,7 +119,7 @@ class CarteLocation extends StatelessWidget {
                           prix,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                         if (puces.isNotEmpty) ...[

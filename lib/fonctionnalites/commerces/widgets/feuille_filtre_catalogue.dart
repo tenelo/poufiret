@@ -78,7 +78,7 @@ class _FeuilleFiltreCatalogueState extends State<FeuilleFiltreCatalogue> {
               widget.titre,
               style: Theme.of(
                 context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             for (final champ in widget.champs) ...[
               const SizedBox(height: 12),

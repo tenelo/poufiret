@@ -143,7 +143,7 @@ class _EcranMapState extends ConsumerState<EcranMap>
             },
           ),
           PermissionRefusee(definitif: true) => _BlocageLocalisation(
-            icone: Icons.location_disabled,
+            icone: Icons.location_disabled_outlined,
             titre: 'Permission de localisation requise',
             description:
                 "Tu as refusé l'accès à ta position. Autorise-la dans les paramètres de l'application pour utiliser la carte.",
@@ -153,7 +153,7 @@ class _EcranMapState extends ConsumerState<EcranMap>
             },
           ),
           PermissionRefusee() => _BlocageLocalisation(
-            icone: Icons.location_disabled,
+            icone: Icons.location_disabled_outlined,
             titre: 'Localisation nécessaire',
             description:
                 "Poufiret a besoin de ta position pour afficher les services les plus proches de toi.",
@@ -268,7 +268,7 @@ class _EcranMapState extends ConsumerState<EcranMap>
               FloatingActionButton.small(
                 heroTag: 'centrer_map',
                 onPressed: _recentrer,
-                child: const Icon(Icons.my_location),
+                child: const Icon(Icons.my_location_outlined),
               ),
             ],
           ),
@@ -504,11 +504,11 @@ class _EncartPlusProche extends StatelessWidget {
         children: [
           const Text(
             'Plus proche de vous',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
           ),
           Text(
             nom,
-            style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 13),
+            style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 12),
           ),
           Text(distance, style: const TextStyle(fontSize: 12)),
         ],

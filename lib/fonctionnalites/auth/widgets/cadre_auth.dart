@@ -144,17 +144,20 @@ class MarquePoufiret extends StatelessWidget {
             borderRadius: BorderRadius.circular(22),
             boxShadow: const [
               BoxShadow(
-                color: Color(0x33000000),
-                blurRadius: 18,
+                // Ombre adoucie : même teinte, opacité 20 % → 12 %.
+                color: Color(0x1F000000),
+                blurRadius: 24,
                 offset: Offset(0, 8),
               ),
             ],
           ),
           child: Text(
             'P',
+            // Exception : le monogramme de la marque garde sa graisse.
             style: textes.headlineLarge?.copyWith(
               fontSize: 36,
               height: 1,
+              fontWeight: FontWeight.w800,
               color: const Color(0xFF1D4FA3),
             ),
           ),
@@ -326,7 +329,7 @@ class PrefixeTelephone extends StatelessWidget {
             '🇨🇮  +225',
             style: Theme.of(
               context,
-            ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
+            ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(width: 10),
           Container(width: 1, height: 22, color: Config.couleurBordure),

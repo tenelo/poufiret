@@ -352,7 +352,7 @@ class _ActionEventail extends StatelessWidget {
               children: [
                 Card(
                   color: theme.colorScheme.surface,
-                  elevation: 3,
+                  elevation: 1,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -456,7 +456,7 @@ class _TuileCategorie extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: encre,
-                    fontWeight: FontWeight.w800,
+                    fontWeight: FontWeight.w600,
                     height: 1.15,
                   ),
                 ),

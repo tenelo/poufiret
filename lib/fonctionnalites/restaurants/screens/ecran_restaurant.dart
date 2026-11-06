@@ -450,7 +450,7 @@ class _Entete extends StatelessWidget {
                     Text(
                       r.nom,
                       style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -521,13 +521,13 @@ class _SectionMenuDuJour extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
             child: Row(
               children: [
-                Icon(Icons.today, color: theme.colorScheme.primary, size: 20),
+                Icon(Icons.today_outlined, color: theme.colorScheme.primary, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     menu.titre.isEmpty ? 'Menu du jour' : menu.titre,
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
@@ -696,7 +696,7 @@ class _TitreSection extends StatelessWidget {
                 ? section.nom
                 : '${section.icone} ${section.nom}',
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w600,
             ),
           ),
           if (section.description.isNotEmpty)

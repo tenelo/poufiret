@@ -74,7 +74,7 @@ class EcranMesCategories extends ConsumerWidget {
                             'celle que les clients verront en vous '
                             'cherchant dans cette catégorie.',
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 12,
                               color: Config.couleurTexteSecondaire,
                             ),
                           ),

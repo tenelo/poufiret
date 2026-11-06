@@ -151,7 +151,7 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
                 Navigator.pop(ctx);
                 _appelerClient(tel);
               },
-              icon: const Icon(Icons.phone),
+              icon: const Icon(Icons.phone_outlined),
               label: const Text('Appeler le client'),
             ),
         ],
@@ -281,7 +281,7 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
                 Text('${c.total} FCFA',
                     style: theme.textTheme.titleSmall?.copyWith(
                       color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     )),
               ],
             ),
@@ -302,7 +302,7 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
               else
                 FilledButton.icon(
                   onPressed: _commanderLivreur,
-                  icon: const Icon(Icons.delivery_dining),
+                  icon: const Icon(Icons.delivery_dining_outlined),
                   label: const Text('Commander un livreur'),
                 ),
             ],

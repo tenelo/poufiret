@@ -202,7 +202,7 @@ class _SectionCommentairesState extends ConsumerState<SectionCommentaires> {
                       height: 18,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Icon(Icons.send),
+                  : const Icon(Icons.send_outlined),
             ),
           ],
         ),
@@ -288,7 +288,7 @@ class _Ligne extends ConsumerWidget {
         children: [
           Text(
             commentaire.userNom,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 2),
           Text(commentaire.contenu),

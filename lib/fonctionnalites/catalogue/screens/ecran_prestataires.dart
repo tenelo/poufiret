@@ -371,7 +371,7 @@ class _FondNeutre extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: theme.colorScheme.surfaceContainerHighest,
-      child: Icon(Icons.storefront, size: 48, color: theme.colorScheme.outline),
+      child: Icon(Icons.storefront_outlined, size: 48, color: theme.colorScheme.outline),
     );
   }
 }

@@ -73,12 +73,12 @@ class _EcranDemandeInterventionState
         child: Wrap(
           children: [
             ListTile(
-              leading: const Icon(Icons.photo_camera),
+              leading: const Icon(Icons.photo_camera_outlined),
               title: const Text('Prendre une photo'),
               onTap: () => Navigator.pop(ctx, 'camera'),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library),
+              leading: const Icon(Icons.photo_library_outlined),
               title: const Text('Depuis la galerie'),
               onTap: () => Navigator.pop(ctx, 'galerie'),
             ),
@@ -304,7 +304,7 @@ class _EcranDemandeInterventionState
                       //   'L\'artisan recevra votre position GPS.',
                       //   style: TextStyle(fontSize: 12),
                       // ),
-                      secondary: const Icon(Icons.my_location, size: 16),
+                      secondary: const Icon(Icons.my_location_outlined, size: 16),
                       contentPadding: EdgeInsets.zero,
                       dense: true,
                       controlAffinity: ListTileControlAffinity.trailing,
@@ -324,7 +324,7 @@ class _EcranDemandeInterventionState
                           onPressed: _photos.length >= 5
                               ? null
                               : _choisirPhotos,
-                          icon: const Icon(Icons.add_a_photo),
+                          icon: const Icon(Icons.add_a_photo_outlined),
                           label: const Text('Ajouter'),
                         ),
                       ],
@@ -388,7 +388,7 @@ class _EcranDemandeInterventionState
                           height: 18,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Icon(Icons.send),
+                      : const Icon(Icons.send_outlined),
                   label: const Text('Envoyer la demande'),
                 ),
               ),

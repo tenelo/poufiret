@@ -509,7 +509,7 @@ class _SectionLocalisationState extends ConsumerState<_SectionLocalisation> {
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Icon(Icons.my_location, size: 18),
+                      : const Icon(Icons.my_location_outlined, size: 18),
                   label: const Text('Utiliser ma position actuelle'),
                 ),
                 if (_aUnPoint)
@@ -568,7 +568,7 @@ class _Etat extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  visible ? Icons.visibility : Icons.visibility_off,
+                  visible ? Icons.visibility_outlined : Icons.visibility_off,
                   size: 18,
                   color: visible
                       ? Config.couleurSucces

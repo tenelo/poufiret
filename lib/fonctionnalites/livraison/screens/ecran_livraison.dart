@@ -110,7 +110,7 @@ class EcranLivraison extends ConsumerWidget {
                     const SizedBox(height: 24),
                     Card(
                       child: ListTile(
-                        leading: const Icon(Icons.inventory_2),
+                        leading: const Icon(Icons.inventory_2_outlined),
                         title: const Text('Colis qui m\'arrivent'),
                         subtitle: const Text(
                             'Déposez votre position, suivez vos réceptions.'),
@@ -212,7 +212,7 @@ class _GardeLocalisationState extends State<_GardeLocalisation>
               const SizedBox(height: 24),
               FilledButton.icon(
                 onPressed: () => _service.ouvrirParametresLocalisation(),
-                icon: const Icon(Icons.my_location),
+                icon: const Icon(Icons.my_location_outlined),
                 label: const Text('Activer'),
               ),
               const SizedBox(height: 8),

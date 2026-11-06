@@ -105,7 +105,7 @@ class _Onglet extends StatelessWidget {
                 libelle,
                 style: theme.textTheme.titleSmall?.copyWith(
                   color: actif ? schema.onPrimary : schema.onSurface,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),

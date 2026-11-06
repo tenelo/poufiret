@@ -169,7 +169,7 @@ class _CarteTotal extends StatelessWidget {
                     '$totalVues',
                     style: theme.textTheme.headlineMedium?.copyWith(
                       color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -187,7 +187,7 @@ class _CarteTotal extends StatelessWidget {
                     '$nbArticles',
                     style: theme.textTheme.headlineMedium?.copyWith(
                       color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 4),

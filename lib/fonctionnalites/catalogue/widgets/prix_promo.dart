@@ -55,7 +55,7 @@ class PrixPromo extends StatelessWidget {
         _format(prixNormal),
         style: TextStyle(
           fontSize: taillePrix,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
           color: Config.couleurPrimaire,
         ),
       );
@@ -88,7 +88,7 @@ class PrixPromo extends StatelessWidget {
                 '-$pourcentageReduction%',
                 style: TextStyle(
                   fontSize: taillePrix * 0.65,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                   color: Config.couleurSurPrimaire,
                 ),
               ),
@@ -101,7 +101,7 @@ class PrixPromo extends StatelessWidget {
           _format(prixEffectif),
           style: TextStyle(
             fontSize: taillePrix,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w600,
             color: Config.couleurPrimaire,
           ),
         ),

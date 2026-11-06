@@ -196,7 +196,7 @@ class _FeuilleReservationVehiculeState
               Text(
                 'Réserver ce véhicule',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               Text(

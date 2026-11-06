@@ -74,7 +74,7 @@ class _FeuilleFiltreState extends State<_FeuilleFiltre> {
               'Filtrer les hébergements',
               style: Theme.of(
                 context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String?>(

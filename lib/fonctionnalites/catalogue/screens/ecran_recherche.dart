@@ -216,7 +216,7 @@ class _TitreSection extends StatelessWidget {
             Text(
               titre,
               style: TextStyle(
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: Config.couleurPrimaire,
                 letterSpacing: 0.3,
               ),
@@ -528,7 +528,7 @@ class _LigneArticleState extends ConsumerState<_LigneArticle> {
                 'Voir le partenaire',
                 style: TextStyle(
                   color: Config.couleurSecondaire,
-                  fontWeight: FontWeight.w700,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),

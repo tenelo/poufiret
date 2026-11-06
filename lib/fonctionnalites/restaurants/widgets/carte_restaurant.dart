@@ -24,7 +24,7 @@ class BadgeTexte extends StatelessWidget {
         texte,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
           color: Config.couleurSurPrimaire,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

@@ -483,7 +483,7 @@ class _EcranFormulaireArticleState
                               ),
                               TextButton.icon(
                                 onPressed: _choisirPhotos,
-                                icon: const Icon(Icons.add_a_photo),
+                                icon: const Icon(Icons.add_a_photo_outlined),
                                 label: const Text('Ajouter'),
                               ),
                             ],
@@ -551,7 +551,7 @@ class _EcranFormulaireArticleState
                           height: 18,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Icon(Icons.save),
+                      : const Icon(Icons.save_outlined),
                   label: Text(_estEdition ? 'Enregistrer' : 'Créer'),
                 ),
               ),

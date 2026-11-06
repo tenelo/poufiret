@@ -432,7 +432,7 @@ class _EcranCommandeDetailState extends ConsumerState<EcranCommandeDetail> {
                           '${c.total} FCFA',
                           style: theme.textTheme.titleLarge?.copyWith(
                             color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],

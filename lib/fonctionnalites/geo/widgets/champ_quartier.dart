@@ -96,7 +96,7 @@ class _ChampQuartierState extends ConsumerState<ChampQuartier> {
         return Align(
           alignment: Alignment.topLeft,
           child: Material(
-            elevation: 4,
+            elevation: 2,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 240, maxWidth: 400),
               child: ListView(

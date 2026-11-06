@@ -66,7 +66,7 @@ class _EcranPubliciteDetailState extends ConsumerState<EcranPubliciteDetail> {
 /// en gras et couleur de l'app.
 TextSpan _descriptionMiseEnForme(String description, ThemeData theme) {
   final ligne = RegExp(r'^(\s*prix\s*:)(.*)$', caseSensitive: false);
-  final gras = theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold);
+  final gras = theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600);
   final lignes = description.split('\n');
   final enfants = <InlineSpan>[];
   for (var i = 0; i < lignes.length; i++) {

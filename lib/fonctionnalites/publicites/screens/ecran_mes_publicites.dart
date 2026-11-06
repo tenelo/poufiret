@@ -21,7 +21,7 @@ class EcranMesPublicites extends ConsumerWidget {
         title: const Text('Mes publicités'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.card_giftcard),
+            icon: const Icon(Icons.card_giftcard_outlined),
             tooltip: 'Mes faveurs pub',
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const EcranMesFaveursPub()),
@@ -131,7 +131,7 @@ class _CartePub extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w700),
+                        ?.copyWith(fontWeight: FontWeight.w600),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -165,7 +165,7 @@ class _CartePub extends StatelessWidget {
               Text(
                 stats.message ?? 'Statistiques bientôt disponibles.',
                 style: TextStyle(
-                    fontSize: 13, color: Config.couleurTexteSecondaire),
+                    fontSize: 12, color: Config.couleurTexteSecondaire),
               )
             else ...[
               Row(
@@ -194,8 +194,8 @@ class _CartePub extends StatelessWidget {
                   children: [
                     Icon(
                       stats.cibleAtteinte
-                          ? Icons.verified
-                          : Icons.hourglass_bottom,
+                          ? Icons.verified_outlined
+                          : Icons.hourglass_bottom_outlined,
                       size: 15,
                       color: stats.cibleAtteinte
                           ? Config.couleurSucces
@@ -239,7 +239,7 @@ class _Chiffre extends StatelessWidget {
               valeur,
               style: TextStyle(
                 fontSize: 20,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
                 color: Config.couleurPrimaire,
               ),
             ),
@@ -249,7 +249,7 @@ class _Chiffre extends StatelessWidget {
             libelle,
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontSize: 10, color: Config.couleurTexteSecondaire),
+                fontSize: 11, color: Config.couleurTexteSecondaire),
           ),
         ],
       ),

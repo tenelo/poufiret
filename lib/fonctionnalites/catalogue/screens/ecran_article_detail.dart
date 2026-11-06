@@ -331,7 +331,7 @@ class _Contenu extends ConsumerWidget {
                                           WrapCrossAlignment.center,
                                       children: [
                                         _Compteur(
-                                          icone: Icons.visibility,
+                                          icone: Icons.visibility_outlined,
                                           valeur: article.nbVues,
                                         ),
                                         BoutonSocial(
@@ -388,12 +388,12 @@ class _Contenu extends ConsumerWidget {
                                                           s + c.reponses.length,
                                                     );
                                                 return _Compteur(
-                                                  icone: Icons.comment,
+                                                  icone: Icons.comment_outlined,
                                                   valeur: total,
                                                 );
                                               },
                                               orElse: () => const _Compteur(
-                                                icone: Icons.comment,
+                                                icone: Icons.comment_outlined,
                                                 valeur: 0,
                                               ),
                                             ),
