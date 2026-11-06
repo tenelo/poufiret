@@ -5,7 +5,8 @@ import '../metier_domaine/gabarits.dart';
 import 'ecran_catalogue.dart';
 
 /// Page dédiée d'un commerce selon son gabarit : la page restaurant (en
-/// grille pour une boulangerie) ou la page catalogue. [siIntrouvable] est
+/// grille pour une boulangerie) ou la page catalogue (pharmacie, mode,
+/// librairie, éleveur). [siIntrouvable] est
 /// affiché si le serveur ne connaît pas ce commerce (404).
 Widget pageGabarit(
   Gabarit gabarit, {
@@ -24,7 +25,10 @@ Widget pageGabarit(
     siIntrouvable: siIntrouvable,
     grille: true,
   ),
-  Gabarit.pharmacie || Gabarit.mode || Gabarit.librairie => EcranCatalogue(
+  Gabarit.pharmacie ||
+  Gabarit.mode ||
+  Gabarit.librairie ||
+  Gabarit.elevage => EcranCatalogue(
     commerceId: commerceId,
     gabarit: gabarit,
     nom: nom,

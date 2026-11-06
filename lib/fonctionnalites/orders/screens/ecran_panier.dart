@@ -347,8 +347,9 @@ class _LigneTuile extends ConsumerStatefulWidget {
 class _LigneTuileState extends ConsumerState<_LigneTuile> {
   bool _occupe = false;
 
-  Future<void> _modifierQuantite(int nouvelle) async {
-    if (nouvelle < 1 || _occupe) return;
+  Future<void> _modifierQuantite(num nouvelle) async {
+    // Jamais sous un pas (1, ou 0,5 kg) : pour retirer, la corbeille.
+    if (nouvelle < widget.ligne.pasQuantite || _occupe) return;
     setState(() => _occupe = true);
     try {
       await ref
@@ -421,12 +422,12 @@ class _LigneTuileState extends ConsumerState<_LigneTuile> {
           ),
           // Contrôles quantité.
           IconButton(
-            onPressed: _occupe ? null : () => _modifierQuantite(l.quantite - 1),
+            onPressed: _occupe ? null : () => _modifierQuantite(l.quantite - l.pasQuantite),
             icon: const Icon(Icons.remove_circle_outline),
           ),
-          Text('${l.quantite}', style: theme.textTheme.titleMedium),
+          Text(l.quantiteLisible, style: theme.textTheme.titleMedium),
           IconButton(
-            onPressed: _occupe ? null : () => _modifierQuantite(l.quantite + 1),
+            onPressed: _occupe ? null : () => _modifierQuantite(l.quantite + l.pasQuantite),
             icon: const Icon(Icons.add_circle_outline),
           ),
           IconButton(
@@ -547,7 +548,7 @@ class _ApercuLigne extends StatelessWidget {
           ],
           const Divider(height: 28),
           info('Prix unitaire', formatMontant(l.prixUnitaire)),
-          info('Quantité', '${l.quantite}'),
+          info('Quantité', l.quantiteLisible),
           info(
             'Total',
             formatMontant(l.prixLigne),

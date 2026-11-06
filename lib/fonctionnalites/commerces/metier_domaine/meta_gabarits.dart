@@ -134,6 +134,11 @@ const criteresParGabarit = {
     ('genre_livre', 'Genre'),
     ('etat', 'État'),
   ],
+  Gabarit.elevage: [
+    ('espece', 'Espèce'),
+    ('etat_vente', 'État de vente'),
+    ('livraison_possible', 'Livraison'),
+  ],
 };
 
 /// Choix utilisés tant que la meta n'en fournit pas.
@@ -160,4 +165,22 @@ const choixParDefaut = {
     ChoixFiltre('autre', 'Autre'),
   ],
   'etat': [ChoixFiltre('neuf', 'Neuf'), ChoixFiltre('occasion', 'Occasion')],
+  'espece': [
+    ChoixFiltre('porc', 'Porc'),
+    ChoixFiltre('poulet', 'Poulet'),
+    ChoixFiltre('pintade', 'Pintade'),
+    ChoixFiltre('canard', 'Canard'),
+    ChoixFiltre('lapin', 'Lapin'),
+    ChoixFiltre('mouton', 'Mouton'),
+    ChoixFiltre('chevre', 'Chèvre'),
+    ChoixFiltre('boeuf', 'Bœuf'),
+    ChoixFiltre('poisson', 'Poisson'),
+  ],
+  'etat_vente': [
+    ChoixFiltre('vivant', 'Vivant'),
+    ChoixFiltre('abattu_entier', 'Abattu entier'),
+    ChoixFiltre('decoupe', 'Découpé'),
+  ],
+  // Booléen : « Tous » ou seulement les produits livrables.
+  'livraison_possible': [ChoixFiltre('true', 'Livraison possible')],
 };

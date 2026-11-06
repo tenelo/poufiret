@@ -87,8 +87,14 @@ extension FicheProduit on Plat {
         : "Sur commande · $delai h à l'avance";
   }
 
-  /// Plus aucune variante en stock (toutes les pointures épuisées).
-  bool get toutEpuise =>
-      indisponible ||
-      (variantesActives.isNotEmpty && variantesActives.every((v) => v.epuisee));
+  /// Plus rien à vendre : épuisé, toutes les variantes (pointures)
+  /// épuisées, ou stock déclaré à zéro (`quantite_disponible`, éleveurs).
+  bool get toutEpuise {
+    final stock = ficheSpecifique['quantite_disponible'];
+    final zero = stock != null && (num.tryParse('$stock') ?? 1) <= 0;
+    return indisponible ||
+        zero ||
+        (variantesActives.isNotEmpty &&
+            variantesActives.every((v) => v.epuisee));
+  }
 }

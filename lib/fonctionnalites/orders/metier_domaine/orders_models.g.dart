@@ -39,13 +39,14 @@ _LignePanier _$LignePanierFromJson(Map<String, dynamic> json) => _LignePanier(
           ?.map((e) => SupplementSnapshot.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <SupplementSnapshot>[],
-  quantite: (json['quantite'] as num?)?.toInt() ?? 1,
+  quantite: json['quantite'] == null ? 1 : _versQuantite(json['quantite']),
   prixUnitaire: json['prix_unitaire'] == null
       ? 0
       : _versInt(json['prix_unitaire']),
   prixLigne: json['prix_ligne'] == null ? 0 : _versInt(json['prix_ligne']),
   noteSpeciale: json['note_speciale'] as String? ?? '',
   image: json['image'] as String?,
+  unitePrix: json['unite_prix'] as String? ?? '',
 );
 
 Map<String, dynamic> _$LignePanierToJson(_LignePanier instance) =>
@@ -63,6 +64,7 @@ Map<String, dynamic> _$LignePanierToJson(_LignePanier instance) =>
       'prix_ligne': instance.prixLigne,
       'note_speciale': instance.noteSpeciale,
       'image': instance.image,
+      'unite_prix': instance.unitePrix,
     };
 
 _Panier _$PanierFromJson(Map<String, dynamic> json) => _Panier(
@@ -102,7 +104,7 @@ _LigneCommande _$LigneCommandeFromJson(Map<String, dynamic> json) =>
               )
               .toList() ??
           const <SupplementSnapshot>[],
-      quantite: (json['quantite'] as num?)?.toInt() ?? 1,
+      quantite: json['quantite'] == null ? 1 : _versQuantite(json['quantite']),
       prixUnitaire: json['prix_unitaire'] == null
           ? 0
           : _versInt(json['prix_unitaire']),

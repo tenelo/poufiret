@@ -15,7 +15,7 @@ Future<bool> ajouterProduitAuPanier(
   WidgetRef ref, {
   required Plat produit,
   VariantePlat? variante,
-  int quantite = 1,
+  num quantite = 1,
 }) async {
   final messenger = ScaffoldMessenger.of(context);
   final navigator = Navigator.of(context);

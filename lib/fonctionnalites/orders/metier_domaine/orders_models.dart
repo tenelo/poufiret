@@ -7,6 +7,12 @@ part 'orders_models.g.dart';
 
 /// Convertit un montant reçu en int, quel que soit son format JSON
 /// (int, double comme 7000.0, ou String comme "3500").
+/// Quantité : entière (pièces), ou décimale (kg, par pas de 0,5).
+num _versQuantite(dynamic valeur) {
+  final q = valeur is num ? valeur : num.tryParse('${valeur ?? ''}') ?? 1;
+  return q == q.roundToDouble() ? q.round() : q.toDouble();
+}
+
 int _versInt(dynamic valeur) {
   if (valeur == null) return 0;
   if (valeur is int) return valeur;
@@ -51,7 +57,7 @@ abstract class LignePanier with _$LignePanier {
 
     /// Options de plat choisies (restaurants) : `{nom, prix_supplement}`.
     @Default(<SupplementSnapshot>[]) List<SupplementSnapshot> options,
-    @Default(1) int quantite,
+    @JsonKey(fromJson: _versQuantite) @Default(1) num quantite,
     @JsonKey(name: 'prix_unitaire', fromJson: _versInt)
     @Default(0)
     int prixUnitaire,
@@ -60,9 +66,23 @@ abstract class LignePanier with _$LignePanier {
 
     /// Photo de l'article (URL absolue), null si aucune.
     String? image,
+
+    /// piece | kg (éleveurs) ; vide pour un article ordinaire.
+    @JsonKey(name: 'unite_prix') @Default('') String unitePrix,
   }) = _LignePanier;
 
   const LignePanier._();
+
+  /// Pas du sélecteur de quantité : 0,5 au kilo (ou pour une quantité déjà
+  /// décimale), 1 sinon.
+  num get pasQuantite => unitePrix == 'kg' || quantite is double ? 0.5 : 1;
+
+  /// « 3 », « 2,5 kg ».
+  String get quantiteLisible =>
+      formatQuantite(quantite, unite: unitePrix == 'kg' ? 'kg' : '');
+
+  /// Nombre d'articles comptés dans le badge du panier : une pesée compte 1.
+  int get nbArticles => quantite is int ? quantite as int : 1;
 
   /// Options et suppléments choisis, chacun une seule fois : le serveur
   /// peut renvoyer une même option dans `options` et dans `supplements`
@@ -112,7 +132,7 @@ abstract class LigneCommande with _$LigneCommande {
     @JsonKey(name: 'nom_article') @Default('') String nomArticle,
     @JsonKey(name: 'variante_nom') @Default('') String varianteNom,
     @Default(<SupplementSnapshot>[]) List<SupplementSnapshot> supplements,
-    @Default(1) int quantite,
+    @JsonKey(fromJson: _versQuantite) @Default(1) num quantite,
     @JsonKey(name: 'prix_unitaire', fromJson: _versInt)
     @Default(0)
     int prixUnitaire,

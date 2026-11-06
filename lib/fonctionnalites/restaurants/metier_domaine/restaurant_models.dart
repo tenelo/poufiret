@@ -38,7 +38,9 @@ const _champsGabarit = [
   'marque', 'couleur', 'matiere', 'genre', //
   'auteur', 'editeur', 'annee', 'isbn', 'langue', 'niveau', 'classe',
   'etat', 'genre_livre', //
-  'sur_commande', 'delai_heures',
+  'sur_commande', 'delai_heures', //
+  'espece', 'etat_vente', 'unite_prix', 'poids_moyen_kg', 'age',
+  'quantite_disponible', 'commande_avance_jours', 'livraison_possible',
 ];
 
 /// Fiche spécifique, complétée des champs de gabarit trouvés à la racine.

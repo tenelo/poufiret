@@ -48,6 +48,7 @@ SliverGridDelegate grilleProduits(
   BuildContext context,
   double largeur, {
   double ratioPhoto = 1,
+  double hauteurTexte = 132,
 }) {
   const espacement = 12.0;
   final colonne = (largeur - espacement) / 2;
@@ -56,7 +57,8 @@ SliverGridDelegate grilleProduits(
     mainAxisSpacing: espacement,
     crossAxisSpacing: espacement,
     mainAxisExtent:
-        colonne / ratioPhoto + MediaQuery.textScalerOf(context).scale(132),
+        colonne / ratioPhoto +
+        MediaQuery.textScalerOf(context).scale(hauteurTexte),
   );
 }
 

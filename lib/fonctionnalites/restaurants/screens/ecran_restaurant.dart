@@ -754,7 +754,7 @@ class _BarrePanier extends ConsumerWidget {
         .where((p) => p.partenaire == restaurantId && p.lignes.isNotEmpty)
         .firstOrNull;
     if (panier == null) return const SizedBox.shrink();
-    final nb = panier.lignes.fold<int>(0, (n, l) => n + l.quantite);
+    final nb = panier.lignes.fold<int>(0, (n, l) => n + l.nbArticles);
     return SafeArea(
       child: Center(
         heightFactor: 1,

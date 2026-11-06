@@ -26,7 +26,9 @@ class OrdersRepository {
   /// serveur valide les bornes min / max.
   Future<Panier> ajouterLigne({
     int? articleId,
-    required int quantite,
+
+    /// Entière, ou décimale par pas de 0,5 pour un article au kilo.
+    required num quantite,
     int? varianteId,
     int? ligneMenuId,
     List<int>? optionIds,
@@ -55,7 +57,7 @@ class OrdersRepository {
   /// PATCH /orders/lignes/<id>/ — modifie quantité et/ou note.
   Future<Panier> modifierLigne({
     required int ligneId,
-    int? quantite,
+    num? quantite,
     String? noteSpeciale,
   }) async {
     final r = await _dio.patch(

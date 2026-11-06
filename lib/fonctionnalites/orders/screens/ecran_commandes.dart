@@ -7,6 +7,7 @@ import '../donnees/orders_providers.dart';
 import '../../../global/config/config.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../../global/ui/squelette.dart';
+import '../../../global/ui/format_montant.dart';
 import '../metier_domaine/orders_models.dart';
 
 const _mois = [
@@ -397,7 +398,7 @@ class _EcranCommandeDetailState extends ConsumerState<EcranCommandeDetail> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('${l.nomArticle} ×${l.quantite}'),
+                                  Text('${l.nomArticle} ×${formatQuantite(l.quantite)}'),
                                   if (l.varianteNom.isNotEmpty)
                                     Text(
                                       l.varianteNom,

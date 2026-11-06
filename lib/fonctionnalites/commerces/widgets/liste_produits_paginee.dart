@@ -20,6 +20,7 @@ class SliverProduitsPagines extends ConsumerWidget {
     required this.tuile,
     this.presentation = Presentation.liste,
     this.ratioPhoto = 1,
+    this.hauteurTexte = 132,
     this.hauteurLigne,
     this.vide = 'Aucun produit pour le moment.',
     this.videRecherche = 'Aucun produit ne correspond à votre recherche.',
@@ -31,6 +32,9 @@ class SliverProduitsPagines extends ConsumerWidget {
 
   /// Largeur / hauteur de la photo d'une case de grille.
   final double ratioPhoto;
+
+  /// Hauteur de la zone de texte d'une case de grille, sous la photo.
+  final double hauteurTexte;
 
   /// Hauteur fixe d'une ligne de liste (sinon hauteur libre).
   final double? hauteurLigne;
@@ -94,6 +98,7 @@ class SliverProduitsPagines extends ConsumerWidget {
               context,
               contraintes.crossAxisExtent,
               ratioPhoto: ratioPhoto,
+              hauteurTexte: hauteurTexte,
             ),
             itemCount: produits.length,
             itemBuilder: element,

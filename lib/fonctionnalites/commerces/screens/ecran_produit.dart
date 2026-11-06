@@ -11,6 +11,7 @@ import '../../../global/widgets/message_erreur.dart';
 import '../../restaurants/metier_domaine/commande_plat.dart';
 import '../../restaurants/metier_domaine/restaurant_models.dart';
 import '../donnees/commerces_providers.dart';
+import '../metier_domaine/elevage.dart';
 import '../metier_domaine/fiche_produit.dart';
 import '../metier_domaine/gabarits.dart';
 import '../widgets/ajout_panier.dart';
@@ -93,6 +94,7 @@ extension on Gabarit {
     Gabarit.pharmacie => Icons.medication_outlined,
     Gabarit.mode => Icons.checkroom_outlined,
     Gabarit.librairie => Icons.menu_book_outlined,
+    Gabarit.elevage => Icons.agriculture_outlined,
     _ => Icons.bakery_dining_outlined,
   };
 }
@@ -114,6 +116,30 @@ List<(String, String)> informationsProduit(Plat p, Gabarit gabarit) => [
       ('Langue', p.langue),
       ('Niveau et classe', p.niveauClasse),
       ('État', p.etatLivre),
+    ],
+    Gabarit.elevage => [
+      ('Espèce', p.espece),
+      ('État de vente', p.etatVente),
+      ('Âge', p.age),
+      (
+        'Poids moyen',
+        p.poidsMoyenKg == null
+            ? ''
+            : formatQuantite(p.poidsMoyenKg!, unite: 'kg'),
+      ),
+      (
+        'Quantité disponible',
+        p.quantiteDisponible == null
+            ? ''
+            : formatQuantiteUnite(p.quantiteDisponible!, p.unitePrix),
+      ),
+      (
+        'Délai de commande',
+        p.commandeAvanceJours == null
+            ? ''
+            : "${p.commandeAvanceJours} ${p.commandeAvanceJours! > 1 ? 'jours' : 'jour'} à l'avance",
+      ),
+      ('Livraison', p.livraisonPossible ? 'Possible' : 'Non proposée'),
     ],
     Gabarit.pharmacie => [
       ('Forme et dosage', p.formeDosage),
@@ -144,7 +170,21 @@ class _FicheState extends ConsumerState<_Fiche> {
   int? _varianteId;
   bool _envoi = false;
 
+  /// Pièces ou kg choisis (éleveur) ; null = un pas (1 pièce, 0,5 kg).
+  num? _quantite;
+
   Plat get _p => widget.produit;
+
+  bool get _elevage => widget.gabarit == Gabarit.elevage;
+
+  /// Quantité retenue, sur la grille de l'unité et sous le stock.
+  num get _quantiteRetenue => _elevage
+      ? ajusterQuantite(
+          _quantite ?? _p.unitePrix.pas,
+          _p.unitePrix,
+          max: _p.quantiteMax,
+        )
+      : 1;
 
   /// Variante retenue : celle choisie, sinon (hors mode, où la pointure se
   /// choisit) la variante par défaut si elle est en stock.
@@ -160,7 +200,13 @@ class _FicheState extends ConsumerState<_Fiche> {
 
   Future<void> _ajouter(VariantePlat? variante) async {
     setState(() => _envoi = true);
-    await ajouterProduitAuPanier(context, ref, produit: _p, variante: variante);
+    await ajouterProduitAuPanier(
+      context,
+      ref,
+      produit: _p,
+      variante: variante,
+      quantite: _quantiteRetenue,
+    );
     if (mounted) setState(() => _envoi = false);
   }
 
@@ -171,12 +217,16 @@ class _FicheState extends ConsumerState<_Fiche> {
     final g = widget.gabarit;
     final variantes = p.variantesActives;
     final variante = _variante;
-    final prix = variante == null
+    final prixUnitaire = p.prixEffectif + (variante?.prixSupplement ?? 0);
+    final prix = _elevage
+        ? formatPrixUnite(prixUnitaire, p.unitePrix)
+        : variante == null
         ? prixLisible(p)
-        : formatMontant(p.prixEffectif + variante.prixSupplement);
+        : formatMontant(prixUnitaire);
     final surTitre = switch (g) {
       Gabarit.mode => p.marque,
       Gabarit.librairie => p.auteur,
+      Gabarit.elevage => p.espece,
       _ => '',
     };
     final mention = [
@@ -193,6 +243,8 @@ class _FicheState extends ConsumerState<_Fiche> {
         consigneVariante: g.consigneVariante,
         telephone: widget.telephone,
         envoi: _envoi,
+        elevage: _elevage,
+        quantite: _quantiteRetenue,
         onAjouter: () => _ajouter(variante),
       ),
       body: LayoutBuilder(
@@ -259,6 +311,18 @@ class _FicheState extends ConsumerState<_Fiche> {
                         ],
                       ),
                     ),
+                    if (_elevage && p.commandable && !p.toutEpuise)
+                      _Section(
+                        titre: p.unitePrix == UnitePrix.kg
+                            ? 'Poids (kg)'
+                            : 'Nombre de pièces',
+                        child: _SelecteurQuantite(
+                          produit: p,
+                          quantite: _quantiteRetenue,
+                          prixUnitaire: prixUnitaire,
+                          onChanged: (q) => setState(() => _quantite = q),
+                        ),
+                      ),
                     if (variantes.isNotEmpty)
                       _Section(
                         titre: g.titreVariantes,
@@ -357,7 +421,14 @@ class _BarreAction extends StatelessWidget {
     required this.telephone,
     required this.envoi,
     required this.onAjouter,
+    this.elevage = false,
+    this.quantite = 1,
   });
+
+  /// Éleveur : total = prix unitaire × [quantite], et un bouton désactivé
+  /// (plutôt qu'absent) quand le produit n'est pas commandable.
+  final bool elevage;
+  final num quantite;
 
   final Plat produit;
   final VariantePlat? variante;
@@ -378,8 +449,30 @@ class _BarreAction extends StatelessWidget {
         icon: const Icon(Icons.call),
         label: const Text('Appeler la pharmacie'),
       );
-    } else if (!p.commandable) {
+    } else if (!p.commandable && !elevage) {
       return const SizedBox.shrink();
+    } else if (elevage) {
+      final bloque = !p.commandable || p.toutEpuise;
+      final total = totalElevage(
+        p.prixEffectif + (variante?.prixSupplement ?? 0),
+        quantite,
+      );
+      bouton = FilledButton(
+        onPressed: bloque || envoi ? null : onAjouter,
+        child: envoi
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : Text(
+                !p.commandable
+                    ? 'Indisponible à la commande'
+                    : p.toutEpuise
+                    ? 'Épuisé'
+                    : 'Ajouter au panier · ${formatMontant(total)}',
+              ),
+      );
     } else {
       final epuise = p.toutEpuise;
       final manque = exigeVariante && variante == null;
@@ -479,6 +572,73 @@ class _Info extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Sélecteur « − quantité + » d'un produit d'éleveur (pièces entières ou
+/// kg par 0,5), plafonné par le stock, avec le total recalculé en direct.
+class _SelecteurQuantite extends StatelessWidget {
+  const _SelecteurQuantite({
+    required this.produit,
+    required this.quantite,
+    required this.prixUnitaire,
+    required this.onChanged,
+  });
+
+  final Plat produit;
+  final num quantite;
+  final int prixUnitaire;
+  final ValueChanged<num> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final unite = produit.unitePrix;
+    final max = produit.quantiteMax;
+    final peutAjouter = max == null || quantite + unite.pas <= max;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            IconButton.outlined(
+              tooltip: 'Moins',
+              onPressed: quantite > unite.pas
+                  ? () => onChanged(quantite - unite.pas)
+                  : null,
+              icon: const Icon(Icons.remove),
+            ),
+            SizedBox(
+              width: 96,
+              child: Text(
+                formatQuantiteUnite(quantite, unite),
+                key: const ValueKey('quantite-elevage'),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            IconButton.outlined(
+              tooltip: 'Plus',
+              onPressed: peutAjouter
+                  ? () => onChanged(quantite + unite.pas)
+                  : null,
+              icon: const Icon(Icons.add),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(
+          libelleTotalElevage(prixUnitaire, quantite, unite),
+          key: const ValueKey('total-elevage'),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: theme.colorScheme.primary,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ],
     );
   }
 }

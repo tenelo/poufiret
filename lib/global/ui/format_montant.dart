@@ -13,3 +13,14 @@ String formatMontant(int montant) {
 
 /// Surcoût d'une option : « +1 000 F ».
 String formatSupplement(int montant) => '+${formatMontant(montant)}';
+
+/// Quantité au format français : « 3 », « 2,5 », « 2,5 kg ».
+String formatQuantite(num quantite, {String unite = ''}) {
+  final texte = quantite == quantite.roundToDouble()
+      ? quantite.round().toString()
+      : quantite
+            .toStringAsFixed(2)
+            .replaceFirst(RegExp(r'0+$'), '')
+            .replaceAll('.', ',');
+  return unite.isEmpty ? texte : '$texte\u00a0$unite';
+}

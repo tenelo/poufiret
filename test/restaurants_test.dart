@@ -132,7 +132,7 @@ class _CommandesRefusees extends OrdersRepository {
   @override
   Future<Panier> ajouterLigne({
     int? articleId,
-    required int quantite,
+    required num quantite,
     int? varianteId,
     int? ligneMenuId,
     List<int>? optionIds,

@@ -11,6 +11,7 @@ import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/liens_externes.dart';
 import '../../../global/ui/squelette.dart';
 import '../../../global/widgets/barre_onglets.dart';
+import '../../../global/widgets/image_reseau.dart';
 import '../../../global/widgets/message_erreur.dart';
 import '../../analytics/donnees/analytics_providers.dart';
 import '../../restaurants/donnees/restaurants_providers.dart';
@@ -24,6 +25,7 @@ import '../metier_domaine/meta_gabarits.dart';
 import '../widgets/ajout_panier.dart';
 import '../widgets/feuille_filtre_catalogue.dart';
 import '../widgets/liste_produits_paginee.dart';
+import '../widgets/tuile_elevage.dart';
 import '../widgets/tuiles_produits.dart';
 import 'ecran_produit.dart';
 
@@ -115,7 +117,16 @@ extension ProfilCatalogue on Gabarit {
   bool get avecPrixMax => this == Gabarit.mode;
 
   Presentation get presentation =>
-      this == Gabarit.mode ? Presentation.grille : Presentation.liste;
+      this == Gabarit.mode || this == Gabarit.elevage
+      ? Presentation.grille
+      : Presentation.liste;
+
+  /// Photo de couverture en tête de page.
+  bool get avecCouverture => this == Gabarit.elevage;
+
+  /// Zone de texte des cases de grille (l'éleveur en affiche plus).
+  double get hauteurTexteGrille =>
+      this == Gabarit.elevage ? hauteurTexteElevage : 132;
 }
 
 class _Page extends ConsumerStatefulWidget {
@@ -181,6 +192,11 @@ class _PageState extends ConsumerState<_Page> {
   Widget _tuile(BuildContext context, Plat p) {
     final telephone = telephoneCommerce(widget.commerce);
     return switch (widget.gabarit) {
+      Gabarit.elevage => TuileElevage(
+        key: ValueKey(p.id),
+        produit: p,
+        onTap: () => _ouvrir(p),
+      ),
       Gabarit.mode => TuileGrilleProduit(
         key: ValueKey(p.id),
         produit: p,
@@ -321,13 +337,25 @@ class _PageState extends ConsumerState<_Page> {
                 ),
                 SliverPadding(
                   padding: marge,
-                  sliver: SliverProduitsPagines(
-                    key: ValueKey(requete.cle),
-                    requete: requete,
-                    presentation: g.presentation,
-                    tuile: _tuile,
-                    vide: 'Aucun produit dans ce rayon pour le moment.',
-                  ),
+                  // Produits joints à la fiche (sans pagination publique) :
+                  // affichés et filtrés sur place ; sinon page par page.
+                  sliver:
+                      !c.paginationPublique &&
+                          !enRecherche &&
+                          (rayon?.plats.isNotEmpty ?? false)
+                      ? _GrilleLocale(
+                          produits: rayon!.plats.where(_filtre.garde).toList(),
+                          hauteurTexte: g.hauteurTexteGrille,
+                          tuile: _tuile,
+                        )
+                      : SliverProduitsPagines(
+                          key: ValueKey(requete.cle),
+                          requete: requete,
+                          presentation: g.presentation,
+                          hauteurTexte: g.hauteurTexteGrille,
+                          tuile: _tuile,
+                          vide: 'Aucun produit dans ce rayon pour le moment.',
+                        ),
                 ),
               ],
             ),
@@ -352,7 +380,7 @@ class _EnteteCommerce extends StatelessWidget {
     final telephone = telephoneCommerce(c);
     final garde = c.fiche.deGarde;
     final jusquAu = c.fiche.deGardeJusquAu ?? '';
-    return Padding(
+    final entete = Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -437,6 +465,65 @@ class _EnteteCommerce extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+    if (!gabarit.avecCouverture || c.couverture.isEmpty) return entete;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        AspectRatio(
+          aspectRatio: 16 / 7,
+          child: LayoutBuilder(
+            builder: (context, contraintes) => ImageReseau(
+              c.couverture,
+              fit: BoxFit.cover,
+              largeurAffichee: contraintes.maxWidth,
+            ),
+          ),
+        ),
+        entete,
+      ],
+    );
+  }
+}
+
+/// Grille des produits joints à la fiche (rayon non paginé).
+class _GrilleLocale extends StatelessWidget {
+  const _GrilleLocale({
+    required this.produits,
+    required this.hauteurTexte,
+    required this.tuile,
+  });
+
+  final List<Plat> produits;
+  final double hauteurTexte;
+  final Widget Function(BuildContext context, Plat produit) tuile;
+
+  @override
+  Widget build(BuildContext context) {
+    if (produits.isEmpty) {
+      return const SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: Text(
+            'Aucun produit ne correspond à ces critères.',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
+      sliver: SliverLayoutBuilder(
+        builder: (context, contraintes) => SliverGrid.builder(
+          gridDelegate: grilleProduits(
+            context,
+            contraintes.crossAxisExtent,
+            hauteurTexte: hauteurTexte,
+          ),
+          itemCount: produits.length,
+          itemBuilder: (context, i) => tuile(context, produits[i]),
+        ),
       ),
     );
   }

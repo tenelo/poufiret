@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../donnees/orders_providers.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../global/ui/notificateur.dart';
+import '../../../global/ui/format_montant.dart';
 import '../metier_domaine/orders_models.dart';
 
 /// Transitions autorisées côté partenaire, calquées sur le backend.
@@ -255,7 +256,7 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('${l.nomArticle} ×${l.quantite}'),
+                          Text('${l.nomArticle} ×${formatQuantite(l.quantite)}'),
                           if (l.varianteNom.isNotEmpty)
                             Text(l.varianteNom,
                                 style: theme.textTheme.bodySmall),
