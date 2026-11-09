@@ -45,11 +45,11 @@ void _afficherDialogue(BuildContext context) {
     context: context,
     builder: (ctx) => DialogueAuth(
       icone: Icons.lock_open_rounded,
-      titre: 'Enregistrez-vous pour continuer',
-      texte: 'Créez un compte gratuit pour découvrir les commerces, '
-          'consulter les articles et contacter les vendeurs près de '
-          'chez vous.',
-      actionPrincipale: 'S\'enregistrer',
+      titre: 'Connectez-vous pour continuer',
+      texte: 'Connectez-vous à votre compte, ou créez-en un gratuitement, '
+          'pour découvrir les commerces, consulter les articles et '
+          'contacter les vendeurs près de chez vous.',
+      actionPrincipale: 'Se connecter ou s\'inscrire',
       onPrincipale: () {
         Navigator.pop(ctx);
         Navigator.of(context).push(

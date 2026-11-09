@@ -158,7 +158,7 @@ void main() {
     await tester.tap(find.text('Ouvrir'));
     await tester.pumpAndSettle();
     expect(find.byType(DialogueAuth), findsOneWidget);
-    expect(find.text('S\'enregistrer'), findsOneWidget);
+    expect(find.text("Se connecter ou s'inscrire"), findsOneWidget);
     await tester.tap(find.text('Plus tard'));
     await tester.pumpAndSettle();
     expect(find.byType(DialogueAuth), findsNothing);

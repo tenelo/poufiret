@@ -10,7 +10,7 @@ import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/squelette.dart';
 import '../../../global/widgets/barre_onglets.dart';
-import '../../../global/widgets/image_reseau.dart';
+import '../../../global/widgets/couverture_nommee.dart';
 import '../../../global/widgets/message_erreur.dart';
 import '../../analytics/donnees/analytics_providers.dart';
 import '../../analytics/donnees/service_suivi.dart';
@@ -208,12 +208,12 @@ class _PageState extends ConsumerState<_Page> {
   }
 
   MaterialPageRoute<void> _routeProduit(Plat p) => MaterialPageRoute(
-      builder: (_) => EcranProduit(
-        produitId: p.id,
-        gabarit: widget.gabarit,
-        titre: p.nom,
-        telephoneCommerce: telephoneCommerce(widget.commerce),
-      ),
+    builder: (_) => EcranProduit(
+      produitId: p.id,
+      gabarit: widget.gabarit,
+      titre: p.nom,
+      telephoneCommerce: telephoneCommerce(widget.commerce),
+    ),
   );
 
   Widget _tuile(BuildContext context, Plat p) {
@@ -405,39 +405,52 @@ class _EnteteCommerce extends StatelessWidget {
     final telephone = telephoneCommerce(c);
     final garde = c.fiche.deGarde;
     final jusquAu = c.fiche.deGardeJusquAu ?? '';
+    // Avec couverture, le logo et le nom sont posés dessus.
+    final avecCouverture = gabarit.avecCouverture && c.couverture.isNotEmpty;
     final entete = Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              if (c.logo.isNotEmpty) ...[
-                MedaillonLogo(url: c.logo, rayon: 24),
-                const SizedBox(width: 12),
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      c.nom,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (c.localisation.isNotEmpty)
+          if (avecCouverture)
+            if (c.localisation.isNotEmpty)
+              Text(
+                c.localisation,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: Config.couleurTexteSecondaire,
+                ),
+              )
+            else
+              const SizedBox.shrink()
+          else
+            Row(
+              children: [
+                if (c.logo.isNotEmpty) ...[
+                  MedaillonLogo(url: c.logo, rayon: 24),
+                  const SizedBox(width: 12),
+                ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
                       Text(
-                        c.localisation,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: Config.couleurTexteSecondaire,
+                        c.nom,
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                  ],
+                      if (c.localisation.isNotEmpty)
+                        Text(
+                          c.localisation,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: Config.couleurTexteSecondaire,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           if (gabarit == Gabarit.pharmacie && garde)
             Padding(
               padding: const EdgeInsets.only(top: 8),
@@ -499,19 +512,15 @@ class _EnteteCommerce extends StatelessWidget {
         ],
       ),
     );
-    if (!gabarit.avecCouverture || c.couverture.isEmpty) return entete;
+    if (!avecCouverture) return entete;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AspectRatio(
-          aspectRatio: 16 / 7,
-          child: LayoutBuilder(
-            builder: (context, contraintes) => ImageReseau(
-              c.couverture,
-              fit: BoxFit.cover,
-              largeurAffichee: contraintes.maxWidth,
-            ),
-          ),
+        CouvertureNommee(
+          couverture: c.couverture,
+          logo: c.logo,
+          nom: c.nom,
+          iconeVide: Icons.storefront_outlined,
         ),
         entete,
       ],

@@ -196,15 +196,16 @@ class _FeuilleReservationVehiculeState
               Text(
                 'Réserver ce véhicule',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
               Text(
                 _v.nomComplet,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: Config.couleurTexteSecondaire,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Config.couleurPrimaire,
                 ),
               ),
               const SizedBox(height: 16),

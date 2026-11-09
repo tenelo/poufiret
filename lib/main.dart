@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'global/navigation/app_shell.dart';
@@ -59,6 +60,10 @@ class PoufiretApp extends ConsumerWidget {
       // Bascule nette : les couleurs de Config ne s'interpolent pas.
       themeAnimationDuration: Duration.zero,
       debugShowCheckedModeBanner: false,
+      // Composants Flutter (calendriers, boutons système) en français.
+      locale: const Locale('fr', 'FR'),
+      supportedLocales: const [Locale('fr', 'FR')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       navigatorObservers: [observateurNavigation],
       builder: (context, enfant) =>
           _SynchroPalette(enfant: _AvecBandeauHorsLigne(enfant: enfant!)),

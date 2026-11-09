@@ -450,13 +450,16 @@ class _TuileCategorie extends StatelessWidget {
                     ),
                   ),
                 const SizedBox(height: 10),
+                // Nom en entier : jusqu'à 3 lignes, l'image se réduit
+                // pour lui laisser la place.
                 Text(
                   categorie.nom,
-                  maxLines: 2,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: encre,
                     fontWeight: FontWeight.w600,
+                    fontSize: 15,
                     height: 1.15,
                   ),
                 ),

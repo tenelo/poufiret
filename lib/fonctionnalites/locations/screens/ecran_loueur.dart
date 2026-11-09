@@ -3,10 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show ProviderOrFamily;
 
 import '../../../global/cache/contexte_cache.dart';
-import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/squelette.dart';
-import '../../../global/widgets/image_reseau.dart';
+import '../../../global/widgets/couverture_nommee.dart';
 import '../../../global/widgets/message_erreur.dart';
 import '../../analytics/donnees/analytics_providers.dart';
 import '../donnees/locations_providers.dart';
@@ -367,61 +366,18 @@ class _Entete extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l = loueur;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        AspectRatio(
-          aspectRatio: 16 / 7,
-          child: l.couverture.isEmpty
-              ? ColoredBox(
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  child: Icon(
-                    icone,
-                    size: 48,
-                    color: theme.colorScheme.outline,
-                  ),
-                )
-              : ImageReseau(
-                  l.couverture,
-                  fit: BoxFit.cover,
-                  largeurAffichee: largeur,
-                ),
+        CouvertureNommee(
+          couverture: l.couverture,
+          logo: l.logo,
+          nom: l.nom,
+          iconeVide: icone,
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-          child: Row(
-            children: [
-              if (l.logo.isNotEmpty) ...[
-                CircleAvatar(
-                  radius: 26,
-                  backgroundColor: Config.couleurFond,
-                  child: ClipOval(
-                    child: ImageReseau(
-                      l.logo,
-                      width: 52,
-                      height: 52,
-                      fit: BoxFit.cover,
-                      largeurAffichee: 52,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-              ],
-              Expanded(
-                child: Text(
-                  l.nom,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
           child: BoutonsContact(
             telephone: l.telephonePro,
             whatsapp: l.whatsapp,

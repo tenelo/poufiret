@@ -642,7 +642,7 @@ void main() {
       expect(find.byType(VisiteImmersive), findsOneWidget);
       expect(find.text('Tableau de bord'), findsOneWidget);
       // Autres véhicules du loueur.
-      expect(find.text('Autres véhicules de ce loueur'), findsOneWidget);
+      expect(find.text('Autres véhicules de Ferké Auto'), findsOneWidget);
       expect(find.text('Minibus 15 places'), findsOneWidget);
       // Actions.
       expect(find.text('Itinéraire'), findsOneWidget);
@@ -724,7 +724,7 @@ void main() {
       await _monter(tester, bouton(_vehicule), utilisateur: null);
       await tester.tap(find.text('Ouvrir'));
       await tester.pumpAndSettle();
-      expect(find.text('Enregistrez-vous pour continuer'), findsOneWidget);
+      expect(find.text('Connectez-vous pour continuer'), findsOneWidget);
       expect(find.byType(FeuilleReservationVehicule), findsNothing);
     });
 

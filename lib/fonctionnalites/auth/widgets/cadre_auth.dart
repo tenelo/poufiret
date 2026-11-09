@@ -494,7 +494,8 @@ class DialogueAuth extends StatelessWidget {
       insetPadding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 380),
-        child: Padding(
+        // Défilant : rien ne déborde sur un petit écran ou en grand texte.
+        child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(24, 28, 24, 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,

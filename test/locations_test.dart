@@ -534,7 +534,7 @@ void main() {
       );
       await tester.tap(find.text('Ouvrir'));
       await tester.pumpAndSettle();
-      expect(find.text('Enregistrez-vous pour continuer'), findsOneWidget);
+      expect(find.text('Connectez-vous pour continuer'), findsOneWidget);
       expect(find.byType(FeuilleDemandeVisite), findsNothing);
     });
 
