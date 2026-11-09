@@ -21,6 +21,7 @@ import '../../locations/metier_domaine/location_models.dart';
 import '../../locations/screens/ecran_loueur.dart';
 import '../../restaurants/metier_domaine/types_restauration.dart';
 import '../../restaurants/screens/ecran_restaurant.dart';
+import '../../avis/widgets/widgets_avis.dart';
 
 /// Annuaire d'une catégorie : les prestataires/commerces (couverture + nom).
 /// Le client choisit un commerce avant de voir ses articles.
@@ -291,11 +292,25 @@ class _CartePrestataire extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          prestataire.nomCommerce,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.titleMedium,
+                        // Nom, puis « ★ 4,5 (12) » s'il a des avis.
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                prestataire.nomCommerce,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.titleMedium,
+                              ),
+                            ),
+                            if (prestataire.nbAvis > 0) ...[
+                              const SizedBox(width: 6),
+                              ResumeNote(
+                                noteMoyenne: prestataire.noteMoyenne,
+                                nbAvis: prestataire.nbAvis,
+                              ),
+                            ],
+                          ],
                         ),
                         if (prestataire.ligneLocalisation.isNotEmpty)
                           // « Localite - Quartier - Secteur » sous le nom.

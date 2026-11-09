@@ -12,9 +12,11 @@ import 'global/config/config.dart';
 import 'global/ui/mode_theme.dart';
 import 'global/ui/theme_poufiret.dart';
 import 'fonctionnalites/analytics/donnees/analytics_providers.dart';
+import 'fonctionnalites/analytics/donnees/service_suivi.dart';
 import 'fonctionnalites/auth/screens/auth_notifier.dart';
 import 'fonctionnalites/auth/screens/ecran_connexion.dart';
 import 'fonctionnalites/auth/screens/ecran_changer_pin.dart';
+import 'fonctionnalites/confidentialite/donnees/demande_consentement.dart';
 import 'fonctionnalites/publicites/widgets/couche_publicites.dart';
 import 'fonctionnalites/publicites/widgets/observateur_interstitiel.dart';
 import 'fonctionnalites/version/donnees/version_providers.dart';
@@ -151,6 +153,9 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
     _servicesLances = true;
     ref.read(fcmServiceProvider).initialiser();
     ref.read(sessionAnalyticsProvider.notifier).demarrer();
+    // Choix de confidentialité : demandés une fois (nouvelle version du
+    // texte), sur l'accueil, sans bloquer le reste.
+    ref.read(demandeConsentementProvider).proposerSiBesoin();
   }
 
   @override
@@ -167,6 +172,11 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
     // le serveur (demarrage hors connexion), on retente tout de suite.
     if (etat == AppLifecycleState.resumed) {
       ref.read(authProvider.notifier).revalider();
+    }
+    // Passage en arrière-plan : les événements de suivi en attente partent
+    // (connecté ou non).
+    if (etat == AppLifecycleState.paused || etat == AppLifecycleState.hidden) {
+      ref.read(serviceSuiviProvider).vider();
     }
     final connecte = ref.read(authProvider).value != null;
     if (!connecte) return;
@@ -197,6 +207,8 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
         if (_accueilAffiche) _lancerServicesDifferes();
       } else if (user == null && etaitConnecte) {
         _servicesLances = false;
+        // Prochain compte connecté : sa propre demande de consentement.
+        ref.invalidate(demandeConsentementProvider);
         ref.read(sessionAnalyticsProvider.notifier).arreter();
         // Deconnexion : on retire le token FCM de cet appareil.
         ref.read(fcmServiceProvider).desenregistrer();

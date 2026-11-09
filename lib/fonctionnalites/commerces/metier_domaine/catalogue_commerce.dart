@@ -11,10 +11,12 @@ class PageProduits {
     required this.results,
     this.next,
     this.previous,
+    this.rechercheId,
   });
 
   factory PageProduits.fromJson(Map<String, dynamic> json) => PageProduits(
     count: versInt(json['count']),
+    rechercheId: versIntNullable(json['recherche_id']),
     next: json['next'] as String?,
     previous: json['previous'] as String?,
     results: [
@@ -27,6 +29,10 @@ class PageProduits {
   final String? next;
   final String? previous;
   final List<Plat> results;
+
+  /// Recherche journalisée par le serveur (avec `q` de 2 caractères ou
+  /// plus) : sert à compter le produit touché ensuite.
+  final int? rechercheId;
 
   bool get aSuite => next != null && next!.isNotEmpty;
 }
@@ -153,9 +159,13 @@ class EtatPagination {
     this.aSuite = true,
     this.chargement = false,
     this.erreur,
+    this.rechercheId,
   });
 
   final List<Plat> produits;
+
+  /// Recherche journalisée (première page), voir [PageProduits.rechercheId].
+  final int? rechercheId;
 
   /// Nombre total annoncé par le serveur (null tant qu'inconnu).
   final int? total;
@@ -182,5 +192,6 @@ class EtatPagination {
     aSuite: aSuite ?? this.aSuite,
     chargement: chargement ?? this.chargement,
     erreur: effacerErreur ? null : erreur ?? this.erreur,
+    rechercheId: rechercheId,
   );
 }

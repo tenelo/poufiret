@@ -114,10 +114,15 @@ class EnteteEtablissement extends ConsumerWidget {
                 ),
               ],
               const SizedBox(height: 10),
-              BoutonsContact(telephone: e.telephonePro, whatsapp: e.whatsapp),
+              BoutonsContact(
+                telephone: e.telephonePro,
+                whatsapp: e.whatsapp,
+                partenaireId: e.id,
+              ),
               if (e.aPosition) ...[
                 const SizedBox(height: 8),
                 BoutonsPosition(
+                  partenaireId: e.id,
                   latitude: e.latitude,
                   longitude: e.longitude,
                   titreCarte: e.localisationTexte.isEmpty

@@ -244,7 +244,7 @@ final class ProduitsPaginesProvider
   }
 }
 
-String _$produitsPaginesHash() => r'526d9b75904315129f5413597408a585337b9485';
+String _$produitsPaginesHash() => r'842622a197b70c2470172b7748900d0f542ac39f';
 
 /// Liste paginée d'un rayon, d'une recherche ou de filtres : la première
 /// page à la construction, la suivante à chaque [chargerSuite] (défilement

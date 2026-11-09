@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../global/json/convertisseurs.dart';
+
 import '../../geo/metier_domaine/localisation.dart' as geo;
 
 part 'partenaire_categorie.freezed.dart';
@@ -42,6 +44,10 @@ abstract class PartenaireCategorie with _$PartenaireCategorie {
     @JsonKey(readValue: _lireTypes)
     @Default(<String>[])
     List<String> typesPartenaire,
+    /// Note des clients (null sans avis) et nombre d'avis visibles.
+    @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable)
+    double? noteMoyenne,
+    @JsonKey(name: 'nb_avis', fromJson: versInt) @Default(0) int nbAvis,
   }) = _PartenaireCategorie;
 
   const PartenaireCategorie._();

@@ -29,6 +29,8 @@ _PartenaireCategorie _$PartenaireCategorieFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const <String>[],
+      noteMoyenne: versDoubleNullable(json['note_moyenne']),
+      nbAvis: json['nb_avis'] == null ? 0 : versInt(json['nb_avis']),
     );
 
 Map<String, dynamic> _$PartenaireCategorieToJson(
@@ -51,4 +53,6 @@ Map<String, dynamic> _$PartenaireCategorieToJson(
   'quartier_nom': instance.quartierNom,
   'gabarit': instance.gabarit,
   'typesPartenaire': instance.typesPartenaire,
+  'note_moyenne': instance.noteMoyenne,
+  'nb_avis': instance.nbAvis,
 };

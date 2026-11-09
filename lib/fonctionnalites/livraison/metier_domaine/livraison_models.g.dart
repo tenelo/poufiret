@@ -69,6 +69,8 @@ _Course _$CourseFromJson(Map<String, dynamic> json) => _Course(
   jeSuisDestinataire: json['je_suis_destinataire'] as bool? ?? false,
   positionBDeposee: json['position_b_deposee'] as bool? ?? false,
   creeLe: json['cree_le'] as String?,
+  peutNoter: json['peut_noter'] as bool? ?? false,
+  monAvis: versIntNullable(json['mon_avis']),
 );
 
 Map<String, dynamic> _$CourseToJson(_Course instance) => <String, dynamic>{
@@ -86,6 +88,8 @@ Map<String, dynamic> _$CourseToJson(_Course instance) => <String, dynamic>{
   'je_suis_destinataire': instance.jeSuisDestinataire,
   'position_b_deposee': instance.positionBDeposee,
   'cree_le': instance.creeLe,
+  'peut_noter': instance.peutNoter,
+  'mon_avis': instance.monAvis,
 };
 
 _ResultatCreationCourse _$ResultatCreationCourseFromJson(

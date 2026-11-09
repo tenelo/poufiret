@@ -5,6 +5,7 @@ import '../../../global/carte/carte_poufiret.dart';
 import '../../../global/carte/modeles_carte.dart';
 import '../../../global/config/config.dart';
 import '../../../global/ui/liens_externes.dart';
+import '../../analytics/donnees/service_suivi.dart';
 import '../metier_domaine/commande_plat.dart';
 import '../metier_domaine/restaurant_models.dart';
 
@@ -123,7 +124,8 @@ class _Infos extends StatelessWidget {
               title: Text(t.key),
               subtitle: t.value.isEmpty ? null : Text(t.value),
               trailing: Icon(Icons.call_outlined, color: Config.couleurSucces),
-              onTap: () => ouvrirLien(context, uriAppel(t.key)),
+              onTap: () =>
+                  appelerPartenaire(context, t.key, partenaireId: r.id),
             ),
           if (r.whatsapp.isNotEmpty)
             ListTile(
@@ -136,7 +138,11 @@ class _Infos extends StatelessWidget {
               title: Text(r.whatsapp),
               subtitle: const Text('WhatsApp'),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => ouvrirLien(context, uriWhatsapp(r.whatsapp)),
+              onTap: () => whatsappPartenaire(
+                context,
+                r.whatsapp,
+                partenaireId: r.id,
+              ),
             ),
         ],
 

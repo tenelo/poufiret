@@ -151,6 +151,8 @@ _Commande _$CommandeFromJson(Map<String, dynamic> json) => _Commande(
           .toList() ??
       const <LigneCommande>[],
   createdAt: json['created_at'] as String?,
+  peutNoter: json['peut_noter'] as bool? ?? false,
+  monAvis: versIntNullable(json['mon_avis']),
 );
 
 Map<String, dynamic> _$CommandeToJson(_Commande instance) => <String, dynamic>{
@@ -171,4 +173,6 @@ Map<String, dynamic> _$CommandeToJson(_Commande instance) => <String, dynamic>{
   'notes_client': instance.notesClient,
   'lignes': instance.lignes,
   'created_at': instance.createdAt,
+  'peut_noter': instance.peutNoter,
+  'mon_avis': instance.monAvis,
 };

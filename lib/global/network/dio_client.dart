@@ -4,12 +4,14 @@ import '../config/env.dart';
 import '../errors/api_exception.dart';
 import '../storage/token_storage.dart';
 import 'auth_interceptor.dart';
+import 'entetes_app.dart';
 import 'pool_http.dart';
 
 /// Fabrique les clients HTTP de l'app. Tous partagent le MÊME pool de
 /// connexions (voir [adaptateurPartage]).
 class DioClient {
-  /// Dio « nu » : baseUrl + timeouts, aucun intercepteur. Sert aux appels
+  /// Dio « nu » : baseUrl + timeouts + en-têtes de l'app, sans
+  /// authentification. Sert aux appels
   /// publics (contrôle de version) et au refresh de token.
   static Dio creerNu({
     Duration connexion = const Duration(seconds: 15),
@@ -25,6 +27,9 @@ class DioClient {
       ),
     );
     dio.httpClientAdapter = adaptateur ?? adaptateurPartage();
+    // Plateforme et version de l'app, sur toutes les requêtes (y compris
+    // refresh de token et contrôle de version).
+    dio.interceptors.add(IntercepteurEntetesApp());
     return dio;
   }
 

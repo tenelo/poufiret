@@ -9,6 +9,8 @@ import '../../../global/ui/squelette.dart';
 import '../../../global/widgets/message_erreur.dart';
 import '../donnees/locations_providers.dart';
 import '../metier_domaine/location_models.dart';
+import '../../avis/metier_domaine/avis.dart';
+import '../../avis/widgets/widgets_avis.dart';
 
 /// « Mes demandes » : les visites de logement et les réservations
 /// (véhicule, séjour) du client, avec leur statut, le motif d'un refus, et
@@ -235,6 +237,19 @@ class _CarteDemandeState extends ConsumerState<_CarteDemande> {
                 child: TextButton(
                   onPressed: _envoi ? null : _annuler,
                   child: Text(_envoi ? 'Annulation…' : 'Annuler la demande'),
+                ),
+              ),
+            // Avis, une fois la visite ou la réservation honorée.
+            if (d.peutNoter || d.monAvis != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: BlocNotation(
+                  compact: true,
+                  objet: ObjetAvis.reservation,
+                  objetId: '${d.id}',
+                  etat: EtatNotation(peutNoter: d.peutNoter, monAvis: d.monAvis),
+                  onModifie: () =>
+                      ref.invalidate(mesDemandesReservationProvider),
                 ),
               ),
           ],

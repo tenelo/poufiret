@@ -17,6 +17,7 @@ import '../../../global/widgets/image_reseau.dart';
 import '../../auth/widgets/mur_inscription.dart';
 import '../../auth/screens/auth_notifier.dart';
 import '../../../global/ui/notificateur.dart';
+import '../../analytics/donnees/service_suivi.dart';
 import '../../restaurants/donnees/restaurants_providers.dart';
 import '../../restaurants/metier_domaine/restaurant_models.dart';
 import '../../restaurants/screens/ecran_restaurant.dart';
@@ -181,14 +182,22 @@ class _Resultats extends ConsumerWidget {
                           titre: 'Commerces',
                           icone: Icons.storefront_outlined),
                       for (final p in r.partenaires)
-                        _LignePartenaire(partenaire: p, connecte: connecte),
+                        _LignePartenaire(
+                          partenaire: p,
+                          connecte: connecte,
+                          rechercheId: r.rechercheId,
+                        ),
                     ],
                     if (r.articles.isNotEmpty) ...[
                       const _TitreSection(
                           titre: 'Produits',
                           icone: Icons.shopping_bag_outlined),
                       for (final a in r.articles)
-                        _LigneArticle(article: a, connecte: connecte),
+                        _LigneArticle(
+                          article: a,
+                          connecte: connecte,
+                          rechercheId: r.rechercheId,
+                        ),
                     ],
                   ],
                 ),
@@ -251,7 +260,14 @@ class _LigneCategorie extends StatelessWidget {
 }
 
 class _LignePartenaire extends StatelessWidget {
-  const _LignePartenaire({required this.partenaire, required this.connecte});
+  const _LignePartenaire({
+    required this.partenaire,
+    required this.connecte,
+    this.rechercheId,
+  });
+
+  /// Recherche d'où vient ce résultat (compte le toucher).
+  final int? rechercheId;
   final bool connecte;
   final PartenaireTrouve partenaire;
 
@@ -276,16 +292,19 @@ class _LignePartenaire extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
       ),
       trailing: const Icon(Icons.chevron_right),
-      onTap: () => murInscriptionSi(
-        context,
-        connecte: connecte,
-        action: () => Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) =>
-                EcranVitrinePartenaire(partenaireId: partenaire.id),
+      onTap: () {
+        suivreClicRecherche(context, rechercheId, 'partenaire', partenaire.id);
+        murInscriptionSi(
+          context,
+          connecte: connecte,
+          action: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) =>
+                  EcranVitrinePartenaire(partenaireId: partenaire.id),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -295,7 +314,14 @@ class _LignePartenaire extends StatelessWidget {
 /// le parcours habituel de la fiche produit sinon. « Voir le partenaire »
 /// mène à sa page.
 class _LigneArticle extends ConsumerStatefulWidget {
-  const _LigneArticle({required this.article, required this.connecte});
+  const _LigneArticle({
+    required this.article,
+    required this.connecte,
+    this.rechercheId,
+  });
+
+  /// Recherche d'où vient ce résultat (compte le toucher).
+  final int? rechercheId;
   final bool connecte;
   final ArticleTrouve article;
 
@@ -548,7 +574,15 @@ class _LigneArticleState extends ConsumerState<_LigneArticle> {
               taillePrix: 14,
               aligneADroite: true,
             ),
-      onTap: () => _siConnecte(_ajouter),
+      onTap: () {
+        suivreClicRecherche(
+          context,
+          widget.rechercheId,
+          'article',
+          widget.article.id,
+        );
+        _siConnecte(_ajouter);
+      },
     );
   }
 }

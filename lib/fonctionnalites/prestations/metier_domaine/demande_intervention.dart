@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../global/json/convertisseurs.dart';
+
 part 'demande_intervention.freezed.dart';
 part 'demande_intervention.g.dart';
 
@@ -65,6 +67,10 @@ abstract class DemandeIntervention with _$DemandeIntervention {
     int? conversation,
     @Default(<PhotoDemande>[]) List<PhotoDemande> photos,
     @JsonKey(name: 'created_at') @Default('') String createdAt,
+    /// Avis client : notable maintenant (livré / terminé, pas encore noté),
+    /// et id de l'avis déjà donné.
+    @JsonKey(name: 'peut_noter') @Default(false) bool peutNoter,
+    @JsonKey(name: 'mon_avis', fromJson: versIntNullable) int? monAvis,
   }) = _DemandeIntervention;
 
   factory DemandeIntervention.fromJson(Map<String, dynamic> json) =>

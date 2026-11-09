@@ -309,6 +309,8 @@ _Restaurant _$RestaurantFromJson(Map<String, dynamic> json) => _Restaurant(
           ?.map((e) => SectionCarte.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <SectionCarte>[],
+  noteMoyenne: versDoubleNullable(json['note_moyenne']),
+  nbAvis: json['nb_avis'] == null ? 0 : versInt(json['nb_avis']),
 );
 
 Map<String, dynamic> _$RestaurantToJson(_Restaurant instance) =>
@@ -336,4 +338,6 @@ Map<String, dynamic> _$RestaurantToJson(_Restaurant instance) =>
       'menus': instance.menus,
       'services_en_vigueur': instance.servicesEnVigueur,
       'carte': instance.carte,
+      'note_moyenne': instance.noteMoyenne,
+      'nb_avis': instance.nbAvis,
     };

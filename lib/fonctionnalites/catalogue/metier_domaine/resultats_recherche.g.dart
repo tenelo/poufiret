@@ -91,6 +91,7 @@ _ResultatsRecherche _$ResultatsRechercheFromJson(Map<String, dynamic> json) =>
               ?.map((e) => ArticleTrouve.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const <ArticleTrouve>[],
+      rechercheId: (json['recherche_id'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$ResultatsRechercheToJson(_ResultatsRecherche instance) =>
@@ -98,4 +99,5 @@ Map<String, dynamic> _$ResultatsRechercheToJson(_ResultatsRecherche instance) =>
       'categories': instance.categories,
       'partenaires': instance.partenaires,
       'articles': instance.articles,
+      'recherche_id': instance.rechercheId,
     };

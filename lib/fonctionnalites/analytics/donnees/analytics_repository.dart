@@ -87,6 +87,25 @@ class AnalyticsRepository {
     }
   }
 
+  /// POST /analytics/evenements/ — un lot d'événements (50 au plus).
+  /// Lève en cas d'échec : [ServiceSuivi] garde alors le lot pour plus tard.
+  Future<void> envoyerEvenements(List<Map<String, dynamic>> lot) async {
+    await _dio.post<void>('${Env.apiPrefix}/analytics/evenements/', data: lot);
+  }
+
+  /// `POST /analytics/recherches/<id>/clic/` — résultat touché après une
+  /// recherche. Lève en cas d'échec (409 si le clic est déjà compté).
+  Future<void> envoyerClicRecherche(
+    int rechercheId, {
+    required String resultatType,
+    required int resultatId,
+  }) async {
+    await _dio.post<void>(
+      '${Env.apiPrefix}/analytics/recherches/$rechercheId/clic/',
+      data: {'resultat_type': resultatType, 'resultat_id': resultatId},
+    );
+  }
+
   /// Enregistre la consultation d'un article (alimente le profil de navigation).
   Future<void> enregistrerVueArticle(String slug, {String source = 'liste'}) async {
     try {

@@ -6,6 +6,7 @@ import '../../../global/ui/notificateur.dart';
 import '../../auth/screens/auth_notifier.dart';
 import '../../locations/screens/ecran_mes_demandes.dart';
 import 'ecran_devenir_partenaire.dart';
+import '../../confidentialite/screens/ecran_confidentialite.dart';
 
 /// Écran « Mon compte » : profil éditable + accès appareils / partenaire.
 class EcranMonCompte extends ConsumerStatefulWidget {
@@ -166,6 +167,21 @@ class _EcranMonCompteState extends ConsumerState<EcranMonCompte> {
                                 onTap: () => Navigator.of(context).push(
                                   MaterialPageRoute(
                                     builder: (_) => const EcranMesDemandes(),
+                                  ),
+                                ),
+                              ),
+                              const Divider(height: 1),
+                              ListTile(
+                                leading: const Icon(Icons.shield_outlined),
+                                title: const Text('Confidentialité'),
+                                subtitle: const Text(
+                                  "Statistiques d'usage et IA de Poufiret.",
+                                ),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const EcranConfidentialite(),
                                   ),
                                 ),
                               ),

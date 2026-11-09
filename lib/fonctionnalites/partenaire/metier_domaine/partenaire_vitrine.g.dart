@@ -33,6 +33,8 @@ _PartenaireVitrine _$PartenaireVitrineFromJson(Map<String, dynamic> json) =>
       nombreLikes: (json['nombre_likes'] as num?)?.toInt() ?? 0,
       estLikeParMoi: json['est_like_par_moi'] as bool? ?? false,
       estFavoriParMoi: json['est_favori_par_moi'] as bool? ?? false,
+      noteMoyenne: versDoubleNullable(json['note_moyenne']),
+      nbAvis: json['nb_avis'] == null ? 0 : versInt(json['nb_avis']),
     );
 
 Map<String, dynamic> _$PartenaireVitrineToJson(_PartenaireVitrine instance) =>
@@ -62,4 +64,6 @@ Map<String, dynamic> _$PartenaireVitrineToJson(_PartenaireVitrine instance) =>
       'nombre_likes': instance.nombreLikes,
       'est_like_par_moi': instance.estLikeParMoi,
       'est_favori_par_moi': instance.estFavoriParMoi,
+      'note_moyenne': instance.noteMoyenne,
+      'nb_avis': instance.nbAvis,
     };

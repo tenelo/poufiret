@@ -66,6 +66,7 @@ class _Fiche extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l.titre)),
       bottomNavigationBar: BarreActionsFiche(
+        partenaireId: l.loueur?.id,
         latitude: l.latitude,
         longitude: l.longitude,
         titreCarte: l.localisation.isEmpty ? 'Localisation' : l.localisation,

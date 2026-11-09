@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../global/json/convertisseurs.dart';
+
 part 'livraison_models.freezed.dart';
 part 'livraison_models.g.dart';
 
@@ -71,6 +73,10 @@ abstract class Course with _$Course {
     @JsonKey(name: 'je_suis_destinataire') @Default(false) bool jeSuisDestinataire,
     @JsonKey(name: 'position_b_deposee') @Default(false) bool positionBDeposee,
     @JsonKey(name: 'cree_le') String? creeLe,
+    /// Avis client : notable maintenant (livré / terminé, pas encore noté),
+    /// et id de l'avis déjà donné.
+    @JsonKey(name: 'peut_noter') @Default(false) bool peutNoter,
+    @JsonKey(name: 'mon_avis', fromJson: versIntNullable) int? monAvis,
   }) = _Course;
 
   factory Course.fromJson(Map<String, dynamic> json) =>

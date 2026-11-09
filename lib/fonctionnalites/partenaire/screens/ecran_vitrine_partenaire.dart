@@ -16,6 +16,7 @@ import '../donnees/partenaire_providers.dart';
 import '../metier_domaine/partenaire_vitrine.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../../global/widgets/image_reseau.dart';
+import '../../avis/widgets/widgets_avis.dart';
 
 /// Vitrine publique d'un partenaire (côté client).
 /// Affiche couverture, logo, infos, localisation, contacts.
@@ -314,6 +315,14 @@ class _Infos extends ConsumerWidget {
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: theme.colorScheme.primary,
                               )),
+                        if (p.nbAvis > 0) ...[
+                          const SizedBox(height: 4),
+                          ResumeNote(
+                            noteMoyenne: p.noteMoyenne,
+                            nbAvis: p.nbAvis,
+                            taille: 14,
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -457,6 +466,15 @@ class _Infos extends ConsumerWidget {
                     Text(p.whatsapp, style: theme.textTheme.bodyMedium),
                   ]),
               ],
+            ),
+          ),
+
+        // Avis clients : les 3 derniers et « Voir tout ».
+        if (p.nbAvis > 0)
+          _CarteSection(
+            child: SectionAvisPartenaire(
+              partenaireId: p.id,
+              nomPartenaire: p.nomCommerce,
             ),
           ),
 

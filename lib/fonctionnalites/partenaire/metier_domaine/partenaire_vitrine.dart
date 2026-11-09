@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../global/json/convertisseurs.dart';
+
 import '../../geo/metier_domaine/localisation.dart';
 
 part 'partenaire_vitrine.freezed.dart';
@@ -38,6 +40,10 @@ abstract class PartenaireVitrine with _$PartenaireVitrine {
     @JsonKey(name: 'nombre_likes') @Default(0) int nombreLikes,
     @JsonKey(name: 'est_like_par_moi') @Default(false) bool estLikeParMoi,
     @JsonKey(name: 'est_favori_par_moi') @Default(false) bool estFavoriParMoi,
+    /// Note des clients (null sans avis) et nombre d'avis visibles.
+    @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable)
+    double? noteMoyenne,
+    @JsonKey(name: 'nb_avis', fromJson: versInt) @Default(0) int nbAvis,
   }) = _PartenaireVitrine;
 
   factory PartenaireVitrine.fromJson(Map<String, dynamic> json) =>

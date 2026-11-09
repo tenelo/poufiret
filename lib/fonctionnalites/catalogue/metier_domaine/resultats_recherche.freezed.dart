@@ -861,7 +861,9 @@ as String,
 /// @nodoc
 mixin _$ResultatsRecherche {
 
- List<CategorieTrouvee> get categories; List<PartenaireTrouve> get partenaires; List<ArticleTrouve> get articles;
+ List<CategorieTrouvee> get categories; List<PartenaireTrouve> get partenaires; List<ArticleTrouve> get articles;/// Recherche journalisée par le serveur (absente sous 2 caractères) :
+/// sert à compter le résultat touché ensuite.
+@JsonKey(name: 'recherche_id') int? get rechercheId;
 /// Create a copy of ResultatsRecherche
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -874,16 +876,16 @@ $ResultatsRechercheCopyWith<ResultatsRecherche> get copyWith => _$ResultatsReche
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ResultatsRecherche&&const DeepCollectionEquality().equals(other.categories, categories)&&const DeepCollectionEquality().equals(other.partenaires, partenaires)&&const DeepCollectionEquality().equals(other.articles, articles));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ResultatsRecherche&&const DeepCollectionEquality().equals(other.categories, categories)&&const DeepCollectionEquality().equals(other.partenaires, partenaires)&&const DeepCollectionEquality().equals(other.articles, articles)&&(identical(other.rechercheId, rechercheId) || other.rechercheId == rechercheId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(categories),const DeepCollectionEquality().hash(partenaires),const DeepCollectionEquality().hash(articles));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(categories),const DeepCollectionEquality().hash(partenaires),const DeepCollectionEquality().hash(articles),rechercheId);
 
 @override
 String toString() {
-  return 'ResultatsRecherche(categories: $categories, partenaires: $partenaires, articles: $articles)';
+  return 'ResultatsRecherche(categories: $categories, partenaires: $partenaires, articles: $articles, rechercheId: $rechercheId)';
 }
 
 
@@ -894,7 +896,7 @@ abstract mixin class $ResultatsRechercheCopyWith<$Res>  {
   factory $ResultatsRechercheCopyWith(ResultatsRecherche value, $Res Function(ResultatsRecherche) _then) = _$ResultatsRechercheCopyWithImpl;
 @useResult
 $Res call({
- List<CategorieTrouvee> categories, List<PartenaireTrouve> partenaires, List<ArticleTrouve> articles
+ List<CategorieTrouvee> categories, List<PartenaireTrouve> partenaires, List<ArticleTrouve> articles,@JsonKey(name: 'recherche_id') int? rechercheId
 });
 
 
@@ -911,12 +913,13 @@ class _$ResultatsRechercheCopyWithImpl<$Res>
 
 /// Create a copy of ResultatsRecherche
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? categories = null,Object? partenaires = null,Object? articles = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? categories = null,Object? partenaires = null,Object? articles = null,Object? rechercheId = freezed,}) {
   return _then(_self.copyWith(
 categories: null == categories ? _self.categories : categories // ignore: cast_nullable_to_non_nullable
 as List<CategorieTrouvee>,partenaires: null == partenaires ? _self.partenaires : partenaires // ignore: cast_nullable_to_non_nullable
 as List<PartenaireTrouve>,articles: null == articles ? _self.articles : articles // ignore: cast_nullable_to_non_nullable
-as List<ArticleTrouve>,
+as List<ArticleTrouve>,rechercheId: freezed == rechercheId ? _self.rechercheId : rechercheId // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -1001,10 +1004,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<CategorieTrouvee> categories,  List<PartenaireTrouve> partenaires,  List<ArticleTrouve> articles)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<CategorieTrouvee> categories,  List<PartenaireTrouve> partenaires,  List<ArticleTrouve> articles, @JsonKey(name: 'recherche_id')  int? rechercheId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ResultatsRecherche() when $default != null:
-return $default(_that.categories,_that.partenaires,_that.articles);case _:
+return $default(_that.categories,_that.partenaires,_that.articles,_that.rechercheId);case _:
   return orElse();
 
 }
@@ -1022,10 +1025,10 @@ return $default(_that.categories,_that.partenaires,_that.articles);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<CategorieTrouvee> categories,  List<PartenaireTrouve> partenaires,  List<ArticleTrouve> articles)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<CategorieTrouvee> categories,  List<PartenaireTrouve> partenaires,  List<ArticleTrouve> articles, @JsonKey(name: 'recherche_id')  int? rechercheId)  $default,) {final _that = this;
 switch (_that) {
 case _ResultatsRecherche():
-return $default(_that.categories,_that.partenaires,_that.articles);case _:
+return $default(_that.categories,_that.partenaires,_that.articles,_that.rechercheId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1042,10 +1045,10 @@ return $default(_that.categories,_that.partenaires,_that.articles);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<CategorieTrouvee> categories,  List<PartenaireTrouve> partenaires,  List<ArticleTrouve> articles)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<CategorieTrouvee> categories,  List<PartenaireTrouve> partenaires,  List<ArticleTrouve> articles, @JsonKey(name: 'recherche_id')  int? rechercheId)?  $default,) {final _that = this;
 switch (_that) {
 case _ResultatsRecherche() when $default != null:
-return $default(_that.categories,_that.partenaires,_that.articles);case _:
+return $default(_that.categories,_that.partenaires,_that.articles,_that.rechercheId);case _:
   return null;
 
 }
@@ -1057,7 +1060,7 @@ return $default(_that.categories,_that.partenaires,_that.articles);case _:
 @JsonSerializable()
 
 class _ResultatsRecherche extends ResultatsRecherche {
-  const _ResultatsRecherche({final  List<CategorieTrouvee> categories = const <CategorieTrouvee>[], final  List<PartenaireTrouve> partenaires = const <PartenaireTrouve>[], final  List<ArticleTrouve> articles = const <ArticleTrouve>[]}): _categories = categories,_partenaires = partenaires,_articles = articles,super._();
+  const _ResultatsRecherche({final  List<CategorieTrouvee> categories = const <CategorieTrouvee>[], final  List<PartenaireTrouve> partenaires = const <PartenaireTrouve>[], final  List<ArticleTrouve> articles = const <ArticleTrouve>[], @JsonKey(name: 'recherche_id') this.rechercheId}): _categories = categories,_partenaires = partenaires,_articles = articles,super._();
   factory _ResultatsRecherche.fromJson(Map<String, dynamic> json) => _$ResultatsRechercheFromJson(json);
 
  final  List<CategorieTrouvee> _categories;
@@ -1081,6 +1084,9 @@ class _ResultatsRecherche extends ResultatsRecherche {
   return EqualUnmodifiableListView(_articles);
 }
 
+/// Recherche journalisée par le serveur (absente sous 2 caractères) :
+/// sert à compter le résultat touché ensuite.
+@override@JsonKey(name: 'recherche_id') final  int? rechercheId;
 
 /// Create a copy of ResultatsRecherche
 /// with the given fields replaced by the non-null parameter values.
@@ -1095,16 +1101,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ResultatsRecherche&&const DeepCollectionEquality().equals(other._categories, _categories)&&const DeepCollectionEquality().equals(other._partenaires, _partenaires)&&const DeepCollectionEquality().equals(other._articles, _articles));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ResultatsRecherche&&const DeepCollectionEquality().equals(other._categories, _categories)&&const DeepCollectionEquality().equals(other._partenaires, _partenaires)&&const DeepCollectionEquality().equals(other._articles, _articles)&&(identical(other.rechercheId, rechercheId) || other.rechercheId == rechercheId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_categories),const DeepCollectionEquality().hash(_partenaires),const DeepCollectionEquality().hash(_articles));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_categories),const DeepCollectionEquality().hash(_partenaires),const DeepCollectionEquality().hash(_articles),rechercheId);
 
 @override
 String toString() {
-  return 'ResultatsRecherche(categories: $categories, partenaires: $partenaires, articles: $articles)';
+  return 'ResultatsRecherche(categories: $categories, partenaires: $partenaires, articles: $articles, rechercheId: $rechercheId)';
 }
 
 
@@ -1115,7 +1121,7 @@ abstract mixin class _$ResultatsRechercheCopyWith<$Res> implements $ResultatsRec
   factory _$ResultatsRechercheCopyWith(_ResultatsRecherche value, $Res Function(_ResultatsRecherche) _then) = __$ResultatsRechercheCopyWithImpl;
 @override @useResult
 $Res call({
- List<CategorieTrouvee> categories, List<PartenaireTrouve> partenaires, List<ArticleTrouve> articles
+ List<CategorieTrouvee> categories, List<PartenaireTrouve> partenaires, List<ArticleTrouve> articles,@JsonKey(name: 'recherche_id') int? rechercheId
 });
 
 
@@ -1132,12 +1138,13 @@ class __$ResultatsRechercheCopyWithImpl<$Res>
 
 /// Create a copy of ResultatsRecherche
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? categories = null,Object? partenaires = null,Object? articles = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? categories = null,Object? partenaires = null,Object? articles = null,Object? rechercheId = freezed,}) {
   return _then(_ResultatsRecherche(
 categories: null == categories ? _self._categories : categories // ignore: cast_nullable_to_non_nullable
 as List<CategorieTrouvee>,partenaires: null == partenaires ? _self._partenaires : partenaires // ignore: cast_nullable_to_non_nullable
 as List<PartenaireTrouve>,articles: null == articles ? _self._articles : articles // ignore: cast_nullable_to_non_nullable
-as List<ArticleTrouve>,
+as List<ArticleTrouve>,rechercheId: freezed == rechercheId ? _self.rechercheId : rechercheId // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

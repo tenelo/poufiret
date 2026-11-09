@@ -425,6 +425,7 @@ class _Entete extends StatelessWidget {
           child: BoutonsContact(
             telephone: l.telephonePro,
             whatsapp: l.whatsapp,
+            partenaireId: l.id,
           ),
         ),
         const Divider(height: 16),

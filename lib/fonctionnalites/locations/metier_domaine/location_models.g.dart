@@ -266,6 +266,8 @@ _DemandeReservation _$DemandeReservationFromJson(Map<String, dynamic> json) =>
       statutLibelle: json['statut_libelle'] as String? ?? '',
       raisonRefus: json['raison_refus'] as String? ?? '',
       createdAt: json['created_at'] as String?,
+      peutNoter: json['peut_noter'] as bool? ?? false,
+      monAvis: versIntNullable(json['mon_avis']),
     );
 
 Map<String, dynamic> _$DemandeReservationToJson(_DemandeReservation instance) =>
@@ -290,4 +292,6 @@ Map<String, dynamic> _$DemandeReservationToJson(_DemandeReservation instance) =>
       'statut_libelle': instance.statutLibelle,
       'raison_refus': instance.raisonRefus,
       'created_at': instance.createdAt,
+      'peut_noter': instance.peutNoter,
+      'mon_avis': instance.monAvis,
     };

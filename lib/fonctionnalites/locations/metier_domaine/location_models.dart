@@ -348,6 +348,10 @@ abstract class DemandeReservation with _$DemandeReservation {
     @JsonKey(name: 'statut_libelle') @Default('') String statutLibelle,
     @JsonKey(name: 'raison_refus') @Default('') String raisonRefus,
     @JsonKey(name: 'created_at') String? createdAt,
+    /// Avis client : notable maintenant (livré / terminé, pas encore noté),
+    /// et id de l'avis déjà donné.
+    @JsonKey(name: 'peut_noter') @Default(false) bool peutNoter,
+    @JsonKey(name: 'mon_avis', fromJson: versIntNullable) int? monAvis,
   }) = _DemandeReservation;
 
   factory DemandeReservation.fromJson(Map<String, dynamic> json) =>

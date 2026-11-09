@@ -9,6 +9,8 @@ import '../../../global/ui/notificateur.dart';
 import '../../../global/ui/squelette.dart';
 import '../../../global/ui/format_montant.dart';
 import '../metier_domaine/orders_models.dart';
+import '../../avis/metier_domaine/avis.dart';
+import '../../avis/widgets/widgets_avis.dart';
 
 const _mois = [
   'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
@@ -437,6 +439,22 @@ class _EcranCommandeDetailState extends ConsumerState<EcranCommandeDetail> {
                         ),
                       ],
                     ),
+
+                    // Avis : « Noter » une fois livrée, ou « Votre avis ».
+                    if (c.peutNoter || c.monAvis != null) ...[
+                      const SizedBox(height: 20),
+                      BlocNotation(
+                        objet: ObjetAvis.commande,
+                        objetId: '${c.id}',
+                        etat: EtatNotation(
+                          peutNoter: c.peutNoter,
+                          monAvis: c.monAvis,
+                        ),
+                        onModifie: () => ref.invalidate(
+                          commandeDetailProvider(id: widget.commandeId),
+                        ),
+                      ),
+                    ],
 
                     if (c.peutAnnuler) ...[
                       const SizedBox(height: 24),

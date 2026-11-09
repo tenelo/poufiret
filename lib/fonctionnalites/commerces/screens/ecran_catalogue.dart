@@ -8,12 +8,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../global/cache/contexte_cache.dart';
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
-import '../../../global/ui/liens_externes.dart';
 import '../../../global/ui/squelette.dart';
 import '../../../global/widgets/barre_onglets.dart';
 import '../../../global/widgets/image_reseau.dart';
 import '../../../global/widgets/message_erreur.dart';
 import '../../analytics/donnees/analytics_providers.dart';
+import '../../analytics/donnees/service_suivi.dart';
 import '../../restaurants/donnees/restaurants_providers.dart';
 import '../../restaurants/metier_domaine/restaurant_models.dart';
 import '../../restaurants/widgets/carte_restaurant.dart' show MedaillonLogo;
@@ -178,15 +178,42 @@ class _PageState extends ConsumerState<_Page> {
     if (choisi != null && mounted) setState(() => _filtre = choisi);
   }
 
-  void _ouvrir(Plat p) => Navigator.of(context).push(
-    MaterialPageRoute(
+  /// Produits affichés : recherche sur tout le commerce, sinon le rayon
+  /// choisi.
+  RequeteProduits get _requete {
+    final rayons = widget.commerce.carte;
+    final enRecherche = _recherche.isNotEmpty;
+    final rayon = rayons.isEmpty
+        ? null
+        : rayons[_rayon.clamp(0, rayons.length - 1)];
+    return RequeteProduits(
+      commerceId: widget.commerce.id,
+      sectionId: enRecherche ? null : rayon?.id,
+      recherche: _recherche,
+      filtre: _filtre,
+    );
+  }
+
+  void _ouvrir(Plat p) {
+    // Produit trouvé par une recherche : le toucher est compté.
+    if (_recherche.isNotEmpty) {
+      suivreClicRecherche(
+        context,
+        ref.read(produitsPaginesProvider(_requete)).rechercheId,
+        'article',
+        p.id,
+      );
+    }
+    Navigator.of(context).push(_routeProduit(p));
+  }
+
+  MaterialPageRoute<void> _routeProduit(Plat p) => MaterialPageRoute(
       builder: (_) => EcranProduit(
         produitId: p.id,
         gabarit: widget.gabarit,
         titre: p.nom,
         telephoneCommerce: telephoneCommerce(widget.commerce),
       ),
-    ),
   );
 
   Widget _tuile(BuildContext context, Plat p) {
@@ -225,7 +252,11 @@ class _PageState extends ConsumerState<_Page> {
             ? (telephone.isEmpty
                   ? null
                   : TextButton.icon(
-                      onPressed: () => ouvrirLien(context, uriAppel(telephone)),
+                      onPressed: () => appelerPartenaire(
+                        context,
+                        telephone,
+                        partenaireId: widget.commerce.id,
+                      ),
                       icon: const Icon(Icons.call_outlined, size: 18),
                       label: const Text('Appeler la pharmacie'),
                     ))
@@ -250,13 +281,7 @@ class _PageState extends ConsumerState<_Page> {
     final rayon = rayons.isEmpty
         ? null
         : rayons[_rayon.clamp(0, rayons.length - 1)];
-    // Recherche : sur tout le commerce ; sinon le rayon choisi.
-    final requete = RequeteProduits(
-      commerceId: c.id,
-      sectionId: enRecherche ? null : rayon?.id,
-      recherche: _recherche,
-      filtre: _filtre,
-    );
+    final requete = _requete;
     final avecOnglets = rayons.length > 1 && !enRecherche;
 
     return Scaffold(
@@ -445,7 +470,11 @@ class _EnteteCommerce extends StatelessWidget {
                 if (telephone.isNotEmpty)
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () => ouvrirLien(context, uriAppel(telephone)),
+                      onPressed: () => appelerPartenaire(
+                        context,
+                        telephone,
+                        partenaireId: c.id,
+                      ),
                       icon: const Icon(Icons.call_outlined, size: 18),
                       label: const Text('Appeler'),
                     ),
@@ -455,8 +484,11 @@ class _EnteteCommerce extends StatelessWidget {
                 if (c.whatsapp.isNotEmpty)
                   Expanded(
                     child: OutlinedButton.icon(
-                      onPressed: () =>
-                          ouvrirLien(context, uriWhatsapp(c.whatsapp)),
+                      onPressed: () => whatsappPartenaire(
+                        context,
+                        c.whatsapp,
+                        partenaireId: c.id,
+                      ),
                       icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 18),
                       label: const Text('WhatsApp'),
                     ),

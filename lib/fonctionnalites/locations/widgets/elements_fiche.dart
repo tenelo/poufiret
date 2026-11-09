@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../global/carte/carte_poufiret.dart';
 import '../../../global/carte/modeles_carte.dart';
 import '../../../global/config/config.dart';
-import '../../../global/ui/liens_externes.dart';
+import '../../analytics/donnees/service_suivi.dart';
 
 // Briques communes aux fiches de location (logement, véhicule).
 
@@ -111,10 +111,14 @@ class BoutonsPosition extends StatelessWidget {
     required this.longitude,
     required this.titreCarte,
     required this.nomMarqueur,
+    this.partenaireId,
   });
 
   final double? latitude;
   final double? longitude;
+
+  /// Loueur concerné (pour noter l'itinéraire demandé).
+  final int? partenaireId;
 
   /// Titre de la feuille « Localisation ».
   final String titreCarte;
@@ -165,8 +169,12 @@ class BoutonsPosition extends StatelessWidget {
       children: [
         Expanded(
           child: OutlinedButton.icon(
-            onPressed: () =>
-                ouvrirLien(context, uriItineraire(latitude!, longitude!)),
+            onPressed: () => itinerairePartenaire(
+              context,
+              latitude!,
+              longitude!,
+              partenaireId: partenaireId,
+            ),
             icon: const Icon(Icons.directions_outlined, size: 18),
             label: const Text('Itinéraire'),
           ),
@@ -190,10 +198,14 @@ class BoutonsContact extends StatelessWidget {
     super.key,
     required this.telephone,
     required this.whatsapp,
+    this.partenaireId,
   });
 
   final String telephone;
   final String whatsapp;
+
+  /// Loueur concerné (pour noter l'appel ou le message).
+  final int? partenaireId;
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +215,11 @@ class BoutonsContact extends StatelessWidget {
         if (telephone.isNotEmpty)
           Expanded(
             child: OutlinedButton.icon(
-              onPressed: () => ouvrirLien(context, uriAppel(telephone)),
+              onPressed: () => appelerPartenaire(
+                context,
+                telephone,
+                partenaireId: partenaireId,
+              ),
               icon: const Icon(Icons.call_outlined, size: 18),
               label: const Text('Appeler'),
             ),
@@ -213,7 +229,11 @@ class BoutonsContact extends StatelessWidget {
         if (whatsapp.isNotEmpty)
           Expanded(
             child: OutlinedButton.icon(
-              onPressed: () => ouvrirLien(context, uriWhatsapp(whatsapp)),
+              onPressed: () => whatsappPartenaire(
+                context,
+                whatsapp,
+                partenaireId: partenaireId,
+              ),
               icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 18),
               label: const Text('WhatsApp'),
             ),
@@ -233,12 +253,16 @@ class BarreActionsFiche extends StatelessWidget {
     required this.titreCarte,
     required this.nomMarqueur,
     required this.action,
+    this.partenaireId,
   });
 
   final double? latitude;
   final double? longitude;
   final String titreCarte;
   final String nomMarqueur;
+
+  /// Loueur concerné (pour noter l'itinéraire demandé).
+  final int? partenaireId;
 
   /// Bouton principal (« Demander une visite », « Réserver »).
   final Widget action;
@@ -263,6 +287,7 @@ class BarreActionsFiche extends StatelessWidget {
                     longitude: longitude,
                     titreCarte: titreCarte,
                     nomMarqueur: nomMarqueur,
+                    partenaireId: partenaireId,
                   ),
                   const SizedBox(height: 8),
                 ],

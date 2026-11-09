@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../global/json/convertisseurs.dart';
+
 import '../../../global/ui/format_montant.dart';
 
 part 'orders_models.freezed.dart';
@@ -172,6 +174,10 @@ abstract class Commande with _$Commande {
     @JsonKey(name: 'notes_client') @Default('') String notesClient,
     @Default(<LigneCommande>[]) List<LigneCommande> lignes,
     @JsonKey(name: 'created_at') String? createdAt,
+    /// Avis client : notable maintenant (livré / terminé, pas encore noté),
+    /// et id de l'avis déjà donné.
+    @JsonKey(name: 'peut_noter') @Default(false) bool peutNoter,
+    @JsonKey(name: 'mon_avis', fromJson: versIntNullable) int? monAvis,
   }) = _Commande;
 
   factory Commande.fromJson(Map<String, dynamic> json) =>

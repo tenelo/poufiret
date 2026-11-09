@@ -17,6 +17,8 @@ import '../../../global/config/config.dart';
 import '../../../global/network/providers.dart';
 import '../../../global/ui/notificateur.dart';
 import '../metier_domaine/livraison_models.dart';
+import '../../avis/metier_domaine/avis.dart';
+import '../../avis/widgets/widgets_avis.dart';
 
 const _ordreStatuts = [
   'demandee',
@@ -574,6 +576,19 @@ class _EcranSuiviState extends ConsumerState<EcranSuivi> {
                             _annulation ? 'Annulation…' : 'Annuler la course',
                           ),
                         ),
+                      // Avis du demandeur, une fois la course livrée.
+                      if (c.peutNoter || c.monAvis != null) ...[
+                        const SizedBox(height: 8),
+                        BlocNotation(
+                          objet: ObjetAvis.course,
+                          objetId: c.id,
+                          etat: EtatNotation(
+                            peutNoter: c.peutNoter,
+                            monAvis: c.monAvis,
+                          ),
+                          onModifie: _poll,
+                        ),
+                      ],
                       const SizedBox(height: 24),
                     ],
                   ),

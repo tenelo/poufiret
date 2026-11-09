@@ -8,11 +8,39 @@ import 'ecran_formulaire_article.dart';
 import 'ecran_mes_categories.dart';
 import 'ecran_mon_profil_partenaire.dart';
 import '../../publicites/screens/ecran_mes_publicites.dart';
+import '../../../global/ui/notificateur.dart';
+import '../../avis/screens/ecran_avis_partenaire.dart';
 
 /// Tableau de bord du partenaire : total de vues + articles avec stats,
 /// création/modification/suppression d'articles.
 class EcranEspacePartenaire extends ConsumerWidget {
   const EcranEspacePartenaire({super.key});
+
+  /// Avis reçus : il faut l'id du profil partenaire (lu sur le serveur).
+  Future<void> _ouvrirAvisRecus(BuildContext context, WidgetRef ref) async {
+    final navigateur = Navigator.of(context);
+    try {
+      final profil = await ref.read(monProfilPartenaireProvider.future);
+      final id = profil['id'];
+      if (id is! int) throw StateError('profil sans id');
+      await navigateur.push(
+        MaterialPageRoute(
+          builder: (_) => EcranAvisPartenaire(
+            partenaireId: id,
+            titre: 'Avis reçus',
+            peutRepondre: true,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (context.mounted) {
+        Notificateur.erreur(
+          context,
+          messageErreurApi(e, repli: "Impossible d'ouvrir vos avis."),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -109,6 +137,16 @@ class EcranEspacePartenaire extends ConsumerWidget {
                                   builder: (_) => const EcranMesPublicites(),
                                 ),
                               ),
+                            ),
+                            const Divider(height: 1),
+                            ListTile(
+                              leading: const Icon(Icons.star_outline_rounded),
+                              title: const Text('Avis reçus'),
+                              subtitle: const Text(
+                                'Notes de vos clients, et vos réponses',
+                              ),
+                              trailing: const Icon(Icons.chevron_right),
+                              onTap: () => _ouvrirAvisRecus(context, ref),
                             ),
                           ],
                         ),

@@ -348,6 +348,10 @@ abstract class Restaurant with _$Restaurant {
     @Default(<String>[])
     List<String> servicesEnVigueur,
     @Default(<SectionCarte>[]) List<SectionCarte> carte,
+    /// Note des clients (null sans avis) et nombre d'avis visibles.
+    @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable)
+    double? noteMoyenne,
+    @JsonKey(name: 'nb_avis', fromJson: versInt) @Default(0) int nbAvis,
   }) = _Restaurant;
 
   factory Restaurant.fromJson(Map<String, dynamic> json) =>

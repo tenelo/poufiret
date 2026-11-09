@@ -5,7 +5,7 @@ import '../../../global/cache/contexte_cache.dart';
 import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/format_montant.dart';
-import '../../../global/ui/liens_externes.dart';
+import '../../analytics/donnees/service_suivi.dart';
 import '../../../global/ui/squelette.dart';
 import '../../../global/widgets/message_erreur.dart';
 import '../../restaurants/metier_domaine/commande_plat.dart';
@@ -66,6 +66,7 @@ class EcranProduit extends ConsumerWidget {
             autres: detail.autres,
             gabarit: gabarit,
             telephone: telephoneCommerce,
+            commerceId: detail.commerceId,
           ),
         );
   }
@@ -155,12 +156,16 @@ class _Fiche extends ConsumerStatefulWidget {
     required this.autres,
     required this.gabarit,
     required this.telephone,
+    this.commerceId,
   });
 
   final Plat produit;
   final List<Plat> autres;
   final Gabarit gabarit;
   final String telephone;
+
+  /// Commerce du produit (pour noter l'appel).
+  final int? commerceId;
 
   @override
   ConsumerState<_Fiche> createState() => _FicheState();
@@ -242,6 +247,7 @@ class _FicheState extends ConsumerState<_Fiche> {
         exigeVariante: variantes.isNotEmpty,
         consigneVariante: g.consigneVariante,
         telephone: widget.telephone,
+        partenaireId: widget.commerceId,
         envoi: _envoi,
         elevage: _elevage,
         quantite: _quantiteRetenue,
@@ -421,6 +427,7 @@ class _BarreAction extends StatelessWidget {
     required this.telephone,
     required this.envoi,
     required this.onAjouter,
+    this.partenaireId,
     this.elevage = false,
     this.quantite = 1,
   });
@@ -435,6 +442,7 @@ class _BarreAction extends StatelessWidget {
   final bool exigeVariante;
   final String consigneVariante;
   final String telephone;
+  final int? partenaireId;
   final bool envoi;
   final VoidCallback onAjouter;
 
@@ -445,7 +453,8 @@ class _BarreAction extends StatelessWidget {
     if (p.surOrdonnance) {
       if (telephone.isEmpty) return const SizedBox.shrink();
       bouton = FilledButton.icon(
-        onPressed: () => ouvrirLien(context, uriAppel(telephone)),
+        onPressed: () =>
+            appelerPartenaire(context, telephone, partenaireId: partenaireId),
         icon: const Icon(Icons.call_outlined),
         label: const Text('Appeler la pharmacie'),
       );

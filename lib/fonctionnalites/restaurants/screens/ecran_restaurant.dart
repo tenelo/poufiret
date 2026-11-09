@@ -12,6 +12,8 @@ import '../../../global/widgets/barre_onglets.dart';
 import '../../../global/widgets/image_reseau.dart';
 import '../../../global/widgets/message_erreur.dart';
 import '../../analytics/donnees/analytics_providers.dart';
+import '../../analytics/donnees/service_suivi.dart';
+import '../../avis/widgets/widgets_avis.dart';
 import '../../orders/donnees/orders_providers.dart';
 import '../../orders/screens/ecran_panier.dart';
 import '../donnees/restaurants_providers.dart';
@@ -23,6 +25,7 @@ import '../widgets/carte_restaurant.dart';
 import '../widgets/feuille_infos_restaurant.dart';
 import '../widgets/feuille_plat.dart';
 import '../widgets/tuile_plat.dart';
+import '../../commerces/donnees/commerces_providers.dart';
 import '../../commerces/metier_domaine/catalogue_commerce.dart';
 import '../../commerces/metier_domaine/fiche_produit.dart';
 import '../../commerces/metier_domaine/gabarits.dart';
@@ -160,9 +163,17 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
             key: ValueKey(requete.cle),
             requete: requete,
             presentation: Presentation.grille,
-            tuile: (context, p) => tuile(
-              p,
-              () => Navigator.of(context).push(
+            tuile: (context, p) => tuile(p, () {
+              // Produit trouvé par une recherche : le toucher est compté.
+              if (enRecherche) {
+                suivreClicRecherche(
+                  context,
+                  ref.read(produitsPaginesProvider(requete)).rechercheId,
+                  'article',
+                  p.id,
+                );
+              }
+              Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (_) => EcranProduit(
                     produitId: p.id,
@@ -170,8 +181,8 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                     titre: p.nom,
                   ),
                 ),
-              ),
-            ),
+              );
+            }),
           ),
         ),
       ];
@@ -453,6 +464,12 @@ class _Entete extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                    if (r.nbAvis > 0)
+                      ResumeNote(
+                        noteMoyenne: r.noteMoyenne,
+                        nbAvis: r.nbAvis,
+                        taille: 14,
+                      ),
                   ],
                 ),
               ),

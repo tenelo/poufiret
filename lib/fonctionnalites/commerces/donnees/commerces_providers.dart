@@ -70,6 +70,7 @@ class ProduitsPagines extends _$ProduitsPagines {
         total: recu.count,
         pagesChargees: page,
         aSuite: recu.aSuite,
+        rechercheId: state.rechercheId ?? recu.rechercheId,
       );
     } catch (e) {
       if (!ref.mounted) return;

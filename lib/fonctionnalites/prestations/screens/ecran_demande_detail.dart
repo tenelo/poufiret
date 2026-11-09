@@ -4,8 +4,11 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/notificateur.dart';
+import '../../analytics/donnees/service_suivi.dart';
 import '../donnees/prestations_providers.dart';
 import '../metier_domaine/demande_intervention.dart';
+import '../../avis/metier_domaine/avis.dart';
+import '../../avis/widgets/widgets_avis.dart';
 import 'ecran_mes_demandes.dart' show couleurStatut;
 import '../../../global/widgets/image_reseau.dart';
 
@@ -35,6 +38,17 @@ class _EcranDemandeDetailState extends ConsumerState<EcranDemandeDetail> {
   }
 
   Future<void> _appeler(String numero) async {
+    // Le client appelle l'artisan : appel au partenaire, noté.
+    if (!widget.estArtisan) {
+      suivreEvenement(
+        context,
+        TypeEvenement.appelPartenaire,
+        partenaireId: ref
+            .read(demandeInterventionDetailProvider(id: widget.demandeId))
+            .value
+            ?.artisan,
+      );
+    }
     final uri = Uri(scheme: 'tel', path: numero);
     final ok = await launchUrl(uri);
     if (!ok && mounted) {
@@ -235,6 +249,7 @@ class _EcranDemandeDetailState extends ConsumerState<EcranDemandeDetail> {
                       () => _transitionner('terminee')),
                   onAnnuler: () => _confirmer('Annuler cette demande ?',
                       () => _transitionner('annulee')),
+                  onAvis: _rafraichir,
                 ),
               ),
             );
@@ -257,6 +272,7 @@ class _Contenu extends StatelessWidget {
     required this.onDemarrer,
     required this.onTerminer,
     required this.onAnnuler,
+    this.onAvis,
   });
 
   final DemandeIntervention demande;
@@ -269,6 +285,9 @@ class _Contenu extends StatelessWidget {
   final VoidCallback onDemarrer;
   final VoidCallback onTerminer;
   final VoidCallback onAnnuler;
+
+  /// Après un avis donné : rafraîchit le détail.
+  final VoidCallback? onAvis;
 
   @override
   Widget build(BuildContext context) {
@@ -432,6 +451,19 @@ class _Contenu extends StatelessWidget {
               label: const Text('Annuler la demande'),
             ),
           ],
+        ],
+        // Avis du client, une fois l'intervention terminée.
+        if (!estArtisan && (demande.peutNoter || demande.monAvis != null)) ...[
+          const SizedBox(height: 16),
+          BlocNotation(
+            objet: ObjetAvis.intervention,
+            objetId: '${demande.id}',
+            etat: EtatNotation(
+              peutNoter: demande.peutNoter,
+              monAvis: demande.monAvis,
+            ),
+            onModifie: onAvis,
+          ),
         ],
         const SizedBox(height: 24),
       ],

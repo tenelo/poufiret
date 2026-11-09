@@ -82,6 +82,10 @@ abstract class ResultatsRecherche with _$ResultatsRecherche {
     @Default(<CategorieTrouvee>[]) List<CategorieTrouvee> categories,
     @Default(<PartenaireTrouve>[]) List<PartenaireTrouve> partenaires,
     @Default(<ArticleTrouve>[]) List<ArticleTrouve> articles,
+
+    /// Recherche journalisée par le serveur (absente sous 2 caractères) :
+    /// sert à compter le résultat touché ensuite.
+    @JsonKey(name: 'recherche_id') int? rechercheId,
   }) = _ResultatsRecherche;
 
   factory ResultatsRecherche.fromJson(Map<String, dynamic> json) =>

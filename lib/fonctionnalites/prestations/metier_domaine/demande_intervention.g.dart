@@ -54,6 +54,8 @@ _DemandeIntervention _$DemandeInterventionFromJson(Map<String, dynamic> json) =>
               .toList() ??
           const <PhotoDemande>[],
       createdAt: json['created_at'] as String? ?? '',
+      peutNoter: json['peut_noter'] as bool? ?? false,
+      monAvis: versIntNullable(json['mon_avis']),
     );
 
 Map<String, dynamic> _$DemandeInterventionToJson(
@@ -84,4 +86,6 @@ Map<String, dynamic> _$DemandeInterventionToJson(
   'conversation': instance.conversation,
   'photos': instance.photos,
   'created_at': instance.createdAt,
+  'peut_noter': instance.peutNoter,
+  'mon_avis': instance.monAvis,
 };
