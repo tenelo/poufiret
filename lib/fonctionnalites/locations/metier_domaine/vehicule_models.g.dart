@@ -26,6 +26,11 @@ _VehiculeResume _$VehiculeResumeFromJson(Map<String, dynamic> json) =>
       chauffeurObligatoire: json['chauffeur_obligatoire'] as bool? ?? false,
       localisationTexte: json['localisation_texte'] as String? ?? '',
       disponibilite: json['disponibilite'] as String? ?? '',
+      vente: lireRacine(json, 'vente') == null
+          ? const InfosVente()
+          : InfosVente.fromJson(
+              lireRacine(json, 'vente') as Map<String, dynamic>,
+            ),
     );
 
 Map<String, dynamic> _$VehiculeResumeToJson(_VehiculeResume instance) =>
@@ -48,6 +53,7 @@ Map<String, dynamic> _$VehiculeResumeToJson(_VehiculeResume instance) =>
       'chauffeur_obligatoire': instance.chauffeurObligatoire,
       'localisation_texte': instance.localisationTexte,
       'disponibilite': instance.disponibilite,
+      'vente': instance.vente,
     };
 
 _PageLoueurVehicules _$PageLoueurVehiculesFromJson(Map<String, dynamic> json) =>
@@ -141,6 +147,9 @@ _Vehicule _$VehiculeFromJson(Map<String, dynamic> json) => _Vehicule(
           ?.map((e) => PeriodeIndisponible.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <PeriodeIndisponible>[],
+  vente: lireRacine(json, 'vente') == null
+      ? const InfosVente()
+      : InfosVente.fromJson(lireRacine(json, 'vente') as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$VehiculeToJson(_Vehicule instance) => <String, dynamic>{
@@ -180,4 +189,5 @@ Map<String, dynamic> _$VehiculeToJson(_Vehicule instance) => <String, dynamic>{
   'loueur': instance.loueur,
   'autres_vehicules': instance.autresVehicules,
   'periodes_indisponibles': instance.periodesIndisponibles,
+  'vente': instance.vente,
 };

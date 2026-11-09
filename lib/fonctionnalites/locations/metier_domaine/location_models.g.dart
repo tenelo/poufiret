@@ -61,6 +61,24 @@ _MetaLocations _$MetaLocationsFromJson(Map<String, dynamic> json) =>
               ?.map((e) => OptionMeta.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const <OptionMeta>[],
+      modes:
+          (json['modes'] as List<dynamic>?)
+              ?.map((e) => OptionMeta.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <OptionMeta>[],
+      etatsVehicule:
+          (json['etats_vehicule'] as List<dynamic>?)
+              ?.map((e) => OptionMeta.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <OptionMeta>[],
+      typesDocument:
+          (json['types_document'] as List<dynamic>?)
+              ?.map((e) => OptionMeta.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <OptionMeta>[],
+      champsVente: json['champs_vente'] == null
+          ? const ChampsVente()
+          : ChampsVente.fromJson(json['champs_vente']),
     );
 
 Map<String, dynamic> _$MetaLocationsToJson(_MetaLocations instance) =>
@@ -74,6 +92,9 @@ Map<String, dynamic> _$MetaLocationsToJson(_MetaLocations instance) =>
       'equipements_vehicule': instance.equipementsVehicule,
       'equipements_etablissement': instance.equipementsEtablissement,
       'equipements_hebergement': instance.equipementsHebergement,
+      'modes': instance.modes,
+      'etats_vehicule': instance.etatsVehicule,
+      'types_document': instance.typesDocument,
     };
 
 _Loueur _$LoueurFromJson(Map<String, dynamic> json) => _Loueur(
@@ -94,24 +115,26 @@ Map<String, dynamic> _$LoueurToJson(_Loueur instance) => <String, dynamic>{
   'whatsapp': instance.whatsapp,
 };
 
-_LogementResume _$LogementResumeFromJson(Map<String, dynamic> json) =>
-    _LogementResume(
-      id: (json['id'] as num).toInt(),
-      titre: json['titre'] as String? ?? '',
-      photo: json['photo'] as String? ?? '',
-      typeLogement: json['type_logement'] as String? ?? '',
-      typeLogementLibelle: json['type_logement_libelle'] as String? ?? '',
-      localisationTexte: json['localisation_texte'] as String? ?? '',
-      loyer: json['loyer'] == null ? 0 : versInt(json['loyer']),
-      nbChambres: json['nb_chambres'] == null
-          ? 0
-          : versInt(json['nb_chambres']),
-      nbSallesDeBain: json['nb_salles_de_bain'] == null
-          ? 0
-          : versInt(json['nb_salles_de_bain']),
-      meuble: json['meuble'] as bool? ?? false,
-      disponibilite: json['disponibilite'] as String? ?? '',
-    );
+_LogementResume _$LogementResumeFromJson(
+  Map<String, dynamic> json,
+) => _LogementResume(
+  id: (json['id'] as num).toInt(),
+  titre: json['titre'] as String? ?? '',
+  photo: json['photo'] as String? ?? '',
+  typeLogement: json['type_logement'] as String? ?? '',
+  typeLogementLibelle: json['type_logement_libelle'] as String? ?? '',
+  localisationTexte: json['localisation_texte'] as String? ?? '',
+  loyer: json['loyer'] == null ? 0 : versInt(json['loyer']),
+  nbChambres: json['nb_chambres'] == null ? 0 : versInt(json['nb_chambres']),
+  nbSallesDeBain: json['nb_salles_de_bain'] == null
+      ? 0
+      : versInt(json['nb_salles_de_bain']),
+  meuble: json['meuble'] as bool? ?? false,
+  disponibilite: json['disponibilite'] as String? ?? '',
+  vente: lireRacine(json, 'vente') == null
+      ? const InfosVente()
+      : InfosVente.fromJson(lireRacine(json, 'vente') as Map<String, dynamic>),
+);
 
 Map<String, dynamic> _$LogementResumeToJson(_LogementResume instance) =>
     <String, dynamic>{
@@ -126,6 +149,7 @@ Map<String, dynamic> _$LogementResumeToJson(_LogementResume instance) =>
       'nb_salles_de_bain': instance.nbSallesDeBain,
       'meuble': instance.meuble,
       'disponibilite': instance.disponibilite,
+      'vente': instance.vente,
     };
 
 _PageLoueur _$PageLoueurFromJson(Map<String, dynamic> json) => _PageLoueur(
@@ -210,6 +234,9 @@ _Logement _$LogementFromJson(Map<String, dynamic> json) => _Logement(
           ?.map((e) => LogementResume.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <LogementResume>[],
+  vente: lireRacine(json, 'vente') == null
+      ? const InfosVente()
+      : InfosVente.fromJson(lireRacine(json, 'vente') as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$LogementToJson(_Logement instance) => <String, dynamic>{
@@ -242,6 +269,7 @@ Map<String, dynamic> _$LogementToJson(_Logement instance) => <String, dynamic>{
   'longitude': instance.longitude,
   'loueur': instance.loueur,
   'autres_logements': instance.autresLogements,
+  'vente': instance.vente,
 };
 
 _DemandeReservation _$DemandeReservationFromJson(Map<String, dynamic> json) =>

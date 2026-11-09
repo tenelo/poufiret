@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../global/json/convertisseurs.dart';
 import '../../../global/ui/format_montant.dart';
 import 'location_models.dart';
+import 'vente_models.dart';
 
 part 'vehicule_models.freezed.dart';
 part 'vehicule_models.g.dart';
@@ -36,6 +37,9 @@ abstract class VehiculeResume with _$VehiculeResume {
     bool chauffeurObligatoire,
     @JsonKey(name: 'localisation_texte') @Default('') String localisationTexte,
     @Default('') String disponibilite,
+
+    /// Vente : mode, prix de vente, vendu, champs propres (à la racine).
+    @JsonKey(readValue: lireRacine) @Default(InfosVente()) InfosVente vente,
   }) = _VehiculeResume;
 
   factory VehiculeResume.fromJson(Map<String, dynamic> json) =>
@@ -186,6 +190,9 @@ abstract class Vehicule with _$Vehicule {
     @JsonKey(name: 'periodes_indisponibles')
     @Default(<PeriodeIndisponible>[])
     List<PeriodeIndisponible> periodesIndisponibles,
+
+    /// Vente : mode, prix de vente, vendu, champs propres (à la racine).
+    @JsonKey(readValue: lireRacine) @Default(InfosVente()) InfosVente vente,
   }) = _Vehicule;
 
   factory Vehicule.fromJson(Map<String, dynamic> json) =>
@@ -294,9 +301,23 @@ class FiltreVehicules {
     this.placesMin,
     this.boite,
     this.avecChauffeur = false,
+    this.mode,
   });
 
   final String? categorie;
+
+  /// Louer | Acheter : `location` ou `vente` (null : toutes les annonces).
+  final String? mode;
+
+  /// Même filtre, pour le type d'annonce choisi.
+  FiltreVehicules avecMode(String? mode) => FiltreVehicules(
+    categorie: categorie,
+    prixMax: prixMax,
+    placesMin: placesMin,
+    boite: boite,
+    avecChauffeur: avecChauffeur,
+    mode: mode,
+  );
   final int? prixMax;
   final int? placesMin;
   final String? boite;
@@ -319,6 +340,7 @@ class FiltreVehicules {
     'places_min': ?placesMin,
     'boite': ?boite,
     if (avecChauffeur) 'avec_chauffeur': 1,
+    'mode': ?mode,
   };
 
   /// Signature stable, pour la clé de cache.

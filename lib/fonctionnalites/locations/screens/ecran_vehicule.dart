@@ -14,6 +14,8 @@ import '../metier_domaine/location_models.dart';
 import '../metier_domaine/vehicule_models.dart';
 import '../widgets/carte_logement.dart';
 import '../widgets/elements_fiche.dart';
+import '../widgets/elements_vente.dart';
+import '../widgets/feuille_demande_achat.dart';
 import '../widgets/feuille_reservation_vehicule.dart';
 import '../widgets/visite_immersive.dart';
 
@@ -100,10 +102,22 @@ class _Fiche extends ConsumerWidget {
             ? 'Point de prise en charge'
             : 'Point de prise en charge · ${v.localisationTexte}',
         nomMarqueur: v.nomComplet,
-        action: FilledButton.icon(
-          onPressed: () => reserverVehicule(context, ref, vehicule: v),
-          icon: const Icon(Icons.event_available_outlined),
-          label: const Text('Réserver'),
+        // Réserver (location), « Je suis intéressé » (vente), les deux,
+        // ou le bandeau « Vendu ».
+        action: ActionsFicheVente(
+          actions: v.vente.actions,
+          louer: FilledButton.icon(
+            onPressed: () => reserverVehicule(context, ref, vehicule: v),
+            icon: const Icon(Icons.event_available_outlined),
+            label: const Text('Réserver'),
+          ),
+          onInteresse: () => demanderAchat(
+            context,
+            ref,
+            objetId: v.id,
+            titre: v.nomComplet,
+            prix: v.vente.prixVenteLisible,
+          ),
         ),
       ),
       body: LayoutBuilder(
@@ -182,20 +196,30 @@ class _Fiche extends ConsumerWidget {
                             children: [
                               if (v.categorieLibelle.isNotEmpty)
                                 PuceLogement(v.categorieLibelle),
+                              if (v.vente.aVendre) ...[
+                                const SizedBox(width: 6),
+                                const BadgeAVendre(),
+                              ],
                               const Spacer(),
-                              Text(
-                                formatPrixJour(
-                                  v.prixJourPour(
-                                    avecChauffeur: v.chauffeurObligatoire,
+                              if (v.vente.mode.aLouer)
+                                Text(
+                                  formatPrixJour(
+                                    v.prixJourPour(
+                                      avecChauffeur: v.chauffeurObligatoire,
+                                    ),
+                                  ),
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  color: theme.colorScheme.primary,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
                             ],
                           ),
+                          if (v.vente.aVendre && v.vente.prixVente != null)
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: PrixVente(infos: v.vente, grand: true),
+                            ),
                         ],
                       ),
                     ),
@@ -214,10 +238,16 @@ class _Fiche extends ConsumerWidget {
                         children: _caracteristiques(v),
                       ),
                     ),
-                    SectionFiche(
-                      titre: 'Tarifs et conditions',
-                      child: Column(children: _tarifs(v)),
-                    ),
+                    if (v.vente.aVendre)
+                      SectionVente(
+                        infos: v.vente,
+                        lignes: v.vente.lignesVehicule,
+                      ),
+                    if (v.vente.mode.aLouer)
+                      SectionFiche(
+                        titre: 'Tarifs et conditions',
+                        child: Column(children: _tarifs(v)),
+                      ),
                     if (v.zone.isNotEmpty)
                       SectionFiche(
                         titre: 'Zone de circulation',

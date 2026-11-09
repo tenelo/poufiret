@@ -9,6 +9,7 @@ import '../../../global/ui/squelette.dart';
 import '../../../global/widgets/message_erreur.dart';
 import '../donnees/locations_providers.dart';
 import '../metier_domaine/location_models.dart';
+import '../metier_domaine/vente_models.dart';
 import '../../avis/metier_domaine/avis.dart';
 import '../../avis/widgets/widgets_avis.dart';
 
@@ -156,7 +157,7 @@ class _CarteDemandeState extends ConsumerState<_CarteDemande> {
               children: [
                 Expanded(
                   child: Text(
-                    d.objetNom.isEmpty ? d.natureLibelle : d.objetNom,
+                    d.objetNom.isEmpty ? d.natureLisible : d.objetNom,
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -181,7 +182,15 @@ class _CarteDemandeState extends ConsumerState<_CarteDemande> {
                 ),
               ),
             const SizedBox(height: 6),
-            if (d.estSejour) ...[
+            // Achat : ni dates ni voyageurs, le prix de vente demandé.
+            if (d.estAchat) ...[
+              const _Info(Icons.sell_outlined, "Demande d'achat"),
+              if (d.montantEstime != null)
+                _Info(
+                  Icons.payments_outlined,
+                  'Prix de vente : ${formatPrixVente(d.montantEstime!)}',
+                ),
+            ] else if (d.estSejour) ...[
               _Info(Icons.date_range_outlined, d.sejourLisible),
               if (d.voyageursLisible.isNotEmpty)
                 _Info(Icons.people_outline, d.voyageursLisible),
@@ -247,7 +256,10 @@ class _CarteDemandeState extends ConsumerState<_CarteDemande> {
                   compact: true,
                   objet: ObjetAvis.reservation,
                   objetId: '${d.id}',
-                  etat: EtatNotation(peutNoter: d.peutNoter, monAvis: d.monAvis),
+                  etat: EtatNotation(
+                    peutNoter: d.peutNoter,
+                    monAvis: d.monAvis,
+                  ),
                   onModifie: () =>
                       ref.invalidate(mesDemandesReservationProvider),
                 ),

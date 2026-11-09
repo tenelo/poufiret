@@ -12,6 +12,7 @@ import '../donnees/locations_providers.dart';
 import '../metier_domaine/hebergement_models.dart';
 import '../metier_domaine/location_models.dart';
 import '../metier_domaine/vehicule_models.dart';
+import '../metier_domaine/vente_models.dart';
 import '../widgets/carte_hebergement.dart';
 import '../widgets/carte_logement.dart';
 import '../widgets/carte_vehicule.dart';
@@ -59,6 +60,7 @@ class _Liste {
     required this.filtrer,
     required this.textes,
     this.entete,
+    this.avecSelecteur = false,
   });
 
   final AsyncValue<Object?> async;
@@ -73,7 +75,15 @@ class _Liste {
 
   /// En-tête propre au type (établissement) ; sinon l'en-tête du loueur.
   final Widget? entete;
+
+  /// Sélecteur « Louer | Acheter » : le loueur a des annonces des deux types.
+  final bool avecSelecteur;
 }
+
+/// Le loueur a-t-il des annonces à louer et des annonces à vendre ?
+/// Calculé sur sa liste complète (sans filtre de mode).
+bool aLesDeuxModes(Iterable<InfosVente> annonces) =>
+    annonces.any((a) => a.mode.aLouer) && annonces.any((a) => a.mode.aVendre);
 
 /// Libellés propres à un type de location.
 class _Textes {
@@ -115,6 +125,17 @@ class _Textes {
     icone: Icons.car_rental_outlined,
   );
 
+  /// Mode « Acheter » : mêmes libellés, « à vendre ».
+  _Textes aVendre(String nom) => _Textes(
+    singulier: '$nom à vendre',
+    pluriel: '${nom}s à vendre',
+    titre: '${nom[0].toUpperCase()}${nom.substring(1)}s à vendre',
+    vide: 'Aucun $nom à vendre pour le moment.',
+    videFiltre: videFiltre,
+    erreur: erreur,
+    icone: icone,
+  );
+
   static const hebergements = _Textes(
     singulier: 'hébergement disponible',
     pluriel: 'hébergements disponibles',
@@ -135,10 +156,21 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
   /// filtre charge.
   Loueur? _loueur;
 
+  /// « Louer » (location) ou « Acheter » (vente), si le sélecteur est là.
+  String _mode = ModeAnnonce.location.valeur;
+
+  bool get _achat => _mode == ModeAnnonce.vente.valeur;
+
   _Liste _logements() {
+    // Liste complète (sans mode) : décide de l'affichage du sélecteur.
+    final tout = ref
+        .watch(pageLoueurProvider(partenaireId: widget.partenaireId))
+        .value
+        ?.resultats;
+    final selecteur = aLesDeuxModes([...?tout?.map((l) => l.vente)]);
     final provider = pageLoueurProvider(
       partenaireId: widget.partenaireId,
-      filtre: _filtreLogements,
+      filtre: _filtreLogements.avecMode(selecteur ? _mode : null),
     );
     final async = ref.watch(provider);
     return _Liste(
@@ -155,14 +187,23 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
           setState(() => _filtreLogements = choisi);
         }
       },
-      textes: _Textes.logements,
+      textes: selecteur && _achat
+          ? _Textes.logements.aVendre('logement')
+          : _Textes.logements,
+      avecSelecteur: selecteur,
     );
   }
 
   _Liste _vehicules() {
+    // Liste complète (sans mode) : décide de l'affichage du sélecteur.
+    final tout = ref
+        .watch(pageLoueurVehiculesProvider(partenaireId: widget.partenaireId))
+        .value
+        ?.resultats;
+    final selecteur = aLesDeuxModes([...?tout?.map((v) => v.vente)]);
     final provider = pageLoueurVehiculesProvider(
       partenaireId: widget.partenaireId,
-      filtre: _filtreVehicules,
+      filtre: _filtreVehicules.avecMode(selecteur ? _mode : null),
     );
     final async = ref.watch(provider);
     return _Liste(
@@ -179,7 +220,10 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
           setState(() => _filtreVehicules = choisi);
         }
       },
-      textes: _Textes.vehicules,
+      textes: selecteur && _achat
+          ? _Textes.vehicules.aVendre('véhicule')
+          : _Textes.vehicules,
+      avecSelecteur: selecteur,
     );
   }
 
@@ -280,6 +324,11 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
                           largeur: largeur,
                           icone: textes.icone,
                         ),
+                    if (liste.avecSelecteur)
+                      SelecteurLouerAcheter(
+                        mode: _mode,
+                        onChange: (mode) => setState(() => _mode = mode),
+                      ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 4, 12, 4),
                       child: Row(
@@ -421,6 +470,58 @@ class _SqueletteBiens extends StatelessWidget {
                 ],
               ),
             ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Sélecteur « Louer | Acheter » (même style que les pastilles de
+/// localisation) : envoie `?mode=location` ou `?mode=vente`.
+class SelecteurLouerAcheter extends StatelessWidget {
+  const SelecteurLouerAcheter({
+    super.key,
+    required this.mode,
+    required this.onChange,
+  });
+
+  final String mode;
+  final ValueChanged<String> onChange;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    Widget puce(String libelle, String valeur, IconData icone) {
+      final actif = mode == valeur;
+      return ChoiceChip(
+        avatar: Icon(
+          icone,
+          size: 16,
+          color: actif
+              ? theme.colorScheme.onPrimary
+              : theme.colorScheme.primary,
+        ),
+        label: Text(libelle, style: const TextStyle(fontSize: 12)),
+        selected: actif,
+        onSelected: (_) => onChange(valeur),
+        visualDensity: VisualDensity.compact,
+        showCheckmark: false,
+        selectedColor: theme.colorScheme.primary,
+        labelStyle: TextStyle(
+          color: actif
+              ? theme.colorScheme.onPrimary
+              : theme.colorScheme.onSurface,
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 2, 16, 4),
+      child: Row(
+        children: [
+          puce('Louer', ModeAnnonce.location.valeur, Icons.key_outlined),
+          const SizedBox(width: 6),
+          puce('Acheter', ModeAnnonce.vente.valeur, Icons.sell_outlined),
         ],
       ),
     );

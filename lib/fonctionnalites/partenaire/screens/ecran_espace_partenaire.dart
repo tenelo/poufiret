@@ -10,6 +10,8 @@ import 'ecran_mon_profil_partenaire.dart';
 import '../../publicites/screens/ecran_mes_publicites.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../avis/screens/ecran_avis_partenaire.dart';
+import '../../locations/donnees/mes_annonces_repository.dart';
+import '../../locations/screens/ecran_mes_annonces.dart';
 
 /// Tableau de bord du partenaire : total de vues + articles avec stats,
 /// création/modification/suppression d'articles.
@@ -45,6 +47,10 @@ class EcranEspacePartenaire extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final statsAsync = ref.watch(statsVuesPartenaireProvider);
+    // Loueur de voitures ou de maisons : gestion location / vente.
+    final typeAnnonce = TypeAnnonce.pour(
+      ref.watch(monProfilPartenaireProvider).value?['type_partenaire'],
+    );
     return Scaffold(
       appBar: AppBar(title: const Text('Mon espace partenaire')),
       floatingActionButton: FloatingActionButton.extended(
@@ -148,6 +154,27 @@ class EcranEspacePartenaire extends ConsumerWidget {
                               trailing: const Icon(Icons.chevron_right),
                               onTap: () => _ouvrirAvisRecus(context, ref),
                             ),
+                            if (typeAnnonce != null) ...[
+                              const Divider(height: 1),
+                              ListTile(
+                                leading: const Icon(Icons.sell_outlined),
+                                title: Text(
+                                  typeAnnonce == TypeAnnonce.vehicule
+                                      ? 'Mes véhicules'
+                                      : 'Mes logements',
+                                ),
+                                subtitle: const Text(
+                                  'Location ou vente, marquer vendu',
+                                ),
+                                trailing: const Icon(Icons.chevron_right),
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        EcranMesAnnonces(type: typeAnnonce),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),

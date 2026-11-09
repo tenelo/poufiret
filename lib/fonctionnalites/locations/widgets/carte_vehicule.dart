@@ -22,7 +22,8 @@ class CarteVehicule extends StatelessWidget {
       titre: v.nomComplet,
       sousTitre: v.caracteristiques,
       prix: formatPrixJour(v.prixAffiche),
-      puces: [if (v.avecChauffeur) 'Avec chauffeur'],
+      puces: [if (v.avecChauffeur && v.vente.mode.aLouer) 'Avec chauffeur'],
+      vente: v.vente,
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => EcranVehicule(vehiculeId: v.id, titre: v.nomComplet),

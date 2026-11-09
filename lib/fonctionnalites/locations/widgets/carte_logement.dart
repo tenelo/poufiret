@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../global/config/config.dart';
 import '../../../global/widgets/image_reseau.dart';
 import '../metier_domaine/location_models.dart';
+import '../metier_domaine/vente_models.dart';
 import '../screens/ecran_logement.dart';
+import 'elements_vente.dart';
 
 /// Carte d'un logement dans une liste : photo à gauche ; à droite le titre,
 /// la localisation, le loyer et les puces (chambres, sdb, meublé).
@@ -22,6 +24,7 @@ class CarteLogement extends StatelessWidget {
       sousTitre: l.localisationTexte,
       prix: formatLoyer(l.loyer),
       puces: l.puces,
+      vente: l.vente,
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => EcranLogement(logementId: l.id, titre: l.titre),
@@ -44,6 +47,7 @@ class CarteLocation extends StatelessWidget {
     required this.onTap,
     this.sousTitre = '',
     this.puces = const [],
+    this.vente,
   });
 
   final String photo;
@@ -53,6 +57,10 @@ class CarteLocation extends StatelessWidget {
   final String prix;
   final List<String> puces;
   final VoidCallback onTap;
+
+  /// Annonce à vendre : badge « À vendre » et prix de vente ; le prix de
+  /// location ([prix]) n'est montré que si elle est aussi à louer.
+  final InfosVente? vente;
 
   static const double _cotePhoto = 108;
 
@@ -70,20 +78,14 @@ class CarteLocation extends StatelessWidget {
             children: [
               SizedBox(
                 width: _cotePhoto,
-                child: photo.isEmpty
-                    ? ColoredBox(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: Icon(
-                          iconeSansPhoto,
-                          size: 36,
-                          color: theme.colorScheme.outline,
-                        ),
-                      )
-                    : ImageReseau(
-                        photo,
-                        fit: BoxFit.cover,
-                        largeurAffichee: _cotePhoto,
-                      ),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _photo(theme),
+                    if (vente?.aVendre ?? false)
+                      const Positioned(top: 6, left: 6, child: BadgeAVendre()),
+                  ],
+                ),
               ),
               Expanded(
                 child: ConstrainedBox(
@@ -115,13 +117,15 @@ class CarteLocation extends StatelessWidget {
                           ),
                         ],
                         const SizedBox(height: 4),
-                        Text(
-                          prix,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
+                        if (vente == null || vente!.mode.aLouer)
+                          Text(
+                            prix,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
+                        if (vente?.aVendre ?? false) PrixVente(infos: vente!),
                         if (puces.isNotEmpty) ...[
                           const SizedBox(height: 6),
                           Wrap(
@@ -143,6 +147,17 @@ class CarteLocation extends StatelessWidget {
       ),
     );
   }
+
+  Widget _photo(ThemeData theme) => photo.isEmpty
+      ? ColoredBox(
+          color: theme.colorScheme.surfaceContainerHighest,
+          child: Icon(
+            iconeSansPhoto,
+            size: 36,
+            color: theme.colorScheme.outline,
+          ),
+        )
+      : ImageReseau(photo, fit: BoxFit.cover, largeurAffichee: _cotePhoto);
 }
 
 /// Petite puce d'information (« 3 chambres », « Meublé », un équipement).

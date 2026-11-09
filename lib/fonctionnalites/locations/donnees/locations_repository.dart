@@ -168,6 +168,25 @@ class LocationsRepository {
     );
   }
 
+  /// `POST /reservations/` — demande en vue d'achat d'une annonce à vendre
+  /// (logement ou véhicule) : sans dates, le serveur fixe le montant estimé
+  /// au prix de vente. Un refus (annonce vendue…) remonte en [DioException].
+  Future<void> demanderAchat({
+    required int objetId,
+    required String telephone,
+    String message = '',
+  }) async {
+    await _dio.post(
+      '${Env.apiPrefix}/reservations/',
+      data: {
+        'objet_id': objetId,
+        'nature': 'achat',
+        'message': message,
+        'telephone_contact': telephone,
+      },
+    );
+  }
+
   /// `GET /reservations/mes-demandes/` — mes demandes (paginé).
   Future<List<DemandeReservation>> mesDemandes({String? statut}) async {
     final r = await _dio.get(

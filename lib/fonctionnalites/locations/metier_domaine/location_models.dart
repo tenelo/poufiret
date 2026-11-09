@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../global/json/convertisseurs.dart';
 import '../../../global/ui/format_montant.dart';
 import '../../geo/metier_domaine/localisation.dart';
+import 'vente_models.dart';
 
 part 'location_models.freezed.dart';
 part 'location_models.g.dart';
@@ -78,6 +79,24 @@ abstract class MetaLocations with _$MetaLocations {
     @JsonKey(name: 'equipements_hebergement')
     @Default(<OptionMeta>[])
     List<OptionMeta> equipementsHebergement,
+
+    // ── Vente ──
+    @Default(<OptionMeta>[]) List<OptionMeta> modes,
+    @JsonKey(name: 'etats_vehicule')
+    @Default(<OptionMeta>[])
+    List<OptionMeta> etatsVehicule,
+    @JsonKey(name: 'types_document')
+    @Default(<OptionMeta>[])
+    List<OptionMeta> typesDocument,
+
+    /// Champs du formulaire de vente, avec leur condition d'affichage.
+    @JsonKey(
+      name: 'champs_vente',
+      fromJson: ChampsVente.fromJson,
+      includeToJson: false,
+    )
+    @Default(ChampsVente())
+    ChampsVente champsVente,
   }) = _MetaLocations;
 
   factory MetaLocations.fromJson(Map<String, dynamic> json) =>
@@ -151,6 +170,9 @@ abstract class LogementResume with _$LogementResume {
     int nbSallesDeBain,
     @Default(false) bool meuble,
     @Default('') String disponibilite,
+
+    /// Vente : mode, prix de vente, vendu, champs propres (à la racine).
+    @JsonKey(readValue: lireRacine) @Default(InfosVente()) InfosVente vente,
   }) = _LogementResume;
 
   factory LogementResume.fromJson(Map<String, dynamic> json) =>
@@ -244,6 +266,9 @@ abstract class Logement with _$Logement {
     @JsonKey(name: 'autres_logements')
     @Default(<LogementResume>[])
     List<LogementResume> autresLogements,
+
+    /// Vente : mode, prix de vente, vendu, champs propres (à la racine).
+    @JsonKey(readValue: lireRacine) @Default(InfosVente()) InfosVente vente,
   }) = _Logement;
 
   factory Logement.fromJson(Map<String, dynamic> json) =>
@@ -274,9 +299,23 @@ class FiltreLogements {
     this.loyerMax,
     this.chambresMin,
     this.meuble = false,
+    this.mode,
   });
 
   final String? type;
+
+  /// Louer | Acheter : `location` ou `vente` (null : toutes les annonces).
+  final String? mode;
+
+  /// Même filtre, pour le type d'annonce choisi.
+  FiltreLogements avecMode(String? mode) => FiltreLogements(
+    type: type,
+    quartier: quartier,
+    loyerMax: loyerMax,
+    chambresMin: chambresMin,
+    meuble: meuble,
+    mode: mode,
+  );
   final String quartier;
   final int? loyerMax;
   final int? chambresMin;
@@ -299,6 +338,7 @@ class FiltreLogements {
     'loyer_max': ?loyerMax,
     'chambres_min': ?chambresMin,
     if (meuble) 'meuble': 1,
+    'mode': ?mode,
   };
 
   /// Signature stable, pour la clé de cache.
@@ -324,7 +364,7 @@ abstract class DemandeReservation with _$DemandeReservation {
     required int id,
     @Default('') String numero,
 
-    /// visite | reservation
+    /// visite | reservation | achat
     @Default('') String nature,
     @JsonKey(name: 'nature_libelle') @Default('') String natureLibelle,
 
@@ -348,6 +388,7 @@ abstract class DemandeReservation with _$DemandeReservation {
     @JsonKey(name: 'statut_libelle') @Default('') String statutLibelle,
     @JsonKey(name: 'raison_refus') @Default('') String raisonRefus,
     @JsonKey(name: 'created_at') String? createdAt,
+
     /// Avis client : notable maintenant (livré / terminé, pas encore noté),
     /// et id de l'avis déjà donné.
     @JsonKey(name: 'peut_noter') @Default(false) bool peutNoter,
@@ -372,6 +413,12 @@ abstract class DemandeReservation with _$DemandeReservation {
   /// Réservation (plage de dates), par opposition à une visite (un jour).
   bool get estReservation =>
       nature == 'reservation' || (dateDebut ?? '').isNotEmpty;
+
+  /// Demande en vue d'achat d'une annonce à vendre : sans dates.
+  bool get estAchat => nature == 'achat';
+
+  /// Libellé de la nature : « Demande d'achat » pour un achat.
+  String get natureLisible => estAchat ? "Demande d'achat" : natureLibelle;
 
   /// Séjour dans un hébergement (hôtel, résidence).
   bool get estSejour => objetType == 'hebergement' || nbUnites != null;

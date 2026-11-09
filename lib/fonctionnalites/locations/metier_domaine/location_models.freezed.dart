@@ -281,7 +281,8 @@ as String,
 /// @nodoc
 mixin _$MetaLocations {
 
-@JsonKey(name: 'types_logement') List<OptionMeta> get typesLogement; List<OptionMeta> get equipements; List<OptionMeta> get disponibilites;@JsonKey(name: 'categories_vehicule') List<OptionMeta> get categoriesVehicule; List<OptionMeta> get boites; List<OptionMeta> get carburants;@JsonKey(name: 'equipements_vehicule') List<OptionMeta> get equipementsVehicule;@JsonKey(name: 'equipements_etablissement') List<OptionMeta> get equipementsEtablissement;@JsonKey(name: 'equipements_hebergement') List<OptionMeta> get equipementsHebergement;
+@JsonKey(name: 'types_logement') List<OptionMeta> get typesLogement; List<OptionMeta> get equipements; List<OptionMeta> get disponibilites;@JsonKey(name: 'categories_vehicule') List<OptionMeta> get categoriesVehicule; List<OptionMeta> get boites; List<OptionMeta> get carburants;@JsonKey(name: 'equipements_vehicule') List<OptionMeta> get equipementsVehicule;@JsonKey(name: 'equipements_etablissement') List<OptionMeta> get equipementsEtablissement;@JsonKey(name: 'equipements_hebergement') List<OptionMeta> get equipementsHebergement; List<OptionMeta> get modes;@JsonKey(name: 'etats_vehicule') List<OptionMeta> get etatsVehicule;@JsonKey(name: 'types_document') List<OptionMeta> get typesDocument;/// Champs du formulaire de vente, avec leur condition d'affichage.
+@JsonKey(name: 'champs_vente', fromJson: ChampsVente.fromJson, includeToJson: false) ChampsVente get champsVente;
 /// Create a copy of MetaLocations
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -294,16 +295,16 @@ $MetaLocationsCopyWith<MetaLocations> get copyWith => _$MetaLocationsCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MetaLocations&&const DeepCollectionEquality().equals(other.typesLogement, typesLogement)&&const DeepCollectionEquality().equals(other.equipements, equipements)&&const DeepCollectionEquality().equals(other.disponibilites, disponibilites)&&const DeepCollectionEquality().equals(other.categoriesVehicule, categoriesVehicule)&&const DeepCollectionEquality().equals(other.boites, boites)&&const DeepCollectionEquality().equals(other.carburants, carburants)&&const DeepCollectionEquality().equals(other.equipementsVehicule, equipementsVehicule)&&const DeepCollectionEquality().equals(other.equipementsEtablissement, equipementsEtablissement)&&const DeepCollectionEquality().equals(other.equipementsHebergement, equipementsHebergement));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MetaLocations&&const DeepCollectionEquality().equals(other.typesLogement, typesLogement)&&const DeepCollectionEquality().equals(other.equipements, equipements)&&const DeepCollectionEquality().equals(other.disponibilites, disponibilites)&&const DeepCollectionEquality().equals(other.categoriesVehicule, categoriesVehicule)&&const DeepCollectionEquality().equals(other.boites, boites)&&const DeepCollectionEquality().equals(other.carburants, carburants)&&const DeepCollectionEquality().equals(other.equipementsVehicule, equipementsVehicule)&&const DeepCollectionEquality().equals(other.equipementsEtablissement, equipementsEtablissement)&&const DeepCollectionEquality().equals(other.equipementsHebergement, equipementsHebergement)&&const DeepCollectionEquality().equals(other.modes, modes)&&const DeepCollectionEquality().equals(other.etatsVehicule, etatsVehicule)&&const DeepCollectionEquality().equals(other.typesDocument, typesDocument)&&(identical(other.champsVente, champsVente) || other.champsVente == champsVente));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(typesLogement),const DeepCollectionEquality().hash(equipements),const DeepCollectionEquality().hash(disponibilites),const DeepCollectionEquality().hash(categoriesVehicule),const DeepCollectionEquality().hash(boites),const DeepCollectionEquality().hash(carburants),const DeepCollectionEquality().hash(equipementsVehicule),const DeepCollectionEquality().hash(equipementsEtablissement),const DeepCollectionEquality().hash(equipementsHebergement));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(typesLogement),const DeepCollectionEquality().hash(equipements),const DeepCollectionEquality().hash(disponibilites),const DeepCollectionEquality().hash(categoriesVehicule),const DeepCollectionEquality().hash(boites),const DeepCollectionEquality().hash(carburants),const DeepCollectionEquality().hash(equipementsVehicule),const DeepCollectionEquality().hash(equipementsEtablissement),const DeepCollectionEquality().hash(equipementsHebergement),const DeepCollectionEquality().hash(modes),const DeepCollectionEquality().hash(etatsVehicule),const DeepCollectionEquality().hash(typesDocument),champsVente);
 
 @override
 String toString() {
-  return 'MetaLocations(typesLogement: $typesLogement, equipements: $equipements, disponibilites: $disponibilites, categoriesVehicule: $categoriesVehicule, boites: $boites, carburants: $carburants, equipementsVehicule: $equipementsVehicule, equipementsEtablissement: $equipementsEtablissement, equipementsHebergement: $equipementsHebergement)';
+  return 'MetaLocations(typesLogement: $typesLogement, equipements: $equipements, disponibilites: $disponibilites, categoriesVehicule: $categoriesVehicule, boites: $boites, carburants: $carburants, equipementsVehicule: $equipementsVehicule, equipementsEtablissement: $equipementsEtablissement, equipementsHebergement: $equipementsHebergement, modes: $modes, etatsVehicule: $etatsVehicule, typesDocument: $typesDocument, champsVente: $champsVente)';
 }
 
 
@@ -314,7 +315,7 @@ abstract mixin class $MetaLocationsCopyWith<$Res>  {
   factory $MetaLocationsCopyWith(MetaLocations value, $Res Function(MetaLocations) _then) = _$MetaLocationsCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'types_logement') List<OptionMeta> typesLogement, List<OptionMeta> equipements, List<OptionMeta> disponibilites,@JsonKey(name: 'categories_vehicule') List<OptionMeta> categoriesVehicule, List<OptionMeta> boites, List<OptionMeta> carburants,@JsonKey(name: 'equipements_vehicule') List<OptionMeta> equipementsVehicule,@JsonKey(name: 'equipements_etablissement') List<OptionMeta> equipementsEtablissement,@JsonKey(name: 'equipements_hebergement') List<OptionMeta> equipementsHebergement
+@JsonKey(name: 'types_logement') List<OptionMeta> typesLogement, List<OptionMeta> equipements, List<OptionMeta> disponibilites,@JsonKey(name: 'categories_vehicule') List<OptionMeta> categoriesVehicule, List<OptionMeta> boites, List<OptionMeta> carburants,@JsonKey(name: 'equipements_vehicule') List<OptionMeta> equipementsVehicule,@JsonKey(name: 'equipements_etablissement') List<OptionMeta> equipementsEtablissement,@JsonKey(name: 'equipements_hebergement') List<OptionMeta> equipementsHebergement, List<OptionMeta> modes,@JsonKey(name: 'etats_vehicule') List<OptionMeta> etatsVehicule,@JsonKey(name: 'types_document') List<OptionMeta> typesDocument,@JsonKey(name: 'champs_vente', fromJson: ChampsVente.fromJson, includeToJson: false) ChampsVente champsVente
 });
 
 
@@ -331,7 +332,7 @@ class _$MetaLocationsCopyWithImpl<$Res>
 
 /// Create a copy of MetaLocations
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? typesLogement = null,Object? equipements = null,Object? disponibilites = null,Object? categoriesVehicule = null,Object? boites = null,Object? carburants = null,Object? equipementsVehicule = null,Object? equipementsEtablissement = null,Object? equipementsHebergement = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? typesLogement = null,Object? equipements = null,Object? disponibilites = null,Object? categoriesVehicule = null,Object? boites = null,Object? carburants = null,Object? equipementsVehicule = null,Object? equipementsEtablissement = null,Object? equipementsHebergement = null,Object? modes = null,Object? etatsVehicule = null,Object? typesDocument = null,Object? champsVente = null,}) {
   return _then(_self.copyWith(
 typesLogement: null == typesLogement ? _self.typesLogement : typesLogement // ignore: cast_nullable_to_non_nullable
 as List<OptionMeta>,equipements: null == equipements ? _self.equipements : equipements // ignore: cast_nullable_to_non_nullable
@@ -342,7 +343,11 @@ as List<OptionMeta>,carburants: null == carburants ? _self.carburants : carburan
 as List<OptionMeta>,equipementsVehicule: null == equipementsVehicule ? _self.equipementsVehicule : equipementsVehicule // ignore: cast_nullable_to_non_nullable
 as List<OptionMeta>,equipementsEtablissement: null == equipementsEtablissement ? _self.equipementsEtablissement : equipementsEtablissement // ignore: cast_nullable_to_non_nullable
 as List<OptionMeta>,equipementsHebergement: null == equipementsHebergement ? _self.equipementsHebergement : equipementsHebergement // ignore: cast_nullable_to_non_nullable
-as List<OptionMeta>,
+as List<OptionMeta>,modes: null == modes ? _self.modes : modes // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,etatsVehicule: null == etatsVehicule ? _self.etatsVehicule : etatsVehicule // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,typesDocument: null == typesDocument ? _self.typesDocument : typesDocument // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,champsVente: null == champsVente ? _self.champsVente : champsVente // ignore: cast_nullable_to_non_nullable
+as ChampsVente,
   ));
 }
 
@@ -427,10 +432,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'types_logement')  List<OptionMeta> typesLogement,  List<OptionMeta> equipements,  List<OptionMeta> disponibilites, @JsonKey(name: 'categories_vehicule')  List<OptionMeta> categoriesVehicule,  List<OptionMeta> boites,  List<OptionMeta> carburants, @JsonKey(name: 'equipements_vehicule')  List<OptionMeta> equipementsVehicule, @JsonKey(name: 'equipements_etablissement')  List<OptionMeta> equipementsEtablissement, @JsonKey(name: 'equipements_hebergement')  List<OptionMeta> equipementsHebergement)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'types_logement')  List<OptionMeta> typesLogement,  List<OptionMeta> equipements,  List<OptionMeta> disponibilites, @JsonKey(name: 'categories_vehicule')  List<OptionMeta> categoriesVehicule,  List<OptionMeta> boites,  List<OptionMeta> carburants, @JsonKey(name: 'equipements_vehicule')  List<OptionMeta> equipementsVehicule, @JsonKey(name: 'equipements_etablissement')  List<OptionMeta> equipementsEtablissement, @JsonKey(name: 'equipements_hebergement')  List<OptionMeta> equipementsHebergement,  List<OptionMeta> modes, @JsonKey(name: 'etats_vehicule')  List<OptionMeta> etatsVehicule, @JsonKey(name: 'types_document')  List<OptionMeta> typesDocument, @JsonKey(name: 'champs_vente', fromJson: ChampsVente.fromJson, includeToJson: false)  ChampsVente champsVente)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MetaLocations() when $default != null:
-return $default(_that.typesLogement,_that.equipements,_that.disponibilites,_that.categoriesVehicule,_that.boites,_that.carburants,_that.equipementsVehicule,_that.equipementsEtablissement,_that.equipementsHebergement);case _:
+return $default(_that.typesLogement,_that.equipements,_that.disponibilites,_that.categoriesVehicule,_that.boites,_that.carburants,_that.equipementsVehicule,_that.equipementsEtablissement,_that.equipementsHebergement,_that.modes,_that.etatsVehicule,_that.typesDocument,_that.champsVente);case _:
   return orElse();
 
 }
@@ -448,10 +453,10 @@ return $default(_that.typesLogement,_that.equipements,_that.disponibilites,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'types_logement')  List<OptionMeta> typesLogement,  List<OptionMeta> equipements,  List<OptionMeta> disponibilites, @JsonKey(name: 'categories_vehicule')  List<OptionMeta> categoriesVehicule,  List<OptionMeta> boites,  List<OptionMeta> carburants, @JsonKey(name: 'equipements_vehicule')  List<OptionMeta> equipementsVehicule, @JsonKey(name: 'equipements_etablissement')  List<OptionMeta> equipementsEtablissement, @JsonKey(name: 'equipements_hebergement')  List<OptionMeta> equipementsHebergement)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'types_logement')  List<OptionMeta> typesLogement,  List<OptionMeta> equipements,  List<OptionMeta> disponibilites, @JsonKey(name: 'categories_vehicule')  List<OptionMeta> categoriesVehicule,  List<OptionMeta> boites,  List<OptionMeta> carburants, @JsonKey(name: 'equipements_vehicule')  List<OptionMeta> equipementsVehicule, @JsonKey(name: 'equipements_etablissement')  List<OptionMeta> equipementsEtablissement, @JsonKey(name: 'equipements_hebergement')  List<OptionMeta> equipementsHebergement,  List<OptionMeta> modes, @JsonKey(name: 'etats_vehicule')  List<OptionMeta> etatsVehicule, @JsonKey(name: 'types_document')  List<OptionMeta> typesDocument, @JsonKey(name: 'champs_vente', fromJson: ChampsVente.fromJson, includeToJson: false)  ChampsVente champsVente)  $default,) {final _that = this;
 switch (_that) {
 case _MetaLocations():
-return $default(_that.typesLogement,_that.equipements,_that.disponibilites,_that.categoriesVehicule,_that.boites,_that.carburants,_that.equipementsVehicule,_that.equipementsEtablissement,_that.equipementsHebergement);case _:
+return $default(_that.typesLogement,_that.equipements,_that.disponibilites,_that.categoriesVehicule,_that.boites,_that.carburants,_that.equipementsVehicule,_that.equipementsEtablissement,_that.equipementsHebergement,_that.modes,_that.etatsVehicule,_that.typesDocument,_that.champsVente);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -468,10 +473,10 @@ return $default(_that.typesLogement,_that.equipements,_that.disponibilites,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'types_logement')  List<OptionMeta> typesLogement,  List<OptionMeta> equipements,  List<OptionMeta> disponibilites, @JsonKey(name: 'categories_vehicule')  List<OptionMeta> categoriesVehicule,  List<OptionMeta> boites,  List<OptionMeta> carburants, @JsonKey(name: 'equipements_vehicule')  List<OptionMeta> equipementsVehicule, @JsonKey(name: 'equipements_etablissement')  List<OptionMeta> equipementsEtablissement, @JsonKey(name: 'equipements_hebergement')  List<OptionMeta> equipementsHebergement)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'types_logement')  List<OptionMeta> typesLogement,  List<OptionMeta> equipements,  List<OptionMeta> disponibilites, @JsonKey(name: 'categories_vehicule')  List<OptionMeta> categoriesVehicule,  List<OptionMeta> boites,  List<OptionMeta> carburants, @JsonKey(name: 'equipements_vehicule')  List<OptionMeta> equipementsVehicule, @JsonKey(name: 'equipements_etablissement')  List<OptionMeta> equipementsEtablissement, @JsonKey(name: 'equipements_hebergement')  List<OptionMeta> equipementsHebergement,  List<OptionMeta> modes, @JsonKey(name: 'etats_vehicule')  List<OptionMeta> etatsVehicule, @JsonKey(name: 'types_document')  List<OptionMeta> typesDocument, @JsonKey(name: 'champs_vente', fromJson: ChampsVente.fromJson, includeToJson: false)  ChampsVente champsVente)?  $default,) {final _that = this;
 switch (_that) {
 case _MetaLocations() when $default != null:
-return $default(_that.typesLogement,_that.equipements,_that.disponibilites,_that.categoriesVehicule,_that.boites,_that.carburants,_that.equipementsVehicule,_that.equipementsEtablissement,_that.equipementsHebergement);case _:
+return $default(_that.typesLogement,_that.equipements,_that.disponibilites,_that.categoriesVehicule,_that.boites,_that.carburants,_that.equipementsVehicule,_that.equipementsEtablissement,_that.equipementsHebergement,_that.modes,_that.etatsVehicule,_that.typesDocument,_that.champsVente);case _:
   return null;
 
 }
@@ -483,7 +488,7 @@ return $default(_that.typesLogement,_that.equipements,_that.disponibilites,_that
 @JsonSerializable()
 
 class _MetaLocations extends MetaLocations {
-  const _MetaLocations({@JsonKey(name: 'types_logement') final  List<OptionMeta> typesLogement = const <OptionMeta>[], final  List<OptionMeta> equipements = const <OptionMeta>[], final  List<OptionMeta> disponibilites = const <OptionMeta>[], @JsonKey(name: 'categories_vehicule') final  List<OptionMeta> categoriesVehicule = const <OptionMeta>[], final  List<OptionMeta> boites = const <OptionMeta>[], final  List<OptionMeta> carburants = const <OptionMeta>[], @JsonKey(name: 'equipements_vehicule') final  List<OptionMeta> equipementsVehicule = const <OptionMeta>[], @JsonKey(name: 'equipements_etablissement') final  List<OptionMeta> equipementsEtablissement = const <OptionMeta>[], @JsonKey(name: 'equipements_hebergement') final  List<OptionMeta> equipementsHebergement = const <OptionMeta>[]}): _typesLogement = typesLogement,_equipements = equipements,_disponibilites = disponibilites,_categoriesVehicule = categoriesVehicule,_boites = boites,_carburants = carburants,_equipementsVehicule = equipementsVehicule,_equipementsEtablissement = equipementsEtablissement,_equipementsHebergement = equipementsHebergement,super._();
+  const _MetaLocations({@JsonKey(name: 'types_logement') final  List<OptionMeta> typesLogement = const <OptionMeta>[], final  List<OptionMeta> equipements = const <OptionMeta>[], final  List<OptionMeta> disponibilites = const <OptionMeta>[], @JsonKey(name: 'categories_vehicule') final  List<OptionMeta> categoriesVehicule = const <OptionMeta>[], final  List<OptionMeta> boites = const <OptionMeta>[], final  List<OptionMeta> carburants = const <OptionMeta>[], @JsonKey(name: 'equipements_vehicule') final  List<OptionMeta> equipementsVehicule = const <OptionMeta>[], @JsonKey(name: 'equipements_etablissement') final  List<OptionMeta> equipementsEtablissement = const <OptionMeta>[], @JsonKey(name: 'equipements_hebergement') final  List<OptionMeta> equipementsHebergement = const <OptionMeta>[], final  List<OptionMeta> modes = const <OptionMeta>[], @JsonKey(name: 'etats_vehicule') final  List<OptionMeta> etatsVehicule = const <OptionMeta>[], @JsonKey(name: 'types_document') final  List<OptionMeta> typesDocument = const <OptionMeta>[], @JsonKey(name: 'champs_vente', fromJson: ChampsVente.fromJson, includeToJson: false) this.champsVente = const ChampsVente()}): _typesLogement = typesLogement,_equipements = equipements,_disponibilites = disponibilites,_categoriesVehicule = categoriesVehicule,_boites = boites,_carburants = carburants,_equipementsVehicule = equipementsVehicule,_equipementsEtablissement = equipementsEtablissement,_equipementsHebergement = equipementsHebergement,_modes = modes,_etatsVehicule = etatsVehicule,_typesDocument = typesDocument,super._();
   factory _MetaLocations.fromJson(Map<String, dynamic> json) => _$MetaLocationsFromJson(json);
 
  final  List<OptionMeta> _typesLogement;
@@ -549,6 +554,29 @@ class _MetaLocations extends MetaLocations {
   return EqualUnmodifiableListView(_equipementsHebergement);
 }
 
+ final  List<OptionMeta> _modes;
+@override@JsonKey() List<OptionMeta> get modes {
+  if (_modes is EqualUnmodifiableListView) return _modes;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_modes);
+}
+
+ final  List<OptionMeta> _etatsVehicule;
+@override@JsonKey(name: 'etats_vehicule') List<OptionMeta> get etatsVehicule {
+  if (_etatsVehicule is EqualUnmodifiableListView) return _etatsVehicule;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_etatsVehicule);
+}
+
+ final  List<OptionMeta> _typesDocument;
+@override@JsonKey(name: 'types_document') List<OptionMeta> get typesDocument {
+  if (_typesDocument is EqualUnmodifiableListView) return _typesDocument;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_typesDocument);
+}
+
+/// Champs du formulaire de vente, avec leur condition d'affichage.
+@override@JsonKey(name: 'champs_vente', fromJson: ChampsVente.fromJson, includeToJson: false) final  ChampsVente champsVente;
 
 /// Create a copy of MetaLocations
 /// with the given fields replaced by the non-null parameter values.
@@ -563,16 +591,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MetaLocations&&const DeepCollectionEquality().equals(other._typesLogement, _typesLogement)&&const DeepCollectionEquality().equals(other._equipements, _equipements)&&const DeepCollectionEquality().equals(other._disponibilites, _disponibilites)&&const DeepCollectionEquality().equals(other._categoriesVehicule, _categoriesVehicule)&&const DeepCollectionEquality().equals(other._boites, _boites)&&const DeepCollectionEquality().equals(other._carburants, _carburants)&&const DeepCollectionEquality().equals(other._equipementsVehicule, _equipementsVehicule)&&const DeepCollectionEquality().equals(other._equipementsEtablissement, _equipementsEtablissement)&&const DeepCollectionEquality().equals(other._equipementsHebergement, _equipementsHebergement));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MetaLocations&&const DeepCollectionEquality().equals(other._typesLogement, _typesLogement)&&const DeepCollectionEquality().equals(other._equipements, _equipements)&&const DeepCollectionEquality().equals(other._disponibilites, _disponibilites)&&const DeepCollectionEquality().equals(other._categoriesVehicule, _categoriesVehicule)&&const DeepCollectionEquality().equals(other._boites, _boites)&&const DeepCollectionEquality().equals(other._carburants, _carburants)&&const DeepCollectionEquality().equals(other._equipementsVehicule, _equipementsVehicule)&&const DeepCollectionEquality().equals(other._equipementsEtablissement, _equipementsEtablissement)&&const DeepCollectionEquality().equals(other._equipementsHebergement, _equipementsHebergement)&&const DeepCollectionEquality().equals(other._modes, _modes)&&const DeepCollectionEquality().equals(other._etatsVehicule, _etatsVehicule)&&const DeepCollectionEquality().equals(other._typesDocument, _typesDocument)&&(identical(other.champsVente, champsVente) || other.champsVente == champsVente));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_typesLogement),const DeepCollectionEquality().hash(_equipements),const DeepCollectionEquality().hash(_disponibilites),const DeepCollectionEquality().hash(_categoriesVehicule),const DeepCollectionEquality().hash(_boites),const DeepCollectionEquality().hash(_carburants),const DeepCollectionEquality().hash(_equipementsVehicule),const DeepCollectionEquality().hash(_equipementsEtablissement),const DeepCollectionEquality().hash(_equipementsHebergement));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_typesLogement),const DeepCollectionEquality().hash(_equipements),const DeepCollectionEquality().hash(_disponibilites),const DeepCollectionEquality().hash(_categoriesVehicule),const DeepCollectionEquality().hash(_boites),const DeepCollectionEquality().hash(_carburants),const DeepCollectionEquality().hash(_equipementsVehicule),const DeepCollectionEquality().hash(_equipementsEtablissement),const DeepCollectionEquality().hash(_equipementsHebergement),const DeepCollectionEquality().hash(_modes),const DeepCollectionEquality().hash(_etatsVehicule),const DeepCollectionEquality().hash(_typesDocument),champsVente);
 
 @override
 String toString() {
-  return 'MetaLocations(typesLogement: $typesLogement, equipements: $equipements, disponibilites: $disponibilites, categoriesVehicule: $categoriesVehicule, boites: $boites, carburants: $carburants, equipementsVehicule: $equipementsVehicule, equipementsEtablissement: $equipementsEtablissement, equipementsHebergement: $equipementsHebergement)';
+  return 'MetaLocations(typesLogement: $typesLogement, equipements: $equipements, disponibilites: $disponibilites, categoriesVehicule: $categoriesVehicule, boites: $boites, carburants: $carburants, equipementsVehicule: $equipementsVehicule, equipementsEtablissement: $equipementsEtablissement, equipementsHebergement: $equipementsHebergement, modes: $modes, etatsVehicule: $etatsVehicule, typesDocument: $typesDocument, champsVente: $champsVente)';
 }
 
 
@@ -583,7 +611,7 @@ abstract mixin class _$MetaLocationsCopyWith<$Res> implements $MetaLocationsCopy
   factory _$MetaLocationsCopyWith(_MetaLocations value, $Res Function(_MetaLocations) _then) = __$MetaLocationsCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'types_logement') List<OptionMeta> typesLogement, List<OptionMeta> equipements, List<OptionMeta> disponibilites,@JsonKey(name: 'categories_vehicule') List<OptionMeta> categoriesVehicule, List<OptionMeta> boites, List<OptionMeta> carburants,@JsonKey(name: 'equipements_vehicule') List<OptionMeta> equipementsVehicule,@JsonKey(name: 'equipements_etablissement') List<OptionMeta> equipementsEtablissement,@JsonKey(name: 'equipements_hebergement') List<OptionMeta> equipementsHebergement
+@JsonKey(name: 'types_logement') List<OptionMeta> typesLogement, List<OptionMeta> equipements, List<OptionMeta> disponibilites,@JsonKey(name: 'categories_vehicule') List<OptionMeta> categoriesVehicule, List<OptionMeta> boites, List<OptionMeta> carburants,@JsonKey(name: 'equipements_vehicule') List<OptionMeta> equipementsVehicule,@JsonKey(name: 'equipements_etablissement') List<OptionMeta> equipementsEtablissement,@JsonKey(name: 'equipements_hebergement') List<OptionMeta> equipementsHebergement, List<OptionMeta> modes,@JsonKey(name: 'etats_vehicule') List<OptionMeta> etatsVehicule,@JsonKey(name: 'types_document') List<OptionMeta> typesDocument,@JsonKey(name: 'champs_vente', fromJson: ChampsVente.fromJson, includeToJson: false) ChampsVente champsVente
 });
 
 
@@ -600,7 +628,7 @@ class __$MetaLocationsCopyWithImpl<$Res>
 
 /// Create a copy of MetaLocations
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? typesLogement = null,Object? equipements = null,Object? disponibilites = null,Object? categoriesVehicule = null,Object? boites = null,Object? carburants = null,Object? equipementsVehicule = null,Object? equipementsEtablissement = null,Object? equipementsHebergement = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? typesLogement = null,Object? equipements = null,Object? disponibilites = null,Object? categoriesVehicule = null,Object? boites = null,Object? carburants = null,Object? equipementsVehicule = null,Object? equipementsEtablissement = null,Object? equipementsHebergement = null,Object? modes = null,Object? etatsVehicule = null,Object? typesDocument = null,Object? champsVente = null,}) {
   return _then(_MetaLocations(
 typesLogement: null == typesLogement ? _self._typesLogement : typesLogement // ignore: cast_nullable_to_non_nullable
 as List<OptionMeta>,equipements: null == equipements ? _self._equipements : equipements // ignore: cast_nullable_to_non_nullable
@@ -611,7 +639,11 @@ as List<OptionMeta>,carburants: null == carburants ? _self._carburants : carbura
 as List<OptionMeta>,equipementsVehicule: null == equipementsVehicule ? _self._equipementsVehicule : equipementsVehicule // ignore: cast_nullable_to_non_nullable
 as List<OptionMeta>,equipementsEtablissement: null == equipementsEtablissement ? _self._equipementsEtablissement : equipementsEtablissement // ignore: cast_nullable_to_non_nullable
 as List<OptionMeta>,equipementsHebergement: null == equipementsHebergement ? _self._equipementsHebergement : equipementsHebergement // ignore: cast_nullable_to_non_nullable
-as List<OptionMeta>,
+as List<OptionMeta>,modes: null == modes ? _self._modes : modes // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,etatsVehicule: null == etatsVehicule ? _self._etatsVehicule : etatsVehicule // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,typesDocument: null == typesDocument ? _self._typesDocument : typesDocument // ignore: cast_nullable_to_non_nullable
+as List<OptionMeta>,champsVente: null == champsVente ? _self.champsVente : champsVente // ignore: cast_nullable_to_non_nullable
+as ChampsVente,
   ));
 }
 
@@ -900,7 +932,8 @@ as String,
 /// @nodoc
 mixin _$LogementResume {
 
- int get id; String get titre; String get photo;@JsonKey(name: 'type_logement') String get typeLogement;@JsonKey(name: 'type_logement_libelle') String get typeLogementLibelle;@JsonKey(name: 'localisation_texte') String get localisationTexte;@JsonKey(fromJson: versInt) int get loyer;@JsonKey(name: 'nb_chambres', fromJson: versInt) int get nbChambres;@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) int get nbSallesDeBain; bool get meuble; String get disponibilite;
+ int get id; String get titre; String get photo;@JsonKey(name: 'type_logement') String get typeLogement;@JsonKey(name: 'type_logement_libelle') String get typeLogementLibelle;@JsonKey(name: 'localisation_texte') String get localisationTexte;@JsonKey(fromJson: versInt) int get loyer;@JsonKey(name: 'nb_chambres', fromJson: versInt) int get nbChambres;@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) int get nbSallesDeBain; bool get meuble; String get disponibilite;/// Vente : mode, prix de vente, vendu, champs propres (à la racine).
+@JsonKey(readValue: lireRacine) InfosVente get vente;
 /// Create a copy of LogementResume
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -913,16 +946,16 @@ $LogementResumeCopyWith<LogementResume> get copyWith => _$LogementResumeCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LogementResume&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.photo, photo) || other.photo == photo)&&(identical(other.typeLogement, typeLogement) || other.typeLogement == typeLogement)&&(identical(other.typeLogementLibelle, typeLogementLibelle) || other.typeLogementLibelle == typeLogementLibelle)&&(identical(other.localisationTexte, localisationTexte) || other.localisationTexte == localisationTexte)&&(identical(other.loyer, loyer) || other.loyer == loyer)&&(identical(other.nbChambres, nbChambres) || other.nbChambres == nbChambres)&&(identical(other.nbSallesDeBain, nbSallesDeBain) || other.nbSallesDeBain == nbSallesDeBain)&&(identical(other.meuble, meuble) || other.meuble == meuble)&&(identical(other.disponibilite, disponibilite) || other.disponibilite == disponibilite));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LogementResume&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.photo, photo) || other.photo == photo)&&(identical(other.typeLogement, typeLogement) || other.typeLogement == typeLogement)&&(identical(other.typeLogementLibelle, typeLogementLibelle) || other.typeLogementLibelle == typeLogementLibelle)&&(identical(other.localisationTexte, localisationTexte) || other.localisationTexte == localisationTexte)&&(identical(other.loyer, loyer) || other.loyer == loyer)&&(identical(other.nbChambres, nbChambres) || other.nbChambres == nbChambres)&&(identical(other.nbSallesDeBain, nbSallesDeBain) || other.nbSallesDeBain == nbSallesDeBain)&&(identical(other.meuble, meuble) || other.meuble == meuble)&&(identical(other.disponibilite, disponibilite) || other.disponibilite == disponibilite)&&(identical(other.vente, vente) || other.vente == vente));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,titre,photo,typeLogement,typeLogementLibelle,localisationTexte,loyer,nbChambres,nbSallesDeBain,meuble,disponibilite);
+int get hashCode => Object.hash(runtimeType,id,titre,photo,typeLogement,typeLogementLibelle,localisationTexte,loyer,nbChambres,nbSallesDeBain,meuble,disponibilite,vente);
 
 @override
 String toString() {
-  return 'LogementResume(id: $id, titre: $titre, photo: $photo, typeLogement: $typeLogement, typeLogementLibelle: $typeLogementLibelle, localisationTexte: $localisationTexte, loyer: $loyer, nbChambres: $nbChambres, nbSallesDeBain: $nbSallesDeBain, meuble: $meuble, disponibilite: $disponibilite)';
+  return 'LogementResume(id: $id, titre: $titre, photo: $photo, typeLogement: $typeLogement, typeLogementLibelle: $typeLogementLibelle, localisationTexte: $localisationTexte, loyer: $loyer, nbChambres: $nbChambres, nbSallesDeBain: $nbSallesDeBain, meuble: $meuble, disponibilite: $disponibilite, vente: $vente)';
 }
 
 
@@ -933,11 +966,11 @@ abstract mixin class $LogementResumeCopyWith<$Res>  {
   factory $LogementResumeCopyWith(LogementResume value, $Res Function(LogementResume) _then) = _$LogementResumeCopyWithImpl;
 @useResult
 $Res call({
- int id, String titre, String photo,@JsonKey(name: 'type_logement') String typeLogement,@JsonKey(name: 'type_logement_libelle') String typeLogementLibelle,@JsonKey(name: 'localisation_texte') String localisationTexte,@JsonKey(fromJson: versInt) int loyer,@JsonKey(name: 'nb_chambres', fromJson: versInt) int nbChambres,@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) int nbSallesDeBain, bool meuble, String disponibilite
+ int id, String titre, String photo,@JsonKey(name: 'type_logement') String typeLogement,@JsonKey(name: 'type_logement_libelle') String typeLogementLibelle,@JsonKey(name: 'localisation_texte') String localisationTexte,@JsonKey(fromJson: versInt) int loyer,@JsonKey(name: 'nb_chambres', fromJson: versInt) int nbChambres,@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) int nbSallesDeBain, bool meuble, String disponibilite,@JsonKey(readValue: lireRacine) InfosVente vente
 });
 
 
-
+$InfosVenteCopyWith<$Res> get vente;
 
 }
 /// @nodoc
@@ -950,7 +983,7 @@ class _$LogementResumeCopyWithImpl<$Res>
 
 /// Create a copy of LogementResume
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? titre = null,Object? photo = null,Object? typeLogement = null,Object? typeLogementLibelle = null,Object? localisationTexte = null,Object? loyer = null,Object? nbChambres = null,Object? nbSallesDeBain = null,Object? meuble = null,Object? disponibilite = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? titre = null,Object? photo = null,Object? typeLogement = null,Object? typeLogementLibelle = null,Object? localisationTexte = null,Object? loyer = null,Object? nbChambres = null,Object? nbSallesDeBain = null,Object? meuble = null,Object? disponibilite = null,Object? vente = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,titre: null == titre ? _self.titre : titre // ignore: cast_nullable_to_non_nullable
@@ -963,10 +996,20 @@ as int,nbChambres: null == nbChambres ? _self.nbChambres : nbChambres // ignore:
 as int,nbSallesDeBain: null == nbSallesDeBain ? _self.nbSallesDeBain : nbSallesDeBain // ignore: cast_nullable_to_non_nullable
 as int,meuble: null == meuble ? _self.meuble : meuble // ignore: cast_nullable_to_non_nullable
 as bool,disponibilite: null == disponibilite ? _self.disponibilite : disponibilite // ignore: cast_nullable_to_non_nullable
-as String,
+as String,vente: null == vente ? _self.vente : vente // ignore: cast_nullable_to_non_nullable
+as InfosVente,
   ));
 }
-
+/// Create a copy of LogementResume
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$InfosVenteCopyWith<$Res> get vente {
+  
+  return $InfosVenteCopyWith<$Res>(_self.vente, (value) {
+    return _then(_self.copyWith(vente: value));
+  });
+}
 }
 
 
@@ -1048,10 +1091,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String titre,  String photo, @JsonKey(name: 'type_logement')  String typeLogement, @JsonKey(name: 'type_logement_libelle')  String typeLogementLibelle, @JsonKey(name: 'localisation_texte')  String localisationTexte, @JsonKey(fromJson: versInt)  int loyer, @JsonKey(name: 'nb_chambres', fromJson: versInt)  int nbChambres, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt)  int nbSallesDeBain,  bool meuble,  String disponibilite)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String titre,  String photo, @JsonKey(name: 'type_logement')  String typeLogement, @JsonKey(name: 'type_logement_libelle')  String typeLogementLibelle, @JsonKey(name: 'localisation_texte')  String localisationTexte, @JsonKey(fromJson: versInt)  int loyer, @JsonKey(name: 'nb_chambres', fromJson: versInt)  int nbChambres, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt)  int nbSallesDeBain,  bool meuble,  String disponibilite, @JsonKey(readValue: lireRacine)  InfosVente vente)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LogementResume() when $default != null:
-return $default(_that.id,_that.titre,_that.photo,_that.typeLogement,_that.typeLogementLibelle,_that.localisationTexte,_that.loyer,_that.nbChambres,_that.nbSallesDeBain,_that.meuble,_that.disponibilite);case _:
+return $default(_that.id,_that.titre,_that.photo,_that.typeLogement,_that.typeLogementLibelle,_that.localisationTexte,_that.loyer,_that.nbChambres,_that.nbSallesDeBain,_that.meuble,_that.disponibilite,_that.vente);case _:
   return orElse();
 
 }
@@ -1069,10 +1112,10 @@ return $default(_that.id,_that.titre,_that.photo,_that.typeLogement,_that.typeLo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String titre,  String photo, @JsonKey(name: 'type_logement')  String typeLogement, @JsonKey(name: 'type_logement_libelle')  String typeLogementLibelle, @JsonKey(name: 'localisation_texte')  String localisationTexte, @JsonKey(fromJson: versInt)  int loyer, @JsonKey(name: 'nb_chambres', fromJson: versInt)  int nbChambres, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt)  int nbSallesDeBain,  bool meuble,  String disponibilite)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String titre,  String photo, @JsonKey(name: 'type_logement')  String typeLogement, @JsonKey(name: 'type_logement_libelle')  String typeLogementLibelle, @JsonKey(name: 'localisation_texte')  String localisationTexte, @JsonKey(fromJson: versInt)  int loyer, @JsonKey(name: 'nb_chambres', fromJson: versInt)  int nbChambres, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt)  int nbSallesDeBain,  bool meuble,  String disponibilite, @JsonKey(readValue: lireRacine)  InfosVente vente)  $default,) {final _that = this;
 switch (_that) {
 case _LogementResume():
-return $default(_that.id,_that.titre,_that.photo,_that.typeLogement,_that.typeLogementLibelle,_that.localisationTexte,_that.loyer,_that.nbChambres,_that.nbSallesDeBain,_that.meuble,_that.disponibilite);case _:
+return $default(_that.id,_that.titre,_that.photo,_that.typeLogement,_that.typeLogementLibelle,_that.localisationTexte,_that.loyer,_that.nbChambres,_that.nbSallesDeBain,_that.meuble,_that.disponibilite,_that.vente);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1089,10 +1132,10 @@ return $default(_that.id,_that.titre,_that.photo,_that.typeLogement,_that.typeLo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String titre,  String photo, @JsonKey(name: 'type_logement')  String typeLogement, @JsonKey(name: 'type_logement_libelle')  String typeLogementLibelle, @JsonKey(name: 'localisation_texte')  String localisationTexte, @JsonKey(fromJson: versInt)  int loyer, @JsonKey(name: 'nb_chambres', fromJson: versInt)  int nbChambres, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt)  int nbSallesDeBain,  bool meuble,  String disponibilite)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String titre,  String photo, @JsonKey(name: 'type_logement')  String typeLogement, @JsonKey(name: 'type_logement_libelle')  String typeLogementLibelle, @JsonKey(name: 'localisation_texte')  String localisationTexte, @JsonKey(fromJson: versInt)  int loyer, @JsonKey(name: 'nb_chambres', fromJson: versInt)  int nbChambres, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt)  int nbSallesDeBain,  bool meuble,  String disponibilite, @JsonKey(readValue: lireRacine)  InfosVente vente)?  $default,) {final _that = this;
 switch (_that) {
 case _LogementResume() when $default != null:
-return $default(_that.id,_that.titre,_that.photo,_that.typeLogement,_that.typeLogementLibelle,_that.localisationTexte,_that.loyer,_that.nbChambres,_that.nbSallesDeBain,_that.meuble,_that.disponibilite);case _:
+return $default(_that.id,_that.titre,_that.photo,_that.typeLogement,_that.typeLogementLibelle,_that.localisationTexte,_that.loyer,_that.nbChambres,_that.nbSallesDeBain,_that.meuble,_that.disponibilite,_that.vente);case _:
   return null;
 
 }
@@ -1104,7 +1147,7 @@ return $default(_that.id,_that.titre,_that.photo,_that.typeLogement,_that.typeLo
 @JsonSerializable()
 
 class _LogementResume extends LogementResume {
-  const _LogementResume({required this.id, this.titre = '', this.photo = '', @JsonKey(name: 'type_logement') this.typeLogement = '', @JsonKey(name: 'type_logement_libelle') this.typeLogementLibelle = '', @JsonKey(name: 'localisation_texte') this.localisationTexte = '', @JsonKey(fromJson: versInt) this.loyer = 0, @JsonKey(name: 'nb_chambres', fromJson: versInt) this.nbChambres = 0, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) this.nbSallesDeBain = 0, this.meuble = false, this.disponibilite = ''}): super._();
+  const _LogementResume({required this.id, this.titre = '', this.photo = '', @JsonKey(name: 'type_logement') this.typeLogement = '', @JsonKey(name: 'type_logement_libelle') this.typeLogementLibelle = '', @JsonKey(name: 'localisation_texte') this.localisationTexte = '', @JsonKey(fromJson: versInt) this.loyer = 0, @JsonKey(name: 'nb_chambres', fromJson: versInt) this.nbChambres = 0, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) this.nbSallesDeBain = 0, this.meuble = false, this.disponibilite = '', @JsonKey(readValue: lireRacine) this.vente = const InfosVente()}): super._();
   factory _LogementResume.fromJson(Map<String, dynamic> json) => _$LogementResumeFromJson(json);
 
 @override final  int id;
@@ -1118,6 +1161,8 @@ class _LogementResume extends LogementResume {
 @override@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) final  int nbSallesDeBain;
 @override@JsonKey() final  bool meuble;
 @override@JsonKey() final  String disponibilite;
+/// Vente : mode, prix de vente, vendu, champs propres (à la racine).
+@override@JsonKey(readValue: lireRacine) final  InfosVente vente;
 
 /// Create a copy of LogementResume
 /// with the given fields replaced by the non-null parameter values.
@@ -1132,16 +1177,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LogementResume&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.photo, photo) || other.photo == photo)&&(identical(other.typeLogement, typeLogement) || other.typeLogement == typeLogement)&&(identical(other.typeLogementLibelle, typeLogementLibelle) || other.typeLogementLibelle == typeLogementLibelle)&&(identical(other.localisationTexte, localisationTexte) || other.localisationTexte == localisationTexte)&&(identical(other.loyer, loyer) || other.loyer == loyer)&&(identical(other.nbChambres, nbChambres) || other.nbChambres == nbChambres)&&(identical(other.nbSallesDeBain, nbSallesDeBain) || other.nbSallesDeBain == nbSallesDeBain)&&(identical(other.meuble, meuble) || other.meuble == meuble)&&(identical(other.disponibilite, disponibilite) || other.disponibilite == disponibilite));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LogementResume&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.photo, photo) || other.photo == photo)&&(identical(other.typeLogement, typeLogement) || other.typeLogement == typeLogement)&&(identical(other.typeLogementLibelle, typeLogementLibelle) || other.typeLogementLibelle == typeLogementLibelle)&&(identical(other.localisationTexte, localisationTexte) || other.localisationTexte == localisationTexte)&&(identical(other.loyer, loyer) || other.loyer == loyer)&&(identical(other.nbChambres, nbChambres) || other.nbChambres == nbChambres)&&(identical(other.nbSallesDeBain, nbSallesDeBain) || other.nbSallesDeBain == nbSallesDeBain)&&(identical(other.meuble, meuble) || other.meuble == meuble)&&(identical(other.disponibilite, disponibilite) || other.disponibilite == disponibilite)&&(identical(other.vente, vente) || other.vente == vente));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,titre,photo,typeLogement,typeLogementLibelle,localisationTexte,loyer,nbChambres,nbSallesDeBain,meuble,disponibilite);
+int get hashCode => Object.hash(runtimeType,id,titre,photo,typeLogement,typeLogementLibelle,localisationTexte,loyer,nbChambres,nbSallesDeBain,meuble,disponibilite,vente);
 
 @override
 String toString() {
-  return 'LogementResume(id: $id, titre: $titre, photo: $photo, typeLogement: $typeLogement, typeLogementLibelle: $typeLogementLibelle, localisationTexte: $localisationTexte, loyer: $loyer, nbChambres: $nbChambres, nbSallesDeBain: $nbSallesDeBain, meuble: $meuble, disponibilite: $disponibilite)';
+  return 'LogementResume(id: $id, titre: $titre, photo: $photo, typeLogement: $typeLogement, typeLogementLibelle: $typeLogementLibelle, localisationTexte: $localisationTexte, loyer: $loyer, nbChambres: $nbChambres, nbSallesDeBain: $nbSallesDeBain, meuble: $meuble, disponibilite: $disponibilite, vente: $vente)';
 }
 
 
@@ -1152,11 +1197,11 @@ abstract mixin class _$LogementResumeCopyWith<$Res> implements $LogementResumeCo
   factory _$LogementResumeCopyWith(_LogementResume value, $Res Function(_LogementResume) _then) = __$LogementResumeCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String titre, String photo,@JsonKey(name: 'type_logement') String typeLogement,@JsonKey(name: 'type_logement_libelle') String typeLogementLibelle,@JsonKey(name: 'localisation_texte') String localisationTexte,@JsonKey(fromJson: versInt) int loyer,@JsonKey(name: 'nb_chambres', fromJson: versInt) int nbChambres,@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) int nbSallesDeBain, bool meuble, String disponibilite
+ int id, String titre, String photo,@JsonKey(name: 'type_logement') String typeLogement,@JsonKey(name: 'type_logement_libelle') String typeLogementLibelle,@JsonKey(name: 'localisation_texte') String localisationTexte,@JsonKey(fromJson: versInt) int loyer,@JsonKey(name: 'nb_chambres', fromJson: versInt) int nbChambres,@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) int nbSallesDeBain, bool meuble, String disponibilite,@JsonKey(readValue: lireRacine) InfosVente vente
 });
 
 
-
+@override $InfosVenteCopyWith<$Res> get vente;
 
 }
 /// @nodoc
@@ -1169,7 +1214,7 @@ class __$LogementResumeCopyWithImpl<$Res>
 
 /// Create a copy of LogementResume
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? titre = null,Object? photo = null,Object? typeLogement = null,Object? typeLogementLibelle = null,Object? localisationTexte = null,Object? loyer = null,Object? nbChambres = null,Object? nbSallesDeBain = null,Object? meuble = null,Object? disponibilite = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? titre = null,Object? photo = null,Object? typeLogement = null,Object? typeLogementLibelle = null,Object? localisationTexte = null,Object? loyer = null,Object? nbChambres = null,Object? nbSallesDeBain = null,Object? meuble = null,Object? disponibilite = null,Object? vente = null,}) {
   return _then(_LogementResume(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,titre: null == titre ? _self.titre : titre // ignore: cast_nullable_to_non_nullable
@@ -1182,11 +1227,21 @@ as int,nbChambres: null == nbChambres ? _self.nbChambres : nbChambres // ignore:
 as int,nbSallesDeBain: null == nbSallesDeBain ? _self.nbSallesDeBain : nbSallesDeBain // ignore: cast_nullable_to_non_nullable
 as int,meuble: null == meuble ? _self.meuble : meuble // ignore: cast_nullable_to_non_nullable
 as bool,disponibilite: null == disponibilite ? _self.disponibilite : disponibilite // ignore: cast_nullable_to_non_nullable
-as String,
+as String,vente: null == vente ? _self.vente : vente // ignore: cast_nullable_to_non_nullable
+as InfosVente,
   ));
 }
 
-
+/// Create a copy of LogementResume
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$InfosVenteCopyWith<$Res> get vente {
+  
+  return $InfosVenteCopyWith<$Res>(_self.vente, (value) {
+    return _then(_self.copyWith(vente: value));
+  });
+}
 }
 
 
@@ -1763,7 +1818,8 @@ as bool,
 /// @nodoc
 mixin _$Logement {
 
- int get id; String get titre; String get description; List<String> get galerie; List<Panorama> get panoramas;@JsonKey(name: 'type_logement') String get typeLogement;@JsonKey(name: 'type_logement_libelle') String get typeLogementLibelle;@JsonKey(name: 'nb_chambres', fromJson: versInt) int get nbChambres;@JsonKey(name: 'nb_salons', fromJson: versInt) int get nbSalons;@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) int get nbSallesDeBain;@JsonKey(name: 'surface_m2', fromJson: versIntNullable) int? get surfaceM2; bool get meuble;@JsonKey(fromJson: versInt) int get loyer;@JsonKey(name: 'caution_mois', fromJson: versIntNullable) int? get cautionMois;@JsonKey(name: 'avance_mois', fromJson: versIntNullable) int? get avanceMois;@JsonKey(name: 'frais_agence', fromJson: versIntNullable) int? get fraisAgence;@JsonKey(name: 'compteur_eau_individuel') bool get compteurEauIndividuel;@JsonKey(name: 'compteur_electricite_individuel') bool get compteurElectriciteIndividuel; List<String> get equipements; String get disponibilite;@JsonKey(name: 'disponible_a_partir_du') String? get disponibleAPartirDu;@JsonKey(name: 'localite_nom') String? get localiteNom;@JsonKey(name: 'quartier_nom') String? get quartierNom; String get secteur;@JsonKey(name: 'adresse_reperes') String get adresseReperes;@JsonKey(fromJson: versDoubleNullable) double? get latitude;@JsonKey(fromJson: versDoubleNullable) double? get longitude; Loueur? get loueur;@JsonKey(name: 'autres_logements') List<LogementResume> get autresLogements;
+ int get id; String get titre; String get description; List<String> get galerie; List<Panorama> get panoramas;@JsonKey(name: 'type_logement') String get typeLogement;@JsonKey(name: 'type_logement_libelle') String get typeLogementLibelle;@JsonKey(name: 'nb_chambres', fromJson: versInt) int get nbChambres;@JsonKey(name: 'nb_salons', fromJson: versInt) int get nbSalons;@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) int get nbSallesDeBain;@JsonKey(name: 'surface_m2', fromJson: versIntNullable) int? get surfaceM2; bool get meuble;@JsonKey(fromJson: versInt) int get loyer;@JsonKey(name: 'caution_mois', fromJson: versIntNullable) int? get cautionMois;@JsonKey(name: 'avance_mois', fromJson: versIntNullable) int? get avanceMois;@JsonKey(name: 'frais_agence', fromJson: versIntNullable) int? get fraisAgence;@JsonKey(name: 'compteur_eau_individuel') bool get compteurEauIndividuel;@JsonKey(name: 'compteur_electricite_individuel') bool get compteurElectriciteIndividuel; List<String> get equipements; String get disponibilite;@JsonKey(name: 'disponible_a_partir_du') String? get disponibleAPartirDu;@JsonKey(name: 'localite_nom') String? get localiteNom;@JsonKey(name: 'quartier_nom') String? get quartierNom; String get secteur;@JsonKey(name: 'adresse_reperes') String get adresseReperes;@JsonKey(fromJson: versDoubleNullable) double? get latitude;@JsonKey(fromJson: versDoubleNullable) double? get longitude; Loueur? get loueur;@JsonKey(name: 'autres_logements') List<LogementResume> get autresLogements;/// Vente : mode, prix de vente, vendu, champs propres (à la racine).
+@JsonKey(readValue: lireRacine) InfosVente get vente;
 /// Create a copy of Logement
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1776,16 +1832,16 @@ $LogementCopyWith<Logement> get copyWith => _$LogementCopyWithImpl<Logement>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Logement&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other.galerie, galerie)&&const DeepCollectionEquality().equals(other.panoramas, panoramas)&&(identical(other.typeLogement, typeLogement) || other.typeLogement == typeLogement)&&(identical(other.typeLogementLibelle, typeLogementLibelle) || other.typeLogementLibelle == typeLogementLibelle)&&(identical(other.nbChambres, nbChambres) || other.nbChambres == nbChambres)&&(identical(other.nbSalons, nbSalons) || other.nbSalons == nbSalons)&&(identical(other.nbSallesDeBain, nbSallesDeBain) || other.nbSallesDeBain == nbSallesDeBain)&&(identical(other.surfaceM2, surfaceM2) || other.surfaceM2 == surfaceM2)&&(identical(other.meuble, meuble) || other.meuble == meuble)&&(identical(other.loyer, loyer) || other.loyer == loyer)&&(identical(other.cautionMois, cautionMois) || other.cautionMois == cautionMois)&&(identical(other.avanceMois, avanceMois) || other.avanceMois == avanceMois)&&(identical(other.fraisAgence, fraisAgence) || other.fraisAgence == fraisAgence)&&(identical(other.compteurEauIndividuel, compteurEauIndividuel) || other.compteurEauIndividuel == compteurEauIndividuel)&&(identical(other.compteurElectriciteIndividuel, compteurElectriciteIndividuel) || other.compteurElectriciteIndividuel == compteurElectriciteIndividuel)&&const DeepCollectionEquality().equals(other.equipements, equipements)&&(identical(other.disponibilite, disponibilite) || other.disponibilite == disponibilite)&&(identical(other.disponibleAPartirDu, disponibleAPartirDu) || other.disponibleAPartirDu == disponibleAPartirDu)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.secteur, secteur) || other.secteur == secteur)&&(identical(other.adresseReperes, adresseReperes) || other.adresseReperes == adresseReperes)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.loueur, loueur) || other.loueur == loueur)&&const DeepCollectionEquality().equals(other.autresLogements, autresLogements));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Logement&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other.galerie, galerie)&&const DeepCollectionEquality().equals(other.panoramas, panoramas)&&(identical(other.typeLogement, typeLogement) || other.typeLogement == typeLogement)&&(identical(other.typeLogementLibelle, typeLogementLibelle) || other.typeLogementLibelle == typeLogementLibelle)&&(identical(other.nbChambres, nbChambres) || other.nbChambres == nbChambres)&&(identical(other.nbSalons, nbSalons) || other.nbSalons == nbSalons)&&(identical(other.nbSallesDeBain, nbSallesDeBain) || other.nbSallesDeBain == nbSallesDeBain)&&(identical(other.surfaceM2, surfaceM2) || other.surfaceM2 == surfaceM2)&&(identical(other.meuble, meuble) || other.meuble == meuble)&&(identical(other.loyer, loyer) || other.loyer == loyer)&&(identical(other.cautionMois, cautionMois) || other.cautionMois == cautionMois)&&(identical(other.avanceMois, avanceMois) || other.avanceMois == avanceMois)&&(identical(other.fraisAgence, fraisAgence) || other.fraisAgence == fraisAgence)&&(identical(other.compteurEauIndividuel, compteurEauIndividuel) || other.compteurEauIndividuel == compteurEauIndividuel)&&(identical(other.compteurElectriciteIndividuel, compteurElectriciteIndividuel) || other.compteurElectriciteIndividuel == compteurElectriciteIndividuel)&&const DeepCollectionEquality().equals(other.equipements, equipements)&&(identical(other.disponibilite, disponibilite) || other.disponibilite == disponibilite)&&(identical(other.disponibleAPartirDu, disponibleAPartirDu) || other.disponibleAPartirDu == disponibleAPartirDu)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.secteur, secteur) || other.secteur == secteur)&&(identical(other.adresseReperes, adresseReperes) || other.adresseReperes == adresseReperes)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.loueur, loueur) || other.loueur == loueur)&&const DeepCollectionEquality().equals(other.autresLogements, autresLogements)&&(identical(other.vente, vente) || other.vente == vente));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,titre,description,const DeepCollectionEquality().hash(galerie),const DeepCollectionEquality().hash(panoramas),typeLogement,typeLogementLibelle,nbChambres,nbSalons,nbSallesDeBain,surfaceM2,meuble,loyer,cautionMois,avanceMois,fraisAgence,compteurEauIndividuel,compteurElectriciteIndividuel,const DeepCollectionEquality().hash(equipements),disponibilite,disponibleAPartirDu,localiteNom,quartierNom,secteur,adresseReperes,latitude,longitude,loueur,const DeepCollectionEquality().hash(autresLogements)]);
+int get hashCode => Object.hashAll([runtimeType,id,titre,description,const DeepCollectionEquality().hash(galerie),const DeepCollectionEquality().hash(panoramas),typeLogement,typeLogementLibelle,nbChambres,nbSalons,nbSallesDeBain,surfaceM2,meuble,loyer,cautionMois,avanceMois,fraisAgence,compteurEauIndividuel,compteurElectriciteIndividuel,const DeepCollectionEquality().hash(equipements),disponibilite,disponibleAPartirDu,localiteNom,quartierNom,secteur,adresseReperes,latitude,longitude,loueur,const DeepCollectionEquality().hash(autresLogements),vente]);
 
 @override
 String toString() {
-  return 'Logement(id: $id, titre: $titre, description: $description, galerie: $galerie, panoramas: $panoramas, typeLogement: $typeLogement, typeLogementLibelle: $typeLogementLibelle, nbChambres: $nbChambres, nbSalons: $nbSalons, nbSallesDeBain: $nbSallesDeBain, surfaceM2: $surfaceM2, meuble: $meuble, loyer: $loyer, cautionMois: $cautionMois, avanceMois: $avanceMois, fraisAgence: $fraisAgence, compteurEauIndividuel: $compteurEauIndividuel, compteurElectriciteIndividuel: $compteurElectriciteIndividuel, equipements: $equipements, disponibilite: $disponibilite, disponibleAPartirDu: $disponibleAPartirDu, localiteNom: $localiteNom, quartierNom: $quartierNom, secteur: $secteur, adresseReperes: $adresseReperes, latitude: $latitude, longitude: $longitude, loueur: $loueur, autresLogements: $autresLogements)';
+  return 'Logement(id: $id, titre: $titre, description: $description, galerie: $galerie, panoramas: $panoramas, typeLogement: $typeLogement, typeLogementLibelle: $typeLogementLibelle, nbChambres: $nbChambres, nbSalons: $nbSalons, nbSallesDeBain: $nbSallesDeBain, surfaceM2: $surfaceM2, meuble: $meuble, loyer: $loyer, cautionMois: $cautionMois, avanceMois: $avanceMois, fraisAgence: $fraisAgence, compteurEauIndividuel: $compteurEauIndividuel, compteurElectriciteIndividuel: $compteurElectriciteIndividuel, equipements: $equipements, disponibilite: $disponibilite, disponibleAPartirDu: $disponibleAPartirDu, localiteNom: $localiteNom, quartierNom: $quartierNom, secteur: $secteur, adresseReperes: $adresseReperes, latitude: $latitude, longitude: $longitude, loueur: $loueur, autresLogements: $autresLogements, vente: $vente)';
 }
 
 
@@ -1796,11 +1852,11 @@ abstract mixin class $LogementCopyWith<$Res>  {
   factory $LogementCopyWith(Logement value, $Res Function(Logement) _then) = _$LogementCopyWithImpl;
 @useResult
 $Res call({
- int id, String titre, String description, List<String> galerie, List<Panorama> panoramas,@JsonKey(name: 'type_logement') String typeLogement,@JsonKey(name: 'type_logement_libelle') String typeLogementLibelle,@JsonKey(name: 'nb_chambres', fromJson: versInt) int nbChambres,@JsonKey(name: 'nb_salons', fromJson: versInt) int nbSalons,@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) int nbSallesDeBain,@JsonKey(name: 'surface_m2', fromJson: versIntNullable) int? surfaceM2, bool meuble,@JsonKey(fromJson: versInt) int loyer,@JsonKey(name: 'caution_mois', fromJson: versIntNullable) int? cautionMois,@JsonKey(name: 'avance_mois', fromJson: versIntNullable) int? avanceMois,@JsonKey(name: 'frais_agence', fromJson: versIntNullable) int? fraisAgence,@JsonKey(name: 'compteur_eau_individuel') bool compteurEauIndividuel,@JsonKey(name: 'compteur_electricite_individuel') bool compteurElectriciteIndividuel, List<String> equipements, String disponibilite,@JsonKey(name: 'disponible_a_partir_du') String? disponibleAPartirDu,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom, String secteur,@JsonKey(name: 'adresse_reperes') String adresseReperes,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude, Loueur? loueur,@JsonKey(name: 'autres_logements') List<LogementResume> autresLogements
+ int id, String titre, String description, List<String> galerie, List<Panorama> panoramas,@JsonKey(name: 'type_logement') String typeLogement,@JsonKey(name: 'type_logement_libelle') String typeLogementLibelle,@JsonKey(name: 'nb_chambres', fromJson: versInt) int nbChambres,@JsonKey(name: 'nb_salons', fromJson: versInt) int nbSalons,@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) int nbSallesDeBain,@JsonKey(name: 'surface_m2', fromJson: versIntNullable) int? surfaceM2, bool meuble,@JsonKey(fromJson: versInt) int loyer,@JsonKey(name: 'caution_mois', fromJson: versIntNullable) int? cautionMois,@JsonKey(name: 'avance_mois', fromJson: versIntNullable) int? avanceMois,@JsonKey(name: 'frais_agence', fromJson: versIntNullable) int? fraisAgence,@JsonKey(name: 'compteur_eau_individuel') bool compteurEauIndividuel,@JsonKey(name: 'compteur_electricite_individuel') bool compteurElectriciteIndividuel, List<String> equipements, String disponibilite,@JsonKey(name: 'disponible_a_partir_du') String? disponibleAPartirDu,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom, String secteur,@JsonKey(name: 'adresse_reperes') String adresseReperes,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude, Loueur? loueur,@JsonKey(name: 'autres_logements') List<LogementResume> autresLogements,@JsonKey(readValue: lireRacine) InfosVente vente
 });
 
 
-$LoueurCopyWith<$Res>? get loueur;
+$LoueurCopyWith<$Res>? get loueur;$InfosVenteCopyWith<$Res> get vente;
 
 }
 /// @nodoc
@@ -1813,7 +1869,7 @@ class _$LogementCopyWithImpl<$Res>
 
 /// Create a copy of Logement
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? titre = null,Object? description = null,Object? galerie = null,Object? panoramas = null,Object? typeLogement = null,Object? typeLogementLibelle = null,Object? nbChambres = null,Object? nbSalons = null,Object? nbSallesDeBain = null,Object? surfaceM2 = freezed,Object? meuble = null,Object? loyer = null,Object? cautionMois = freezed,Object? avanceMois = freezed,Object? fraisAgence = freezed,Object? compteurEauIndividuel = null,Object? compteurElectriciteIndividuel = null,Object? equipements = null,Object? disponibilite = null,Object? disponibleAPartirDu = freezed,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? secteur = null,Object? adresseReperes = null,Object? latitude = freezed,Object? longitude = freezed,Object? loueur = freezed,Object? autresLogements = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? titre = null,Object? description = null,Object? galerie = null,Object? panoramas = null,Object? typeLogement = null,Object? typeLogementLibelle = null,Object? nbChambres = null,Object? nbSalons = null,Object? nbSallesDeBain = null,Object? surfaceM2 = freezed,Object? meuble = null,Object? loyer = null,Object? cautionMois = freezed,Object? avanceMois = freezed,Object? fraisAgence = freezed,Object? compteurEauIndividuel = null,Object? compteurElectriciteIndividuel = null,Object? equipements = null,Object? disponibilite = null,Object? disponibleAPartirDu = freezed,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? secteur = null,Object? adresseReperes = null,Object? latitude = freezed,Object? longitude = freezed,Object? loueur = freezed,Object? autresLogements = null,Object? vente = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,titre: null == titre ? _self.titre : titre // ignore: cast_nullable_to_non_nullable
@@ -1844,7 +1900,8 @@ as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: c
 as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double?,loueur: freezed == loueur ? _self.loueur : loueur // ignore: cast_nullable_to_non_nullable
 as Loueur?,autresLogements: null == autresLogements ? _self.autresLogements : autresLogements // ignore: cast_nullable_to_non_nullable
-as List<LogementResume>,
+as List<LogementResume>,vente: null == vente ? _self.vente : vente // ignore: cast_nullable_to_non_nullable
+as InfosVente,
   ));
 }
 /// Create a copy of Logement
@@ -1858,6 +1915,15 @@ $LoueurCopyWith<$Res>? get loueur {
 
   return $LoueurCopyWith<$Res>(_self.loueur!, (value) {
     return _then(_self.copyWith(loueur: value));
+  });
+}/// Create a copy of Logement
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$InfosVenteCopyWith<$Res> get vente {
+  
+  return $InfosVenteCopyWith<$Res>(_self.vente, (value) {
+    return _then(_self.copyWith(vente: value));
   });
 }
 }
@@ -1941,10 +2007,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String titre,  String description,  List<String> galerie,  List<Panorama> panoramas, @JsonKey(name: 'type_logement')  String typeLogement, @JsonKey(name: 'type_logement_libelle')  String typeLogementLibelle, @JsonKey(name: 'nb_chambres', fromJson: versInt)  int nbChambres, @JsonKey(name: 'nb_salons', fromJson: versInt)  int nbSalons, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt)  int nbSallesDeBain, @JsonKey(name: 'surface_m2', fromJson: versIntNullable)  int? surfaceM2,  bool meuble, @JsonKey(fromJson: versInt)  int loyer, @JsonKey(name: 'caution_mois', fromJson: versIntNullable)  int? cautionMois, @JsonKey(name: 'avance_mois', fromJson: versIntNullable)  int? avanceMois, @JsonKey(name: 'frais_agence', fromJson: versIntNullable)  int? fraisAgence, @JsonKey(name: 'compteur_eau_individuel')  bool compteurEauIndividuel, @JsonKey(name: 'compteur_electricite_individuel')  bool compteurElectriciteIndividuel,  List<String> equipements,  String disponibilite, @JsonKey(name: 'disponible_a_partir_du')  String? disponibleAPartirDu, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String secteur, @JsonKey(name: 'adresse_reperes')  String adresseReperes, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude,  Loueur? loueur, @JsonKey(name: 'autres_logements')  List<LogementResume> autresLogements)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String titre,  String description,  List<String> galerie,  List<Panorama> panoramas, @JsonKey(name: 'type_logement')  String typeLogement, @JsonKey(name: 'type_logement_libelle')  String typeLogementLibelle, @JsonKey(name: 'nb_chambres', fromJson: versInt)  int nbChambres, @JsonKey(name: 'nb_salons', fromJson: versInt)  int nbSalons, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt)  int nbSallesDeBain, @JsonKey(name: 'surface_m2', fromJson: versIntNullable)  int? surfaceM2,  bool meuble, @JsonKey(fromJson: versInt)  int loyer, @JsonKey(name: 'caution_mois', fromJson: versIntNullable)  int? cautionMois, @JsonKey(name: 'avance_mois', fromJson: versIntNullable)  int? avanceMois, @JsonKey(name: 'frais_agence', fromJson: versIntNullable)  int? fraisAgence, @JsonKey(name: 'compteur_eau_individuel')  bool compteurEauIndividuel, @JsonKey(name: 'compteur_electricite_individuel')  bool compteurElectriciteIndividuel,  List<String> equipements,  String disponibilite, @JsonKey(name: 'disponible_a_partir_du')  String? disponibleAPartirDu, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String secteur, @JsonKey(name: 'adresse_reperes')  String adresseReperes, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude,  Loueur? loueur, @JsonKey(name: 'autres_logements')  List<LogementResume> autresLogements, @JsonKey(readValue: lireRacine)  InfosVente vente)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Logement() when $default != null:
-return $default(_that.id,_that.titre,_that.description,_that.galerie,_that.panoramas,_that.typeLogement,_that.typeLogementLibelle,_that.nbChambres,_that.nbSalons,_that.nbSallesDeBain,_that.surfaceM2,_that.meuble,_that.loyer,_that.cautionMois,_that.avanceMois,_that.fraisAgence,_that.compteurEauIndividuel,_that.compteurElectriciteIndividuel,_that.equipements,_that.disponibilite,_that.disponibleAPartirDu,_that.localiteNom,_that.quartierNom,_that.secteur,_that.adresseReperes,_that.latitude,_that.longitude,_that.loueur,_that.autresLogements);case _:
+return $default(_that.id,_that.titre,_that.description,_that.galerie,_that.panoramas,_that.typeLogement,_that.typeLogementLibelle,_that.nbChambres,_that.nbSalons,_that.nbSallesDeBain,_that.surfaceM2,_that.meuble,_that.loyer,_that.cautionMois,_that.avanceMois,_that.fraisAgence,_that.compteurEauIndividuel,_that.compteurElectriciteIndividuel,_that.equipements,_that.disponibilite,_that.disponibleAPartirDu,_that.localiteNom,_that.quartierNom,_that.secteur,_that.adresseReperes,_that.latitude,_that.longitude,_that.loueur,_that.autresLogements,_that.vente);case _:
   return orElse();
 
 }
@@ -1962,10 +2028,10 @@ return $default(_that.id,_that.titre,_that.description,_that.galerie,_that.panor
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String titre,  String description,  List<String> galerie,  List<Panorama> panoramas, @JsonKey(name: 'type_logement')  String typeLogement, @JsonKey(name: 'type_logement_libelle')  String typeLogementLibelle, @JsonKey(name: 'nb_chambres', fromJson: versInt)  int nbChambres, @JsonKey(name: 'nb_salons', fromJson: versInt)  int nbSalons, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt)  int nbSallesDeBain, @JsonKey(name: 'surface_m2', fromJson: versIntNullable)  int? surfaceM2,  bool meuble, @JsonKey(fromJson: versInt)  int loyer, @JsonKey(name: 'caution_mois', fromJson: versIntNullable)  int? cautionMois, @JsonKey(name: 'avance_mois', fromJson: versIntNullable)  int? avanceMois, @JsonKey(name: 'frais_agence', fromJson: versIntNullable)  int? fraisAgence, @JsonKey(name: 'compteur_eau_individuel')  bool compteurEauIndividuel, @JsonKey(name: 'compteur_electricite_individuel')  bool compteurElectriciteIndividuel,  List<String> equipements,  String disponibilite, @JsonKey(name: 'disponible_a_partir_du')  String? disponibleAPartirDu, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String secteur, @JsonKey(name: 'adresse_reperes')  String adresseReperes, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude,  Loueur? loueur, @JsonKey(name: 'autres_logements')  List<LogementResume> autresLogements)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String titre,  String description,  List<String> galerie,  List<Panorama> panoramas, @JsonKey(name: 'type_logement')  String typeLogement, @JsonKey(name: 'type_logement_libelle')  String typeLogementLibelle, @JsonKey(name: 'nb_chambres', fromJson: versInt)  int nbChambres, @JsonKey(name: 'nb_salons', fromJson: versInt)  int nbSalons, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt)  int nbSallesDeBain, @JsonKey(name: 'surface_m2', fromJson: versIntNullable)  int? surfaceM2,  bool meuble, @JsonKey(fromJson: versInt)  int loyer, @JsonKey(name: 'caution_mois', fromJson: versIntNullable)  int? cautionMois, @JsonKey(name: 'avance_mois', fromJson: versIntNullable)  int? avanceMois, @JsonKey(name: 'frais_agence', fromJson: versIntNullable)  int? fraisAgence, @JsonKey(name: 'compteur_eau_individuel')  bool compteurEauIndividuel, @JsonKey(name: 'compteur_electricite_individuel')  bool compteurElectriciteIndividuel,  List<String> equipements,  String disponibilite, @JsonKey(name: 'disponible_a_partir_du')  String? disponibleAPartirDu, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String secteur, @JsonKey(name: 'adresse_reperes')  String adresseReperes, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude,  Loueur? loueur, @JsonKey(name: 'autres_logements')  List<LogementResume> autresLogements, @JsonKey(readValue: lireRacine)  InfosVente vente)  $default,) {final _that = this;
 switch (_that) {
 case _Logement():
-return $default(_that.id,_that.titre,_that.description,_that.galerie,_that.panoramas,_that.typeLogement,_that.typeLogementLibelle,_that.nbChambres,_that.nbSalons,_that.nbSallesDeBain,_that.surfaceM2,_that.meuble,_that.loyer,_that.cautionMois,_that.avanceMois,_that.fraisAgence,_that.compteurEauIndividuel,_that.compteurElectriciteIndividuel,_that.equipements,_that.disponibilite,_that.disponibleAPartirDu,_that.localiteNom,_that.quartierNom,_that.secteur,_that.adresseReperes,_that.latitude,_that.longitude,_that.loueur,_that.autresLogements);case _:
+return $default(_that.id,_that.titre,_that.description,_that.galerie,_that.panoramas,_that.typeLogement,_that.typeLogementLibelle,_that.nbChambres,_that.nbSalons,_that.nbSallesDeBain,_that.surfaceM2,_that.meuble,_that.loyer,_that.cautionMois,_that.avanceMois,_that.fraisAgence,_that.compteurEauIndividuel,_that.compteurElectriciteIndividuel,_that.equipements,_that.disponibilite,_that.disponibleAPartirDu,_that.localiteNom,_that.quartierNom,_that.secteur,_that.adresseReperes,_that.latitude,_that.longitude,_that.loueur,_that.autresLogements,_that.vente);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1982,10 +2048,10 @@ return $default(_that.id,_that.titre,_that.description,_that.galerie,_that.panor
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String titre,  String description,  List<String> galerie,  List<Panorama> panoramas, @JsonKey(name: 'type_logement')  String typeLogement, @JsonKey(name: 'type_logement_libelle')  String typeLogementLibelle, @JsonKey(name: 'nb_chambres', fromJson: versInt)  int nbChambres, @JsonKey(name: 'nb_salons', fromJson: versInt)  int nbSalons, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt)  int nbSallesDeBain, @JsonKey(name: 'surface_m2', fromJson: versIntNullable)  int? surfaceM2,  bool meuble, @JsonKey(fromJson: versInt)  int loyer, @JsonKey(name: 'caution_mois', fromJson: versIntNullable)  int? cautionMois, @JsonKey(name: 'avance_mois', fromJson: versIntNullable)  int? avanceMois, @JsonKey(name: 'frais_agence', fromJson: versIntNullable)  int? fraisAgence, @JsonKey(name: 'compteur_eau_individuel')  bool compteurEauIndividuel, @JsonKey(name: 'compteur_electricite_individuel')  bool compteurElectriciteIndividuel,  List<String> equipements,  String disponibilite, @JsonKey(name: 'disponible_a_partir_du')  String? disponibleAPartirDu, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String secteur, @JsonKey(name: 'adresse_reperes')  String adresseReperes, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude,  Loueur? loueur, @JsonKey(name: 'autres_logements')  List<LogementResume> autresLogements)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String titre,  String description,  List<String> galerie,  List<Panorama> panoramas, @JsonKey(name: 'type_logement')  String typeLogement, @JsonKey(name: 'type_logement_libelle')  String typeLogementLibelle, @JsonKey(name: 'nb_chambres', fromJson: versInt)  int nbChambres, @JsonKey(name: 'nb_salons', fromJson: versInt)  int nbSalons, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt)  int nbSallesDeBain, @JsonKey(name: 'surface_m2', fromJson: versIntNullable)  int? surfaceM2,  bool meuble, @JsonKey(fromJson: versInt)  int loyer, @JsonKey(name: 'caution_mois', fromJson: versIntNullable)  int? cautionMois, @JsonKey(name: 'avance_mois', fromJson: versIntNullable)  int? avanceMois, @JsonKey(name: 'frais_agence', fromJson: versIntNullable)  int? fraisAgence, @JsonKey(name: 'compteur_eau_individuel')  bool compteurEauIndividuel, @JsonKey(name: 'compteur_electricite_individuel')  bool compteurElectriciteIndividuel,  List<String> equipements,  String disponibilite, @JsonKey(name: 'disponible_a_partir_du')  String? disponibleAPartirDu, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String secteur, @JsonKey(name: 'adresse_reperes')  String adresseReperes, @JsonKey(fromJson: versDoubleNullable)  double? latitude, @JsonKey(fromJson: versDoubleNullable)  double? longitude,  Loueur? loueur, @JsonKey(name: 'autres_logements')  List<LogementResume> autresLogements, @JsonKey(readValue: lireRacine)  InfosVente vente)?  $default,) {final _that = this;
 switch (_that) {
 case _Logement() when $default != null:
-return $default(_that.id,_that.titre,_that.description,_that.galerie,_that.panoramas,_that.typeLogement,_that.typeLogementLibelle,_that.nbChambres,_that.nbSalons,_that.nbSallesDeBain,_that.surfaceM2,_that.meuble,_that.loyer,_that.cautionMois,_that.avanceMois,_that.fraisAgence,_that.compteurEauIndividuel,_that.compteurElectriciteIndividuel,_that.equipements,_that.disponibilite,_that.disponibleAPartirDu,_that.localiteNom,_that.quartierNom,_that.secteur,_that.adresseReperes,_that.latitude,_that.longitude,_that.loueur,_that.autresLogements);case _:
+return $default(_that.id,_that.titre,_that.description,_that.galerie,_that.panoramas,_that.typeLogement,_that.typeLogementLibelle,_that.nbChambres,_that.nbSalons,_that.nbSallesDeBain,_that.surfaceM2,_that.meuble,_that.loyer,_that.cautionMois,_that.avanceMois,_that.fraisAgence,_that.compteurEauIndividuel,_that.compteurElectriciteIndividuel,_that.equipements,_that.disponibilite,_that.disponibleAPartirDu,_that.localiteNom,_that.quartierNom,_that.secteur,_that.adresseReperes,_that.latitude,_that.longitude,_that.loueur,_that.autresLogements,_that.vente);case _:
   return null;
 
 }
@@ -1997,7 +2063,7 @@ return $default(_that.id,_that.titre,_that.description,_that.galerie,_that.panor
 @JsonSerializable()
 
 class _Logement extends Logement {
-  const _Logement({required this.id, this.titre = '', this.description = '', final  List<String> galerie = const <String>[], final  List<Panorama> panoramas = const <Panorama>[], @JsonKey(name: 'type_logement') this.typeLogement = '', @JsonKey(name: 'type_logement_libelle') this.typeLogementLibelle = '', @JsonKey(name: 'nb_chambres', fromJson: versInt) this.nbChambres = 0, @JsonKey(name: 'nb_salons', fromJson: versInt) this.nbSalons = 0, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) this.nbSallesDeBain = 0, @JsonKey(name: 'surface_m2', fromJson: versIntNullable) this.surfaceM2, this.meuble = false, @JsonKey(fromJson: versInt) this.loyer = 0, @JsonKey(name: 'caution_mois', fromJson: versIntNullable) this.cautionMois, @JsonKey(name: 'avance_mois', fromJson: versIntNullable) this.avanceMois, @JsonKey(name: 'frais_agence', fromJson: versIntNullable) this.fraisAgence, @JsonKey(name: 'compteur_eau_individuel') this.compteurEauIndividuel = false, @JsonKey(name: 'compteur_electricite_individuel') this.compteurElectriciteIndividuel = false, final  List<String> equipements = const <String>[], this.disponibilite = '', @JsonKey(name: 'disponible_a_partir_du') this.disponibleAPartirDu, @JsonKey(name: 'localite_nom') this.localiteNom, @JsonKey(name: 'quartier_nom') this.quartierNom, this.secteur = '', @JsonKey(name: 'adresse_reperes') this.adresseReperes = '', @JsonKey(fromJson: versDoubleNullable) this.latitude, @JsonKey(fromJson: versDoubleNullable) this.longitude, this.loueur, @JsonKey(name: 'autres_logements') final  List<LogementResume> autresLogements = const <LogementResume>[]}): _galerie = galerie,_panoramas = panoramas,_equipements = equipements,_autresLogements = autresLogements,super._();
+  const _Logement({required this.id, this.titre = '', this.description = '', final  List<String> galerie = const <String>[], final  List<Panorama> panoramas = const <Panorama>[], @JsonKey(name: 'type_logement') this.typeLogement = '', @JsonKey(name: 'type_logement_libelle') this.typeLogementLibelle = '', @JsonKey(name: 'nb_chambres', fromJson: versInt) this.nbChambres = 0, @JsonKey(name: 'nb_salons', fromJson: versInt) this.nbSalons = 0, @JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) this.nbSallesDeBain = 0, @JsonKey(name: 'surface_m2', fromJson: versIntNullable) this.surfaceM2, this.meuble = false, @JsonKey(fromJson: versInt) this.loyer = 0, @JsonKey(name: 'caution_mois', fromJson: versIntNullable) this.cautionMois, @JsonKey(name: 'avance_mois', fromJson: versIntNullable) this.avanceMois, @JsonKey(name: 'frais_agence', fromJson: versIntNullable) this.fraisAgence, @JsonKey(name: 'compteur_eau_individuel') this.compteurEauIndividuel = false, @JsonKey(name: 'compteur_electricite_individuel') this.compteurElectriciteIndividuel = false, final  List<String> equipements = const <String>[], this.disponibilite = '', @JsonKey(name: 'disponible_a_partir_du') this.disponibleAPartirDu, @JsonKey(name: 'localite_nom') this.localiteNom, @JsonKey(name: 'quartier_nom') this.quartierNom, this.secteur = '', @JsonKey(name: 'adresse_reperes') this.adresseReperes = '', @JsonKey(fromJson: versDoubleNullable) this.latitude, @JsonKey(fromJson: versDoubleNullable) this.longitude, this.loueur, @JsonKey(name: 'autres_logements') final  List<LogementResume> autresLogements = const <LogementResume>[], @JsonKey(readValue: lireRacine) this.vente = const InfosVente()}): _galerie = galerie,_panoramas = panoramas,_equipements = equipements,_autresLogements = autresLogements,super._();
   factory _Logement.fromJson(Map<String, dynamic> json) => _$LogementFromJson(json);
 
 @override final  int id;
@@ -2053,6 +2119,8 @@ class _Logement extends Logement {
   return EqualUnmodifiableListView(_autresLogements);
 }
 
+/// Vente : mode, prix de vente, vendu, champs propres (à la racine).
+@override@JsonKey(readValue: lireRacine) final  InfosVente vente;
 
 /// Create a copy of Logement
 /// with the given fields replaced by the non-null parameter values.
@@ -2067,16 +2135,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Logement&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other._galerie, _galerie)&&const DeepCollectionEquality().equals(other._panoramas, _panoramas)&&(identical(other.typeLogement, typeLogement) || other.typeLogement == typeLogement)&&(identical(other.typeLogementLibelle, typeLogementLibelle) || other.typeLogementLibelle == typeLogementLibelle)&&(identical(other.nbChambres, nbChambres) || other.nbChambres == nbChambres)&&(identical(other.nbSalons, nbSalons) || other.nbSalons == nbSalons)&&(identical(other.nbSallesDeBain, nbSallesDeBain) || other.nbSallesDeBain == nbSallesDeBain)&&(identical(other.surfaceM2, surfaceM2) || other.surfaceM2 == surfaceM2)&&(identical(other.meuble, meuble) || other.meuble == meuble)&&(identical(other.loyer, loyer) || other.loyer == loyer)&&(identical(other.cautionMois, cautionMois) || other.cautionMois == cautionMois)&&(identical(other.avanceMois, avanceMois) || other.avanceMois == avanceMois)&&(identical(other.fraisAgence, fraisAgence) || other.fraisAgence == fraisAgence)&&(identical(other.compteurEauIndividuel, compteurEauIndividuel) || other.compteurEauIndividuel == compteurEauIndividuel)&&(identical(other.compteurElectriciteIndividuel, compteurElectriciteIndividuel) || other.compteurElectriciteIndividuel == compteurElectriciteIndividuel)&&const DeepCollectionEquality().equals(other._equipements, _equipements)&&(identical(other.disponibilite, disponibilite) || other.disponibilite == disponibilite)&&(identical(other.disponibleAPartirDu, disponibleAPartirDu) || other.disponibleAPartirDu == disponibleAPartirDu)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.secteur, secteur) || other.secteur == secteur)&&(identical(other.adresseReperes, adresseReperes) || other.adresseReperes == adresseReperes)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.loueur, loueur) || other.loueur == loueur)&&const DeepCollectionEquality().equals(other._autresLogements, _autresLogements));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Logement&&(identical(other.id, id) || other.id == id)&&(identical(other.titre, titre) || other.titre == titre)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other._galerie, _galerie)&&const DeepCollectionEquality().equals(other._panoramas, _panoramas)&&(identical(other.typeLogement, typeLogement) || other.typeLogement == typeLogement)&&(identical(other.typeLogementLibelle, typeLogementLibelle) || other.typeLogementLibelle == typeLogementLibelle)&&(identical(other.nbChambres, nbChambres) || other.nbChambres == nbChambres)&&(identical(other.nbSalons, nbSalons) || other.nbSalons == nbSalons)&&(identical(other.nbSallesDeBain, nbSallesDeBain) || other.nbSallesDeBain == nbSallesDeBain)&&(identical(other.surfaceM2, surfaceM2) || other.surfaceM2 == surfaceM2)&&(identical(other.meuble, meuble) || other.meuble == meuble)&&(identical(other.loyer, loyer) || other.loyer == loyer)&&(identical(other.cautionMois, cautionMois) || other.cautionMois == cautionMois)&&(identical(other.avanceMois, avanceMois) || other.avanceMois == avanceMois)&&(identical(other.fraisAgence, fraisAgence) || other.fraisAgence == fraisAgence)&&(identical(other.compteurEauIndividuel, compteurEauIndividuel) || other.compteurEauIndividuel == compteurEauIndividuel)&&(identical(other.compteurElectriciteIndividuel, compteurElectriciteIndividuel) || other.compteurElectriciteIndividuel == compteurElectriciteIndividuel)&&const DeepCollectionEquality().equals(other._equipements, _equipements)&&(identical(other.disponibilite, disponibilite) || other.disponibilite == disponibilite)&&(identical(other.disponibleAPartirDu, disponibleAPartirDu) || other.disponibleAPartirDu == disponibleAPartirDu)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.secteur, secteur) || other.secteur == secteur)&&(identical(other.adresseReperes, adresseReperes) || other.adresseReperes == adresseReperes)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.loueur, loueur) || other.loueur == loueur)&&const DeepCollectionEquality().equals(other._autresLogements, _autresLogements)&&(identical(other.vente, vente) || other.vente == vente));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,titre,description,const DeepCollectionEquality().hash(_galerie),const DeepCollectionEquality().hash(_panoramas),typeLogement,typeLogementLibelle,nbChambres,nbSalons,nbSallesDeBain,surfaceM2,meuble,loyer,cautionMois,avanceMois,fraisAgence,compteurEauIndividuel,compteurElectriciteIndividuel,const DeepCollectionEquality().hash(_equipements),disponibilite,disponibleAPartirDu,localiteNom,quartierNom,secteur,adresseReperes,latitude,longitude,loueur,const DeepCollectionEquality().hash(_autresLogements)]);
+int get hashCode => Object.hashAll([runtimeType,id,titre,description,const DeepCollectionEquality().hash(_galerie),const DeepCollectionEquality().hash(_panoramas),typeLogement,typeLogementLibelle,nbChambres,nbSalons,nbSallesDeBain,surfaceM2,meuble,loyer,cautionMois,avanceMois,fraisAgence,compteurEauIndividuel,compteurElectriciteIndividuel,const DeepCollectionEquality().hash(_equipements),disponibilite,disponibleAPartirDu,localiteNom,quartierNom,secteur,adresseReperes,latitude,longitude,loueur,const DeepCollectionEquality().hash(_autresLogements),vente]);
 
 @override
 String toString() {
-  return 'Logement(id: $id, titre: $titre, description: $description, galerie: $galerie, panoramas: $panoramas, typeLogement: $typeLogement, typeLogementLibelle: $typeLogementLibelle, nbChambres: $nbChambres, nbSalons: $nbSalons, nbSallesDeBain: $nbSallesDeBain, surfaceM2: $surfaceM2, meuble: $meuble, loyer: $loyer, cautionMois: $cautionMois, avanceMois: $avanceMois, fraisAgence: $fraisAgence, compteurEauIndividuel: $compteurEauIndividuel, compteurElectriciteIndividuel: $compteurElectriciteIndividuel, equipements: $equipements, disponibilite: $disponibilite, disponibleAPartirDu: $disponibleAPartirDu, localiteNom: $localiteNom, quartierNom: $quartierNom, secteur: $secteur, adresseReperes: $adresseReperes, latitude: $latitude, longitude: $longitude, loueur: $loueur, autresLogements: $autresLogements)';
+  return 'Logement(id: $id, titre: $titre, description: $description, galerie: $galerie, panoramas: $panoramas, typeLogement: $typeLogement, typeLogementLibelle: $typeLogementLibelle, nbChambres: $nbChambres, nbSalons: $nbSalons, nbSallesDeBain: $nbSallesDeBain, surfaceM2: $surfaceM2, meuble: $meuble, loyer: $loyer, cautionMois: $cautionMois, avanceMois: $avanceMois, fraisAgence: $fraisAgence, compteurEauIndividuel: $compteurEauIndividuel, compteurElectriciteIndividuel: $compteurElectriciteIndividuel, equipements: $equipements, disponibilite: $disponibilite, disponibleAPartirDu: $disponibleAPartirDu, localiteNom: $localiteNom, quartierNom: $quartierNom, secteur: $secteur, adresseReperes: $adresseReperes, latitude: $latitude, longitude: $longitude, loueur: $loueur, autresLogements: $autresLogements, vente: $vente)';
 }
 
 
@@ -2087,11 +2155,11 @@ abstract mixin class _$LogementCopyWith<$Res> implements $LogementCopyWith<$Res>
   factory _$LogementCopyWith(_Logement value, $Res Function(_Logement) _then) = __$LogementCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String titre, String description, List<String> galerie, List<Panorama> panoramas,@JsonKey(name: 'type_logement') String typeLogement,@JsonKey(name: 'type_logement_libelle') String typeLogementLibelle,@JsonKey(name: 'nb_chambres', fromJson: versInt) int nbChambres,@JsonKey(name: 'nb_salons', fromJson: versInt) int nbSalons,@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) int nbSallesDeBain,@JsonKey(name: 'surface_m2', fromJson: versIntNullable) int? surfaceM2, bool meuble,@JsonKey(fromJson: versInt) int loyer,@JsonKey(name: 'caution_mois', fromJson: versIntNullable) int? cautionMois,@JsonKey(name: 'avance_mois', fromJson: versIntNullable) int? avanceMois,@JsonKey(name: 'frais_agence', fromJson: versIntNullable) int? fraisAgence,@JsonKey(name: 'compteur_eau_individuel') bool compteurEauIndividuel,@JsonKey(name: 'compteur_electricite_individuel') bool compteurElectriciteIndividuel, List<String> equipements, String disponibilite,@JsonKey(name: 'disponible_a_partir_du') String? disponibleAPartirDu,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom, String secteur,@JsonKey(name: 'adresse_reperes') String adresseReperes,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude, Loueur? loueur,@JsonKey(name: 'autres_logements') List<LogementResume> autresLogements
+ int id, String titre, String description, List<String> galerie, List<Panorama> panoramas,@JsonKey(name: 'type_logement') String typeLogement,@JsonKey(name: 'type_logement_libelle') String typeLogementLibelle,@JsonKey(name: 'nb_chambres', fromJson: versInt) int nbChambres,@JsonKey(name: 'nb_salons', fromJson: versInt) int nbSalons,@JsonKey(name: 'nb_salles_de_bain', fromJson: versInt) int nbSallesDeBain,@JsonKey(name: 'surface_m2', fromJson: versIntNullable) int? surfaceM2, bool meuble,@JsonKey(fromJson: versInt) int loyer,@JsonKey(name: 'caution_mois', fromJson: versIntNullable) int? cautionMois,@JsonKey(name: 'avance_mois', fromJson: versIntNullable) int? avanceMois,@JsonKey(name: 'frais_agence', fromJson: versIntNullable) int? fraisAgence,@JsonKey(name: 'compteur_eau_individuel') bool compteurEauIndividuel,@JsonKey(name: 'compteur_electricite_individuel') bool compteurElectriciteIndividuel, List<String> equipements, String disponibilite,@JsonKey(name: 'disponible_a_partir_du') String? disponibleAPartirDu,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom, String secteur,@JsonKey(name: 'adresse_reperes') String adresseReperes,@JsonKey(fromJson: versDoubleNullable) double? latitude,@JsonKey(fromJson: versDoubleNullable) double? longitude, Loueur? loueur,@JsonKey(name: 'autres_logements') List<LogementResume> autresLogements,@JsonKey(readValue: lireRacine) InfosVente vente
 });
 
 
-@override $LoueurCopyWith<$Res>? get loueur;
+@override $LoueurCopyWith<$Res>? get loueur;@override $InfosVenteCopyWith<$Res> get vente;
 
 }
 /// @nodoc
@@ -2104,7 +2172,7 @@ class __$LogementCopyWithImpl<$Res>
 
 /// Create a copy of Logement
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? titre = null,Object? description = null,Object? galerie = null,Object? panoramas = null,Object? typeLogement = null,Object? typeLogementLibelle = null,Object? nbChambres = null,Object? nbSalons = null,Object? nbSallesDeBain = null,Object? surfaceM2 = freezed,Object? meuble = null,Object? loyer = null,Object? cautionMois = freezed,Object? avanceMois = freezed,Object? fraisAgence = freezed,Object? compteurEauIndividuel = null,Object? compteurElectriciteIndividuel = null,Object? equipements = null,Object? disponibilite = null,Object? disponibleAPartirDu = freezed,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? secteur = null,Object? adresseReperes = null,Object? latitude = freezed,Object? longitude = freezed,Object? loueur = freezed,Object? autresLogements = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? titre = null,Object? description = null,Object? galerie = null,Object? panoramas = null,Object? typeLogement = null,Object? typeLogementLibelle = null,Object? nbChambres = null,Object? nbSalons = null,Object? nbSallesDeBain = null,Object? surfaceM2 = freezed,Object? meuble = null,Object? loyer = null,Object? cautionMois = freezed,Object? avanceMois = freezed,Object? fraisAgence = freezed,Object? compteurEauIndividuel = null,Object? compteurElectriciteIndividuel = null,Object? equipements = null,Object? disponibilite = null,Object? disponibleAPartirDu = freezed,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? secteur = null,Object? adresseReperes = null,Object? latitude = freezed,Object? longitude = freezed,Object? loueur = freezed,Object? autresLogements = null,Object? vente = null,}) {
   return _then(_Logement(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,titre: null == titre ? _self.titre : titre // ignore: cast_nullable_to_non_nullable
@@ -2135,7 +2203,8 @@ as String,latitude: freezed == latitude ? _self.latitude : latitude // ignore: c
 as double?,longitude: freezed == longitude ? _self.longitude : longitude // ignore: cast_nullable_to_non_nullable
 as double?,loueur: freezed == loueur ? _self.loueur : loueur // ignore: cast_nullable_to_non_nullable
 as Loueur?,autresLogements: null == autresLogements ? _self._autresLogements : autresLogements // ignore: cast_nullable_to_non_nullable
-as List<LogementResume>,
+as List<LogementResume>,vente: null == vente ? _self.vente : vente // ignore: cast_nullable_to_non_nullable
+as InfosVente,
   ));
 }
 
@@ -2151,6 +2220,15 @@ $LoueurCopyWith<$Res>? get loueur {
   return $LoueurCopyWith<$Res>(_self.loueur!, (value) {
     return _then(_self.copyWith(loueur: value));
   });
+}/// Create a copy of Logement
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$InfosVenteCopyWith<$Res> get vente {
+  
+  return $InfosVenteCopyWith<$Res>(_self.vente, (value) {
+    return _then(_self.copyWith(vente: value));
+  });
 }
 }
 
@@ -2158,7 +2236,7 @@ $LoueurCopyWith<$Res>? get loueur {
 /// @nodoc
 mixin _$DemandeReservation {
 
- int get id; String get numero;/// visite | reservation
+ int get id; String get numero;/// visite | reservation | achat
  String get nature;@JsonKey(name: 'nature_libelle') String get natureLibelle;/// logement | vehicule
 @JsonKey(name: 'objet_type') String get objetType;@JsonKey(name: 'objet_nom') String get objetNom;@JsonKey(name: 'partenaire_nom') String get partenaireNom;@JsonKey(name: 'date_souhaitee') String? get dateSouhaitee;@JsonKey(name: 'date_debut') String? get dateDebut;@JsonKey(name: 'date_fin') String? get dateFin;@JsonKey(name: 'avec_chauffeur') bool get avecChauffeur;@JsonKey(name: 'lieu_prise_en_charge') String get lieuPriseEnCharge;@JsonKey(name: 'montant_estime', fromJson: versIntNullable) int? get montantEstime;@JsonKey(name: 'nb_adultes', fromJson: versIntNullable) int? get nbAdultes;@JsonKey(name: 'nb_enfants', fromJson: versIntNullable) int? get nbEnfants;@JsonKey(name: 'nb_unites', fromJson: versIntNullable) int? get nbUnites; String get statut;@JsonKey(name: 'statut_libelle') String get statutLibelle;@JsonKey(name: 'raison_refus') String get raisonRefus;@JsonKey(name: 'created_at') String? get createdAt;/// Avis client : notable maintenant (livré / terminé, pas encore noté),
 /// et id de l'avis déjà donné.
@@ -2382,7 +2460,7 @@ class _DemandeReservation extends DemandeReservation {
 
 @override final  int id;
 @override@JsonKey() final  String numero;
-/// visite | reservation
+/// visite | reservation | achat
 @override@JsonKey() final  String nature;
 @override@JsonKey(name: 'nature_libelle') final  String natureLibelle;
 /// logement | vehicule

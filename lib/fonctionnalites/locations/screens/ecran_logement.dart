@@ -12,6 +12,8 @@ import '../donnees/locations_providers.dart';
 import '../metier_domaine/location_models.dart';
 import '../widgets/carte_logement.dart';
 import '../widgets/elements_fiche.dart';
+import '../widgets/elements_vente.dart';
+import '../widgets/feuille_demande_achat.dart';
 import '../widgets/feuille_demande_visite.dart';
 import '../widgets/visite_immersive.dart';
 
@@ -71,11 +73,23 @@ class _Fiche extends ConsumerWidget {
         longitude: l.longitude,
         titreCarte: l.localisation.isEmpty ? 'Localisation' : l.localisation,
         nomMarqueur: l.titre,
-        action: FilledButton.icon(
-          onPressed: () =>
-              demanderVisite(context, ref, logementId: l.id, titre: l.titre),
-          icon: const Icon(Icons.event_available_outlined),
-          label: const Text('Demander une visite'),
+        // Visite (location), « Je suis intéressé » (vente), les deux, ou le
+        // bandeau « Vendu ».
+        action: ActionsFicheVente(
+          actions: l.vente.actions,
+          louer: FilledButton.icon(
+            onPressed: () =>
+                demanderVisite(context, ref, logementId: l.id, titre: l.titre),
+            icon: const Icon(Icons.event_available_outlined),
+            label: const Text('Demander une visite'),
+          ),
+          onInteresse: () => demanderAchat(
+            context,
+            ref,
+            objetId: l.id,
+            titre: l.titre,
+            prix: l.vente.prixVenteLisible,
+          ),
         ),
       ),
       body: LayoutBuilder(
@@ -147,16 +161,26 @@ class _Fiche extends ConsumerWidget {
                             children: [
                               if (l.typeLogementLibelle.isNotEmpty)
                                 PuceLogement(l.typeLogementLibelle),
+                              if (l.vente.aVendre) ...[
+                                const SizedBox(width: 6),
+                                const BadgeAVendre(),
+                              ],
                               const Spacer(),
-                              Text(
-                                formatLoyer(l.loyer),
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  color: theme.colorScheme.primary,
-                                  fontWeight: FontWeight.w600,
+                              if (l.vente.mode.aLouer)
+                                Text(
+                                  formatLoyer(l.loyer),
+                                  style: theme.textTheme.titleLarge?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
                             ],
                           ),
+                          if (l.vente.aVendre && l.vente.prixVente != null)
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: PrixVente(infos: l.vente, grand: true),
+                            ),
                           if (!l.estDisponible && l.disponibilite.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(top: 8),
@@ -213,38 +237,44 @@ class _Fiche extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    SectionFiche(
-                      titre: 'Conditions',
-                      child: Column(
-                        children: [
-                          LigneFiche('Loyer', formatLoyer(l.loyer)),
-                          if (l.cautionMois != null)
-                            LigneFiche('Caution', '${l.cautionMois} mois'),
-                          if (l.avanceMois != null)
-                            LigneFiche('Avance', '${l.avanceMois} mois'),
-                          if (l.fraisAgence != null)
-                            LigneFiche(
-                              "Frais d'agence",
-                              l.fraisAgence == 0
-                                  ? 'Aucun'
-                                  : formatMontant(l.fraisAgence!),
-                            ),
-                          LigneFiche(
-                            "Compteur d'eau individuel",
-                            l.compteurEauIndividuel ? 'Oui' : 'Non',
-                          ),
-                          LigneFiche(
-                            "Compteur d'électricité individuel",
-                            l.compteurElectriciteIndividuel ? 'Oui' : 'Non',
-                          ),
-                          if ((l.disponibleAPartirDu ?? '').isNotEmpty)
-                            LigneFiche(
-                              'Disponible à partir du',
-                              formatDateCourte(l.disponibleAPartirDu),
-                            ),
-                        ],
+                    if (l.vente.aVendre)
+                      SectionVente(
+                        infos: l.vente,
+                        lignes: l.vente.lignesLogement,
                       ),
-                    ),
+                    if (l.vente.mode.aLouer)
+                      SectionFiche(
+                        titre: 'Conditions',
+                        child: Column(
+                          children: [
+                            LigneFiche('Loyer', formatLoyer(l.loyer)),
+                            if (l.cautionMois != null)
+                              LigneFiche('Caution', '${l.cautionMois} mois'),
+                            if (l.avanceMois != null)
+                              LigneFiche('Avance', '${l.avanceMois} mois'),
+                            if (l.fraisAgence != null)
+                              LigneFiche(
+                                "Frais d'agence",
+                                l.fraisAgence == 0
+                                    ? 'Aucun'
+                                    : formatMontant(l.fraisAgence!),
+                              ),
+                            LigneFiche(
+                              "Compteur d'eau individuel",
+                              l.compteurEauIndividuel ? 'Oui' : 'Non',
+                            ),
+                            LigneFiche(
+                              "Compteur d'électricité individuel",
+                              l.compteurElectriciteIndividuel ? 'Oui' : 'Non',
+                            ),
+                            if ((l.disponibleAPartirDu ?? '').isNotEmpty)
+                              LigneFiche(
+                                'Disponible à partir du',
+                                formatDateCourte(l.disponibleAPartirDu),
+                              ),
+                          ],
+                        ),
+                      ),
                     if (l.equipements.isNotEmpty)
                       SectionFiche(
                         titre: 'Équipements',
