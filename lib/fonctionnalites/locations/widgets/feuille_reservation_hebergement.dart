@@ -127,26 +127,20 @@ class _FeuilleReservationHebergementState
           actuelle != null &&
               !actuelle.start.isBefore(aujourdhui) &&
               !actuelle.end.isAfter(dernier) &&
-              dispos.erreurPlage(actuelle.start, actuelle.end, nuits: true) ==
-                  null
+              dispos.erreurPlage(actuelle.start, actuelle.end) == null
           ? actuelle
           : null,
       // Nuits complètes grisées ; un jour complet reste possible comme
       // jour de départ.
       selectableDayPredicate: (jour, debut, fin) =>
-          dispos.selectionnable(jour, debut, fin, nuits: true),
+          dispos.selectionnable(jour, debut, fin),
       helpText: 'Arrivée et départ',
       fieldStartLabelText: 'Arrivée',
       fieldEndLabelText: 'Départ',
     );
     if (plage == null || !mounted) return;
     // Séjour enjambant une nuit réservée (ou trop peu de chambres) : refusé.
-    final refus = dispos.erreurPlage(
-      plage.start,
-      plage.end,
-      nuits: true,
-      unites: _unites,
-    );
+    final refus = dispos.erreurPlage(plage.start, plage.end, unites: _unites);
     setState(() {
       _plage = refus == null ? plage : null;
       _erreurDates = refus;
@@ -256,12 +250,7 @@ class _FeuilleReservationHebergementState
 
     // Plus de chambres demandées qu'il n'en reste sur l'une des nuits.
     final erreurUnites = datesValides
-        ? _dispos?.erreurPlage(
-            plage.start,
-            plage.end,
-            nuits: true,
-            unites: unites,
-          )
+        ? _dispos?.erreurPlage(plage.start, plage.end, unites: unites)
         : null;
 
     final estimation = datesValides && !complet && erreurUnites == null

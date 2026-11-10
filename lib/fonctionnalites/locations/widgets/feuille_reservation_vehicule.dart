@@ -131,8 +131,7 @@ class _FeuilleReservationVehiculeState
             !actuelle.start.isBefore(aujourdhui) &&
             !actuelle.end.isAfter(dernier) &&
             _v.erreurPlage(actuelle.start, actuelle.end) == null &&
-            dispos.erreurPlage(actuelle.start, actuelle.end, nuits: false) ==
-                null
+            dispos.erreurPlage(actuelle.start, actuelle.end) == null
         ? actuelle
         : null;
     final plage = await showDateRangePicker(
@@ -143,12 +142,12 @@ class _FeuilleReservationVehiculeState
       // Jours déjà réservés (fiche et disponibilités) grisés.
       selectableDayPredicate: (jour, debut, fin) =>
           _v.jourSelectionnable(jour, debut, fin) &&
-          dispos.selectionnable(jour, debut, fin, nuits: false),
+          dispos.selectionnable(jour, debut, fin),
       helpText: 'Dates de location',
     );
     if (plage == null || !mounted) return;
     // Plage enjambant un jour réservé : refusée.
-    final refus = dispos.erreurPlage(plage.start, plage.end, nuits: false);
+    final refus = dispos.erreurPlage(plage.start, plage.end);
     setState(() {
       _plage = refus == null ? plage : null;
       _erreurDates = refus;

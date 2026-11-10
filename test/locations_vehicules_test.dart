@@ -430,27 +430,36 @@ void main() {
   group('dates indisponibles', () {
     final v = _vehicule;
 
-    test('jours réservés, bornes incluses', () {
+    // Périodes : 15 → 17 (occupe le 15 et le 16) et 25 → 25 (rien).
+    test('jours réservés : début inclus, restitution libre', () {
       expect(v.jourIndisponible(_j(14)), isFalse);
       expect(v.jourIndisponible(_j(15)), isTrue);
-      expect(v.jourIndisponible(_j(17)), isTrue);
-      expect(v.jourIndisponible(DateTime(2026, 10, 17, 23, 59)), isTrue);
-      expect(v.jourIndisponible(_j(18)), isFalse);
-      expect(v.jourIndisponible(_j(25)), isTrue);
+      expect(v.jourIndisponible(_j(16)), isTrue);
+      expect(v.jourIndisponible(DateTime(2026, 10, 16, 23, 59)), isTrue);
+      expect(v.jourIndisponible(_j(17)), isFalse);
+      expect(v.jourIndisponible(_j(25)), isFalse);
     });
 
     test('une plage qui enjambe une période réservée est refusée', () {
       expect(v.plageLibre(_j(10), _j(14)), isTrue);
+      // Rendu le 15, jour où l'autre client le prend : accepté.
+      expect(v.plageLibre(_j(10), _j(15)), isTrue);
       expect(v.plageLibre(_j(13), _j(19)), isFalse);
-      expect(v.plageLibre(_j(18), _j(24)), isTrue);
+      // Pris le 17, jour où l'autre client le rend : accepté.
+      expect(v.plageLibre(_j(17), _j(24)), isTrue);
     });
 
-    test('calendrier : jours grisés et fin bloquée après une période', () {
+    test('calendrier : jours grisés, jour réservé possible comme fin', () {
       expect(v.jourSelectionnable(_j(16), null, null), isFalse);
       expect(v.jourSelectionnable(_j(12), null, null), isTrue);
-      // Début le 12 : la fin ne peut dépasser le 14.
+      expect(v.jourSelectionnable(_j(17), null, null), isTrue);
+      // Début le 12 : fin possible jusqu'au 15 (jour réservé compris).
       expect(v.jourSelectionnable(_j(14), _j(12), null), isTrue);
+      expect(v.jourSelectionnable(_j(15), _j(12), null), isTrue);
+      expect(v.jourSelectionnable(_j(16), _j(12), null), isFalse);
       expect(v.jourSelectionnable(_j(19), _j(12), null), isFalse);
+      // Plage 12 → 15 déjà choisie : le 15 reste valable.
+      expect(v.jourSelectionnable(_j(15), _j(12), _j(15)), isTrue);
       // Plage terminée : un nouveau début est libre.
       expect(v.jourSelectionnable(_j(19), _j(12), _j(14)), isTrue);
     });

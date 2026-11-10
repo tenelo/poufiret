@@ -99,7 +99,8 @@ abstract class PageLoueurVehicules with _$PageLoueurVehicules {
       _$PageLoueurVehiculesFromJson(json);
 }
 
-/// Période où le véhicule est déjà réservé (bornes incluses).
+/// Période où le véhicule est déjà réservé : elle occupe [début, fin[, le
+/// jour de restitution reste libre.
 @freezed
 abstract class PeriodeIndisponible with _$PeriodeIndisponible {
   const PeriodeIndisponible._();
@@ -114,14 +115,28 @@ abstract class PeriodeIndisponible with _$PeriodeIndisponible {
 
   DateTime? get debut => _jour(dateDebut);
 
-  /// Une période sans fin connue ne bloque que son premier jour.
-  DateTime? get fin => _jour(dateFin) ?? debut;
+  /// Jour de restitution (libre). Une période sans fin connue ne bloque
+  /// que son premier jour.
+  DateTime? get fin {
+    final d = debut;
+    return _jour(dateFin) ??
+        (d == null ? null : DateTime(d.year, d.month, d.day + 1));
+  }
 
-  /// Vrai si la plage [du]..[au] (jours inclus) recoupe cette période.
+  /// Vrai si [jour] est occupé : début <= jour < fin.
+  bool occupe(DateTime jour) {
+    final d = debut, f = fin;
+    if (d == null || f == null) return false;
+    final j = jourSeul(jour);
+    return !j.isBefore(d) && j.isBefore(f);
+  }
+
+  /// Vrai si la plage [du, au[ recoupe cette période (le jour [au] de la
+  /// plage, rendu, ne compte pas).
   bool chevauche(DateTime du, DateTime au) {
     final d = debut, f = fin;
     if (d == null || f == null) return false;
-    return !jourSeul(au).isBefore(d) && !jourSeul(du).isAfter(f);
+    return jourSeul(du).isBefore(f) && d.isBefore(jourSeul(au));
   }
 
   static DateTime? _jour(String iso) {
@@ -228,20 +243,22 @@ abstract class Vehicule with _$Vehicule {
 
   /// Jour déjà réservé (grisé dans le calendrier).
   bool jourIndisponible(DateTime jour) =>
-      periodesIndisponibles.any((p) => p.chevauche(jour, jour));
+      periodesIndisponibles.any((p) => p.occupe(jour));
 
-  /// Vrai si aucun jour de la plage n'est déjà réservé.
+  /// Vrai si aucun jour de [du] à la veille de [au] n'est déjà réservé.
   bool plageLibre(DateTime du, DateTime au) =>
       !periodesIndisponibles.any((p) => p.chevauche(du, au));
 
-  /// Jour sélectionnable dans le calendrier : libre et, une fois le début
-  /// choisi, sans période réservée entre le début et lui.
+  /// Jour sélectionnable dans le calendrier. Comme fin (après un début
+  /// choisi) : même réservé, s'il n'y a pas de période réservée entre le
+  /// début et lui (il est rendu ce jour-là). Sinon : libre.
   bool jourSelectionnable(DateTime jour, DateTime? debut, DateTime? fin) {
-    if (jourIndisponible(jour)) return false;
-    if (debut != null && fin == null && jour.isAfter(debut)) {
-      return plageLibre(debut, jour);
-    }
-    return true;
+    final commeFin =
+        debut != null &&
+        jourSeul(jour).isAfter(jourSeul(debut)) &&
+        (fin == null || jourSeul(fin) == jourSeul(jour));
+    if (commeFin) return plageLibre(debut, jour);
+    return !jourIndisponible(jour);
   }
 
   /// Problème de la plage choisie, ou null si elle convient.

@@ -13,9 +13,9 @@ const aideDatesReservees =
 /// Jours déjà réservés (confirmés par le partenaire) d'un véhicule ou d'un
 /// hébergement : `GET /locations/<type>/<id>/disponibilites/?du=&au=`.
 ///
-/// Véhicule : jours inclus (le jour de retour est occupé). Hébergement :
-/// nuits — le jour de départ reste libre (on peut arriver le jour où un
-/// autre client part).
+/// Une réservation occupe [début, fin[ : le jour de fin (restitution d'un
+/// véhicule, départ d'un hébergement) reste libre — on peut prendre le bien
+/// le jour où un autre client le rend.
 class Disponibilites {
   const Disponibilites({
     this.unitesTotal,
@@ -61,57 +61,40 @@ class Disponibilites {
 
   bool estComplet(DateTime jour) => joursComplets.contains(_seul(jour));
 
-  /// Jours occupés par une plage : tous pour un véhicule ; les nuits (sans
-  /// le jour de départ) pour un hébergement.
-  static Iterable<DateTime> joursOccupes(
-    DateTime du,
-    DateTime au, {
-    required bool nuits,
-  }) sync* {
+  /// Jours occupés par une plage : de [du] à la veille de [au].
+  static Iterable<DateTime> joursOccupes(DateTime du, DateTime au) sync* {
     var jour = _seul(du);
     final fin = _seul(au);
-    while (nuits ? jour.isBefore(fin) : !jour.isAfter(fin)) {
+    while (jour.isBefore(fin)) {
       yield jour;
       jour = DateTime(jour.year, jour.month, jour.day + 1);
     }
   }
 
   /// Prédicat du calendrier (jour, début choisi, fin choisie). Un jour
-  /// complet est grisé ; pour un hébergement, il reste choisissable comme
-  /// jour de DÉPART (après une arrivée déjà choisie).
-  bool selectionnable(
-    DateTime jour,
-    DateTime? debut,
-    DateTime? fin, {
-    required bool nuits,
-  }) {
+  /// complet est grisé, mais reste choisissable comme jour de FIN (après un
+  /// début déjà choisi).
+  bool selectionnable(DateTime jour, DateTime? debut, DateTime? fin) {
     if (!estComplet(jour)) return true;
-    if (!nuits || debut == null || !_seul(jour).isAfter(_seul(debut))) {
+    if (debut == null || !_seul(jour).isAfter(_seul(debut))) {
       return false;
     }
     return fin == null || _seul(fin) == _seul(jour);
   }
 
   /// Problème de la plage choisie, ou null si elle convient : un jour
-  /// complet dedans, ou (hébergement) moins d'unités restantes que
-  /// demandées sur l'une des nuits.
-  String? erreurPlage(
-    DateTime du,
-    DateTime au, {
-    required bool nuits,
-    int unites = 1,
-  }) {
-    final jours = joursOccupes(du, au, nuits: nuits).toList();
+  /// complet entre [du] et la veille de [au], ou (hébergement) moins
+  /// d'unités restantes que demandées sur l'un de ces jours.
+  String? erreurPlage(DateTime du, DateTime au, {int unites = 1}) {
+    final jours = joursOccupes(du, au).toList();
     if (jours.any(estComplet)) return messageDatesReservees;
-    if (nuits) {
-      final restantes = [for (final j in jours) ?unitesRestantes[j]];
-      if (restantes.isNotEmpty) {
-        final minimum = restantes.reduce((a, b) => a < b ? a : b);
-        if (unites > minimum) {
-          return 'Certaines dates de cette période sont déjà réservées : '
-              'il ne reste que ${pluriel(minimum, 'chambre')} sur une '
-              'partie du séjour.';
-        }
+    final restantes = [for (final j in jours) ?unitesRestantes[j]];
+    if (restantes.isNotEmpty) {
+      final minimum = restantes.reduce((a, b) => a < b ? a : b);
+      if (unites > minimum) {
+        return 'Certaines dates de cette période sont déjà réservées : '
+            'il ne reste que ${pluriel(minimum, 'chambre')} sur une '
+            'partie du séjour.';
       }
     }
     return null;
