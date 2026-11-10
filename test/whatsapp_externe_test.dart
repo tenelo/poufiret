@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/partenaire_categorie.dart';
 import 'package:poufiret/fonctionnalites/locations/metier_domaine/location_models.dart';
@@ -82,6 +83,60 @@ void main() {
         ),
       );
       expect(find.text('WhatsApp'), findsOneWidget);
+    });
+  });
+
+  group('page loueur : ligne de contact', () {
+    Future<void> monterLigne(WidgetTester tester, String? whatsapp) async {
+      // Petit écran : rien ne doit déborder.
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            home: Scaffold(
+              body: Padding(
+                padding: const EdgeInsets.all(16),
+                child: LigneContactLoueur(
+                  telephone: '0707070707',
+                  whatsapp: whatsapp,
+                  partenaireId: 3,
+                  nom: 'Ferké Auto Location',
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    testWidgets('Appeler + Discuter, sans WhatsApp si non fourni', (
+      tester,
+    ) async {
+      await monterLigne(tester, null);
+      expect(find.text('Appeler'), findsOneWidget);
+      expect(find.byTooltip('Discuter'), findsOneWidget);
+      expect(find.byTooltip('WhatsApp'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('WhatsApp ajouté sur la même ligne si fourni', (tester) async {
+      await monterLigne(tester, '2250707070707');
+      expect(find.text('Appeler'), findsOneWidget);
+      expect(find.byTooltip('Discuter'), findsOneWidget);
+      expect(find.byTooltip('WhatsApp'), findsOneWidget);
+      final appeler = tester.getRect(find.byType(OutlinedButton).at(0));
+      final discuter = tester.getRect(find.byType(OutlinedButton).at(1));
+      final whatsapp = tester.getRect(find.byType(OutlinedButton).at(2));
+      // Même ligne, même hauteur ; carrés ; Appeler prend le reste.
+      expect(discuter.top, appeler.top);
+      expect(whatsapp.top, appeler.top);
+      expect(discuter.height, appeler.height);
+      expect(discuter.width, discuter.height);
+      expect(whatsapp.width, whatsapp.height);
+      expect(appeler.width, greaterThan(discuter.width));
+      expect(tester.takeException(), isNull);
     });
   });
 

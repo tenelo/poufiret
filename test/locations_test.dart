@@ -395,7 +395,8 @@ void main() {
       );
       expect(find.text('Immo Ferké'), findsWidgets);
       expect(find.text('Appeler'), findsOneWidget);
-      expect(find.text('WhatsApp'), findsOneWidget);
+      expect(find.byTooltip('Discuter'), findsOneWidget);
+      expect(find.byTooltip('WhatsApp'), findsOneWidget);
       expect(find.text('2 logements disponibles'), findsOneWidget);
       expect(find.text('Villa 3 pièces à Bromakoté'), findsOneWidget);
       expect(find.text('Ferké - Bromakoté'), findsOneWidget);

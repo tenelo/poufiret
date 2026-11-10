@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../global/carte/carte_poufiret.dart';
 import '../../../global/carte/modeles_carte.dart';
@@ -6,6 +8,10 @@ import '../../../global/config/config.dart';
 import '../../analytics/donnees/service_suivi.dart';
 import '../../../global/widgets/bouton_whatsapp.dart';
 import '../../../global/ui/whatsapp_externe.dart';
+import '../../../global/ui/notificateur.dart';
+import '../../auth/widgets/mur_inscription.dart';
+import '../../chat/donnees/chat_providers.dart';
+import '../../chat/screens/ecran_discussion.dart';
 
 // Briques communes aux fiches de location (logement, véhicule).
 
@@ -239,6 +245,149 @@ class BoutonsContact extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+/// Page d'un loueur : « Appeler » (place restante), carré bleu « Discuter »
+/// (messagerie interne) et carré vert WhatsApp (seulement si
+/// `whatsapp_externe`), sur une seule ligne.
+class LigneContactLoueur extends StatelessWidget {
+  const LigneContactLoueur({
+    super.key,
+    required this.telephone,
+    required this.whatsapp,
+    required this.partenaireId,
+    required this.nom,
+  });
+
+  final String telephone;
+
+  /// `whatsapp_externe` (null : pas de carré WhatsApp).
+  final String? whatsapp;
+  final int partenaireId;
+
+  /// Titre de la discussion.
+  final String nom;
+
+  /// Hauteur commune des trois boutons ; les carrés sont aussi larges.
+  static const hauteur = 48.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final whatsapp = this.whatsapp;
+    final avecWhatsapp = whatsapp != null && afficherWhatsappExterne(whatsapp);
+    return SizedBox(
+      height: hauteur,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (telephone.isNotEmpty)
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => appelerPartenaire(
+                  context,
+                  telephone,
+                  partenaireId: partenaireId,
+                ),
+                icon: const Icon(Icons.call_outlined, size: 18),
+                label: const Text('Appeler', maxLines: 1),
+              ),
+            )
+          else
+            const Spacer(),
+          const SizedBox(width: 8),
+          _CarreDiscuter(partenaireId: partenaireId, nom: nom),
+          if (avecWhatsapp) ...[
+            const SizedBox(width: 8),
+            _CarreContact(
+              tooltip: 'WhatsApp',
+              icone: const FaIcon(
+                FontAwesomeIcons.whatsapp,
+                size: 22,
+                color: couleurWhatsapp,
+              ),
+              onPressed: () => ouvrirWhatsappExterne(
+                context,
+                whatsapp,
+                partenaireId: partenaireId,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Carré au style des boutons de contact (bord, coins arrondis).
+class _CarreContact extends StatelessWidget {
+  const _CarreContact({
+    required this.tooltip,
+    required this.icone,
+    required this.onPressed,
+  });
+
+  final String tooltip;
+  final Widget icone;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      dimension: LigneContactLoueur.hauteur,
+      child: Tooltip(
+        message: tooltip,
+        child: OutlinedButton(
+          onPressed: onPressed,
+          style: OutlinedButton.styleFrom(padding: EdgeInsets.zero),
+          child: icone,
+        ),
+      ),
+    );
+  }
+}
+
+/// Carré bleu « Discuter » : ouvre la messagerie interne avec le loueur
+/// (compte connecté exigé), comme sur la vitrine.
+class _CarreDiscuter extends ConsumerWidget {
+  const _CarreDiscuter({required this.partenaireId, required this.nom});
+
+  final int partenaireId;
+  final String nom;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return _CarreContact(
+      tooltip: 'Discuter',
+      icone: FaIcon(
+        FontAwesomeIcons.whatsapp,
+        size: 22,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+      onPressed: () async {
+        // Discuter : compte connecté.
+        if (!await exigerConnexion(context) || !context.mounted) {
+          return;
+        }
+        final messenger = ScaffoldMessenger.of(context);
+        final nav = Navigator.of(context);
+        try {
+          final conv = await ref
+              .read(chatRepositoryProvider)
+              .contacter(partenaireId: partenaireId);
+          nav.push(
+            MaterialPageRoute(
+              builder: (_) =>
+                  EcranDiscussion(conversationId: conv.id, titre: nom),
+            ),
+          );
+        } catch (_) {
+          messenger.showSnackBar(
+            Notificateur.snackAvertissement('Connexion requise pour discuter.'),
+          );
+        }
+      },
     );
   }
 }

@@ -427,10 +427,11 @@ class _Entete extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
-          child: BoutonsContact(
+          child: LigneContactLoueur(
             telephone: l.telephonePro,
             whatsapp: l.whatsappExterne,
             partenaireId: l.id,
+            nom: l.nom,
           ),
         ),
         const Divider(height: 16),
