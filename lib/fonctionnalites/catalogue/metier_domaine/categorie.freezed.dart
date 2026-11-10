@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$Categorie {
 
  int get id; String get nom; String get slug; String get description; String get icone;@JsonKey(name: 'image_couverture') String? get imageCouverture;/// Image de la tuile (URL absolue), si le serveur en fournit une.
- String? get image; int? get parent;@JsonKey(name: 'mode_transaction') String get modeTransaction; int get ordre;@JsonKey(name: 'types_articles') List<String> get typesArticles;@JsonKey(name: 'affiche_catalogue') bool get afficheCatalogue;@JsonKey(name: 'types_partenaire') List<String> get typesPartenaire;@JsonKey(name: 'est_active') bool get estActive;@JsonKey(name: 'nb_partenaires') int? get nbPartenaires; List<Categorie> get enfants;
+ String? get image; int? get parent;@JsonKey(name: 'mode_transaction') String get modeTransaction; int get ordre;@JsonKey(name: 'types_articles') List<String> get typesArticles;@JsonKey(name: 'affiche_catalogue') bool get afficheCatalogue;@JsonKey(name: 'types_partenaire') List<String> get typesPartenaire;@JsonKey(name: 'est_active') bool get estActive;@JsonKey(name: 'nb_partenaires') int? get nbPartenaires; List<Categorie> get enfants;/// Présentation des sous-catégories : pastilles | grille (réglage admin).
+@JsonKey(name: 'affichage_enfants') String? get affichageEnfants;@JsonKey(name: 'nb_enfants') int? get nbEnfants;
 /// Create a copy of Categorie
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +30,16 @@ $CategorieCopyWith<Categorie> get copyWith => _$CategorieCopyWithImpl<Categorie>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Categorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.description, description) || other.description == description)&&(identical(other.icone, icone) || other.icone == icone)&&(identical(other.imageCouverture, imageCouverture) || other.imageCouverture == imageCouverture)&&(identical(other.image, image) || other.image == image)&&(identical(other.parent, parent) || other.parent == parent)&&(identical(other.modeTransaction, modeTransaction) || other.modeTransaction == modeTransaction)&&(identical(other.ordre, ordre) || other.ordre == ordre)&&const DeepCollectionEquality().equals(other.typesArticles, typesArticles)&&(identical(other.afficheCatalogue, afficheCatalogue) || other.afficheCatalogue == afficheCatalogue)&&const DeepCollectionEquality().equals(other.typesPartenaire, typesPartenaire)&&(identical(other.estActive, estActive) || other.estActive == estActive)&&(identical(other.nbPartenaires, nbPartenaires) || other.nbPartenaires == nbPartenaires)&&const DeepCollectionEquality().equals(other.enfants, enfants));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Categorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.description, description) || other.description == description)&&(identical(other.icone, icone) || other.icone == icone)&&(identical(other.imageCouverture, imageCouverture) || other.imageCouverture == imageCouverture)&&(identical(other.image, image) || other.image == image)&&(identical(other.parent, parent) || other.parent == parent)&&(identical(other.modeTransaction, modeTransaction) || other.modeTransaction == modeTransaction)&&(identical(other.ordre, ordre) || other.ordre == ordre)&&const DeepCollectionEquality().equals(other.typesArticles, typesArticles)&&(identical(other.afficheCatalogue, afficheCatalogue) || other.afficheCatalogue == afficheCatalogue)&&const DeepCollectionEquality().equals(other.typesPartenaire, typesPartenaire)&&(identical(other.estActive, estActive) || other.estActive == estActive)&&(identical(other.nbPartenaires, nbPartenaires) || other.nbPartenaires == nbPartenaires)&&const DeepCollectionEquality().equals(other.enfants, enfants)&&(identical(other.affichageEnfants, affichageEnfants) || other.affichageEnfants == affichageEnfants)&&(identical(other.nbEnfants, nbEnfants) || other.nbEnfants == nbEnfants));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,slug,description,icone,imageCouverture,image,parent,modeTransaction,ordre,const DeepCollectionEquality().hash(typesArticles),afficheCatalogue,const DeepCollectionEquality().hash(typesPartenaire),estActive,nbPartenaires,const DeepCollectionEquality().hash(enfants));
+int get hashCode => Object.hash(runtimeType,id,nom,slug,description,icone,imageCouverture,image,parent,modeTransaction,ordre,const DeepCollectionEquality().hash(typesArticles),afficheCatalogue,const DeepCollectionEquality().hash(typesPartenaire),estActive,nbPartenaires,const DeepCollectionEquality().hash(enfants),affichageEnfants,nbEnfants);
 
 @override
 String toString() {
-  return 'Categorie(id: $id, nom: $nom, slug: $slug, description: $description, icone: $icone, imageCouverture: $imageCouverture, image: $image, parent: $parent, modeTransaction: $modeTransaction, ordre: $ordre, typesArticles: $typesArticles, afficheCatalogue: $afficheCatalogue, typesPartenaire: $typesPartenaire, estActive: $estActive, nbPartenaires: $nbPartenaires, enfants: $enfants)';
+  return 'Categorie(id: $id, nom: $nom, slug: $slug, description: $description, icone: $icone, imageCouverture: $imageCouverture, image: $image, parent: $parent, modeTransaction: $modeTransaction, ordre: $ordre, typesArticles: $typesArticles, afficheCatalogue: $afficheCatalogue, typesPartenaire: $typesPartenaire, estActive: $estActive, nbPartenaires: $nbPartenaires, enfants: $enfants, affichageEnfants: $affichageEnfants, nbEnfants: $nbEnfants)';
 }
 
 
@@ -49,7 +50,7 @@ abstract mixin class $CategorieCopyWith<$Res>  {
   factory $CategorieCopyWith(Categorie value, $Res Function(Categorie) _then) = _$CategorieCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom, String slug, String description, String icone,@JsonKey(name: 'image_couverture') String? imageCouverture, String? image, int? parent,@JsonKey(name: 'mode_transaction') String modeTransaction, int ordre,@JsonKey(name: 'types_articles') List<String> typesArticles,@JsonKey(name: 'affiche_catalogue') bool afficheCatalogue,@JsonKey(name: 'types_partenaire') List<String> typesPartenaire,@JsonKey(name: 'est_active') bool estActive,@JsonKey(name: 'nb_partenaires') int? nbPartenaires, List<Categorie> enfants
+ int id, String nom, String slug, String description, String icone,@JsonKey(name: 'image_couverture') String? imageCouverture, String? image, int? parent,@JsonKey(name: 'mode_transaction') String modeTransaction, int ordre,@JsonKey(name: 'types_articles') List<String> typesArticles,@JsonKey(name: 'affiche_catalogue') bool afficheCatalogue,@JsonKey(name: 'types_partenaire') List<String> typesPartenaire,@JsonKey(name: 'est_active') bool estActive,@JsonKey(name: 'nb_partenaires') int? nbPartenaires, List<Categorie> enfants,@JsonKey(name: 'affichage_enfants') String? affichageEnfants,@JsonKey(name: 'nb_enfants') int? nbEnfants
 });
 
 
@@ -66,7 +67,7 @@ class _$CategorieCopyWithImpl<$Res>
 
 /// Create a copy of Categorie
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? slug = null,Object? description = null,Object? icone = null,Object? imageCouverture = freezed,Object? image = freezed,Object? parent = freezed,Object? modeTransaction = null,Object? ordre = null,Object? typesArticles = null,Object? afficheCatalogue = null,Object? typesPartenaire = null,Object? estActive = null,Object? nbPartenaires = freezed,Object? enfants = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? slug = null,Object? description = null,Object? icone = null,Object? imageCouverture = freezed,Object? image = freezed,Object? parent = freezed,Object? modeTransaction = null,Object? ordre = null,Object? typesArticles = null,Object? afficheCatalogue = null,Object? typesPartenaire = null,Object? estActive = null,Object? nbPartenaires = freezed,Object? enfants = null,Object? affichageEnfants = freezed,Object? nbEnfants = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -84,7 +85,9 @@ as bool,typesPartenaire: null == typesPartenaire ? _self.typesPartenaire : types
 as List<String>,estActive: null == estActive ? _self.estActive : estActive // ignore: cast_nullable_to_non_nullable
 as bool,nbPartenaires: freezed == nbPartenaires ? _self.nbPartenaires : nbPartenaires // ignore: cast_nullable_to_non_nullable
 as int?,enfants: null == enfants ? _self.enfants : enfants // ignore: cast_nullable_to_non_nullable
-as List<Categorie>,
+as List<Categorie>,affichageEnfants: freezed == affichageEnfants ? _self.affichageEnfants : affichageEnfants // ignore: cast_nullable_to_non_nullable
+as String?,nbEnfants: freezed == nbEnfants ? _self.nbEnfants : nbEnfants // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -169,10 +172,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String slug,  String description,  String icone, @JsonKey(name: 'image_couverture')  String? imageCouverture,  String? image,  int? parent, @JsonKey(name: 'mode_transaction')  String modeTransaction,  int ordre, @JsonKey(name: 'types_articles')  List<String> typesArticles, @JsonKey(name: 'affiche_catalogue')  bool afficheCatalogue, @JsonKey(name: 'types_partenaire')  List<String> typesPartenaire, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(name: 'nb_partenaires')  int? nbPartenaires,  List<Categorie> enfants)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String slug,  String description,  String icone, @JsonKey(name: 'image_couverture')  String? imageCouverture,  String? image,  int? parent, @JsonKey(name: 'mode_transaction')  String modeTransaction,  int ordre, @JsonKey(name: 'types_articles')  List<String> typesArticles, @JsonKey(name: 'affiche_catalogue')  bool afficheCatalogue, @JsonKey(name: 'types_partenaire')  List<String> typesPartenaire, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(name: 'nb_partenaires')  int? nbPartenaires,  List<Categorie> enfants, @JsonKey(name: 'affichage_enfants')  String? affichageEnfants, @JsonKey(name: 'nb_enfants')  int? nbEnfants)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Categorie() when $default != null:
-return $default(_that.id,_that.nom,_that.slug,_that.description,_that.icone,_that.imageCouverture,_that.image,_that.parent,_that.modeTransaction,_that.ordre,_that.typesArticles,_that.afficheCatalogue,_that.typesPartenaire,_that.estActive,_that.nbPartenaires,_that.enfants);case _:
+return $default(_that.id,_that.nom,_that.slug,_that.description,_that.icone,_that.imageCouverture,_that.image,_that.parent,_that.modeTransaction,_that.ordre,_that.typesArticles,_that.afficheCatalogue,_that.typesPartenaire,_that.estActive,_that.nbPartenaires,_that.enfants,_that.affichageEnfants,_that.nbEnfants);case _:
   return orElse();
 
 }
@@ -190,10 +193,10 @@ return $default(_that.id,_that.nom,_that.slug,_that.description,_that.icone,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String slug,  String description,  String icone, @JsonKey(name: 'image_couverture')  String? imageCouverture,  String? image,  int? parent, @JsonKey(name: 'mode_transaction')  String modeTransaction,  int ordre, @JsonKey(name: 'types_articles')  List<String> typesArticles, @JsonKey(name: 'affiche_catalogue')  bool afficheCatalogue, @JsonKey(name: 'types_partenaire')  List<String> typesPartenaire, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(name: 'nb_partenaires')  int? nbPartenaires,  List<Categorie> enfants)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String slug,  String description,  String icone, @JsonKey(name: 'image_couverture')  String? imageCouverture,  String? image,  int? parent, @JsonKey(name: 'mode_transaction')  String modeTransaction,  int ordre, @JsonKey(name: 'types_articles')  List<String> typesArticles, @JsonKey(name: 'affiche_catalogue')  bool afficheCatalogue, @JsonKey(name: 'types_partenaire')  List<String> typesPartenaire, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(name: 'nb_partenaires')  int? nbPartenaires,  List<Categorie> enfants, @JsonKey(name: 'affichage_enfants')  String? affichageEnfants, @JsonKey(name: 'nb_enfants')  int? nbEnfants)  $default,) {final _that = this;
 switch (_that) {
 case _Categorie():
-return $default(_that.id,_that.nom,_that.slug,_that.description,_that.icone,_that.imageCouverture,_that.image,_that.parent,_that.modeTransaction,_that.ordre,_that.typesArticles,_that.afficheCatalogue,_that.typesPartenaire,_that.estActive,_that.nbPartenaires,_that.enfants);case _:
+return $default(_that.id,_that.nom,_that.slug,_that.description,_that.icone,_that.imageCouverture,_that.image,_that.parent,_that.modeTransaction,_that.ordre,_that.typesArticles,_that.afficheCatalogue,_that.typesPartenaire,_that.estActive,_that.nbPartenaires,_that.enfants,_that.affichageEnfants,_that.nbEnfants);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -210,10 +213,10 @@ return $default(_that.id,_that.nom,_that.slug,_that.description,_that.icone,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String slug,  String description,  String icone, @JsonKey(name: 'image_couverture')  String? imageCouverture,  String? image,  int? parent, @JsonKey(name: 'mode_transaction')  String modeTransaction,  int ordre, @JsonKey(name: 'types_articles')  List<String> typesArticles, @JsonKey(name: 'affiche_catalogue')  bool afficheCatalogue, @JsonKey(name: 'types_partenaire')  List<String> typesPartenaire, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(name: 'nb_partenaires')  int? nbPartenaires,  List<Categorie> enfants)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String slug,  String description,  String icone, @JsonKey(name: 'image_couverture')  String? imageCouverture,  String? image,  int? parent, @JsonKey(name: 'mode_transaction')  String modeTransaction,  int ordre, @JsonKey(name: 'types_articles')  List<String> typesArticles, @JsonKey(name: 'affiche_catalogue')  bool afficheCatalogue, @JsonKey(name: 'types_partenaire')  List<String> typesPartenaire, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(name: 'nb_partenaires')  int? nbPartenaires,  List<Categorie> enfants, @JsonKey(name: 'affichage_enfants')  String? affichageEnfants, @JsonKey(name: 'nb_enfants')  int? nbEnfants)?  $default,) {final _that = this;
 switch (_that) {
 case _Categorie() when $default != null:
-return $default(_that.id,_that.nom,_that.slug,_that.description,_that.icone,_that.imageCouverture,_that.image,_that.parent,_that.modeTransaction,_that.ordre,_that.typesArticles,_that.afficheCatalogue,_that.typesPartenaire,_that.estActive,_that.nbPartenaires,_that.enfants);case _:
+return $default(_that.id,_that.nom,_that.slug,_that.description,_that.icone,_that.imageCouverture,_that.image,_that.parent,_that.modeTransaction,_that.ordre,_that.typesArticles,_that.afficheCatalogue,_that.typesPartenaire,_that.estActive,_that.nbPartenaires,_that.enfants,_that.affichageEnfants,_that.nbEnfants);case _:
   return null;
 
 }
@@ -225,7 +228,7 @@ return $default(_that.id,_that.nom,_that.slug,_that.description,_that.icone,_tha
 @JsonSerializable()
 
 class _Categorie implements Categorie {
-  const _Categorie({required this.id, required this.nom, required this.slug, this.description = '', this.icone = '', @JsonKey(name: 'image_couverture') this.imageCouverture, this.image, this.parent, @JsonKey(name: 'mode_transaction') this.modeTransaction = '', this.ordre = 0, @JsonKey(name: 'types_articles') final  List<String> typesArticles = const <String>[], @JsonKey(name: 'affiche_catalogue') this.afficheCatalogue = true, @JsonKey(name: 'types_partenaire') final  List<String> typesPartenaire = const <String>[], @JsonKey(name: 'est_active') this.estActive = true, @JsonKey(name: 'nb_partenaires') this.nbPartenaires, final  List<Categorie> enfants = const <Categorie>[]}): _typesArticles = typesArticles,_typesPartenaire = typesPartenaire,_enfants = enfants;
+  const _Categorie({required this.id, required this.nom, required this.slug, this.description = '', this.icone = '', @JsonKey(name: 'image_couverture') this.imageCouverture, this.image, this.parent, @JsonKey(name: 'mode_transaction') this.modeTransaction = '', this.ordre = 0, @JsonKey(name: 'types_articles') final  List<String> typesArticles = const <String>[], @JsonKey(name: 'affiche_catalogue') this.afficheCatalogue = true, @JsonKey(name: 'types_partenaire') final  List<String> typesPartenaire = const <String>[], @JsonKey(name: 'est_active') this.estActive = true, @JsonKey(name: 'nb_partenaires') this.nbPartenaires, final  List<Categorie> enfants = const <Categorie>[], @JsonKey(name: 'affichage_enfants') this.affichageEnfants, @JsonKey(name: 'nb_enfants') this.nbEnfants}): _typesArticles = typesArticles,_typesPartenaire = typesPartenaire,_enfants = enfants;
   factory _Categorie.fromJson(Map<String, dynamic> json) => _$CategorieFromJson(json);
 
 @override final  int id;
@@ -263,6 +266,9 @@ class _Categorie implements Categorie {
   return EqualUnmodifiableListView(_enfants);
 }
 
+/// Présentation des sous-catégories : pastilles | grille (réglage admin).
+@override@JsonKey(name: 'affichage_enfants') final  String? affichageEnfants;
+@override@JsonKey(name: 'nb_enfants') final  int? nbEnfants;
 
 /// Create a copy of Categorie
 /// with the given fields replaced by the non-null parameter values.
@@ -277,16 +283,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Categorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.description, description) || other.description == description)&&(identical(other.icone, icone) || other.icone == icone)&&(identical(other.imageCouverture, imageCouverture) || other.imageCouverture == imageCouverture)&&(identical(other.image, image) || other.image == image)&&(identical(other.parent, parent) || other.parent == parent)&&(identical(other.modeTransaction, modeTransaction) || other.modeTransaction == modeTransaction)&&(identical(other.ordre, ordre) || other.ordre == ordre)&&const DeepCollectionEquality().equals(other._typesArticles, _typesArticles)&&(identical(other.afficheCatalogue, afficheCatalogue) || other.afficheCatalogue == afficheCatalogue)&&const DeepCollectionEquality().equals(other._typesPartenaire, _typesPartenaire)&&(identical(other.estActive, estActive) || other.estActive == estActive)&&(identical(other.nbPartenaires, nbPartenaires) || other.nbPartenaires == nbPartenaires)&&const DeepCollectionEquality().equals(other._enfants, _enfants));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Categorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.slug, slug) || other.slug == slug)&&(identical(other.description, description) || other.description == description)&&(identical(other.icone, icone) || other.icone == icone)&&(identical(other.imageCouverture, imageCouverture) || other.imageCouverture == imageCouverture)&&(identical(other.image, image) || other.image == image)&&(identical(other.parent, parent) || other.parent == parent)&&(identical(other.modeTransaction, modeTransaction) || other.modeTransaction == modeTransaction)&&(identical(other.ordre, ordre) || other.ordre == ordre)&&const DeepCollectionEquality().equals(other._typesArticles, _typesArticles)&&(identical(other.afficheCatalogue, afficheCatalogue) || other.afficheCatalogue == afficheCatalogue)&&const DeepCollectionEquality().equals(other._typesPartenaire, _typesPartenaire)&&(identical(other.estActive, estActive) || other.estActive == estActive)&&(identical(other.nbPartenaires, nbPartenaires) || other.nbPartenaires == nbPartenaires)&&const DeepCollectionEquality().equals(other._enfants, _enfants)&&(identical(other.affichageEnfants, affichageEnfants) || other.affichageEnfants == affichageEnfants)&&(identical(other.nbEnfants, nbEnfants) || other.nbEnfants == nbEnfants));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,slug,description,icone,imageCouverture,image,parent,modeTransaction,ordre,const DeepCollectionEquality().hash(_typesArticles),afficheCatalogue,const DeepCollectionEquality().hash(_typesPartenaire),estActive,nbPartenaires,const DeepCollectionEquality().hash(_enfants));
+int get hashCode => Object.hash(runtimeType,id,nom,slug,description,icone,imageCouverture,image,parent,modeTransaction,ordre,const DeepCollectionEquality().hash(_typesArticles),afficheCatalogue,const DeepCollectionEquality().hash(_typesPartenaire),estActive,nbPartenaires,const DeepCollectionEquality().hash(_enfants),affichageEnfants,nbEnfants);
 
 @override
 String toString() {
-  return 'Categorie(id: $id, nom: $nom, slug: $slug, description: $description, icone: $icone, imageCouverture: $imageCouverture, image: $image, parent: $parent, modeTransaction: $modeTransaction, ordre: $ordre, typesArticles: $typesArticles, afficheCatalogue: $afficheCatalogue, typesPartenaire: $typesPartenaire, estActive: $estActive, nbPartenaires: $nbPartenaires, enfants: $enfants)';
+  return 'Categorie(id: $id, nom: $nom, slug: $slug, description: $description, icone: $icone, imageCouverture: $imageCouverture, image: $image, parent: $parent, modeTransaction: $modeTransaction, ordre: $ordre, typesArticles: $typesArticles, afficheCatalogue: $afficheCatalogue, typesPartenaire: $typesPartenaire, estActive: $estActive, nbPartenaires: $nbPartenaires, enfants: $enfants, affichageEnfants: $affichageEnfants, nbEnfants: $nbEnfants)';
 }
 
 
@@ -297,7 +303,7 @@ abstract mixin class _$CategorieCopyWith<$Res> implements $CategorieCopyWith<$Re
   factory _$CategorieCopyWith(_Categorie value, $Res Function(_Categorie) _then) = __$CategorieCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom, String slug, String description, String icone,@JsonKey(name: 'image_couverture') String? imageCouverture, String? image, int? parent,@JsonKey(name: 'mode_transaction') String modeTransaction, int ordre,@JsonKey(name: 'types_articles') List<String> typesArticles,@JsonKey(name: 'affiche_catalogue') bool afficheCatalogue,@JsonKey(name: 'types_partenaire') List<String> typesPartenaire,@JsonKey(name: 'est_active') bool estActive,@JsonKey(name: 'nb_partenaires') int? nbPartenaires, List<Categorie> enfants
+ int id, String nom, String slug, String description, String icone,@JsonKey(name: 'image_couverture') String? imageCouverture, String? image, int? parent,@JsonKey(name: 'mode_transaction') String modeTransaction, int ordre,@JsonKey(name: 'types_articles') List<String> typesArticles,@JsonKey(name: 'affiche_catalogue') bool afficheCatalogue,@JsonKey(name: 'types_partenaire') List<String> typesPartenaire,@JsonKey(name: 'est_active') bool estActive,@JsonKey(name: 'nb_partenaires') int? nbPartenaires, List<Categorie> enfants,@JsonKey(name: 'affichage_enfants') String? affichageEnfants,@JsonKey(name: 'nb_enfants') int? nbEnfants
 });
 
 
@@ -314,7 +320,7 @@ class __$CategorieCopyWithImpl<$Res>
 
 /// Create a copy of Categorie
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? slug = null,Object? description = null,Object? icone = null,Object? imageCouverture = freezed,Object? image = freezed,Object? parent = freezed,Object? modeTransaction = null,Object? ordre = null,Object? typesArticles = null,Object? afficheCatalogue = null,Object? typesPartenaire = null,Object? estActive = null,Object? nbPartenaires = freezed,Object? enfants = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? slug = null,Object? description = null,Object? icone = null,Object? imageCouverture = freezed,Object? image = freezed,Object? parent = freezed,Object? modeTransaction = null,Object? ordre = null,Object? typesArticles = null,Object? afficheCatalogue = null,Object? typesPartenaire = null,Object? estActive = null,Object? nbPartenaires = freezed,Object? enfants = null,Object? affichageEnfants = freezed,Object? nbEnfants = freezed,}) {
   return _then(_Categorie(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -332,7 +338,9 @@ as bool,typesPartenaire: null == typesPartenaire ? _self._typesPartenaire : type
 as List<String>,estActive: null == estActive ? _self.estActive : estActive // ignore: cast_nullable_to_non_nullable
 as bool,nbPartenaires: freezed == nbPartenaires ? _self.nbPartenaires : nbPartenaires // ignore: cast_nullable_to_non_nullable
 as int?,enfants: null == enfants ? _self._enfants : enfants // ignore: cast_nullable_to_non_nullable
-as List<Categorie>,
+as List<Categorie>,affichageEnfants: freezed == affichageEnfants ? _self.affichageEnfants : affichageEnfants // ignore: cast_nullable_to_non_nullable
+as String?,nbEnfants: freezed == nbEnfants ? _self.nbEnfants : nbEnfants // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

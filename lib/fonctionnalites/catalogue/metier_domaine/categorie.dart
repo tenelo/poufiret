@@ -18,7 +18,9 @@ abstract class Categorie with _$Categorie {
     int? parent,
     @JsonKey(name: 'mode_transaction') @Default('') String modeTransaction,
     @Default(0) int ordre,
-    @JsonKey(name: 'types_articles') @Default(<String>[]) List<String> typesArticles,
+    @JsonKey(name: 'types_articles')
+    @Default(<String>[])
+    List<String> typesArticles,
     @JsonKey(name: 'affiche_catalogue') @Default(true) bool afficheCatalogue,
     @JsonKey(name: 'types_partenaire')
     @Default(<String>[])
@@ -26,6 +28,10 @@ abstract class Categorie with _$Categorie {
     @JsonKey(name: 'est_active') @Default(true) bool estActive,
     @JsonKey(name: 'nb_partenaires') int? nbPartenaires,
     @Default(<Categorie>[]) List<Categorie> enfants,
+
+    /// Présentation des sous-catégories : pastilles | grille (réglage admin).
+    @JsonKey(name: 'affichage_enfants') String? affichageEnfants,
+    @JsonKey(name: 'nb_enfants') int? nbEnfants,
   }) = _Categorie;
 
   factory Categorie.fromJson(Map<String, dynamic> json) =>
@@ -44,6 +50,17 @@ extension CategorieAffichage on Categorie {
   /// Exactement l'inverse de « Bientôt disponible » sur l'accueil.
   bool get aDesPartenaires =>
       estActive && (nbPartenaires == null || nbPartenaires! > 0);
+
+  /// Sous-catégories en grille de tuiles ; sinon (valeur absente ou
+  /// inconnue) en pastilles au-dessus de l'annuaire.
+  bool get enfantsEnGrille => affichageEnfants == 'grille';
+
+  /// Types de partenaire de la catégorie, sinon ceux de ses descendantes
+  /// (annuaire agrégé « Tous »).
+  List<String> get typesPartenaireAgreges {
+    if (typesPartenaire.isNotEmpty) return typesPartenaire;
+    return {for (final e in enfants) ...e.typesPartenaireAgreges}.toList();
+  }
 }
 
 extension ListeCategories on List<Categorie> {
@@ -51,7 +68,12 @@ extension ListeCategories on List<Categorie> {
   /// ses enfants (récursif). Sans hiérarchie, renvoie la liste telle quelle.
   /// À utiliser partout où l'on doit CHOISIR une catégorie réelle.
   List<Categorie> get feuilles => [
-        for (final c in this)
-          if (c.enfants.isEmpty) c else ...c.enfants.feuilles,
-      ];
+    for (final c in this)
+      if (c.enfants.isEmpty) c else ...c.enfants.feuilles,
+  ];
+
+  /// Toutes les catégories, parentes comprises (récursif).
+  List<Categorie> get toutes => [
+    for (final c in this) ...[c, ...c.enfants.toutes],
+  ];
 }

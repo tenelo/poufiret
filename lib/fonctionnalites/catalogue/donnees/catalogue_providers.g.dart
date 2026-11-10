@@ -560,7 +560,8 @@ final class PartenairesParCategorieProvider
   /// choisies (le backend applique aussi la regle de portee).
   PartenairesParCategorieProvider._({
     required PartenairesParCategorieFamily super.from,
-    required ({String slug, String? typeEtablissement}) super.argument,
+    required ({String slug, String? typeEtablissement, int? sousCategorie})
+    super.argument,
   }) : super(
          retry: null,
          name: r'partenairesParCategorieProvider',
@@ -588,11 +589,13 @@ final class PartenairesParCategorieProvider
   @override
   Stream<List<PartenaireCategorie>> create(Ref ref) {
     final argument =
-        this.argument as ({String slug, String? typeEtablissement});
+        this.argument
+            as ({String slug, String? typeEtablissement, int? sousCategorie});
     return partenairesParCategorie(
       ref,
       slug: argument.slug,
       typeEtablissement: argument.typeEtablissement,
+      sousCategorie: argument.sousCategorie,
     );
   }
 
@@ -609,7 +612,7 @@ final class PartenairesParCategorieProvider
 }
 
 String _$partenairesParCategorieHash() =>
-    r'cf4d054c7cb0fa8daacb21949dc225497e56e4be';
+    r'027410ca430824b2e1728a240ed38b65d0b824e9';
 
 /// Annuaire des prestataires d'une catégorie, filtre par les localites
 /// choisies (le backend applique aussi la regle de portee).
@@ -618,7 +621,7 @@ final class PartenairesParCategorieFamily extends $Family
     with
         $FunctionalFamilyOverride<
           Stream<List<PartenaireCategorie>>,
-          ({String slug, String? typeEtablissement})
+          ({String slug, String? typeEtablissement, int? sousCategorie})
         > {
   PartenairesParCategorieFamily._()
     : super(
@@ -635,8 +638,13 @@ final class PartenairesParCategorieFamily extends $Family
   PartenairesParCategorieProvider call({
     required String slug,
     String? typeEtablissement,
+    int? sousCategorie,
   }) => PartenairesParCategorieProvider._(
-    argument: (slug: slug, typeEtablissement: typeEtablissement),
+    argument: (
+      slug: slug,
+      typeEtablissement: typeEtablissement,
+      sousCategorie: sousCategorie,
+    ),
     from: this,
   );
 

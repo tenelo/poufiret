@@ -27,7 +27,7 @@ class CatalogueRepository {
     return results.map(Categorie.fromJson).toList();
   }
 
-/// GET /catalogue/articles/ — articles filtrés (catégorie et/ou recherche).
+  /// GET /catalogue/articles/ — articles filtrés (catégorie et/ou recherche).
   Future<Object?> articlesBrut({
     int? categorie,
     String? recherche,
@@ -61,12 +61,13 @@ class CatalogueRepository {
       partenaire: partenaire,
     ),
   );
-  
+
   /// GET /catalogue/categories/<slug>/partenaires/ — annuaire d'une catégorie.
   Future<Object?> partenairesParCategorieBrut(
     String slug, {
     List<String>? localites,
     String? typeEtablissement,
+    int? sousCategorie,
   }) async {
     final r = await _dio.get(
       '${Env.apiPrefix}/catalogue/categories/$slug/partenaires/',
@@ -75,6 +76,8 @@ class CatalogueRepository {
           'localites': localites.join(','),
         // Hotels & Residences : hotel | residence_meublee.
         'type_etablissement': ?typeEtablissement,
+        // Catégorie parente : une seule sous-catégorie (et ses descendantes).
+        'sous_categorie': ?sousCategorie,
       },
     );
     return r.data;

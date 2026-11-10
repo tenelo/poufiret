@@ -35,6 +35,8 @@ _Categorie _$CategorieFromJson(Map<String, dynamic> json) => _Categorie(
           ?.map((e) => Categorie.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const <Categorie>[],
+  affichageEnfants: json['affichage_enfants'] as String?,
+  nbEnfants: (json['nb_enfants'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$CategorieToJson(_Categorie instance) =>
@@ -55,4 +57,6 @@ Map<String, dynamic> _$CategorieToJson(_Categorie instance) =>
       'est_active': instance.estActive,
       'nb_partenaires': instance.nbPartenaires,
       'enfants': instance.enfants,
+      'affichage_enfants': instance.affichageEnfants,
+      'nb_enfants': instance.nbEnfants,
     };

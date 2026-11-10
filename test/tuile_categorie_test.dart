@@ -10,6 +10,7 @@ import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
 import 'package:poufiret/fonctionnalites/catalogue/donnees/catalogue_providers.dart';
 import 'package:poufiret/fonctionnalites/catalogue/donnees/catalogue_repository.dart';
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/categorie.dart';
+import 'package:poufiret/fonctionnalites/catalogue/widgets/tuile_categorie.dart';
 import 'package:poufiret/fonctionnalites/catalogue/screens/ecran_categories.dart';
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
 import 'package:poufiret/fonctionnalites/orders/metier_domaine/orders_models.dart';
@@ -67,7 +68,7 @@ Future<void> _monter(WidgetTester tester, List<Categorie> categories) async {
 // La tuile de la grille (le nom figure aussi dans la barre d'onglets).
 Finder get _tuile => find.ancestor(
   of: find.text('Viande de Ferké'),
-  matching: find.byWidgetPredicate((w) => w.runtimeType.toString() == '_TuileCategorie'),
+  matching: find.byType(TuileCategorie),
 );
 Finder _dansTuile(Finder f) => find.descendant(of: _tuile, matching: f);
 

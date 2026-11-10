@@ -77,9 +77,22 @@ class ContenuPrestataires extends ConsumerStatefulWidget {
     this.modeTransaction = '',
     this.afficheCatalogue = true,
     this.typesPartenaire = const [],
+    this.sousCategorieId,
+    this.entete,
+    this.deuxColonnes = false,
   });
 
   final bool afficheCatalogue;
+
+  /// Catégorie parente : une seule de ses sous-catégories
+  /// (`?sous_categorie=`) ; null : annuaire agrégé.
+  final int? sousCategorieId;
+
+  /// Ligne placée sous les pastilles de localisation (sous-catégories).
+  final Widget? entete;
+
+  /// Partenaires en grille de 2 colonnes (sous-catégories).
+  final bool deuxColonnes;
 
   /// Types de partenaire de la categorie. L'affichage est le meme pour
   /// toutes ; seul l'ecran ouvert par une tuile en depend (un restaurant
@@ -122,11 +135,13 @@ class _ContenuPrestatairesState extends ConsumerState<ContenuPrestataires> {
     final provider = partenairesParCategorieProvider(
       slug: categorieSlug,
       typeEtablissement: type,
+      sousCategorie: widget.sousCategorieId,
     );
     final annuaireAsync = ref.watch(provider);
     return Column(
       children: [
         const FiltreLocalites(),
+        ?widget.entete,
         if (hoteliers)
           PucesFiltre<String?>(
             options: typesEtablissement,
@@ -163,6 +178,7 @@ class _ContenuPrestatairesState extends ConsumerState<ContenuPrestataires> {
                 );
               }
               return GrillePrestataires(
+                deuxColonnes: widget.deuxColonnes,
                 prestataires: prestataires,
                 onRefresh: () => rafraichir(ref, provider),
                 // Mur d'inscription : un visiteur non enregistre voit la
@@ -237,11 +253,15 @@ class GrillePrestataires extends StatelessWidget {
     required this.prestataires,
     required this.onRefresh,
     required this.onTap,
+    this.deuxColonnes = false,
   });
 
   final List<PartenaireCategorie> prestataires;
   final Future<void> Function() onRefresh;
   final ValueChanged<PartenaireCategorie> onTap;
+
+  /// Toujours 2 colonnes, cartes compactes (sous-catégories).
+  final bool deuxColonnes;
 
   @override
   Widget build(BuildContext context) {
@@ -251,7 +271,7 @@ class GrillePrestataires extends StatelessWidget {
             ? 700.0
             : contraintes.maxWidth;
         // Colonnes selon la largeur disponible (tuiles ~330px).
-        final colonnes = (largeur / 330).floor().clamp(1, 2);
+        final colonnes = deuxColonnes ? 2 : (largeur / 330).floor().clamp(1, 2);
         return Center(
           child: SizedBox(
             width: largeur,
@@ -264,10 +284,11 @@ class GrillePrestataires extends StatelessWidget {
                   crossAxisCount: colonnes,
                   mainAxisSpacing: 12,
                   crossAxisSpacing: 12,
-                  childAspectRatio: 16 / 11,
+                  childAspectRatio: deuxColonnes ? 0.78 : 16 / 11,
                 ),
                 itemCount: prestataires.length,
                 itemBuilder: (context, i) => _CartePrestataire(
+                  compacte: deuxColonnes,
                   prestataire: prestataires[i],
                   onTap: () => onTap(prestataires[i]),
                 ),
@@ -281,14 +302,143 @@ class GrillePrestataires extends StatelessWidget {
 }
 
 class _CartePrestataire extends ConsumerWidget {
-  const _CartePrestataire({required this.prestataire, required this.onTap});
+  const _CartePrestataire({
+    required this.prestataire,
+    required this.onTap,
+    this.compacte = false,
+  });
 
   final PartenaireCategorie prestataire;
   final VoidCallback onTap;
 
+  /// Demi-largeur : nom et localisation sur toute la largeur, boutons de
+  /// contact en dessous.
+  final bool compacte;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final logo = prestataire.logo.isNotEmpty
+        ? CircleAvatar(
+            radius: compacte ? 12 : 16,
+            backgroundImage: imageReseauProvider(prestataire.logo),
+          )
+        : null;
+    final nom = Text(
+      prestataire.nomCommerce,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: compacte
+          ? theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)
+          : theme.textTheme.titleMedium,
+    );
+    final note = prestataire.nbAvis > 0
+        ? ResumeNote(
+            noteMoyenne: prestataire.noteMoyenne,
+            nbAvis: prestataire.nbAvis,
+          )
+        : null;
+    // « Localite - Quartier - Secteur » sous le nom.
+    final localisation = prestataire.ligneLocalisation.isEmpty
+        ? null
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.place_outlined,
+                size: 13,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 2),
+              Flexible(
+                child: Text(
+                  prestataire.ligneLocalisation,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ),
+            ],
+          );
+    final discuter = IconButton(
+      icon: FaIcon(FontAwesomeIcons.whatsapp, color: theme.colorScheme.primary),
+      tooltip: 'Discuter',
+      onPressed: () async {
+        // Discuter : compte connecté.
+        if (!await exigerConnexion(context) || !context.mounted) {
+          return;
+        }
+        final messenger = ScaffoldMessenger.of(context);
+        final nav = Navigator.of(context);
+        try {
+          final conv = await ref
+              .read(chatRepositoryProvider)
+              .contacter(partenaireId: prestataire.id);
+          nav.push(
+            MaterialPageRoute(
+              builder: (_) => EcranDiscussion(
+                conversationId: conv.id,
+                titre: prestataire.nomCommerce,
+              ),
+            ),
+          );
+        } catch (_) {
+          messenger.showSnackBar(
+            Notificateur.snackAvertissement('Connexion requise pour discuter.'),
+          );
+        }
+      },
+    );
+    // Vrai WhatsApp, si le partenaire l'affiche.
+    final whatsapp = IconeWhatsappExterne(
+      numero: prestataire.whatsappExterne,
+      partenaireId: prestataire.id,
+    );
+
+    final infos = compacte
+        // Demi-largeur : nom, note, localisation, puis logo et contacts.
+        ? Padding(
+            padding: const EdgeInsets.fromLTRB(10, 8, 4, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                nom,
+                ?note,
+                ?localisation,
+                Row(children: [?logo, const Spacer(), discuter, whatsapp]),
+              ],
+            ),
+          )
+        : Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: [
+                if (logo != null) ...[logo, const SizedBox(width: 8)],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Nom, puis « ★ 4,5 (12) » s'il a des avis.
+                      Row(
+                        children: [
+                          Flexible(child: nom),
+                          if (note != null) ...[const SizedBox(width: 6), note],
+                        ],
+                      ),
+                      ?localisation,
+                    ],
+                  ),
+                ),
+                discuter,
+                whatsapp,
+              ],
+            ),
+          );
+
     return Card(
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -306,110 +456,7 @@ class _CartePrestataire extends ConsumerWidget {
                     )
                   : _FondNeutre(theme: theme),
             ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                children: [
-                  if (prestataire.logo.isNotEmpty) ...[
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundImage: imageReseauProvider(prestataire.logo),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Nom, puis « ★ 4,5 (12) » s'il a des avis.
-                        Row(
-                          children: [
-                            Flexible(
-                              child: Text(
-                                prestataire.nomCommerce,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.titleMedium,
-                              ),
-                            ),
-                            if (prestataire.nbAvis > 0) ...[
-                              const SizedBox(width: 6),
-                              ResumeNote(
-                                noteMoyenne: prestataire.noteMoyenne,
-                                nbAvis: prestataire.nbAvis,
-                              ),
-                            ],
-                          ],
-                        ),
-                        if (prestataire.ligneLocalisation.isNotEmpty)
-                          // « Localite - Quartier - Secteur » sous le nom.
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.place_outlined,
-                                size: 13,
-                                color: theme.colorScheme.primary,
-                              ),
-                              const SizedBox(width: 2),
-                              Flexible(
-                                child: Text(
-                                  prestataire.ligneLocalisation,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    icon: FaIcon(
-                      FontAwesomeIcons.whatsapp,
-                      color: theme.colorScheme.primary,
-                    ),
-                    tooltip: 'Discuter',
-                    onPressed: () async {
-                      // Discuter : compte connecté.
-                      if (!await exigerConnexion(context) || !context.mounted) {
-                        return;
-                      }
-                      final messenger = ScaffoldMessenger.of(context);
-                      final nav = Navigator.of(context);
-                      try {
-                        final conv = await ref
-                            .read(chatRepositoryProvider)
-                            .contacter(partenaireId: prestataire.id);
-                        nav.push(
-                          MaterialPageRoute(
-                            builder: (_) => EcranDiscussion(
-                              conversationId: conv.id,
-                              titre: prestataire.nomCommerce,
-                            ),
-                          ),
-                        );
-                      } catch (_) {
-                        messenger.showSnackBar(
-                          Notificateur.snackAvertissement(
-                            'Connexion requise pour discuter.',
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                  // Vrai WhatsApp, si le partenaire l'affiche.
-                  IconeWhatsappExterne(
-                    numero: prestataire.whatsappExterne,
-                    partenaireId: prestataire.id,
-                  ),
-                ],
-              ),
-            ),
+            infos,
           ],
         ),
       ),

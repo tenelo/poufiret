@@ -6,32 +6,42 @@ import '../donnees/catalogue_providers.dart';
 import '../metier_domaine/categorie.dart';
 import '../metier_domaine/resultats_recherche.dart';
 import 'ecran_prestataires.dart';
+import 'ecran_sous_categories.dart';
 
-// Toutes les catégories s'affichent de la même façon : l'annuaire (filtre
-// de localités + grille des partenaires). Les types de partenaire de la
+// Une catégorie sans sous-catégorie s'affiche en annuaire (filtre de
+// localités + grille des partenaires). Les types de partenaire de la
 // catégorie lui sont transmis ; ils ne changent que l'écran ouvert par une
-// tuile.
+// tuile. Une catégorie parente montre ses sous-catégories selon son réglage
+// (pastilles ou grille, voir ecran_sous_categories.dart).
 
 /// Écran complet d'une catégorie (ouvert depuis la grille ou la recherche).
-Widget ecranCategorie(Categorie c) => EcranPrestataires(
-  categorieId: c.id,
-  categorieNom: c.nom,
-  categorieSlug: c.slug,
-  modeTransaction: c.modeTransaction,
-  afficheCatalogue: c.afficheCatalogue,
-  typesPartenaire: c.typesPartenaire,
-);
+Widget ecranCategorie(Categorie c) => c.enfants.isNotEmpty
+    ? (c.enfantsEnGrille
+          ? EcranGrilleSousCategories(parent: c)
+          : EcranSousCategories(parent: c))
+    : EcranPrestataires(
+        categorieId: c.id,
+        categorieNom: c.nom,
+        categorieSlug: c.slug,
+        modeTransaction: c.modeTransaction,
+        afficheCatalogue: c.afficheCatalogue,
+        typesPartenaire: c.typesPartenaire,
+      );
 
 /// Contenu d'une catégorie sans barre ni Scaffold (onglet de l'accueil).
-Widget contenuCategorie(Categorie c) => ContenuPrestataires(
-  key: ValueKey('onglet_${c.id}'),
-  categorieId: c.id,
-  categorieNom: c.nom,
-  categorieSlug: c.slug,
-  modeTransaction: c.modeTransaction,
-  afficheCatalogue: c.afficheCatalogue,
-  typesPartenaire: c.typesPartenaire,
-);
+Widget contenuCategorie(Categorie c) => c.enfants.isNotEmpty
+    ? (c.enfantsEnGrille
+          ? GrilleSousCategories(key: ValueKey('onglet_${c.id}'), parent: c)
+          : ContenuSousCategories(key: ValueKey('onglet_${c.id}'), parent: c))
+    : ContenuPrestataires(
+        key: ValueKey('onglet_${c.id}'),
+        categorieId: c.id,
+        categorieNom: c.nom,
+        categorieSlug: c.slug,
+        modeTransaction: c.modeTransaction,
+        afficheCatalogue: c.afficheCatalogue,
+        typesPartenaire: c.typesPartenaire,
+      );
 
 /// Écran d'une catégorie connue par un résultat de recherche. La recherche
 /// ne donne pas les types de partenaire : la catégorie complète est relue
@@ -45,7 +55,7 @@ class EcranCategorieTrouvee extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categories = ref.watch(categoriesProvider);
-    final complete = categories.value?.feuilles
+    final complete = categories.value?.toutes
         .where((c) => c.id == categorie.id)
         .firstOrNull;
     if (complete != null) return ecranCategorie(complete);

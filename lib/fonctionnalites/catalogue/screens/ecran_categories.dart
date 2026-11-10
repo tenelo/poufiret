@@ -8,7 +8,7 @@ import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/categorie.dart
 import 'package:poufiret/fonctionnalites/catalogue/screens/aiguillage_categorie.dart';
 import 'package:poufiret/global/config/config.dart';
 import 'package:poufiret/global/widgets/barre_onglets.dart';
-import 'package:poufiret/global/widgets/image_reseau.dart';
+import 'package:poufiret/fonctionnalites/catalogue/widgets/tuile_categorie.dart';
 import 'package:poufiret/global/widgets/texte_defilant.dart';
 import 'package:poufiret/fonctionnalites/orders/screens/ecran_panier.dart';
 import 'package:poufiret/global/navigation/app_drawer.dart';
@@ -125,7 +125,9 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
                 // « Tous » = toutes les catégories (les vides restent
                 // grisées). Les autres onglets = uniquement les catégories
                 // NON grisées (actives avec au moins un partenaire).
-                final toutes = categories.feuilles;
+                // Catégories racines : une parente ouvre ses
+                // sous-catégories (pastilles ou grille).
+                final toutes = categories;
                 final actives = toutes.where((c) => c.aDesPartenaires).toList();
                 final nbOnglets = actives.length + 1;
                 final index = _index.clamp(0, nbOnglets - 1);
@@ -153,8 +155,14 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
                         // pas une grille a un seul element.
                         itemBuilder: (context, i) {
                           if (i == 0) {
-                            return _GrilleCategories(
+                            return GrilleCategories(
                               categories: toutes,
+                              onTap: (c) => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ecranCategorie(c),
+                                ),
+                              ),
                               onRefresh: () =>
                                   rafraichir(ref, categoriesProvider),
                             );
@@ -170,39 +178,6 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// Grille responsive de tuiles : le nombre de colonnes s'ajuste selon la
-/// largeur disponible (~180 px par tuile).
-class _GrilleCategories extends StatelessWidget {
-  const _GrilleCategories({required this.categories, required this.onRefresh});
-  final List<Categorie> categories;
-  final Future<void> Function() onRefresh;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, contraintes) {
-        final nbColonnes = (contraintes.maxWidth / 180).floor().clamp(2, 5);
-        return RefreshIndicator(
-          onRefresh: onRefresh,
-          child: GridView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: nbColonnes,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 1.1,
-            ),
-            itemCount: categories.length,
-            itemBuilder: (context, i) =>
-                _TuileCategorie(categorie: categories[i], rang: i),
-          ),
-        );
-      },
     );
   }
 }
@@ -365,111 +340,6 @@ class _ActionEventail extends StatelessWidget {
                   onPressed: onTap,
                   child: Icon(icone),
                 ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Tuile « Explorer » : fond pastel (bleu, vert, ambre, sarcelle en
-/// rotation selon [rang]), emoji ou image en haut, nom en bas à gauche.
-class _TuileCategorie extends StatelessWidget {
-  final Categorie categorie;
-  final int rang;
-  const _TuileCategorie({required this.categorie, required this.rang});
-
-  /// Grisée si désactivée par l'admin OU si aucun partenaire enregistré.
-  bool get _bientot =>
-      !categorie.estActive ||
-      (categorie.nbPartenaires != null && categorie.nbPartenaires == 0);
-
-  @override
-  Widget build(BuildContext context) {
-    final bientot = _bientot;
-    final image = categorie.imageTuile;
-    final pastels = Config.pastels;
-    final (fond, encre) = pastels[rang % pastels.length];
-    final emoji = FittedBox(
-      fit: BoxFit.scaleDown,
-      alignment: Alignment.topLeft,
-      child: Text(
-        categorie.icone.isNotEmpty ? categorie.icone : '📦',
-        style: const TextStyle(fontSize: 60, height: 1),
-      ),
-    );
-    return Material(
-      color: fond,
-      borderRadius: BorderRadius.circular(22),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: bientot
-            ? null
-            : () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => ecranCategorie(categorie)),
-                );
-              },
-        child: Opacity(
-          opacity: bientot ? 0.45 : 1.0,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (image.isEmpty)
-                  Expanded(child: emoji)
-                else
-                  // Image reelle : elle remplit la zone visuelle. L'emoji
-                  // la remplace pendant le chargement et en cas d'erreur.
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
-                      child: LayoutBuilder(
-                        builder: (context, contraintes) => ImageReseau(
-                          image,
-                          fit: BoxFit.cover,
-                          width: contraintes.maxWidth,
-                          height: contraintes.maxHeight,
-                          largeurAffichee: contraintes.maxWidth,
-                          attente: categorie.icone.isNotEmpty
-                              ? Align(
-                                  alignment: Alignment.topLeft,
-                                  child: emoji,
-                                )
-                              : const SizedBox.shrink(),
-                          errorBuilder: (_, _, _) =>
-                              Align(alignment: Alignment.topLeft, child: emoji),
-                        ),
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 10),
-                // Nom en entier : jusqu'à 3 lignes, l'image se réduit
-                // pour lui laisser la place.
-                Text(
-                  categorie.nom,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: encre,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                    height: 1.15,
-                  ),
-                ),
-                if (bientot)
-                  Text(
-                    'Bientôt disponible',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: encre.withValues(alpha: 0.7),
-                    ),
-                  ),
               ],
             ),
           ),

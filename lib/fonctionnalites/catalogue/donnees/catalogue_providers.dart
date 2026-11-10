@@ -103,21 +103,23 @@ class LocalitesChoisies extends _$LocalitesChoisies {
 /// choisies (le backend applique aussi la regle de portee).
 @riverpod
 Stream<List<PartenaireCategorie>> partenairesParCategorie(Ref ref,
-    {required String slug, String? typeEtablissement}) {
+    {required String slug, String? typeEtablissement, int? sousCategorie}) {
   final localites = ref.watch(localitesChoisiesProvider);
   final repo = ref.watch(catalogueRepositoryProvider);
   // Les localites choisies (et le type d'etablissement) changent le
   // resultat : ils font partie de la cle.
   final loc = ([...localites]..sort()).join(',');
   final type = typeEtablissement == null ? '' : '&type=$typeEtablissement';
+  final sous = sousCategorie == null ? '' : '&sous=$sousCategorie';
   return fluxCache(
     ref,
-    cle: 'partenaires/$slug?loc=$loc$type',
+    cle: 'partenaires/$slug?loc=$loc$type$sous',
     politique: PolitiqueCache.partenaires,
     reseau: () => repo.partenairesParCategorieBrut(
       slug,
       localites: localites,
       typeEtablissement: typeEtablissement,
+      sousCategorie: sousCategorie,
     ),
     decoder: repo.partenairesDepuis,
   );

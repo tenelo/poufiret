@@ -14,6 +14,7 @@ import 'package:poufiret/fonctionnalites/catalogue/donnees/catalogue_providers.d
 import 'package:poufiret/fonctionnalites/catalogue/donnees/catalogue_repository.dart';
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/article_liste.dart';
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/categorie.dart';
+import 'package:poufiret/fonctionnalites/catalogue/widgets/tuile_categorie.dart';
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/resultats_recherche.dart';
 import 'package:poufiret/fonctionnalites/catalogue/metier_domaine/video_article.dart';
 import 'package:poufiret/fonctionnalites/catalogue/screens/ecran_articles.dart';
@@ -162,7 +163,7 @@ void _attendreAnnuaire() {
 /// Tuile de la grille d'accueil (le nom figure aussi dans les onglets).
 Finder _tuile(String nom) => find.ancestor(
   of: find.text(nom),
-  matching: find.byWidgetPredicate((w) => w.runtimeType.toString() == '_TuileCategorie'),
+  matching: find.byType(TuileCategorie),
 );
 
 void main() {
