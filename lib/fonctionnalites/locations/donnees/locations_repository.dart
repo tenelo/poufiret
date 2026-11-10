@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../global/config/env.dart';
 import '../../../global/json/convertisseurs.dart';
+import '../metier_domaine/disponibilites.dart';
 import '../metier_domaine/hebergement_models.dart';
 import '../metier_domaine/location_models.dart';
 import '../metier_domaine/vehicule_models.dart';
@@ -92,6 +93,22 @@ class LocationsRepository {
       },
     );
     return versInt((r.data as Map)['unites_disponibles']);
+  }
+
+  /// `GET /locations/<vehicules|hebergements>/<id>/disponibilites/` — jours
+  /// déjà réservés de [du] à [au] (jamais en cache : ça change vite).
+  Future<Disponibilites> disponibilites({
+    required bool hebergement,
+    required int id,
+    required DateTime du,
+    required DateTime au,
+  }) async {
+    final type = hebergement ? 'hebergements' : 'vehicules';
+    final r = await _dio.get(
+      '${Env.apiPrefix}/locations/$type/$id/disponibilites/',
+      queryParameters: {'du': formatDateIso(du), 'au': formatDateIso(au)},
+    );
+    return Disponibilites.fromJson(r.data);
   }
 
   // ── Demandes de visite et réservations (jamais en cache : écritures et suivi) ──────────

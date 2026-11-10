@@ -7,6 +7,7 @@ import '../../../global/ui/notificateur.dart';
 import '../../auth/screens/auth_notifier.dart';
 import '../../auth/widgets/mur_inscription.dart';
 import '../donnees/locations_providers.dart';
+import '../metier_domaine/disponibilites.dart';
 import '../metier_domaine/hebergement_models.dart';
 import '../metier_domaine/location_models.dart';
 import '../metier_domaine/vehicule_models.dart' show jourSeul;
@@ -68,6 +69,13 @@ class _FeuilleReservationHebergementState
   /// Refus du serveur (complet, durée minimale...), affiché tel quel.
   String? _erreur;
 
+  /// Nuits déjà réservées (chargées à la première ouverture du calendrier).
+  Disponibilites? _dispos;
+  bool _chargementDispos = false;
+
+  /// Séjour refusé car il touche une nuit déjà réservée.
+  String? _erreurDates;
+
   Hebergement get _h => widget.hebergement;
 
   String? get _erreurSejour =>
@@ -80,7 +88,34 @@ class _FeuilleReservationHebergementState
     super.dispose();
   }
 
+  /// Nuits réservées sur 180 jours. En cas d'échec, rien n'est bloqué.
+  Future<Disponibilites> _disponibilites() async {
+    final connues = _dispos;
+    if (connues != null) return connues;
+    setState(() => _chargementDispos = true);
+    final aujourdhui = jourSeul(DateTime.now());
+    final repo = ref.read(locationsRepositoryProvider);
+    final dispos = await Disponibilites.ouAucune(
+      () => repo.disponibilites(
+        hebergement: true,
+        id: _h.id,
+        du: aujourdhui,
+        au: aujourdhui.add(const Duration(days: 180)),
+      ),
+    );
+    if (mounted) {
+      setState(() {
+        _dispos = dispos;
+        _chargementDispos = false;
+      });
+    }
+    return dispos;
+  }
+
   Future<void> _choisirDates() async {
+    if (_chargementDispos) return;
+    final dispos = await _disponibilites();
+    if (!mounted) return;
     final aujourdhui = jourSeul(DateTime.now());
     final dernier = aujourdhui.add(const Duration(days: 365));
     final actuelle = _plage;
@@ -91,20 +126,33 @@ class _FeuilleReservationHebergementState
       initialDateRange:
           actuelle != null &&
               !actuelle.start.isBefore(aujourdhui) &&
-              !actuelle.end.isAfter(dernier)
+              !actuelle.end.isAfter(dernier) &&
+              dispos.erreurPlage(actuelle.start, actuelle.end, nuits: true) ==
+                  null
           ? actuelle
           : null,
+      // Nuits complètes grisées ; un jour complet reste possible comme
+      // jour de départ.
+      selectableDayPredicate: (jour, debut, fin) =>
+          dispos.selectionnable(jour, debut, fin, nuits: true),
       helpText: 'Arrivée et départ',
       fieldStartLabelText: 'Arrivée',
       fieldEndLabelText: 'Départ',
     );
-    if (plage != null && mounted) {
-      setState(() {
-        _plage = plage;
-        _datesManquantes = false;
-        _erreur = null;
-      });
-    }
+    if (plage == null || !mounted) return;
+    // Séjour enjambant une nuit réservée (ou trop peu de chambres) : refusé.
+    final refus = dispos.erreurPlage(
+      plage.start,
+      plage.end,
+      nuits: true,
+      unites: _unites,
+    );
+    setState(() {
+      _plage = refus == null ? plage : null;
+      _erreurDates = refus;
+      _datesManquantes = false;
+      _erreur = null;
+    });
   }
 
   Future<void> _envoyer({
@@ -154,6 +202,22 @@ class _FeuilleReservationHebergementState
         );
     } catch (e) {
       if (!mounted) return;
+      final refus = exceptionApi(e);
+      if (refus != null && joursRefuses(refus.details) != null) {
+        // Nuits prises entre-temps : message du serveur, disponibilités
+        // rechargées et nouveau choix des dates.
+        setState(() {
+          _erreur = null;
+          _erreurDates = refus.message.isEmpty
+              ? messageDatesReservees
+              : refus.message;
+          _plage = null;
+          _dispos = null;
+          _envoi = false;
+        });
+        await _choisirDates();
+        return;
+      }
       setState(
         () => _erreur = messageErreurApi(
           e,
@@ -190,7 +254,17 @@ class _FeuilleReservationHebergementState
     final adultes = _adultes.clamp(1, _h.maxAdultes(unites));
     final enfants = _enfants.clamp(0, _h.maxEnfants(unites));
 
-    final estimation = datesValides && !complet
+    // Plus de chambres demandées qu'il n'en reste sur l'une des nuits.
+    final erreurUnites = datesValides
+        ? _dispos?.erreurPlage(
+            plage.start,
+            plage.end,
+            nuits: true,
+            unites: unites,
+          )
+        : null;
+
+    final estimation = datesValides && !complet && erreurUnites == null
         ? EstimationSejour(
             nuits: nombreNuits(plage.start, plage.end),
             prixNuit: _h.prixNuit,
@@ -235,13 +309,26 @@ class _FeuilleReservationHebergementState
                   decoration: InputDecoration(
                     labelText: 'Arrivée et départ *',
                     prefixIcon: const Icon(Icons.date_range_outlined),
-                    helperText: _h.dureeMin > 1
-                        ? 'Durée minimale : ${pluriel(_h.dureeMin, 'nuit')}'
+                    suffixIcon: _chargementDispos
+                        ? const Padding(
+                            padding: EdgeInsets.all(14),
+                            child: SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          )
                         : null,
+                    helperText: [
+                      if (_h.dureeMin > 1)
+                        'Durée minimale : ${pluriel(_h.dureeMin, 'nuit')}.',
+                      aideDatesReservees,
+                    ].join(' '),
+                    helperMaxLines: 3,
                     errorText: _datesManquantes
                         ? 'Choisissez vos dates.'
-                        : erreurSejour,
-                    errorMaxLines: 2,
+                        : _erreurDates ?? erreurSejour ?? erreurUnites,
+                    errorMaxLines: 3,
                   ),
                   child: Text(
                     plage == null ? 'Choisir les dates' : _libelleSejour(plage),
@@ -322,7 +409,7 @@ class _FeuilleReservationHebergementState
                   ),
                 ),
               FilledButton(
-                onPressed: _envoi || complet
+                onPressed: _envoi || complet || erreurUnites != null
                     ? null
                     : () => _envoyer(
                         adultes: adultes,

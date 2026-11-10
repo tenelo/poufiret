@@ -20,6 +20,7 @@ import 'package:poufiret/fonctionnalites/geo/metier_domaine/departement.dart';
 import 'package:poufiret/fonctionnalites/geo/widgets/filtre_localites.dart';
 import 'package:poufiret/fonctionnalites/locations/donnees/locations_providers.dart';
 import 'package:poufiret/fonctionnalites/locations/donnees/locations_repository.dart';
+import 'package:poufiret/fonctionnalites/locations/metier_domaine/disponibilites.dart';
 import 'package:poufiret/fonctionnalites/locations/metier_domaine/location_models.dart';
 import 'package:poufiret/fonctionnalites/locations/metier_domaine/vehicule_models.dart';
 import 'package:poufiret/fonctionnalites/locations/screens/ecran_loueur.dart';
@@ -183,6 +184,23 @@ class _FauxLocations extends LocationsRepository {
   @override
   Future<List<DemandeReservation>> mesDemandes({String? statut}) async =>
       demandes;
+
+  /// Jours réservés renvoyés ; null : appel en échec (réseau, 404).
+  Disponibilites? dispos;
+  int appelsDispos = 0;
+
+  @override
+  Future<Disponibilites> disponibilites({
+    required bool hebergement,
+    required int id,
+    required DateTime du,
+    required DateTime au,
+  }) async {
+    appelsDispos++;
+    final d = dispos;
+    if (d == null) throw DioException(requestOptions: RequestOptions());
+    return d;
+  }
 }
 
 Future<void> _monter(
@@ -740,7 +758,7 @@ void main() {
       await tester.tap(find.text('Ouvrir'));
       await tester.pumpAndSettle();
       expect(find.byType(FeuilleReservationVehicule), findsOneWidget);
-      expect(find.text('Durée minimale : 2 jours'), findsOneWidget);
+      expect(find.textContaining('Durée minimale : 2 jours.'), findsOneWidget);
       expect(
         find.text('Choisissez vos dates pour voir le montant.'),
         findsOneWidget,
@@ -850,6 +868,58 @@ void main() {
       await tester.pumpAndSettle();
       expect(serveur.envois, isEmpty);
     });
+
+    testWidgets("disponibilités en échec : le calendrier s'ouvre quand même", (
+      tester,
+    ) async {
+      final serveur = _FauxLocations(); // dispos null : appel en échec
+      await _monter(
+        tester,
+        feuille(_vehicule, null),
+        overrides: [locationsRepositoryProvider.overrideWithValue(serveur)],
+        largeur: 800,
+      );
+      expect(find.textContaining(aideDatesReservees), findsOneWidget);
+      await tester.tap(find.text('Choisir les dates'));
+      await tester.pumpAndSettle();
+      expect(serveur.appelsDispos, 1);
+      expect(find.text('Dates de location'), findsOneWidget);
+    });
+
+    testWidgets(
+      '400 jours_complets : message du serveur, disponibilités rechargées, '
+      'calendrier rouvert',
+      (tester) async {
+        final serveur = _FauxLocations()
+          ..dispos = Disponibilites.aucune
+          ..refus = {
+            'erreur': true,
+            'message': "Ces dates viennent d'être réservées.",
+            'details': {
+              'jours_complets': ['2026-11-11'],
+            },
+          };
+        await _monter(
+          tester,
+          feuille(_vehicule, troisJours),
+          overrides: [locationsRepositoryProvider.overrideWithValue(serveur)],
+          largeur: 800,
+        );
+        await tester.tap(find.text('Envoyer la réservation'));
+        await tester.pumpAndSettle();
+        // Calendrier rouvert, disponibilités rechargées.
+        expect(find.text('Dates de location'), findsOneWidget);
+        expect(serveur.appelsDispos, 1);
+        await tester.tap(find.byIcon(Icons.close));
+        await tester.pumpAndSettle();
+        expect(
+          find.text("Ces dates viennent d'être réservées."),
+          findsOneWidget,
+        );
+        expect(find.text('Choisir les dates'), findsOneWidget);
+        expect(serveur.envois, isEmpty);
+      },
+    );
 
     testWidgets('refus 400 du serveur affiché dans la feuille', (tester) async {
       final serveur = _FauxLocations()

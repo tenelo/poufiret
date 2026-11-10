@@ -721,7 +721,7 @@ void main() {
       );
       await tester.tap(find.text('Ouvrir'));
       await tester.pumpAndSettle();
-      expect(find.text('Durée minimale : 2 nuits'), findsOneWidget);
+      expect(find.textContaining('Durée minimale : 2 nuits.'), findsOneWidget);
       expect(find.widgetWithText(TextFormField, '0707070707'), findsOneWidget);
       await tester.tap(find.text('Envoyer la réservation'));
       await tester.pumpAndSettle();
