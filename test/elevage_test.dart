@@ -322,7 +322,7 @@ void main() {
       );
       expect(
         formatPrixUnite(2500, UnitePrix.kg),
-        '${formatMontant(2500)} / kg',
+        '2${_nb}500${_nb}f/kg',
       );
     });
 
@@ -478,7 +478,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Poulet bicyclette'), findsNothing);
       expect(find.text('Découpé'), findsOneWidget);
-      expect(find.text('${formatMontant(2500)} / kg'), findsOneWidget);
+      expect(find.text('2${_nb}500${_nb}f/kg'), findsOneWidget);
       expect(find.text('En stock : 4,5${_nb}kg'), findsOneWidget);
       expect(find.text('Épuisé'), findsOneWidget);
     });
@@ -527,7 +527,7 @@ void main() {
       for (final texte in [
         'porc',
         'Découpé',
-        '${formatMontant(2500)} / kg',
+        '2${_nb}500${_nb}f/kg',
         '4,5${_nb}kg',
         'Non proposée',
         'Poids (kg)',

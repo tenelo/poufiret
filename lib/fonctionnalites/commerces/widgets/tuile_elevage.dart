@@ -10,7 +10,7 @@ import 'tuiles_produits.dart';
 const double hauteurTexteElevage = 176;
 
 /// Case de grille d'un produit d'éleveur : photo, nom, puce d'état
-/// (« Vivant »...), prix à l'unité (« 2 500 F / kg »), poids moyen, stock ou
+/// (« Vivant »...), prix à l'unité (« 2 500 f/kg »), poids moyen, stock ou
 /// délai de commande, « Livraison possible ».
 class TuileElevage extends StatelessWidget {
   const TuileElevage({super.key, required this.produit, required this.onTap});

@@ -24,9 +24,10 @@ const libellesEtatVente = {
   'decoupe': 'Découpé',
 };
 
-/// « 3 500 F / pièce », « 2 500 F / kg ».
-String formatPrixUnite(int prix, UnitePrix unite) =>
-    '${formatMontant(prix)} / ${unite.suffixe}';
+/// « 3 500 F / pièce », « 2 500 f/kg » (prix au kilo).
+String formatPrixUnite(int prix, UnitePrix unite) => unite == UnitePrix.kg
+    ? '${formatMontant(prix).replaceFirst(RegExp(r'F$'), 'f')}/kg'
+    : '${formatMontant(prix)} / ${unite.suffixe}';
 
 /// « 1 pièce », « 3 pièces », « 2,5 kg ».
 String formatQuantiteUnite(num quantite, UnitePrix unite) =>
