@@ -249,6 +249,36 @@ void main() {
       expect(find.text('Hôtel Le Kôrô'), findsNothing);
     });
 
+    testWidgets('visiteur : ouvrir une fiche de l\'annuaire est bloqué', (
+      tester,
+    ) async {
+      await _monter(
+        tester,
+        const Scaffold(
+          body: ContenuPrestataires(
+            categorieId: 9,
+            categorieNom: 'Hôtels & Résidences',
+            categorieSlug: 'hotels',
+            typesPartenaire: ['hotelier'],
+          ),
+        ),
+        session: () => SessionTest(null),
+        overrides: [
+          visiteCategorieProvider(categorieId: 9).overrideWith((ref) async {}),
+          partenairesParCategorieProvider(
+            slug: 'hotels',
+          ).overrideWith((ref) => Stream.value(cartes)),
+        ],
+      );
+      await tester.tap(find.text('Résidence Soleil'));
+      await tester.pumpAndSettle();
+      expect(find.text('Connexion requise'), findsOneWidget);
+      await tester.tap(find.text('Plus tard'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ContenuPrestataires), findsOneWidget);
+      expect(find.byType(FeuilleConnexionRequise), findsNothing);
+    });
+
     testWidgets('autre catégorie : pas de pastilles', (tester) async {
       await _monter(
         tester,

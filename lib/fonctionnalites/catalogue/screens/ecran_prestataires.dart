@@ -165,10 +165,10 @@ class _ContenuPrestatairesState extends ConsumerState<ContenuPrestataires> {
               return GrillePrestataires(
                 prestataires: prestataires,
                 onRefresh: () => rafraichir(ref, provider),
-                // Fiches libres : un visiteur ouvre la fiche partenaire ;
-                // les actions (panier, discuter, réserver…) demandent un
-                // compte.
-                onTap: (prestataire) {
+                // Mur d'inscription : un visiteur non enregistre voit la
+                // liste mais doit creer un compte pour ouvrir une fiche
+                // partenaire.
+                onTap: (prestataire) => murInscription(context, ref, () {
                   final fiche = afficheCatalogue
                       ? EcranArticles(
                           categorieId: categorieId,
@@ -219,7 +219,7 @@ class _ContenuPrestatairesState extends ConsumerState<ContenuPrestataires> {
                           : fiche,
                     ),
                   );
-                },
+                }),
               );
             },
           ),
