@@ -16,16 +16,8 @@ import 'package:poufiret/global/ui/theme_poufiret.dart';
 /// de substitution aux glyphes carrés, bien plus large).
 Future<void> _chargerPolice() async {
   final chargeur = FontLoader(police);
-  for (final graisse in [
-    'Regular',
-    'Medium',
-    'SemiBold',
-    'Bold',
-    'ExtraBold',
-  ]) {
-    final octets = File(
-      'assets/fonts/PlusJakartaSans-$graisse.ttf',
-    ).readAsBytesSync();
+  for (final graisse in ['Regular', 'Medium', 'SemiBold', 'Bold']) {
+    final octets = File('assets/fonts/Inter-$graisse.ttf').readAsBytesSync();
     chargeur.addFont(Future.value(ByteData.sublistView(octets)));
   }
   await chargeur.load();

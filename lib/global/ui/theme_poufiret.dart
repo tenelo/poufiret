@@ -5,17 +5,15 @@ import '../config/config.dart';
 /// Design system de Poufiret (maquette Figma « Poufiret clair / sombre ») :
 /// fond bleuté très clair (ou bleu nuit), cartes blanches (ou bleu ardoise)
 /// aux grands rayons et à l'ombre douce, bleu de marque pour les actions,
-/// accent soleil pour les étiquettes, police Plus Jakarta Sans.
+/// accent soleil pour les étiquettes.
 ///
 /// Appliqué via `MaterialApp.theme` / `darkTheme` dans main.dart. Tous les
 /// écrans qui s'appuient sur `Theme.of(context)` (couleurs de texte, `Card`,
 /// boutons, champs, barres de navigation…) en héritent automatiquement.
-// ===== CHOIX DE LA POLICE (décommenter UNE seule ligne) =====
-const String police = 'PlusJakartaSans';
-// const String police = 'Inter';
-// const String police = 'Manrope';
-// const String police = 'DMSans';
-// const String police = 'RobotoFlex';
+
+/// Police unique de l'application : Inter, embarquée dans assets/fonts
+/// (graisses 400 à 700).
+const String police = 'Inter';
 
 class ThemePoufiret {
   ThemePoufiret._();
