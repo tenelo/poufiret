@@ -6,6 +6,7 @@ import '../../../global/ui/notificateur.dart';
 import '../../orders/donnees/orders_providers.dart';
 import '../../orders/screens/ecran_panier.dart';
 import '../../restaurants/metier_domaine/restaurant_models.dart';
+import '../../auth/widgets/mur_inscription.dart';
 
 /// Ajoute un produit (et sa variante) au panier ; confirme par une
 /// notification avec « Voir », ou relaie le refus du serveur. Renvoie vrai
@@ -17,6 +18,8 @@ Future<bool> ajouterProduitAuPanier(
   VariantePlat? variante,
   num quantite = 1,
 }) async {
+  // Panier réservé aux comptes connectés ; l'ajout reprend après connexion.
+  if (!await exigerConnexion(context) || !context.mounted) return false;
   final messenger = ScaffoldMessenger.of(context);
   final navigator = Navigator.of(context);
   try {

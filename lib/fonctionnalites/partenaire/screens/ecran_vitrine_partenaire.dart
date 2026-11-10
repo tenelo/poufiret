@@ -18,6 +18,7 @@ import '../../../global/ui/notificateur.dart';
 import '../../../global/widgets/image_reseau.dart';
 import '../../avis/widgets/widgets_avis.dart';
 import '../../../global/widgets/bouton_whatsapp.dart';
+import '../../auth/widgets/mur_inscription.dart';
 
 /// Vitrine publique d'un partenaire (côté client).
 /// Affiche couverture, logo, infos, localisation, contacts.
@@ -46,6 +47,8 @@ class EcranVitrinePartenaire extends ConsumerWidget {
   /// Demande d'intervention pour les metiers de service, chat sinon.
   Future<void> _actionPrincipale(
       BuildContext context, WidgetRef ref, PartenaireVitrine p) async {
+    // Demande d'intervention ou discussion : compte connecté.
+    if (!await exigerConnexion(context) || !context.mounted) {   return; }
     final nav = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
     if (_estIntervention) {
@@ -370,6 +373,8 @@ class _Infos extends ConsumerWidget {
                         color: theme.colorScheme.primary),
                     tooltip: 'Discuter',
                     onPressed: () async {
+                      // Discuter : compte connecté.
+                      if (!await exigerConnexion(context) || !context.mounted) {   return; }
                       final messenger = ScaffoldMessenger.of(context);
                       final nav = Navigator.of(context);
                       try {

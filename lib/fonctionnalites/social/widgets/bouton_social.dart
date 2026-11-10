@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../global/ui/notificateur.dart';
+import '../../auth/widgets/mur_inscription.dart';
 
 /// Bouton social réutilisable (like ❤️ ou favori 🔖) avec état optimiste.
 /// - bascule l'affichage immédiatement au tap
@@ -46,6 +47,8 @@ class _BoutonSocialState extends State<BoutonSocial> {
 
   Future<void> _tap() async {
     if (_enCours) return;
+    // J'aime et favoris : compte connecté (le geste reprend après).
+    if (!await exigerConnexion(context) || !mounted) return;
 
     // État optimiste : on bascule tout de suite.
     final ancienActif = _actif;

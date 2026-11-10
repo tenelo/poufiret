@@ -11,6 +11,7 @@ import 'package:poufiret/fonctionnalites/partenaire/screens/ecran_vitrine_parten
 import 'package:poufiret/fonctionnalites/analytics/donnees/analytics_providers.dart';
 import 'package:poufiret/fonctionnalites/chat/donnees/chat_providers.dart';
 import 'package:poufiret/fonctionnalites/chat/screens/ecran_discussion.dart';
+import '../../../global/widgets/puces_filtre.dart';
 import '../../../global/widgets/image_reseau.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../auth/widgets/mur_inscription.dart';
@@ -67,7 +68,7 @@ class EcranPrestataires extends ConsumerWidget {
 /// Contenu de l'annuaire d'une categorie (filtre de localites + liste), sans
 /// barre ni Scaffold : partage entre l'ecran ouvert depuis la grille et les
 /// onglets de l'accueil, qui affichent directement ce contenu.
-class ContenuPrestataires extends ConsumerWidget {
+class ContenuPrestataires extends ConsumerStatefulWidget {
   const ContenuPrestataires({
     super.key,
     required this.categorieId,
@@ -91,15 +92,47 @@ class ContenuPrestataires extends ConsumerWidget {
   final String modeTransaction;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ContenuPrestataires> createState() =>
+      _ContenuPrestatairesState();
+}
+
+/// Pastilles « Tous | Hôtels | Résidences » (catégorie d'hôteliers).
+const typesEtablissement = <(String?, String)>[
+  (null, 'Tous'),
+  ('hotel', 'Hôtels'),
+  ('residence_meublee', 'Résidences'),
+];
+
+class _ContenuPrestatairesState extends ConsumerState<ContenuPrestataires> {
+  /// Type d'établissement choisi (null : tous).
+  String? _typeEtablissement;
+
+  @override
+  Widget build(BuildContext context) {
+    final categorieId = widget.categorieId;
+    final categorieSlug = widget.categorieSlug;
+    final typesPartenaire = widget.typesPartenaire;
+    final afficheCatalogue = widget.afficheCatalogue;
+    final modeTransaction = widget.modeTransaction;
     // L affichage de la liste des prestataires = une visite de categorie.
     ref.watch(visiteCategorieProvider(categorieId: categorieId));
-    final annuaireAsync = ref.watch(
-      partenairesParCategorieProvider(slug: categorieSlug),
+    // Hôtels & Résidences : filtre par type, combiné aux localités.
+    final hoteliers = typeLocation(typesPartenaire) == TypeLocation.hebergement;
+    final type = hoteliers ? _typeEtablissement : null;
+    final provider = partenairesParCategorieProvider(
+      slug: categorieSlug,
+      typeEtablissement: type,
     );
+    final annuaireAsync = ref.watch(provider);
     return Column(
       children: [
         const FiltreLocalites(),
+        if (hoteliers)
+          PucesFiltre<String?>(
+            options: typesEtablissement,
+            valeur: _typeEtablissement,
+            onChange: (t) => setState(() => _typeEtablissement = t),
+          ),
         const Divider(height: 1),
         Expanded(
           child: annuaireAsync.when(
@@ -115,16 +148,15 @@ class ContenuPrestataires extends ConsumerWidget {
                     Text(message),
                     const SizedBox(height: 12),
                     FilledButton(
-                      onPressed: () => ref.invalidate(
-                        partenairesParCategorieProvider(slug: categorieSlug),
-                      ),
+                      onPressed: () => ref.invalidate(provider),
                       child: const Text('Réessayer'),
                     ),
                   ],
                 ),
               );
             },
-            data: (prestataires) {
+            data: (tous) {
+              final prestataires = filtrerEtablissements(tous, type);
               if (prestataires.isEmpty) {
                 return const Center(
                   child: Text('Aucun prestataire dans cette catégorie.'),
@@ -132,14 +164,11 @@ class ContenuPrestataires extends ConsumerWidget {
               }
               return GrillePrestataires(
                 prestataires: prestataires,
-                onRefresh: () => rafraichir(
-                  ref,
-                  partenairesParCategorieProvider(slug: categorieSlug),
-                ),
-                // Mur d'inscription : un visiteur non enregistre voit la
-                // liste mais doit creer un compte pour ouvrir une fiche
-                // partenaire.
-                onTap: (prestataire) => murInscription(context, ref, () {
+                onRefresh: () => rafraichir(ref, provider),
+                // Fiches libres : un visiteur ouvre la fiche partenaire ;
+                // les actions (panier, discuter, réserver…) demandent un
+                // compte.
+                onTap: (prestataire) {
                   final fiche = afficheCatalogue
                       ? EcranArticles(
                           categorieId: categorieId,
@@ -190,7 +219,7 @@ class ContenuPrestataires extends ConsumerWidget {
                           : fiche,
                     ),
                   );
-                }),
+                },
               );
             },
           ),
@@ -346,6 +375,10 @@ class _CartePrestataire extends ConsumerWidget {
                     ),
                     tooltip: 'Discuter',
                     onPressed: () async {
+                      // Discuter : compte connecté.
+                      if (!await exigerConnexion(context) || !context.mounted) {
+                        return;
+                      }
                       final messenger = ScaffoldMessenger.of(context);
                       final nav = Navigator.of(context);
                       try {
@@ -392,7 +425,11 @@ class _FondNeutre extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: theme.colorScheme.surfaceContainerHighest,
-      child: Icon(Icons.storefront_outlined, size: 48, color: theme.colorScheme.outline),
+      child: Icon(
+        Icons.storefront_outlined,
+        size: 48,
+        color: theme.colorScheme.outline,
+      ),
     );
   }
 }

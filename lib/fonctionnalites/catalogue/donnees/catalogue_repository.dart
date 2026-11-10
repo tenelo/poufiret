@@ -66,12 +66,15 @@ class CatalogueRepository {
   Future<Object?> partenairesParCategorieBrut(
     String slug, {
     List<String>? localites,
+    String? typeEtablissement,
   }) async {
     final r = await _dio.get(
       '${Env.apiPrefix}/catalogue/categories/$slug/partenaires/',
       queryParameters: {
         if (localites != null && localites.isNotEmpty)
           'localites': localites.join(','),
+        // Hotels & Residences : hotel | residence_meublee.
+        'type_etablissement': ?typeEtablissement,
       },
     );
     return r.data;

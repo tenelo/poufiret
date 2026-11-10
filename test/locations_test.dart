@@ -535,7 +535,7 @@ void main() {
       );
       await tester.tap(find.text('Ouvrir'));
       await tester.pumpAndSettle();
-      expect(find.text('Connectez-vous pour continuer'), findsOneWidget);
+      expect(find.text('Connexion requise'), findsOneWidget);
       expect(find.byType(FeuilleDemandeVisite), findsNothing);
     });
 

@@ -16,7 +16,8 @@ T _$identity<T>(T value) => value;
 mixin _$PartenaireCategorie {
 
  int get id;@JsonKey(name: 'nom_commerce') String get nomCommerce; String get description; String get logo;@JsonKey(name: 'photo_couverture') String get photoCouverture; String get departement; String get region; double? get latitude; double? get longitude; String get adresse; String get quartier; String get ville; String get secteur;@JsonKey(name: 'localite_nom') String? get localiteNom;@JsonKey(name: 'quartier_nom') String? get quartierNom;/// Gabarit de page dédiée (« pharmacie », « mode »...) ; vide sinon.
- String get gabarit;/// Vrai WhatsApp, si le partenaire l'affiche (null sinon).
+ String get gabarit;/// Hôtelier : hotel | residence_meublee (null si inconnu).
+@JsonKey(name: 'type_etablissement', readValue: _lireTypeEtablissement) String? get typeEtablissement;/// Vrai WhatsApp, si le partenaire l'affiche (null sinon).
 @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) String? get whatsappExterne;@JsonKey(readValue: _lireTypes) List<String> get typesPartenaire;/// Note des clients (null sans avis) et nombre d'avis visibles.
 @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable) double? get noteMoyenne;@JsonKey(name: 'nb_avis', fromJson: versInt) int get nbAvis;
 /// Create a copy of PartenaireCategorie
@@ -31,16 +32,16 @@ $PartenaireCategorieCopyWith<PartenaireCategorie> get copyWith => _$PartenaireCa
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.secteur, secteur) || other.secteur == secteur)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.gabarit, gabarit) || other.gabarit == gabarit)&&(identical(other.whatsappExterne, whatsappExterne) || other.whatsappExterne == whatsappExterne)&&const DeepCollectionEquality().equals(other.typesPartenaire, typesPartenaire)&&(identical(other.noteMoyenne, noteMoyenne) || other.noteMoyenne == noteMoyenne)&&(identical(other.nbAvis, nbAvis) || other.nbAvis == nbAvis));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.secteur, secteur) || other.secteur == secteur)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.gabarit, gabarit) || other.gabarit == gabarit)&&(identical(other.typeEtablissement, typeEtablissement) || other.typeEtablissement == typeEtablissement)&&(identical(other.whatsappExterne, whatsappExterne) || other.whatsappExterne == whatsappExterne)&&const DeepCollectionEquality().equals(other.typesPartenaire, typesPartenaire)&&(identical(other.noteMoyenne, noteMoyenne) || other.noteMoyenne == noteMoyenne)&&(identical(other.nbAvis, nbAvis) || other.nbAvis == nbAvis));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region,latitude,longitude,adresse,quartier,ville,secteur,localiteNom,quartierNom,gabarit,whatsappExterne,const DeepCollectionEquality().hash(typesPartenaire),noteMoyenne,nbAvis]);
+int get hashCode => Object.hashAll([runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region,latitude,longitude,adresse,quartier,ville,secteur,localiteNom,quartierNom,gabarit,typeEtablissement,whatsappExterne,const DeepCollectionEquality().hash(typesPartenaire),noteMoyenne,nbAvis]);
 
 @override
 String toString() {
-  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region, latitude: $latitude, longitude: $longitude, adresse: $adresse, quartier: $quartier, ville: $ville, secteur: $secteur, localiteNom: $localiteNom, quartierNom: $quartierNom, gabarit: $gabarit, whatsappExterne: $whatsappExterne, typesPartenaire: $typesPartenaire, noteMoyenne: $noteMoyenne, nbAvis: $nbAvis)';
+  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region, latitude: $latitude, longitude: $longitude, adresse: $adresse, quartier: $quartier, ville: $ville, secteur: $secteur, localiteNom: $localiteNom, quartierNom: $quartierNom, gabarit: $gabarit, typeEtablissement: $typeEtablissement, whatsappExterne: $whatsappExterne, typesPartenaire: $typesPartenaire, noteMoyenne: $noteMoyenne, nbAvis: $nbAvis)';
 }
 
 
@@ -51,7 +52,7 @@ abstract mixin class $PartenaireCategorieCopyWith<$Res>  {
   factory $PartenaireCategorieCopyWith(PartenaireCategorie value, $Res Function(PartenaireCategorie) _then) = _$PartenaireCategorieCopyWithImpl;
 @useResult
 $Res call({
- int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region, double? latitude, double? longitude, String adresse, String quartier, String ville, String secteur,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom, String gabarit,@JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) String? whatsappExterne,@JsonKey(readValue: _lireTypes) List<String> typesPartenaire,@JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable) double? noteMoyenne,@JsonKey(name: 'nb_avis', fromJson: versInt) int nbAvis
+ int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region, double? latitude, double? longitude, String adresse, String quartier, String ville, String secteur,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom, String gabarit,@JsonKey(name: 'type_etablissement', readValue: _lireTypeEtablissement) String? typeEtablissement,@JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) String? whatsappExterne,@JsonKey(readValue: _lireTypes) List<String> typesPartenaire,@JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable) double? noteMoyenne,@JsonKey(name: 'nb_avis', fromJson: versInt) int nbAvis
 });
 
 
@@ -68,7 +69,7 @@ class _$PartenaireCategorieCopyWithImpl<$Res>
 
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,Object? latitude = freezed,Object? longitude = freezed,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? secteur = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? gabarit = null,Object? whatsappExterne = freezed,Object? typesPartenaire = null,Object? noteMoyenne = freezed,Object? nbAvis = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,Object? latitude = freezed,Object? longitude = freezed,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? secteur = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? gabarit = null,Object? typeEtablissement = freezed,Object? whatsappExterne = freezed,Object? typesPartenaire = null,Object? noteMoyenne = freezed,Object? nbAvis = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nomCommerce: null == nomCommerce ? _self.nomCommerce : nomCommerce // ignore: cast_nullable_to_non_nullable
@@ -86,7 +87,8 @@ as String,secteur: null == secteur ? _self.secteur : secteur // ignore: cast_nul
 as String,localiteNom: freezed == localiteNom ? _self.localiteNom : localiteNom // ignore: cast_nullable_to_non_nullable
 as String?,quartierNom: freezed == quartierNom ? _self.quartierNom : quartierNom // ignore: cast_nullable_to_non_nullable
 as String?,gabarit: null == gabarit ? _self.gabarit : gabarit // ignore: cast_nullable_to_non_nullable
-as String,whatsappExterne: freezed == whatsappExterne ? _self.whatsappExterne : whatsappExterne // ignore: cast_nullable_to_non_nullable
+as String,typeEtablissement: freezed == typeEtablissement ? _self.typeEtablissement : typeEtablissement // ignore: cast_nullable_to_non_nullable
+as String?,whatsappExterne: freezed == whatsappExterne ? _self.whatsappExterne : whatsappExterne // ignore: cast_nullable_to_non_nullable
 as String?,typesPartenaire: null == typesPartenaire ? _self.typesPartenaire : typesPartenaire // ignore: cast_nullable_to_non_nullable
 as List<String>,noteMoyenne: freezed == noteMoyenne ? _self.noteMoyenne : noteMoyenne // ignore: cast_nullable_to_non_nullable
 as double?,nbAvis: null == nbAvis ? _self.nbAvis : nbAvis // ignore: cast_nullable_to_non_nullable
@@ -175,10 +177,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier,  String ville,  String secteur, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String gabarit, @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)  String? whatsappExterne, @JsonKey(readValue: _lireTypes)  List<String> typesPartenaire, @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable)  double? noteMoyenne, @JsonKey(name: 'nb_avis', fromJson: versInt)  int nbAvis)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier,  String ville,  String secteur, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String gabarit, @JsonKey(name: 'type_etablissement', readValue: _lireTypeEtablissement)  String? typeEtablissement, @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)  String? whatsappExterne, @JsonKey(readValue: _lireTypes)  List<String> typesPartenaire, @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable)  double? noteMoyenne, @JsonKey(name: 'nb_avis', fromJson: versInt)  int nbAvis)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PartenaireCategorie() when $default != null:
-return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier,_that.ville,_that.secteur,_that.localiteNom,_that.quartierNom,_that.gabarit,_that.whatsappExterne,_that.typesPartenaire,_that.noteMoyenne,_that.nbAvis);case _:
+return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier,_that.ville,_that.secteur,_that.localiteNom,_that.quartierNom,_that.gabarit,_that.typeEtablissement,_that.whatsappExterne,_that.typesPartenaire,_that.noteMoyenne,_that.nbAvis);case _:
   return orElse();
 
 }
@@ -196,10 +198,10 @@ return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.ph
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier,  String ville,  String secteur, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String gabarit, @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)  String? whatsappExterne, @JsonKey(readValue: _lireTypes)  List<String> typesPartenaire, @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable)  double? noteMoyenne, @JsonKey(name: 'nb_avis', fromJson: versInt)  int nbAvis)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier,  String ville,  String secteur, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String gabarit, @JsonKey(name: 'type_etablissement', readValue: _lireTypeEtablissement)  String? typeEtablissement, @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)  String? whatsappExterne, @JsonKey(readValue: _lireTypes)  List<String> typesPartenaire, @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable)  double? noteMoyenne, @JsonKey(name: 'nb_avis', fromJson: versInt)  int nbAvis)  $default,) {final _that = this;
 switch (_that) {
 case _PartenaireCategorie():
-return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier,_that.ville,_that.secteur,_that.localiteNom,_that.quartierNom,_that.gabarit,_that.whatsappExterne,_that.typesPartenaire,_that.noteMoyenne,_that.nbAvis);case _:
+return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier,_that.ville,_that.secteur,_that.localiteNom,_that.quartierNom,_that.gabarit,_that.typeEtablissement,_that.whatsappExterne,_that.typesPartenaire,_that.noteMoyenne,_that.nbAvis);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -216,10 +218,10 @@ return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.ph
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier,  String ville,  String secteur, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String gabarit, @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)  String? whatsappExterne, @JsonKey(readValue: _lireTypes)  List<String> typesPartenaire, @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable)  double? noteMoyenne, @JsonKey(name: 'nb_avis', fromJson: versInt)  int nbAvis)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id, @JsonKey(name: 'nom_commerce')  String nomCommerce,  String description,  String logo, @JsonKey(name: 'photo_couverture')  String photoCouverture,  String departement,  String region,  double? latitude,  double? longitude,  String adresse,  String quartier,  String ville,  String secteur, @JsonKey(name: 'localite_nom')  String? localiteNom, @JsonKey(name: 'quartier_nom')  String? quartierNom,  String gabarit, @JsonKey(name: 'type_etablissement', readValue: _lireTypeEtablissement)  String? typeEtablissement, @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)  String? whatsappExterne, @JsonKey(readValue: _lireTypes)  List<String> typesPartenaire, @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable)  double? noteMoyenne, @JsonKey(name: 'nb_avis', fromJson: versInt)  int nbAvis)?  $default,) {final _that = this;
 switch (_that) {
 case _PartenaireCategorie() when $default != null:
-return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier,_that.ville,_that.secteur,_that.localiteNom,_that.quartierNom,_that.gabarit,_that.whatsappExterne,_that.typesPartenaire,_that.noteMoyenne,_that.nbAvis);case _:
+return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.photoCouverture,_that.departement,_that.region,_that.latitude,_that.longitude,_that.adresse,_that.quartier,_that.ville,_that.secteur,_that.localiteNom,_that.quartierNom,_that.gabarit,_that.typeEtablissement,_that.whatsappExterne,_that.typesPartenaire,_that.noteMoyenne,_that.nbAvis);case _:
   return null;
 
 }
@@ -231,7 +233,7 @@ return $default(_that.id,_that.nomCommerce,_that.description,_that.logo,_that.ph
 @JsonSerializable()
 
 class _PartenaireCategorie extends PartenaireCategorie {
-  const _PartenaireCategorie({required this.id, @JsonKey(name: 'nom_commerce') this.nomCommerce = '', this.description = '', this.logo = '', @JsonKey(name: 'photo_couverture') this.photoCouverture = '', this.departement = '', this.region = '', this.latitude, this.longitude, this.adresse = '', this.quartier = '', this.ville = '', this.secteur = '', @JsonKey(name: 'localite_nom') this.localiteNom, @JsonKey(name: 'quartier_nom') this.quartierNom, this.gabarit = '', @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) this.whatsappExterne, @JsonKey(readValue: _lireTypes) final  List<String> typesPartenaire = const <String>[], @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable) this.noteMoyenne, @JsonKey(name: 'nb_avis', fromJson: versInt) this.nbAvis = 0}): _typesPartenaire = typesPartenaire,super._();
+  const _PartenaireCategorie({required this.id, @JsonKey(name: 'nom_commerce') this.nomCommerce = '', this.description = '', this.logo = '', @JsonKey(name: 'photo_couverture') this.photoCouverture = '', this.departement = '', this.region = '', this.latitude, this.longitude, this.adresse = '', this.quartier = '', this.ville = '', this.secteur = '', @JsonKey(name: 'localite_nom') this.localiteNom, @JsonKey(name: 'quartier_nom') this.quartierNom, this.gabarit = '', @JsonKey(name: 'type_etablissement', readValue: _lireTypeEtablissement) this.typeEtablissement, @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) this.whatsappExterne, @JsonKey(readValue: _lireTypes) final  List<String> typesPartenaire = const <String>[], @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable) this.noteMoyenne, @JsonKey(name: 'nb_avis', fromJson: versInt) this.nbAvis = 0}): _typesPartenaire = typesPartenaire,super._();
   factory _PartenaireCategorie.fromJson(Map<String, dynamic> json) => _$PartenaireCategorieFromJson(json);
 
 @override final  int id;
@@ -251,6 +253,8 @@ class _PartenaireCategorie extends PartenaireCategorie {
 @override@JsonKey(name: 'quartier_nom') final  String? quartierNom;
 /// Gabarit de page dédiée (« pharmacie », « mode »...) ; vide sinon.
 @override@JsonKey() final  String gabarit;
+/// Hôtelier : hotel | residence_meublee (null si inconnu).
+@override@JsonKey(name: 'type_etablissement', readValue: _lireTypeEtablissement) final  String? typeEtablissement;
 /// Vrai WhatsApp, si le partenaire l'affiche (null sinon).
 @override@JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) final  String? whatsappExterne;
  final  List<String> _typesPartenaire;
@@ -277,16 +281,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.secteur, secteur) || other.secteur == secteur)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.gabarit, gabarit) || other.gabarit == gabarit)&&(identical(other.whatsappExterne, whatsappExterne) || other.whatsappExterne == whatsappExterne)&&const DeepCollectionEquality().equals(other._typesPartenaire, _typesPartenaire)&&(identical(other.noteMoyenne, noteMoyenne) || other.noteMoyenne == noteMoyenne)&&(identical(other.nbAvis, nbAvis) || other.nbAvis == nbAvis));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PartenaireCategorie&&(identical(other.id, id) || other.id == id)&&(identical(other.nomCommerce, nomCommerce) || other.nomCommerce == nomCommerce)&&(identical(other.description, description) || other.description == description)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.photoCouverture, photoCouverture) || other.photoCouverture == photoCouverture)&&(identical(other.departement, departement) || other.departement == departement)&&(identical(other.region, region) || other.region == region)&&(identical(other.latitude, latitude) || other.latitude == latitude)&&(identical(other.longitude, longitude) || other.longitude == longitude)&&(identical(other.adresse, adresse) || other.adresse == adresse)&&(identical(other.quartier, quartier) || other.quartier == quartier)&&(identical(other.ville, ville) || other.ville == ville)&&(identical(other.secteur, secteur) || other.secteur == secteur)&&(identical(other.localiteNom, localiteNom) || other.localiteNom == localiteNom)&&(identical(other.quartierNom, quartierNom) || other.quartierNom == quartierNom)&&(identical(other.gabarit, gabarit) || other.gabarit == gabarit)&&(identical(other.typeEtablissement, typeEtablissement) || other.typeEtablissement == typeEtablissement)&&(identical(other.whatsappExterne, whatsappExterne) || other.whatsappExterne == whatsappExterne)&&const DeepCollectionEquality().equals(other._typesPartenaire, _typesPartenaire)&&(identical(other.noteMoyenne, noteMoyenne) || other.noteMoyenne == noteMoyenne)&&(identical(other.nbAvis, nbAvis) || other.nbAvis == nbAvis));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region,latitude,longitude,adresse,quartier,ville,secteur,localiteNom,quartierNom,gabarit,whatsappExterne,const DeepCollectionEquality().hash(_typesPartenaire),noteMoyenne,nbAvis]);
+int get hashCode => Object.hashAll([runtimeType,id,nomCommerce,description,logo,photoCouverture,departement,region,latitude,longitude,adresse,quartier,ville,secteur,localiteNom,quartierNom,gabarit,typeEtablissement,whatsappExterne,const DeepCollectionEquality().hash(_typesPartenaire),noteMoyenne,nbAvis]);
 
 @override
 String toString() {
-  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region, latitude: $latitude, longitude: $longitude, adresse: $adresse, quartier: $quartier, ville: $ville, secteur: $secteur, localiteNom: $localiteNom, quartierNom: $quartierNom, gabarit: $gabarit, whatsappExterne: $whatsappExterne, typesPartenaire: $typesPartenaire, noteMoyenne: $noteMoyenne, nbAvis: $nbAvis)';
+  return 'PartenaireCategorie(id: $id, nomCommerce: $nomCommerce, description: $description, logo: $logo, photoCouverture: $photoCouverture, departement: $departement, region: $region, latitude: $latitude, longitude: $longitude, adresse: $adresse, quartier: $quartier, ville: $ville, secteur: $secteur, localiteNom: $localiteNom, quartierNom: $quartierNom, gabarit: $gabarit, typeEtablissement: $typeEtablissement, whatsappExterne: $whatsappExterne, typesPartenaire: $typesPartenaire, noteMoyenne: $noteMoyenne, nbAvis: $nbAvis)';
 }
 
 
@@ -297,7 +301,7 @@ abstract mixin class _$PartenaireCategorieCopyWith<$Res> implements $PartenaireC
   factory _$PartenaireCategorieCopyWith(_PartenaireCategorie value, $Res Function(_PartenaireCategorie) _then) = __$PartenaireCategorieCopyWithImpl;
 @override @useResult
 $Res call({
- int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region, double? latitude, double? longitude, String adresse, String quartier, String ville, String secteur,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom, String gabarit,@JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) String? whatsappExterne,@JsonKey(readValue: _lireTypes) List<String> typesPartenaire,@JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable) double? noteMoyenne,@JsonKey(name: 'nb_avis', fromJson: versInt) int nbAvis
+ int id,@JsonKey(name: 'nom_commerce') String nomCommerce, String description, String logo,@JsonKey(name: 'photo_couverture') String photoCouverture, String departement, String region, double? latitude, double? longitude, String adresse, String quartier, String ville, String secteur,@JsonKey(name: 'localite_nom') String? localiteNom,@JsonKey(name: 'quartier_nom') String? quartierNom, String gabarit,@JsonKey(name: 'type_etablissement', readValue: _lireTypeEtablissement) String? typeEtablissement,@JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) String? whatsappExterne,@JsonKey(readValue: _lireTypes) List<String> typesPartenaire,@JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable) double? noteMoyenne,@JsonKey(name: 'nb_avis', fromJson: versInt) int nbAvis
 });
 
 
@@ -314,7 +318,7 @@ class __$PartenaireCategorieCopyWithImpl<$Res>
 
 /// Create a copy of PartenaireCategorie
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,Object? latitude = freezed,Object? longitude = freezed,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? secteur = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? gabarit = null,Object? whatsappExterne = freezed,Object? typesPartenaire = null,Object? noteMoyenne = freezed,Object? nbAvis = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nomCommerce = null,Object? description = null,Object? logo = null,Object? photoCouverture = null,Object? departement = null,Object? region = null,Object? latitude = freezed,Object? longitude = freezed,Object? adresse = null,Object? quartier = null,Object? ville = null,Object? secteur = null,Object? localiteNom = freezed,Object? quartierNom = freezed,Object? gabarit = null,Object? typeEtablissement = freezed,Object? whatsappExterne = freezed,Object? typesPartenaire = null,Object? noteMoyenne = freezed,Object? nbAvis = null,}) {
   return _then(_PartenaireCategorie(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nomCommerce: null == nomCommerce ? _self.nomCommerce : nomCommerce // ignore: cast_nullable_to_non_nullable
@@ -332,7 +336,8 @@ as String,secteur: null == secteur ? _self.secteur : secteur // ignore: cast_nul
 as String,localiteNom: freezed == localiteNom ? _self.localiteNom : localiteNom // ignore: cast_nullable_to_non_nullable
 as String?,quartierNom: freezed == quartierNom ? _self.quartierNom : quartierNom // ignore: cast_nullable_to_non_nullable
 as String?,gabarit: null == gabarit ? _self.gabarit : gabarit // ignore: cast_nullable_to_non_nullable
-as String,whatsappExterne: freezed == whatsappExterne ? _self.whatsappExterne : whatsappExterne // ignore: cast_nullable_to_non_nullable
+as String,typeEtablissement: freezed == typeEtablissement ? _self.typeEtablissement : typeEtablissement // ignore: cast_nullable_to_non_nullable
+as String?,whatsappExterne: freezed == whatsappExterne ? _self.whatsappExterne : whatsappExterne // ignore: cast_nullable_to_non_nullable
 as String?,typesPartenaire: null == typesPartenaire ? _self._typesPartenaire : typesPartenaire // ignore: cast_nullable_to_non_nullable
 as List<String>,noteMoyenne: freezed == noteMoyenne ? _self.noteMoyenne : noteMoyenne // ignore: cast_nullable_to_non_nullable
 as double?,nbAvis: null == nbAvis ? _self.nbAvis : nbAvis // ignore: cast_nullable_to_non_nullable

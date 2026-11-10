@@ -17,6 +17,29 @@ Object? _lireTypes(Map<dynamic, dynamic> json, String _) {
   return const <String>[];
 }
 
+/// Type d'établissement (hôtelier) : `type_etablissement` à la racine ou
+/// sur l'établissement imbriqué ; null si inconnu.
+Object? _lireTypeEtablissement(Map<dynamic, dynamic> json, String _) {
+  final etab = json['etablissement'] ?? json['profil_etablissement'];
+  final brut =
+      json['type_etablissement'] ??
+      (etab is Map ? etab['type_etablissement'] : null);
+  return brut is String && brut.isNotEmpty ? brut : null;
+}
+
+/// Hôtels & Résidences : garde les cartes du type choisi (null : toutes).
+/// Une carte dont le type est inconnu reste affichée (le serveur a déjà
+/// filtré s'il connaît `?type_etablissement=`).
+List<PartenaireCategorie> filtrerEtablissements(
+  List<PartenaireCategorie> cartes,
+  String? type,
+) => type == null
+    ? cartes
+    : [
+        for (final c in cartes)
+          if (c.typeEtablissement == null || c.typeEtablissement == type) c,
+      ];
+
 /// Prestataire/commerce listé dans l'annuaire d'une catégorie.
 @freezed
 abstract class PartenaireCategorie with _$PartenaireCategorie {
@@ -42,6 +65,10 @@ abstract class PartenaireCategorie with _$PartenaireCategorie {
 
     /// Gabarit de page dédiée (« pharmacie », « mode »...) ; vide sinon.
     @Default('') String gabarit,
+
+    /// Hôtelier : hotel | residence_meublee (null si inconnu).
+    @JsonKey(name: 'type_etablissement', readValue: _lireTypeEtablissement)
+    String? typeEtablissement,
 
     /// Vrai WhatsApp, si le partenaire l'affiche (null sinon).
     @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)

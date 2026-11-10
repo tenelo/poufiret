@@ -24,6 +24,9 @@ import 'package:poufiret/global/widgets/barre_onglets.dart';
 import 'package:poufiret/global/widgets/carrousel_images.dart';
 import 'package:poufiret/global/widgets/image_reseau.dart';
 import 'package:dio/dio.dart';
+import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
+
+import 'aide_session.dart';
 
 /// Réponses RÉELLES de production, capturées le 2026-10-05 et rangées telles
 /// quelles dans test/fixtures/restaurants/. À cette date la carte, les menus
@@ -524,6 +527,8 @@ void main() {
             ).overrideWith((ref) => Stream.value(ferme)),
             ordersRepositoryProvider.overrideWithValue(commandes),
             paniersProvider.overrideWith((ref) async => const <Panier>[]),
+            // Panier réservé aux comptes connectés.
+            authProvider.overrideWith(SessionTest.new),
           ],
           child: MaterialApp(
             home: Builder(

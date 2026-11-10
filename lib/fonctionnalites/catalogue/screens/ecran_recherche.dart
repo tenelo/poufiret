@@ -294,14 +294,10 @@ class _LignePartenaire extends StatelessWidget {
       trailing: const Icon(Icons.chevron_right),
       onTap: () {
         suivreClicRecherche(context, rechercheId, 'partenaire', partenaire.id);
-        murInscriptionSi(
-          context,
-          connecte: connecte,
-          action: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) =>
-                  EcranVitrinePartenaire(partenaireId: partenaire.id),
-            ),
+        // Fiches libres : ouvertes sans compte.
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => EcranVitrinePartenaire(partenaireId: partenaire.id),
           ),
         );
       },
@@ -407,7 +403,7 @@ class _LigneArticleState extends ConsumerState<_LigneArticle> {
         _messageEchec(echec),
         action: SnackBarAction(
           label: 'Voir le partenaire',
-          onPressed: () => _siConnecte(_voirPartenaire),
+          onPressed: () => _voirPartenaire(),
         ),
       );
     }
@@ -547,7 +543,7 @@ class _LigneArticleState extends ConsumerState<_LigneArticle> {
           ),
           GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () => _siConnecte(_voirPartenaire),
+            onTap: () => _voirPartenaire(),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 4),
               child: Text(

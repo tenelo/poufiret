@@ -157,10 +157,11 @@ void main() {
     );
     await tester.tap(find.text('Ouvrir'));
     await tester.pumpAndSettle();
-    expect(find.byType(DialogueAuth), findsOneWidget);
-    expect(find.text("Se connecter ou s'inscrire"), findsOneWidget);
+    expect(find.byType(FeuilleConnexionRequise), findsOneWidget);
+    expect(find.text('Connexion requise'), findsOneWidget);
+    expect(find.text('Se connecter'), findsOneWidget);
     await tester.tap(find.text('Plus tard'));
     await tester.pumpAndSettle();
-    expect(find.byType(DialogueAuth), findsNothing);
+    expect(find.byType(FeuilleConnexionRequise), findsNothing);
   });
 }

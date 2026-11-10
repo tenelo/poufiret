@@ -782,9 +782,7 @@ class _BarrePanier extends ConsumerWidget {
             child: SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
-                onPressed: () => Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const EcranPanier())),
+                onPressed: () => ouvrirPanier(context),
                 icon: const Icon(Icons.shopping_cart_outlined),
                 label: Text(
                   'Voir le panier ($nb) · ${formatMontant(panier.total)}',

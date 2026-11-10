@@ -13,6 +13,7 @@ import '../../orders/screens/ecran_panier.dart';
 import '../donnees/restaurants_providers.dart';
 import '../metier_domaine/commande_plat.dart';
 import '../metier_domaine/restaurant_models.dart';
+import '../../auth/widgets/mur_inscription.dart';
 
 /// Ouvre la fiche d'un plat en feuille plein écran : un plat de la carte
 /// ([platId]) ou une ligne du menu du jour ([ligneId]).
@@ -74,6 +75,8 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
     required int quantite,
   }) async {
     if (_envoi) return;
+    // Panier réservé aux comptes connectés ; l'ajout reprend après connexion.
+    if (!await exigerConnexion(context) || !mounted) return;
     setState(() {
       _envoi = true;
       _erreur = null;

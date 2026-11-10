@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../fonctionnalites/analytics/donnees/analytics_providers.dart';
 import 'package:poufiret/fonctionnalites/chat/screens/ecran_conversations.dart';
 
+import '../../fonctionnalites/auth/screens/auth_notifier.dart';
+import '../../fonctionnalites/auth/widgets/mur_inscription.dart';
 import '../../fonctionnalites/chat/donnees/chat_providers.dart';
 import '../config/config.dart';
 import 'destinations.dart';
@@ -10,6 +12,10 @@ import '../../fonctionnalites/catalogue/screens/ecran_categories.dart';
 import '../../fonctionnalites/publicites/screens/ecran_publicites.dart';
 import '../../fonctionnalites/livraison/screens/ecran_livraison.dart';
 import '../../fonctionnalites/map/screens/ecran_map.dart';
+
+/// Onglets réservés aux comptes connectés : Messages, Livraison, Map
+/// (Accueil et Pubs restent libres).
+const ongletsProteges = {2, 3, 4};
 
 /// Coquille principale : héberge les onglets et bascule entre
 /// barre basse (mobile) et rail latéral (tablette / web) selon la largeur.
@@ -40,7 +46,17 @@ class _AppShellState extends ConsumerState<AppShell> {
   static const int _indexMessages = 2;
   static const int _indexLivraison = 3;
 
-  void _onTap(int i) {
+  /// Onglet touché : un onglet protégé demande d'abord la connexion, puis
+  /// s'ouvre une fois connecté.
+  Future<void> _onTap(int i) async {
+    if (ongletsProteges.contains(i) && !await exigerConnexion(context)) {
+      return;
+    }
+    if (!mounted) return;
+    _ouvrir(i);
+  }
+
+  void _ouvrir(int i) {
     // Trace la consultation du service livraison (fire-and-forget, silencieux).
     if (i == _indexLivraison && i != _index) {
       ref.read(analyticsRepositoryProvider).enregistrerVueServiceLivraison();
@@ -58,6 +74,14 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    // Déconnexion sur un onglet protégé : retour à l'accueil.
+    ref.listen(authProvider, (_, etat) {
+      if (etat.hasValue &&
+          etat.value == null &&
+          ongletsProteges.contains(_index)) {
+        setState(() => _index = 0);
+      }
+    });
     return LayoutBuilder(
       builder: (context, constraints) {
         final useRail = constraints.maxWidth >= 600;

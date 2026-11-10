@@ -11,9 +11,18 @@ import '../../../global/widgets/image_reseau.dart';
 import '../../publicites/widgets/couche_publicites.dart';
 import '../../map/donnees/map_providers.dart';
 import '../../map/donnees/service_position.dart';
+import '../../auth/widgets/mur_inscription.dart';
 
 /// Écran panier : regroupe les paniers par catégorie (option A).
 /// Chaque ligne indique le commerçant. Un bouton "Commander" par catégorie.
+/// Ouvre le panier ; sans compte connecté, demande d'abord la connexion.
+Future<void> ouvrirPanier(BuildContext context) async {
+  if (!await exigerConnexion(context) || !context.mounted) return;
+  await Navigator.of(
+    context,
+  ).push(MaterialPageRoute<void>(builder: (_) => const EcranPanier()));
+}
+
 class EcranPanier extends ConsumerWidget {
   const EcranPanier({super.key});
 

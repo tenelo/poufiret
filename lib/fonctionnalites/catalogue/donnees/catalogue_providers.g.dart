@@ -560,7 +560,7 @@ final class PartenairesParCategorieProvider
   /// choisies (le backend applique aussi la regle de portee).
   PartenairesParCategorieProvider._({
     required PartenairesParCategorieFamily super.from,
-    required String super.argument,
+    required ({String slug, String? typeEtablissement}) super.argument,
   }) : super(
          retry: null,
          name: r'partenairesParCategorieProvider',
@@ -576,7 +576,7 @@ final class PartenairesParCategorieProvider
   String toString() {
     return r'partenairesParCategorieProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -587,8 +587,13 @@ final class PartenairesParCategorieProvider
 
   @override
   Stream<List<PartenaireCategorie>> create(Ref ref) {
-    final argument = this.argument as String;
-    return partenairesParCategorie(ref, slug: argument);
+    final argument =
+        this.argument as ({String slug, String? typeEtablissement});
+    return partenairesParCategorie(
+      ref,
+      slug: argument.slug,
+      typeEtablissement: argument.typeEtablissement,
+    );
   }
 
   @override
@@ -604,13 +609,17 @@ final class PartenairesParCategorieProvider
 }
 
 String _$partenairesParCategorieHash() =>
-    r'96ed26a8949c25bdc5d60db38a3ec34cfc658a7e';
+    r'cf4d054c7cb0fa8daacb21949dc225497e56e4be';
 
 /// Annuaire des prestataires d'une catégorie, filtre par les localites
 /// choisies (le backend applique aussi la regle de portee).
 
 final class PartenairesParCategorieFamily extends $Family
-    with $FunctionalFamilyOverride<Stream<List<PartenaireCategorie>>, String> {
+    with
+        $FunctionalFamilyOverride<
+          Stream<List<PartenaireCategorie>>,
+          ({String slug, String? typeEtablissement})
+        > {
   PartenairesParCategorieFamily._()
     : super(
         retry: null,
@@ -623,8 +632,13 @@ final class PartenairesParCategorieFamily extends $Family
   /// Annuaire des prestataires d'une catégorie, filtre par les localites
   /// choisies (le backend applique aussi la regle de portee).
 
-  PartenairesParCategorieProvider call({required String slug}) =>
-      PartenairesParCategorieProvider._(argument: slug, from: this);
+  PartenairesParCategorieProvider call({
+    required String slug,
+    String? typeEtablissement,
+  }) => PartenairesParCategorieProvider._(
+    argument: (slug: slug, typeEtablissement: typeEtablissement),
+    from: this,
+  );
 
   @override
   String toString() => r'partenairesParCategorieProvider';

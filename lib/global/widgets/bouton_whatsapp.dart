@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../fonctionnalites/analytics/donnees/service_suivi.dart';
 import '../ui/liens_externes.dart';
 import '../ui/whatsapp_externe.dart';
+import '../../fonctionnalites/auth/widgets/mur_inscription.dart';
 
 /// Vert WhatsApp.
 const couleurWhatsapp = Color(couleurWhatsappValeur);
@@ -14,7 +15,9 @@ Future<void> ouvrirWhatsappExterne(
   BuildContext context,
   String numero, {
   int? partenaireId,
-}) {
+}) async {
+  // Contact du partenaire : compte connecté.
+  if (!await exigerConnexion(context) || !context.mounted) return;
   suivreEvenement(
     context,
     TypeEvenement.whatsappPartenaire,

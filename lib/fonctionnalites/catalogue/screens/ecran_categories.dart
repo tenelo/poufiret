@@ -82,9 +82,7 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
             icone: Icons.shopping_cart_outlined,
             tooltip: 'Mon panier',
             badge: nbPanier,
-            onTap: () => Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const EcranPanier())),
+            onTap: () => ouvrirPanier(context),
           ),
           const SizedBox(width: 20),
         ],

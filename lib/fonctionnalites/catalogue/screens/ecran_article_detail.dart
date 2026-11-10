@@ -23,6 +23,7 @@ import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../../global/widgets/carrousel_images.dart';
 import '../../../global/widgets/bouton_whatsapp.dart';
+import '../../auth/widgets/mur_inscription.dart';
 
 class EcranArticleDetail extends ConsumerWidget {
   final String slug;
@@ -169,6 +170,10 @@ class _Contenu extends ConsumerWidget {
           child: FilledButton(
             onPressed: article.estDisponible
                 ? () async {
+                    // Commander, demander ou discuter : compte connecté.
+                    if (!await exigerConnexion(context) || !context.mounted) {
+                      return;
+                    }
                     final messenger = ScaffoldMessenger.of(context);
                     final navigator = Navigator.of(context);
 
@@ -406,6 +411,8 @@ class _Contenu extends ConsumerWidget {
                                         color: theme.colorScheme.primary),
                                     tooltip: 'Discuter',
                                     onPressed: () async {
+                                      // Discuter : compte connecté.
+                                      if (!await exigerConnexion(context) || !context.mounted) {   return; }
                                       final messenger =
                                           ScaffoldMessenger.of(context);
                                       final navigator = Navigator.of(context);
