@@ -8,10 +8,11 @@ import 'restaurant_models.dart';
 int prixDeBase(Plat plat, {LigneMenu? ligne}) =>
     ligne?.prixEffectif ?? plat.prixEffectif;
 
-/// Prix final d'une variante = prix du plat + supplément (qui peut être
-/// négatif : « Demi » = 6 000 − 2 500).
+/// Prix final d'une variante : son prix propre s'il existe (il remplace
+/// celui du plat), sinon prix du plat + supplément (qui peut être négatif :
+/// « Demi » = 6 000 − 2 500).
 int prixVariante(Plat plat, VariantePlat variante) =>
-    prixDeBase(plat) + variante.prixSupplement;
+    variante.prixPour(prixDeBase(plat));
 
 /// Plus petit prix auquel le plat peut être commandé (« à partir de »).
 int prixAPartirDe(Plat plat) {
@@ -24,7 +25,7 @@ int prixAPartirDe(Plat plat) {
 
 /// Vrai si le prix dépend de la variante choisie.
 bool aPrixVariable(Plat plat) =>
-    plat.variantesActives.map((v) => v.prixSupplement).toSet().length > 1;
+    plat.variantesActives.map((v) => prixVariante(plat, v)).toSet().length > 1;
 
 /// Variante présélectionnée : celle par défaut, sinon la première.
 VariantePlat? varianteParDefaut(Plat plat) {
@@ -45,7 +46,7 @@ int prixUnitaire(
 }) {
   var prix = prixDeBase(plat, ligne: ligne);
   // Un plat du menu du jour est vendu à son prix de menu, sans variante.
-  if (ligne == null && variante != null) prix += variante.prixSupplement;
+  if (ligne == null && variante != null) prix = variante.prixPour(prix);
   for (final groupe in plat.groupesActifs) {
     for (final option in groupe.options) {
       if (optionIds.contains(option.id)) prix += option.prixSupplement;

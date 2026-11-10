@@ -2,19 +2,35 @@ import '../../../global/ui/format_montant.dart';
 import '../../restaurants/metier_domaine/restaurant_models.dart';
 import 'fiche_produit.dart';
 
-// Produits d'éleveur (porc, poulet...) : vendus à la pièce ou au kilo, vifs,
-// abattus entiers ou découpés. Fonctions pures, vérifiées par les tests.
+// Produits d'éleveur (porc, poulet, œufs...) : vendus à la pièce, au kilo,
+// par tête ou par plaquette ; vifs, abattus entiers, découpés ou produits.
+// Fonctions pures, vérifiées par les tests.
 
-/// Unité de vente d'un produit d'élevage.
+/// Unité de prix d'un produit d'élevage. Seul le kilo se commande en
+/// quantité décimale.
 enum UnitePrix {
-  piece,
-  kg;
+  piece('piece', 'pièce'),
+  kg('kg', 'kg'),
+  tete('tete', 'tête'),
+  plaquette('plaquette', 'plaquette');
 
-  /// Pas du sélecteur : 1 pièce, ou 0,5 kg.
+  const UnitePrix(this.code, this.libelle);
+
+  /// Valeur du serveur (`unite_prix`).
+  final String code;
+
+  /// « pièce », « kg », « tête », « plaquette ».
+  final String libelle;
+
+  /// Unité d'un code serveur ; pièce si inconnu.
+  static UnitePrix depuis(String? code) =>
+      values.firstWhere((u) => u.code == code, orElse: () => piece);
+
+  /// Pas du sélecteur : 0,5 kg, sinon 1 (pièce, tête, plaquette).
   num get pas => this == kg ? 0.5 : 1;
 
-  /// « / pièce », « / kg ».
-  String get suffixe => this == kg ? 'kg' : 'pièce';
+  /// « f/kg », « f/tête »… (affichage par défaut, en minuscules).
+  String get suffixe => 'f/$libelle';
 }
 
 /// Libellés des états de vente.
@@ -22,18 +38,24 @@ const libellesEtatVente = {
   'vivant': 'Vivant',
   'abattu_entier': 'Abattu entier',
   'decoupe': 'Découpé',
+  'produit': 'Produit',
 };
 
-/// « 3 500 F / pièce », « 2 500 f/kg » (prix au kilo).
-String formatPrixUnite(int prix, UnitePrix unite) => unite == UnitePrix.kg
-    ? '${formatMontant(prix).replaceFirst(RegExp(r'F$'), 'f')}/kg'
-    : '${formatMontant(prix)} / ${unite.suffixe}';
+/// « 2 500 f/kg », « 5 000 f/tête », « 3 500 f/pièce » : [suffixe] du
+/// serveur s'il est fourni, sinon celui de l'unité.
+String formatPrixUnite(int prix, UnitePrix unite, {String? suffixe}) {
+  final chiffres = formatMontant(prix).replaceFirst(RegExp(r'\s?F$'), '');
+  final s = suffixe == null || suffixe.trim().isEmpty
+      ? unite.suffixe
+      : suffixe.trim();
+  return '$chiffres\u00a0$s';
+}
 
-/// « 1 pièce », « 3 pièces », « 2,5 kg ».
+/// « 1 pièce », « 3 pièces », « 2,5 kg », « 2 têtes », « 1 plaquette ».
 String formatQuantiteUnite(num quantite, UnitePrix unite) =>
     unite == UnitePrix.kg
     ? formatQuantite(quantite, unite: 'kg')
-    : '${formatQuantite(quantite)} ${quantite > 1 ? 'pièces' : 'pièce'}';
+    : '${formatQuantite(quantite)} ${unite.libelle}${quantite > 1 ? 's' : ''}';
 
 /// Ramène [quantite] sur la grille de l'unité (entier, ou multiple de 0,5),
 /// entre un pas et [max] (stock connu ; null = libre).
@@ -60,8 +82,9 @@ String libelleTotalElevage(int prixUnitaire, num quantite, UnitePrix unite) =>
     ' = ${formatMontant(totalElevage(prixUnitaire, quantite))}';
 
 extension ProduitElevage on Plat {
+  /// Unité envoyée par le serveur, sinon celle de la fiche.
   UnitePrix get unitePrix =>
-      valeur('unite_prix') == 'kg' ? UnitePrix.kg : UnitePrix.piece;
+      UnitePrix.depuis(unitePrixCode ?? valeur('unite_prix'));
 
   String get espece => texte('espece');
 

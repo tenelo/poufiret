@@ -46,7 +46,7 @@ _LignePanier _$LignePanierFromJson(Map<String, dynamic> json) => _LignePanier(
   prixLigne: json['prix_ligne'] == null ? 0 : _versInt(json['prix_ligne']),
   noteSpeciale: json['note_speciale'] as String? ?? '',
   image: json['image'] as String?,
-  unitePrix: json['unite_prix'] as String? ?? '',
+  unitePrix: _lireUnite(json, 'unite_prix') as String? ?? '',
 );
 
 Map<String, dynamic> _$LignePanierToJson(_LignePanier instance) =>

@@ -23,6 +23,7 @@ import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../../global/widgets/carrousel_images.dart';
 import '../../../global/widgets/bouton_whatsapp.dart';
+import '../../../global/ui/format_montant.dart';
 import '../../auth/widgets/mur_inscription.dart';
 
 class EcranArticleDetail extends ConsumerWidget {
@@ -479,8 +480,12 @@ class _Contenu extends ConsumerWidget {
                                       dense: true,
                                       contentPadding: EdgeInsets.zero,
                                       title: Text(v.nom),
+                                      // Prix propre : il remplace celui
+                                      // de l'article.
                                       trailing: Text(
-                                        '+${v.supplement.toStringAsFixed(0)} FCFA',
+                                        v.prix != null
+                                            ? formatMontant(v.prix!)
+                                            : '+${v.supplement.toStringAsFixed(0)} FCFA',
                                       ),
                                     ),
                                   ),

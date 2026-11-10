@@ -10,6 +10,7 @@ _Variante _$VarianteFromJson(Map<String, dynamic> json) => _Variante(
   id: (json['id'] as num).toInt(),
   nom: json['nom'] as String,
   prixSupplement: json['prix_supplement'] as String? ?? '0',
+  prix: versIntNullable(json['prix']),
   estParDefaut: json['est_par_defaut'] as bool? ?? false,
 );
 
@@ -17,6 +18,7 @@ Map<String, dynamic> _$VarianteToJson(_Variante instance) => <String, dynamic>{
   'id': instance.id,
   'nom': instance.nom,
   'prix_supplement': instance.prixSupplement,
+  'prix': instance.prix,
   'est_par_defaut': instance.estParDefaut,
 };
 

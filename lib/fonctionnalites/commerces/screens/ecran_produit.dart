@@ -222,9 +222,9 @@ class _FicheState extends ConsumerState<_Fiche> {
     final g = widget.gabarit;
     final variantes = p.variantesActives;
     final variante = _variante;
-    final prixUnitaire = p.prixEffectif + (variante?.prixSupplement ?? 0);
+    final prixUnitaire = variante?.prixPour(p.prixEffectif) ?? p.prixEffectif;
     final prix = _elevage
-        ? formatPrixUnite(prixUnitaire, p.unitePrix)
+        ? formatPrixUnite(prixUnitaire, p.unitePrix, suffixe: p.suffixePrix)
         : variante == null
         ? prixLisible(p)
         : formatMontant(prixUnitaire);
@@ -321,7 +321,7 @@ class _FicheState extends ConsumerState<_Fiche> {
                       _Section(
                         titre: p.unitePrix == UnitePrix.kg
                             ? 'Poids (kg)'
-                            : 'Nombre de pièces',
+                            : 'Nombre de ${p.unitePrix.libelle}s',
                         child: _SelecteurQuantite(
                           produit: p,
                           quantite: _quantiteRetenue,
@@ -463,7 +463,7 @@ class _BarreAction extends StatelessWidget {
     } else if (elevage) {
       final bloque = !p.commandable || p.toutEpuise;
       final total = totalElevage(
-        p.prixEffectif + (variante?.prixSupplement ?? 0),
+        variante?.prixPour(p.prixEffectif) ?? p.prixEffectif,
         quantite,
       );
       bouton = FilledButton(
@@ -487,7 +487,7 @@ class _BarreAction extends StatelessWidget {
       final manque = exigeVariante && variante == null;
       final prix = variante == null
           ? prixAPartirDe(p)
-          : p.prixEffectif + variante!.prixSupplement;
+          : variante!.prixPour(p.prixEffectif);
       bouton = FilledButton(
         onPressed: epuise || manque || envoi ? null : onAjouter,
         child: envoi

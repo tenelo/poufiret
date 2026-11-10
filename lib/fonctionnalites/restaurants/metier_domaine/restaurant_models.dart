@@ -147,8 +147,9 @@ abstract class GroupeOptions with _$GroupeOptions {
       _$GroupeOptionsFromJson(json);
 }
 
-/// Variante d'un plat (« Entier », « Demi »). Son prix final est le prix du
-/// plat + [prixSupplement], qui peut être négatif.
+/// Variante d'un plat (« Entier », « Demi »). Son prix final est son prix
+/// propre ([prix], qui remplace celui du plat), sinon le prix du plat +
+/// [prixSupplement] (qui peut être négatif).
 @freezed
 abstract class VariantePlat with _$VariantePlat {
   const factory VariantePlat({
@@ -157,6 +158,14 @@ abstract class VariantePlat with _$VariantePlat {
     @JsonKey(name: 'prix_supplement', fromJson: versInt)
     @Default(0)
     int prixSupplement,
+
+    /// Prix propre (« Plaquette de 30 ») : remplace le prix du plat, sans
+    /// supplément. null : prix du plat + [prixSupplement].
+    @JsonKey(fromJson: versIntNullable) int? prix,
+
+    /// Prix unitaire facturé au panier, calculé par le serveur.
+    @JsonKey(name: 'prix_effectif', fromJson: versIntNullable)
+    int? prixEffectif,
     @JsonKey(name: 'est_par_defaut') @Default(false) bool estParDefaut,
     @JsonKey(name: 'est_active') @Default(true) bool estActive,
 
@@ -172,6 +181,11 @@ abstract class VariantePlat with _$VariantePlat {
 
   /// Épuisée (pointure plus en stock) : affichée grisée, non sélectionnable.
   bool get epuisee => estEpuise || (stock != null && stock! <= 0);
+
+  /// Prix unitaire de la variante pour un plat à [prixPlat] : celui du
+  /// serveur s'il est fourni, sinon son prix propre, sinon plat + supplément.
+  int prixPour(int prixPlat) =>
+      prixEffectif ?? prix ?? prixPlat + prixSupplement;
 }
 
 @freezed
@@ -213,6 +227,18 @@ abstract class Plat with _$Plat {
     )
     @Default(<String, dynamic>{})
     Map<String, dynamic> ficheSpecifique,
+
+    /// kg : quantité décimale (pas de 0,5) ; piece (ou absent) : entière.
+    @JsonKey(name: 'unite_vente') String? uniteVente,
+
+    /// Élevage : piece | kg | tete | plaquette (null hors élevage).
+    @JsonKey(name: 'unite_prix') String? unitePrixCode,
+
+    /// « kg », « tête »… (null hors élevage).
+    @JsonKey(name: 'unite_prix_libelle') String? unitePrixLibelle,
+
+    /// Suffixe du prix fourni par le serveur : « f/kg », « f/tête »…
+    @JsonKey(name: 'suffixe_prix') String? suffixePrix,
   }) = _Plat;
 
   factory Plat.fromJson(Map<String, dynamic> json) => _$PlatFromJson(json);
@@ -353,6 +379,7 @@ abstract class Restaurant with _$Restaurant {
     @Default(<String>[])
     List<String> servicesEnVigueur,
     @Default(<SectionCarte>[]) List<SectionCarte> carte,
+
     /// Note des clients (null sans avis) et nombre d'avis visibles.
     @JsonKey(name: 'note_moyenne', fromJson: versDoubleNullable)
     double? noteMoyenne,

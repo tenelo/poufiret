@@ -109,7 +109,7 @@ int prixAPartirDeProduit(Plat p) {
   final variantes = p.variantesActives.where((v) => !v.epuisee).toList();
   if (variantes.isEmpty) return p.prixEffectif;
   return variantes
-      .map((v) => p.prixEffectif + v.prixSupplement)
+      .map((v) => v.prixPour(p.prixEffectif))
       .reduce((a, b) => a < b ? a : b);
 }
 

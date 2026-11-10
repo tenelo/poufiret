@@ -130,6 +130,8 @@ _VariantePlat _$VariantePlatFromJson(Map<String, dynamic> json) =>
       prixSupplement: json['prix_supplement'] == null
           ? 0
           : versInt(json['prix_supplement']),
+      prix: versIntNullable(json['prix']),
+      prixEffectif: versIntNullable(json['prix_effectif']),
       estParDefaut: json['est_par_defaut'] as bool? ?? false,
       estActive: json['est_active'] as bool? ?? true,
       stock: versIntNullable(json['stock']),
@@ -141,6 +143,8 @@ Map<String, dynamic> _$VariantePlatToJson(_VariantePlat instance) =>
       'id': instance.id,
       'nom': instance.nom,
       'prix_supplement': instance.prixSupplement,
+      'prix': instance.prix,
+      'prix_effectif': instance.prixEffectif,
       'est_par_defaut': instance.estParDefaut,
       'est_active': instance.estActive,
       'stock': instance.stock,
@@ -178,6 +182,10 @@ _Plat _$PlatFromJson(Map<String, dynamic> json) => _Plat(
   ficheSpecifique: _lireFicheSpecifique(json, 'fiche_specifique') == null
       ? const <String, dynamic>{}
       : _versObjet(_lireFicheSpecifique(json, 'fiche_specifique')),
+  uniteVente: json['unite_vente'] as String?,
+  unitePrixCode: json['unite_prix'] as String?,
+  unitePrixLibelle: json['unite_prix_libelle'] as String?,
+  suffixePrix: json['suffixe_prix'] as String?,
 );
 
 Map<String, dynamic> _$PlatToJson(_Plat instance) => <String, dynamic>{
@@ -195,6 +203,10 @@ Map<String, dynamic> _$PlatToJson(_Plat instance) => <String, dynamic>{
   'groupes_options': instance.groupesOptions,
   'commandable': instance.commandable,
   'fiche_specifique': instance.ficheSpecifique,
+  'unite_vente': instance.uniteVente,
+  'unite_prix': instance.unitePrixCode,
+  'unite_prix_libelle': instance.unitePrixLibelle,
+  'suffixe_prix': instance.suffixePrix,
 };
 
 _SectionCarte _$SectionCarteFromJson(Map<String, dynamic> json) =>

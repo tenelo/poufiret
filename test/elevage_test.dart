@@ -29,6 +29,7 @@ import 'package:poufiret/fonctionnalites/orders/donnees/orders_repository.dart';
 import 'package:poufiret/fonctionnalites/orders/metier_domaine/orders_models.dart';
 import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_providers.dart';
 import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_repository.dart';
+import 'package:poufiret/fonctionnalites/restaurants/metier_domaine/commande_plat.dart';
 import 'package:poufiret/fonctionnalites/restaurants/metier_domaine/restaurant_models.dart';
 import 'package:poufiret/global/ui/format_montant.dart';
 
@@ -227,6 +228,123 @@ Override _detail(Plat p) => produitDetailProvider(
 ).overrideWith((ref) => Stream.value(ProduitDetail(produit: p)));
 
 void main() {
+  group('unités et variantes (backend f5301c7)', () {
+    Plat plat(Map<String, dynamic> extra) =>
+        Plat.fromJson({'id': 1, 'nom': 'Produit', 'prix': 5000, ...extra});
+
+    test('champs serveur : unité de vente, unité de prix, suffixe', () {
+      final p = plat({
+        'unite_vente': 'piece',
+        'unite_prix': 'tete',
+        'unite_prix_libelle': 'tête',
+        'suffixe_prix': 'f/tête',
+      });
+      expect(p.uniteVente, 'piece');
+      expect(p.unitePrix, UnitePrix.tete);
+      expect(p.unitePrixLibelle, 'tête');
+      expect(p.suffixePrix, 'f/tête');
+      // Hors élevage : rien.
+      final ordinaire = plat({'unite_vente': 'piece'});
+      expect(ordinaire.unitePrixCode, isNull);
+      expect(ordinaire.suffixePrix, isNull);
+    });
+
+    test('kg décimal (0,5) ; tête, plaquette, pièce entiers', () {
+      expect(UnitePrix.kg.pas, 0.5);
+      expect(ajusterQuantite(1.7, UnitePrix.kg), 1.5);
+      for (final u in [UnitePrix.tete, UnitePrix.plaquette, UnitePrix.piece]) {
+        expect(u.pas, 1);
+        expect(ajusterQuantite(2.7, u), 2);
+        expect(ajusterQuantite(0, u), 1);
+      }
+      expect(formatQuantiteUnite(2, UnitePrix.tete), '2 têtes');
+      expect(formatQuantiteUnite(1, UnitePrix.plaquette), '1 plaquette');
+      expect(formatQuantiteUnite(2.5, UnitePrix.kg), '2,5${_nb}kg');
+      expect(UnitePrix.depuis('plaquette'), UnitePrix.plaquette);
+      expect(UnitePrix.depuis('inconnue'), UnitePrix.piece);
+    });
+
+    test('suffixes en minuscules : serveur, sinon unité', () {
+      expect(
+        formatPrixUnite(5000, UnitePrix.tete, suffixe: 'f/tête'),
+        '5${_nb}000${_nb}f/tête',
+      );
+      expect(
+        formatPrixUnite(2500, UnitePrix.plaquette),
+        '2${_nb}500${_nb}f/plaquette',
+      );
+      expect(formatPrixUnite(2500, UnitePrix.kg), '2${_nb}500${_nb}f/kg');
+      expect(formatPrixUnite(3500, UnitePrix.piece), '3${_nb}500${_nb}f/pièce');
+      // Suffixe vide du serveur : celui de l'unité.
+      expect(
+        formatPrixUnite(5000, UnitePrix.tete, suffixe: ' '),
+        '5${_nb}000${_nb}f/tête',
+      );
+    });
+
+    test('variante à prix propre : remplace le prix, sans supplément', () {
+      final p = plat({
+        'variantes': [
+          {'id': 1, 'nom': 'Unité', 'prix_supplement': 0},
+          {
+            'id': 2,
+            'nom': 'Plaquette de 30',
+            'prix_supplement': 500,
+            'prix': '2500',
+          },
+          {'id': 3, 'nom': 'Pondeuse', 'prix_supplement': 1000},
+        ],
+      });
+      final unite = p.variantes[0];
+      final plaquette = p.variantes[1];
+      final pondeuse = p.variantes[2];
+      expect(plaquette.prix, 2500);
+      expect(plaquette.prixPour(p.prixEffectif), 2500);
+      // Sans prix propre : prix de l'article + supplément.
+      expect(pondeuse.prixPour(p.prixEffectif), 6000);
+      expect(unite.prixPour(p.prixEffectif), 5000);
+      expect(prixVariante(p, plaquette), 2500);
+      expect(prixUnitaire(p, variante: plaquette), 2500);
+      expect(prixUnitaire(p, variante: pondeuse), 6000);
+      expect(prixAPartirDe(p), 2500);
+      expect(prixAPartirDeProduit(p), 2500);
+      expect(aPrixVariable(p), isTrue);
+    });
+
+    test('prix_effectif du serveur prioritaire', () {
+      final p = plat({
+        'variantes': [
+          {
+            'id': 1,
+            'nom': 'Demi',
+            'prix_supplement': -2000,
+            'prix_effectif': '2800',
+          },
+        ],
+      });
+      expect(p.variantes.first.prixPour(p.prixEffectif), 2800);
+      expect(prixUnitaire(p, variante: p.variantes.first), 2800);
+    });
+
+    test('panier : unité lue sous « unite »', () {
+      final kg = LignePanier.fromJson({
+        'id': 1,
+        'quantite': '1.5',
+        'unite': 'kg',
+        'prix_unitaire': 2500,
+      });
+      expect(kg.unitePrix, 'kg');
+      expect(kg.pasQuantite, 0.5);
+      final piece = LignePanier.fromJson({
+        'id': 2,
+        'quantite': 2,
+        'unite': 'piece',
+        'prix_unitaire': 5000,
+      });
+      expect(piece.pasQuantite, 1);
+    });
+  });
+
   group('parsing de fiche_specifique', () {
     test('poulet vivant à la pièce, en stock, livrable', () {
       final p = _plat(_poulet);
@@ -316,14 +434,8 @@ void main() {
 
   group('calcul pièce / kg', () {
     test('prix à l\'unité', () {
-      expect(
-        formatPrixUnite(3500, UnitePrix.piece),
-        '${formatMontant(3500)} / pièce',
-      );
-      expect(
-        formatPrixUnite(2500, UnitePrix.kg),
-        '2${_nb}500${_nb}f/kg',
-      );
+      expect(formatPrixUnite(3500, UnitePrix.piece), '3${_nb}500${_nb}f/pièce');
+      expect(formatPrixUnite(2500, UnitePrix.kg), '2${_nb}500${_nb}f/kg');
     });
 
     test('quantité ramenée sur la grille de l\'unité et sous le stock', () {
@@ -467,7 +579,7 @@ void main() {
       expect(find.text('Porc découpé'), findsNothing);
       expect(find.text('Vivant'), findsOneWidget);
       expect(find.text('Abattu entier'), findsOneWidget);
-      expect(find.text('${formatMontant(3500)} / pièce'), findsOneWidget);
+      expect(find.text('3${_nb}500${_nb}f/pièce'), findsOneWidget);
       expect(find.text('Poids moyen : 2,5${_nb}kg'), findsOneWidget);
       expect(find.text('En stock : 12'), findsOneWidget);
       expect(find.text("Sur commande · 3 jours à l'avance"), findsOneWidget);

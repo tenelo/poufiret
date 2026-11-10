@@ -7,6 +7,9 @@ import '../../../global/ui/format_montant.dart';
 part 'orders_models.freezed.dart';
 part 'orders_models.g.dart';
 
+/// Unité d'une ligne de panier : `unite_prix`, ou `unite` (kg | piece).
+Object? _lireUnite(Map json, String cle) => json[cle] ?? json['unite'];
+
 /// Convertit un montant reçu en int, quel que soit son format JSON
 /// (int, double comme 7000.0, ou String comme "3500").
 /// Quantité : entière (pièces), ou décimale (kg, par pas de 0,5).
@@ -69,8 +72,11 @@ abstract class LignePanier with _$LignePanier {
     /// Photo de l'article (URL absolue), null si aucune.
     String? image,
 
-    /// piece | kg (éleveurs) ; vide pour un article ordinaire.
-    @JsonKey(name: 'unite_prix') @Default('') String unitePrix,
+    /// piece | kg (éleveurs) ; vide pour un article ordinaire. Le panier
+    /// l'envoie sous `unite`.
+    @JsonKey(name: 'unite_prix', readValue: _lireUnite)
+    @Default('')
+    String unitePrix,
   }) = _LignePanier;
 
   const LignePanier._();
@@ -174,6 +180,7 @@ abstract class Commande with _$Commande {
     @JsonKey(name: 'notes_client') @Default('') String notesClient,
     @Default(<LigneCommande>[]) List<LigneCommande> lignes,
     @JsonKey(name: 'created_at') String? createdAt,
+
     /// Avis client : notable maintenant (livré / terminé, pas encore noté),
     /// et id de l'avis déjà donné.
     @JsonKey(name: 'peut_noter') @Default(false) bool peutNoter,

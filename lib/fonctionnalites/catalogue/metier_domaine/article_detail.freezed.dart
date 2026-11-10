@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Variante {
 
- int get id; String get nom;@JsonKey(name: 'prix_supplement') String get prixSupplement;@JsonKey(name: 'est_par_defaut') bool get estParDefaut;
+ int get id; String get nom;@JsonKey(name: 'prix_supplement') String get prixSupplement;/// Prix propre : remplace le prix de l'article (null : supplément).
+@JsonKey(fromJson: versIntNullable) int? get prix;@JsonKey(name: 'est_par_defaut') bool get estParDefaut;
 /// Create a copy of Variante
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $VarianteCopyWith<Variante> get copyWith => _$VarianteCopyWithImpl<Variante>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Variante&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prixSupplement, prixSupplement) || other.prixSupplement == prixSupplement)&&(identical(other.estParDefaut, estParDefaut) || other.estParDefaut == estParDefaut));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Variante&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prixSupplement, prixSupplement) || other.prixSupplement == prixSupplement)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.estParDefaut, estParDefaut) || other.estParDefaut == estParDefaut));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,prixSupplement,estParDefaut);
+int get hashCode => Object.hash(runtimeType,id,nom,prixSupplement,prix,estParDefaut);
 
 @override
 String toString() {
-  return 'Variante(id: $id, nom: $nom, prixSupplement: $prixSupplement, estParDefaut: $estParDefaut)';
+  return 'Variante(id: $id, nom: $nom, prixSupplement: $prixSupplement, prix: $prix, estParDefaut: $estParDefaut)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $VarianteCopyWith<$Res>  {
   factory $VarianteCopyWith(Variante value, $Res Function(Variante) _then) = _$VarianteCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom,@JsonKey(name: 'prix_supplement') String prixSupplement,@JsonKey(name: 'est_par_defaut') bool estParDefaut
+ int id, String nom,@JsonKey(name: 'prix_supplement') String prixSupplement,@JsonKey(fromJson: versIntNullable) int? prix,@JsonKey(name: 'est_par_defaut') bool estParDefaut
 });
 
 
@@ -65,12 +66,13 @@ class _$VarianteCopyWithImpl<$Res>
 
 /// Create a copy of Variante
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? prixSupplement = null,Object? estParDefaut = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? prixSupplement = null,Object? prix = freezed,Object? estParDefaut = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
 as String,prixSupplement: null == prixSupplement ? _self.prixSupplement : prixSupplement // ignore: cast_nullable_to_non_nullable
-as String,estParDefaut: null == estParDefaut ? _self.estParDefaut : estParDefaut // ignore: cast_nullable_to_non_nullable
+as String,prix: freezed == prix ? _self.prix : prix // ignore: cast_nullable_to_non_nullable
+as int?,estParDefaut: null == estParDefaut ? _self.estParDefaut : estParDefaut // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -156,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom, @JsonKey(name: 'prix_supplement')  String prixSupplement, @JsonKey(name: 'est_par_defaut')  bool estParDefaut)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom, @JsonKey(name: 'prix_supplement')  String prixSupplement, @JsonKey(fromJson: versIntNullable)  int? prix, @JsonKey(name: 'est_par_defaut')  bool estParDefaut)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Variante() when $default != null:
-return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut);case _:
+return $default(_that.id,_that.nom,_that.prixSupplement,_that.prix,_that.estParDefaut);case _:
   return orElse();
 
 }
@@ -177,10 +179,10 @@ return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut);case
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom, @JsonKey(name: 'prix_supplement')  String prixSupplement, @JsonKey(name: 'est_par_defaut')  bool estParDefaut)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom, @JsonKey(name: 'prix_supplement')  String prixSupplement, @JsonKey(fromJson: versIntNullable)  int? prix, @JsonKey(name: 'est_par_defaut')  bool estParDefaut)  $default,) {final _that = this;
 switch (_that) {
 case _Variante():
-return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut);case _:
+return $default(_that.id,_that.nom,_that.prixSupplement,_that.prix,_that.estParDefaut);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +199,10 @@ return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut);case
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom, @JsonKey(name: 'prix_supplement')  String prixSupplement, @JsonKey(name: 'est_par_defaut')  bool estParDefaut)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom, @JsonKey(name: 'prix_supplement')  String prixSupplement, @JsonKey(fromJson: versIntNullable)  int? prix, @JsonKey(name: 'est_par_defaut')  bool estParDefaut)?  $default,) {final _that = this;
 switch (_that) {
 case _Variante() when $default != null:
-return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut);case _:
+return $default(_that.id,_that.nom,_that.prixSupplement,_that.prix,_that.estParDefaut);case _:
   return null;
 
 }
@@ -212,12 +214,14 @@ return $default(_that.id,_that.nom,_that.prixSupplement,_that.estParDefaut);case
 @JsonSerializable()
 
 class _Variante extends Variante {
-  const _Variante({required this.id, required this.nom, @JsonKey(name: 'prix_supplement') this.prixSupplement = '0', @JsonKey(name: 'est_par_defaut') this.estParDefaut = false}): super._();
+  const _Variante({required this.id, required this.nom, @JsonKey(name: 'prix_supplement') this.prixSupplement = '0', @JsonKey(fromJson: versIntNullable) this.prix, @JsonKey(name: 'est_par_defaut') this.estParDefaut = false}): super._();
   factory _Variante.fromJson(Map<String, dynamic> json) => _$VarianteFromJson(json);
 
 @override final  int id;
 @override final  String nom;
 @override@JsonKey(name: 'prix_supplement') final  String prixSupplement;
+/// Prix propre : remplace le prix de l'article (null : supplément).
+@override@JsonKey(fromJson: versIntNullable) final  int? prix;
 @override@JsonKey(name: 'est_par_defaut') final  bool estParDefaut;
 
 /// Create a copy of Variante
@@ -233,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Variante&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prixSupplement, prixSupplement) || other.prixSupplement == prixSupplement)&&(identical(other.estParDefaut, estParDefaut) || other.estParDefaut == estParDefaut));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Variante&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prixSupplement, prixSupplement) || other.prixSupplement == prixSupplement)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.estParDefaut, estParDefaut) || other.estParDefaut == estParDefaut));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,prixSupplement,estParDefaut);
+int get hashCode => Object.hash(runtimeType,id,nom,prixSupplement,prix,estParDefaut);
 
 @override
 String toString() {
-  return 'Variante(id: $id, nom: $nom, prixSupplement: $prixSupplement, estParDefaut: $estParDefaut)';
+  return 'Variante(id: $id, nom: $nom, prixSupplement: $prixSupplement, prix: $prix, estParDefaut: $estParDefaut)';
 }
 
 
@@ -253,7 +257,7 @@ abstract mixin class _$VarianteCopyWith<$Res> implements $VarianteCopyWith<$Res>
   factory _$VarianteCopyWith(_Variante value, $Res Function(_Variante) _then) = __$VarianteCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom,@JsonKey(name: 'prix_supplement') String prixSupplement,@JsonKey(name: 'est_par_defaut') bool estParDefaut
+ int id, String nom,@JsonKey(name: 'prix_supplement') String prixSupplement,@JsonKey(fromJson: versIntNullable) int? prix,@JsonKey(name: 'est_par_defaut') bool estParDefaut
 });
 
 
@@ -270,12 +274,13 @@ class __$VarianteCopyWithImpl<$Res>
 
 /// Create a copy of Variante
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? prixSupplement = null,Object? estParDefaut = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? prixSupplement = null,Object? prix = freezed,Object? estParDefaut = null,}) {
   return _then(_Variante(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
 as String,prixSupplement: null == prixSupplement ? _self.prixSupplement : prixSupplement // ignore: cast_nullable_to_non_nullable
-as String,estParDefaut: null == estParDefaut ? _self.estParDefaut : estParDefaut // ignore: cast_nullable_to_non_nullable
+as String,prix: freezed == prix ? _self.prix : prix // ignore: cast_nullable_to_non_nullable
+as int?,estParDefaut: null == estParDefaut ? _self.estParDefaut : estParDefaut // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

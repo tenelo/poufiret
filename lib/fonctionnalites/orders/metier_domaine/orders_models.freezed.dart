@@ -287,8 +287,9 @@ mixin _$LignePanier {
  int get id; int? get article;/// Ligne de menu du jour d'où vient le plat (restaurants).
 @JsonKey(name: 'ligne_menu') int? get ligneMenu;@JsonKey(name: 'article_nom') String get articleNom;@JsonKey(name: 'variante_id') int? get varianteId;@JsonKey(name: 'variante_nom') String get varianteNom; List<SupplementSnapshot> get supplements;/// Options de plat choisies (restaurants) : `{nom, prix_supplement}`.
  List<SupplementSnapshot> get options;@JsonKey(fromJson: _versQuantite) num get quantite;@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int get prixUnitaire;@JsonKey(name: 'prix_ligne', fromJson: _versInt) int get prixLigne;@JsonKey(name: 'note_speciale') String get noteSpeciale;/// Photo de l'article (URL absolue), null si aucune.
- String? get image;/// piece | kg (éleveurs) ; vide pour un article ordinaire.
-@JsonKey(name: 'unite_prix') String get unitePrix;
+ String? get image;/// piece | kg (éleveurs) ; vide pour un article ordinaire. Le panier
+/// l'envoie sous `unite`.
+@JsonKey(name: 'unite_prix', readValue: _lireUnite) String get unitePrix;
 /// Create a copy of LignePanier
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -321,7 +322,7 @@ abstract mixin class $LignePanierCopyWith<$Res>  {
   factory $LignePanierCopyWith(LignePanier value, $Res Function(LignePanier) _then) = _$LignePanierCopyWithImpl;
 @useResult
 $Res call({
- int id, int? article,@JsonKey(name: 'ligne_menu') int? ligneMenu,@JsonKey(name: 'article_nom') String articleNom,@JsonKey(name: 'variante_id') int? varianteId,@JsonKey(name: 'variante_nom') String varianteNom, List<SupplementSnapshot> supplements, List<SupplementSnapshot> options,@JsonKey(fromJson: _versQuantite) num quantite,@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int prixUnitaire,@JsonKey(name: 'prix_ligne', fromJson: _versInt) int prixLigne,@JsonKey(name: 'note_speciale') String noteSpeciale, String? image,@JsonKey(name: 'unite_prix') String unitePrix
+ int id, int? article,@JsonKey(name: 'ligne_menu') int? ligneMenu,@JsonKey(name: 'article_nom') String articleNom,@JsonKey(name: 'variante_id') int? varianteId,@JsonKey(name: 'variante_nom') String varianteNom, List<SupplementSnapshot> supplements, List<SupplementSnapshot> options,@JsonKey(fromJson: _versQuantite) num quantite,@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int prixUnitaire,@JsonKey(name: 'prix_ligne', fromJson: _versInt) int prixLigne,@JsonKey(name: 'note_speciale') String noteSpeciale, String? image,@JsonKey(name: 'unite_prix', readValue: _lireUnite) String unitePrix
 });
 
 
@@ -439,7 +440,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int? article, @JsonKey(name: 'ligne_menu')  int? ligneMenu, @JsonKey(name: 'article_nom')  String articleNom, @JsonKey(name: 'variante_id')  int? varianteId, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  List<SupplementSnapshot> options, @JsonKey(fromJson: _versQuantite)  num quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale,  String? image, @JsonKey(name: 'unite_prix')  String unitePrix)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int? article, @JsonKey(name: 'ligne_menu')  int? ligneMenu, @JsonKey(name: 'article_nom')  String articleNom, @JsonKey(name: 'variante_id')  int? varianteId, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  List<SupplementSnapshot> options, @JsonKey(fromJson: _versQuantite)  num quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale,  String? image, @JsonKey(name: 'unite_prix', readValue: _lireUnite)  String unitePrix)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LignePanier() when $default != null:
 return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.varianteId,_that.varianteNom,_that.supplements,_that.options,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale,_that.image,_that.unitePrix);case _:
@@ -460,7 +461,7 @@ return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.va
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int? article, @JsonKey(name: 'ligne_menu')  int? ligneMenu, @JsonKey(name: 'article_nom')  String articleNom, @JsonKey(name: 'variante_id')  int? varianteId, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  List<SupplementSnapshot> options, @JsonKey(fromJson: _versQuantite)  num quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale,  String? image, @JsonKey(name: 'unite_prix')  String unitePrix)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int? article, @JsonKey(name: 'ligne_menu')  int? ligneMenu, @JsonKey(name: 'article_nom')  String articleNom, @JsonKey(name: 'variante_id')  int? varianteId, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  List<SupplementSnapshot> options, @JsonKey(fromJson: _versQuantite)  num quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale,  String? image, @JsonKey(name: 'unite_prix', readValue: _lireUnite)  String unitePrix)  $default,) {final _that = this;
 switch (_that) {
 case _LignePanier():
 return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.varianteId,_that.varianteNom,_that.supplements,_that.options,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale,_that.image,_that.unitePrix);case _:
@@ -480,7 +481,7 @@ return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.va
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int? article, @JsonKey(name: 'ligne_menu')  int? ligneMenu, @JsonKey(name: 'article_nom')  String articleNom, @JsonKey(name: 'variante_id')  int? varianteId, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  List<SupplementSnapshot> options, @JsonKey(fromJson: _versQuantite)  num quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale,  String? image, @JsonKey(name: 'unite_prix')  String unitePrix)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int? article, @JsonKey(name: 'ligne_menu')  int? ligneMenu, @JsonKey(name: 'article_nom')  String articleNom, @JsonKey(name: 'variante_id')  int? varianteId, @JsonKey(name: 'variante_nom')  String varianteNom,  List<SupplementSnapshot> supplements,  List<SupplementSnapshot> options, @JsonKey(fromJson: _versQuantite)  num quantite, @JsonKey(name: 'prix_unitaire', fromJson: _versInt)  int prixUnitaire, @JsonKey(name: 'prix_ligne', fromJson: _versInt)  int prixLigne, @JsonKey(name: 'note_speciale')  String noteSpeciale,  String? image, @JsonKey(name: 'unite_prix', readValue: _lireUnite)  String unitePrix)?  $default,) {final _that = this;
 switch (_that) {
 case _LignePanier() when $default != null:
 return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.varianteId,_that.varianteNom,_that.supplements,_that.options,_that.quantite,_that.prixUnitaire,_that.prixLigne,_that.noteSpeciale,_that.image,_that.unitePrix);case _:
@@ -495,7 +496,7 @@ return $default(_that.id,_that.article,_that.ligneMenu,_that.articleNom,_that.va
 @JsonSerializable()
 
 class _LignePanier extends LignePanier {
-  const _LignePanier({required this.id, this.article, @JsonKey(name: 'ligne_menu') this.ligneMenu, @JsonKey(name: 'article_nom') this.articleNom = '', @JsonKey(name: 'variante_id') this.varianteId, @JsonKey(name: 'variante_nom') this.varianteNom = '', final  List<SupplementSnapshot> supplements = const <SupplementSnapshot>[], final  List<SupplementSnapshot> options = const <SupplementSnapshot>[], @JsonKey(fromJson: _versQuantite) this.quantite = 1, @JsonKey(name: 'prix_unitaire', fromJson: _versInt) this.prixUnitaire = 0, @JsonKey(name: 'prix_ligne', fromJson: _versInt) this.prixLigne = 0, @JsonKey(name: 'note_speciale') this.noteSpeciale = '', this.image, @JsonKey(name: 'unite_prix') this.unitePrix = ''}): _supplements = supplements,_options = options,super._();
+  const _LignePanier({required this.id, this.article, @JsonKey(name: 'ligne_menu') this.ligneMenu, @JsonKey(name: 'article_nom') this.articleNom = '', @JsonKey(name: 'variante_id') this.varianteId, @JsonKey(name: 'variante_nom') this.varianteNom = '', final  List<SupplementSnapshot> supplements = const <SupplementSnapshot>[], final  List<SupplementSnapshot> options = const <SupplementSnapshot>[], @JsonKey(fromJson: _versQuantite) this.quantite = 1, @JsonKey(name: 'prix_unitaire', fromJson: _versInt) this.prixUnitaire = 0, @JsonKey(name: 'prix_ligne', fromJson: _versInt) this.prixLigne = 0, @JsonKey(name: 'note_speciale') this.noteSpeciale = '', this.image, @JsonKey(name: 'unite_prix', readValue: _lireUnite) this.unitePrix = ''}): _supplements = supplements,_options = options,super._();
   factory _LignePanier.fromJson(Map<String, dynamic> json) => _$LignePanierFromJson(json);
 
 @override final  int id;
@@ -527,8 +528,9 @@ class _LignePanier extends LignePanier {
 @override@JsonKey(name: 'note_speciale') final  String noteSpeciale;
 /// Photo de l'article (URL absolue), null si aucune.
 @override final  String? image;
-/// piece | kg (éleveurs) ; vide pour un article ordinaire.
-@override@JsonKey(name: 'unite_prix') final  String unitePrix;
+/// piece | kg (éleveurs) ; vide pour un article ordinaire. Le panier
+/// l'envoie sous `unite`.
+@override@JsonKey(name: 'unite_prix', readValue: _lireUnite) final  String unitePrix;
 
 /// Create a copy of LignePanier
 /// with the given fields replaced by the non-null parameter values.
@@ -563,7 +565,7 @@ abstract mixin class _$LignePanierCopyWith<$Res> implements $LignePanierCopyWith
   factory _$LignePanierCopyWith(_LignePanier value, $Res Function(_LignePanier) _then) = __$LignePanierCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int? article,@JsonKey(name: 'ligne_menu') int? ligneMenu,@JsonKey(name: 'article_nom') String articleNom,@JsonKey(name: 'variante_id') int? varianteId,@JsonKey(name: 'variante_nom') String varianteNom, List<SupplementSnapshot> supplements, List<SupplementSnapshot> options,@JsonKey(fromJson: _versQuantite) num quantite,@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int prixUnitaire,@JsonKey(name: 'prix_ligne', fromJson: _versInt) int prixLigne,@JsonKey(name: 'note_speciale') String noteSpeciale, String? image,@JsonKey(name: 'unite_prix') String unitePrix
+ int id, int? article,@JsonKey(name: 'ligne_menu') int? ligneMenu,@JsonKey(name: 'article_nom') String articleNom,@JsonKey(name: 'variante_id') int? varianteId,@JsonKey(name: 'variante_nom') String varianteNom, List<SupplementSnapshot> supplements, List<SupplementSnapshot> options,@JsonKey(fromJson: _versQuantite) num quantite,@JsonKey(name: 'prix_unitaire', fromJson: _versInt) int prixUnitaire,@JsonKey(name: 'prix_ligne', fromJson: _versInt) int prixLigne,@JsonKey(name: 'note_speciale') String noteSpeciale, String? image,@JsonKey(name: 'unite_prix', readValue: _lireUnite) String unitePrix
 });
 
 

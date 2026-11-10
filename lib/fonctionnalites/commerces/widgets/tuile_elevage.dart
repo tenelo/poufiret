@@ -66,7 +66,11 @@ class TuileElevage extends StatelessWidget {
                       ],
                       const Spacer(),
                       Text(
-                        formatPrixUnite(p.prixEffectif, p.unitePrix),
+                        formatPrixUnite(
+                          p.prixEffectif,
+                          p.unitePrix,
+                          suffixe: p.suffixePrix,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodyMedium?.copyWith(
