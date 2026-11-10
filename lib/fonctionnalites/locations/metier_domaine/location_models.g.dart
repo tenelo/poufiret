@@ -104,6 +104,7 @@ _Loueur _$LoueurFromJson(Map<String, dynamic> json) => _Loueur(
   couverture: json['couverture'] as String? ?? '',
   telephonePro: json['telephone_pro'] as String? ?? '',
   whatsapp: json['whatsapp'] as String? ?? '',
+  whatsappExterne: lireWhatsappExterne(json, 'whatsapp_externe') as String?,
 );
 
 Map<String, dynamic> _$LoueurToJson(_Loueur instance) => <String, dynamic>{
@@ -113,6 +114,7 @@ Map<String, dynamic> _$LoueurToJson(_Loueur instance) => <String, dynamic>{
   'couverture': instance.couverture,
   'telephone_pro': instance.telephonePro,
   'whatsapp': instance.whatsapp,
+  'whatsapp_externe': instance.whatsappExterne,
 };
 
 _LogementResume _$LogementResumeFromJson(

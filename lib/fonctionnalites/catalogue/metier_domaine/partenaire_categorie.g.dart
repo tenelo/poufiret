@@ -24,6 +24,7 @@ _PartenaireCategorie _$PartenaireCategorieFromJson(Map<String, dynamic> json) =>
       localiteNom: json['localite_nom'] as String?,
       quartierNom: json['quartier_nom'] as String?,
       gabarit: json['gabarit'] as String? ?? '',
+      whatsappExterne: lireWhatsappExterne(json, 'whatsapp_externe') as String?,
       typesPartenaire:
           (_lireTypes(json, 'typesPartenaire') as List<dynamic>?)
               ?.map((e) => e as String)
@@ -52,6 +53,7 @@ Map<String, dynamic> _$PartenaireCategorieToJson(
   'localite_nom': instance.localiteNom,
   'quartier_nom': instance.quartierNom,
   'gabarit': instance.gabarit,
+  'whatsapp_externe': instance.whatsappExterne,
   'typesPartenaire': instance.typesPartenaire,
   'note_moyenne': instance.noteMoyenne,
   'nb_avis': instance.nbAvis,

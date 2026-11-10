@@ -22,6 +22,7 @@ import 'package:poufiret/fonctionnalites/social/widgets/section_commentaires.dar
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../../global/widgets/carrousel_images.dart';
+import '../../../global/widgets/bouton_whatsapp.dart';
 
 class EcranArticleDetail extends ConsumerWidget {
   final String slug;
@@ -428,6 +429,11 @@ class _Contenu extends ConsumerWidget {
                                                 'Connexion requise pour discuter.'));
                                       }
                                     },
+                                  ),
+                                  // Vrai WhatsApp, si le partenaire l'affiche.
+                                  IconeWhatsappExterne(
+                                    numero: article.whatsappExterne,
+                                    partenaireId: article.partenaire,
                                   ),
                                 ],
                               ),

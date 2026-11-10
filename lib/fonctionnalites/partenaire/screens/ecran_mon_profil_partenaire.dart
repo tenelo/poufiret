@@ -18,6 +18,7 @@ import '../../geo/widgets/cascade_localisation.dart';
 import '../../map/donnees/map_providers.dart';
 import '../../map/donnees/service_position.dart';
 import '../donnees/espace_partenaire_providers.dart';
+import '../widgets/interrupteur_whatsapp.dart';
 import '../../../global/widgets/image_reseau.dart';
 
 /// Le partenaire gere sa vitrine : identite, contacts, localisation.
@@ -274,6 +275,21 @@ class _FormulaireState extends ConsumerState<_Formulaire> {
                           : null,
                     ),
                     const SizedBox(height: 12),
+                    // Vrai WhatsApp affiché aux clients (bouton vert).
+                    if (e.key == 'whatsapp') ...[
+                      InterrupteurWhatsappExterne(
+                        actif: p['whatsapp_externe_actif'] == true,
+                        numero: (p['whatsapp'] ?? '').toString(),
+                        enregistrer: (actif) async {
+                          await ref
+                              .read(espacePartenaireRepositoryProvider)
+                              .modifierProfil({'whatsapp_externe_actif': actif});
+                          ref.invalidate(monProfilPartenaireProvider);
+                          invaliderPartenaires(ref);
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                    ],
                   ],
 
                   _SectionLocalisation(

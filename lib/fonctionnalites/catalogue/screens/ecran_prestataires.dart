@@ -22,6 +22,7 @@ import '../../locations/screens/ecran_loueur.dart';
 import '../../restaurants/metier_domaine/types_restauration.dart';
 import '../../restaurants/screens/ecran_restaurant.dart';
 import '../../avis/widgets/widgets_avis.dart';
+import '../../../global/widgets/bouton_whatsapp.dart';
 
 /// Annuaire d'une catégorie : les prestataires/commerces (couverture + nom).
 /// Le client choisit un commerce avant de voir ses articles.
@@ -367,6 +368,11 @@ class _CartePrestataire extends ConsumerWidget {
                         );
                       }
                     },
+                  ),
+                  // Vrai WhatsApp, si le partenaire l'affiche.
+                  IconeWhatsappExterne(
+                    numero: prestataire.whatsappExterne,
+                    partenaireId: prestataire.id,
                   ),
                 ],
               ),

@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../global/json/convertisseurs.dart';
 
 import '../../geo/metier_domaine/localisation.dart' as geo;
+import '../../../global/ui/whatsapp_externe.dart';
 
 part 'partenaire_categorie.freezed.dart';
 part 'partenaire_categorie.g.dart';
@@ -41,6 +42,10 @@ abstract class PartenaireCategorie with _$PartenaireCategorie {
 
     /// Gabarit de page dédiée (« pharmacie », « mode »...) ; vide sinon.
     @Default('') String gabarit,
+
+    /// Vrai WhatsApp, si le partenaire l'affiche (null sinon).
+    @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)
+    String? whatsappExterne,
     @JsonKey(readValue: _lireTypes)
     @Default(<String>[])
     List<String> typesPartenaire,

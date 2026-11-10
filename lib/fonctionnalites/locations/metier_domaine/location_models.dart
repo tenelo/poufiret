@@ -4,6 +4,7 @@ import '../../../global/json/convertisseurs.dart';
 import '../../../global/ui/format_montant.dart';
 import '../../geo/metier_domaine/localisation.dart';
 import 'vente_models.dart';
+import '../../../global/ui/whatsapp_externe.dart';
 
 part 'location_models.freezed.dart';
 part 'location_models.g.dart';
@@ -144,6 +145,10 @@ abstract class Loueur with _$Loueur {
     @Default('') String couverture,
     @JsonKey(name: 'telephone_pro') @Default('') String telephonePro,
     @Default('') String whatsapp,
+
+    /// Vrai WhatsApp, si le partenaire l'affiche (null sinon).
+    @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)
+    String? whatsappExterne,
   }) = _Loueur;
 
   factory Loueur.fromJson(Map<String, dynamic> json) => _$LoueurFromJson(json);

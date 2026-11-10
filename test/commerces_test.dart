@@ -56,6 +56,8 @@ Map<String, dynamic> _commerce(
   'nom': 'Commerce $id',
   'telephone_pro': '0700000$id',
   'whatsapp': '0700000$id',
+  // Le commerçant affiche son WhatsApp aux clients.
+  'whatsapp_externe': '2250700000$id',
   'est_ouvert': true,
   'pagination_publique': pagine,
   'fiche': fiche,

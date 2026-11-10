@@ -48,6 +48,7 @@ const _jsonPage = '''
   "etablissement": {
     "id": 90, "nom": "Hôtel Le Kôrô", "logo": null, "couverture": null,
     "telephone_pro": "0700000090", "whatsapp": "0700000090",
+    "whatsapp_externe": "2250700000090",
     "type_etablissement": "hotel", "type_etablissement_libelle": "Hôtel",
     "description": "Au calme, près du centre.",
     "galerie": [],
@@ -620,6 +621,8 @@ void main() {
           longitude: null,
           panoramas: const [],
           whatsapp: '',
+          // WhatsApp non affiché aux clients.
+          whatsappExterne: null,
           etoiles: null,
         ),
       );

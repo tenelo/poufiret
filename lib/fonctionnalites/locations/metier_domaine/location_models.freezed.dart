@@ -654,7 +654,8 @@ as ChampsVente,
 /// @nodoc
 mixin _$Loueur {
 
- int get id; String get nom; String get logo; String get couverture;@JsonKey(name: 'telephone_pro') String get telephonePro; String get whatsapp;
+ int get id; String get nom; String get logo; String get couverture;@JsonKey(name: 'telephone_pro') String get telephonePro; String get whatsapp;/// Vrai WhatsApp, si le partenaire l'affiche (null sinon).
+@JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) String? get whatsappExterne;
 /// Create a copy of Loueur
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -667,16 +668,16 @@ $LoueurCopyWith<Loueur> get copyWith => _$LoueurCopyWithImpl<Loueur>(this as Lou
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Loueur&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Loueur&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.whatsappExterne, whatsappExterne) || other.whatsappExterne == whatsappExterne));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,logo,couverture,telephonePro,whatsapp);
+int get hashCode => Object.hash(runtimeType,id,nom,logo,couverture,telephonePro,whatsapp,whatsappExterne);
 
 @override
 String toString() {
-  return 'Loueur(id: $id, nom: $nom, logo: $logo, couverture: $couverture, telephonePro: $telephonePro, whatsapp: $whatsapp)';
+  return 'Loueur(id: $id, nom: $nom, logo: $logo, couverture: $couverture, telephonePro: $telephonePro, whatsapp: $whatsapp, whatsappExterne: $whatsappExterne)';
 }
 
 
@@ -687,7 +688,7 @@ abstract mixin class $LoueurCopyWith<$Res>  {
   factory $LoueurCopyWith(Loueur value, $Res Function(Loueur) _then) = _$LoueurCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom, String logo, String couverture,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp
+ int id, String nom, String logo, String couverture,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) String? whatsappExterne
 });
 
 
@@ -704,7 +705,7 @@ class _$LoueurCopyWithImpl<$Res>
 
 /// Create a copy of Loueur
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? logo = null,Object? couverture = null,Object? telephonePro = null,Object? whatsapp = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? logo = null,Object? couverture = null,Object? telephonePro = null,Object? whatsapp = null,Object? whatsappExterne = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -712,7 +713,8 @@ as String,logo: null == logo ? _self.logo : logo // ignore: cast_nullable_to_non
 as String,couverture: null == couverture ? _self.couverture : couverture // ignore: cast_nullable_to_non_nullable
 as String,telephonePro: null == telephonePro ? _self.telephonePro : telephonePro // ignore: cast_nullable_to_non_nullable
 as String,whatsapp: null == whatsapp ? _self.whatsapp : whatsapp // ignore: cast_nullable_to_non_nullable
-as String,
+as String,whatsappExterne: freezed == whatsappExterne ? _self.whatsappExterne : whatsappExterne // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -797,10 +799,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String logo,  String couverture, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String logo,  String couverture, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)  String? whatsappExterne)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Loueur() when $default != null:
-return $default(_that.id,_that.nom,_that.logo,_that.couverture,_that.telephonePro,_that.whatsapp);case _:
+return $default(_that.id,_that.nom,_that.logo,_that.couverture,_that.telephonePro,_that.whatsapp,_that.whatsappExterne);case _:
   return orElse();
 
 }
@@ -818,10 +820,10 @@ return $default(_that.id,_that.nom,_that.logo,_that.couverture,_that.telephonePr
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String logo,  String couverture, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String logo,  String couverture, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)  String? whatsappExterne)  $default,) {final _that = this;
 switch (_that) {
 case _Loueur():
-return $default(_that.id,_that.nom,_that.logo,_that.couverture,_that.telephonePro,_that.whatsapp);case _:
+return $default(_that.id,_that.nom,_that.logo,_that.couverture,_that.telephonePro,_that.whatsapp,_that.whatsappExterne);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -838,10 +840,10 @@ return $default(_that.id,_that.nom,_that.logo,_that.couverture,_that.telephonePr
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String logo,  String couverture, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String logo,  String couverture, @JsonKey(name: 'telephone_pro')  String telephonePro,  String whatsapp, @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)  String? whatsappExterne)?  $default,) {final _that = this;
 switch (_that) {
 case _Loueur() when $default != null:
-return $default(_that.id,_that.nom,_that.logo,_that.couverture,_that.telephonePro,_that.whatsapp);case _:
+return $default(_that.id,_that.nom,_that.logo,_that.couverture,_that.telephonePro,_that.whatsapp,_that.whatsappExterne);case _:
   return null;
 
 }
@@ -853,7 +855,7 @@ return $default(_that.id,_that.nom,_that.logo,_that.couverture,_that.telephonePr
 @JsonSerializable()
 
 class _Loueur implements Loueur {
-  const _Loueur({required this.id, this.nom = '', this.logo = '', this.couverture = '', @JsonKey(name: 'telephone_pro') this.telephonePro = '', this.whatsapp = ''});
+  const _Loueur({required this.id, this.nom = '', this.logo = '', this.couverture = '', @JsonKey(name: 'telephone_pro') this.telephonePro = '', this.whatsapp = '', @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) this.whatsappExterne});
   factory _Loueur.fromJson(Map<String, dynamic> json) => _$LoueurFromJson(json);
 
 @override final  int id;
@@ -862,6 +864,8 @@ class _Loueur implements Loueur {
 @override@JsonKey() final  String couverture;
 @override@JsonKey(name: 'telephone_pro') final  String telephonePro;
 @override@JsonKey() final  String whatsapp;
+/// Vrai WhatsApp, si le partenaire l'affiche (null sinon).
+@override@JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) final  String? whatsappExterne;
 
 /// Create a copy of Loueur
 /// with the given fields replaced by the non-null parameter values.
@@ -876,16 +880,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loueur&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loueur&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.logo, logo) || other.logo == logo)&&(identical(other.couverture, couverture) || other.couverture == couverture)&&(identical(other.telephonePro, telephonePro) || other.telephonePro == telephonePro)&&(identical(other.whatsapp, whatsapp) || other.whatsapp == whatsapp)&&(identical(other.whatsappExterne, whatsappExterne) || other.whatsappExterne == whatsappExterne));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,logo,couverture,telephonePro,whatsapp);
+int get hashCode => Object.hash(runtimeType,id,nom,logo,couverture,telephonePro,whatsapp,whatsappExterne);
 
 @override
 String toString() {
-  return 'Loueur(id: $id, nom: $nom, logo: $logo, couverture: $couverture, telephonePro: $telephonePro, whatsapp: $whatsapp)';
+  return 'Loueur(id: $id, nom: $nom, logo: $logo, couverture: $couverture, telephonePro: $telephonePro, whatsapp: $whatsapp, whatsappExterne: $whatsappExterne)';
 }
 
 
@@ -896,7 +900,7 @@ abstract mixin class _$LoueurCopyWith<$Res> implements $LoueurCopyWith<$Res> {
   factory _$LoueurCopyWith(_Loueur value, $Res Function(_Loueur) _then) = __$LoueurCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom, String logo, String couverture,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp
+ int id, String nom, String logo, String couverture,@JsonKey(name: 'telephone_pro') String telephonePro, String whatsapp,@JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne) String? whatsappExterne
 });
 
 
@@ -913,7 +917,7 @@ class __$LoueurCopyWithImpl<$Res>
 
 /// Create a copy of Loueur
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? logo = null,Object? couverture = null,Object? telephonePro = null,Object? whatsapp = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? logo = null,Object? couverture = null,Object? telephonePro = null,Object? whatsapp = null,Object? whatsappExterne = freezed,}) {
   return _then(_Loueur(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -921,7 +925,8 @@ as String,logo: null == logo ? _self.logo : logo // ignore: cast_nullable_to_non
 as String,couverture: null == couverture ? _self.couverture : couverture // ignore: cast_nullable_to_non_nullable
 as String,telephonePro: null == telephonePro ? _self.telephonePro : telephonePro // ignore: cast_nullable_to_non_nullable
 as String,whatsapp: null == whatsapp ? _self.whatsapp : whatsapp // ignore: cast_nullable_to_non_nullable
-as String,
+as String,whatsappExterne: freezed == whatsappExterne ? _self.whatsappExterne : whatsappExterne // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

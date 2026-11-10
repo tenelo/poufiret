@@ -116,7 +116,7 @@ class EnteteEtablissement extends ConsumerWidget {
               const SizedBox(height: 10),
               BoutonsContact(
                 telephone: e.telephonePro,
-                whatsapp: e.whatsapp,
+                whatsapp: e.whatsappExterne,
                 partenaireId: e.id,
               ),
               if (e.aPosition) ...[

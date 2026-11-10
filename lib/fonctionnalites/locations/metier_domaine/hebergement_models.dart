@@ -4,6 +4,7 @@ import '../../../global/json/convertisseurs.dart';
 import '../../../global/ui/format_montant.dart';
 import 'location_models.dart';
 import 'vehicule_models.dart' show jourSeul;
+import '../../../global/ui/whatsapp_externe.dart';
 
 part 'hebergement_models.freezed.dart';
 part 'hebergement_models.g.dart';
@@ -63,6 +64,10 @@ abstract class Etablissement with _$Etablissement {
     @Default('') String couverture,
     @JsonKey(name: 'telephone_pro') @Default('') String telephonePro,
     @Default('') String whatsapp,
+
+    /// Vrai WhatsApp, si le partenaire l'affiche (null sinon).
+    @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)
+    String? whatsappExterne,
     @JsonKey(name: 'type_etablissement') @Default('') String typeEtablissement,
     @JsonKey(name: 'type_etablissement_libelle')
     @Default('')
@@ -109,6 +114,7 @@ abstract class Etablissement with _$Etablissement {
     couverture: couverture,
     telephonePro: telephonePro,
     whatsapp: whatsapp,
+    whatsappExterne: whatsappExterne,
   );
 
   /// Vues 360° : actives, dans l'ordre voulu.

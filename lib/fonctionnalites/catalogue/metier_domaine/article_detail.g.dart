@@ -53,6 +53,7 @@ _ArticleDetail _$ArticleDetailFromJson(Map<String, dynamic> json) =>
       nbFavoris: (json['nb_favoris'] as num?)?.toInt() ?? 0,
       nbCommentaires: (json['nb_commentaires'] as num?)?.toInt() ?? 0,
       partenaireNom: json['partenaire_nom'] as String? ?? '',
+      whatsappExterne: lireWhatsappExterne(json, 'whatsapp_externe') as String?,
       partenaire: (json['partenaire'] as num?)?.toInt(),
       categorie: (json['categorie'] as num?)?.toInt(),
       images: json['images'] == null
@@ -90,6 +91,7 @@ Map<String, dynamic> _$ArticleDetailToJson(_ArticleDetail instance) =>
       'nb_favoris': instance.nbFavoris,
       'nb_commentaires': instance.nbCommentaires,
       'partenaire_nom': instance.partenaireNom,
+      'whatsapp_externe': instance.whatsappExterne,
       'partenaire': instance.partenaire,
       'categorie': instance.categorie,
       'images': const ImagesUrlConverter().toJson(instance.images),

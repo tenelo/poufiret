@@ -3,7 +3,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../global/cache/contexte_cache.dart';
 import '../../../global/config/config.dart';
@@ -28,6 +27,7 @@ import '../widgets/liste_produits_paginee.dart';
 import '../widgets/tuile_elevage.dart';
 import '../widgets/tuiles_produits.dart';
 import 'ecran_produit.dart';
+import '../../../global/widgets/bouton_whatsapp.dart';
 
 const double _largeurContenu = 700;
 
@@ -476,7 +476,7 @@ class _EnteteCommerce extends StatelessWidget {
                 ],
               ),
             ),
-          if (telephone.isNotEmpty || c.whatsapp.isNotEmpty) ...[
+          if (telephone.isNotEmpty || c.whatsappExterne != null) ...[
             const SizedBox(height: 10),
             Row(
               children: [
@@ -492,18 +492,14 @@ class _EnteteCommerce extends StatelessWidget {
                       label: const Text('Appeler'),
                     ),
                   ),
-                if (telephone.isNotEmpty && c.whatsapp.isNotEmpty)
+                if (telephone.isNotEmpty && c.whatsappExterne != null)
                   const SizedBox(width: 12),
-                if (c.whatsapp.isNotEmpty)
+                // Vrai WhatsApp, seulement si le partenaire l'affiche.
+                if (c.whatsappExterne != null)
                   Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => whatsappPartenaire(
-                        context,
-                        c.whatsapp,
-                        partenaireId: c.id,
-                      ),
-                      icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 18),
-                      label: const Text('WhatsApp'),
+                    child: BoutonWhatsappExterne(
+                      numero: c.whatsappExterne,
+                      partenaireId: c.id,
                     ),
                   ),
               ],

@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../../global/json/convertisseurs.dart';
 
 import '../../geo/metier_domaine/localisation.dart';
+import '../../../global/ui/whatsapp_externe.dart';
 
 part 'partenaire_vitrine.freezed.dart';
 part 'partenaire_vitrine.g.dart';
@@ -35,6 +36,10 @@ abstract class PartenaireVitrine with _$PartenaireVitrine {
     @JsonKey(name: 'description_acces') @Default('') String descriptionAcces,
     @JsonKey(name: 'telephone_pro') @Default('') String telephonePro,
     @Default('') String whatsapp,
+
+    /// Vrai WhatsApp, si le partenaire l'affiche (null sinon).
+    @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)
+    String? whatsappExterne,
     @JsonKey(name: 'email_pro') @Default('') String emailPro,
     @JsonKey(name: 'nb_vues') @Default(0) int nbVues,
     @JsonKey(name: 'nombre_likes') @Default(0) int nombreLikes,

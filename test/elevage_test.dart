@@ -116,6 +116,7 @@ final _eleveur = _fiche({
   'couverture': 'https://exemple.test/ferme.jpg',
   'telephone_pro': '0700000090',
   'whatsapp': '0700000090',
+  'whatsapp_externe': '2250700000090',
   'est_ouvert': true,
   'pagination_publique': false,
   'sections': [

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../global/carte/carte_poufiret.dart';
 import '../../../global/carte/modeles_carte.dart';
 import '../../../global/config/config.dart';
 import '../../analytics/donnees/service_suivi.dart';
+import '../../../global/widgets/bouton_whatsapp.dart';
+import '../../../global/ui/whatsapp_externe.dart';
 
 // Briques communes aux fiches de location (logement, véhicule).
 
@@ -192,7 +193,8 @@ class BoutonsPosition extends StatelessWidget {
   }
 }
 
-/// Appeler et WhatsApp (chacun seulement si le numéro est connu).
+/// Appeler (si le numéro est connu) et WhatsApp (vrai WhatsApp, seulement si
+/// le partenaire l'affiche : `whatsapp_externe`).
 class BoutonsContact extends StatelessWidget {
   const BoutonsContact({
     super.key,
@@ -202,14 +204,18 @@ class BoutonsContact extends StatelessWidget {
   });
 
   final String telephone;
-  final String whatsapp;
+
+  /// `whatsapp_externe` (null : pas de bouton).
+  final String? whatsapp;
 
   /// Loueur concerné (pour noter l'appel ou le message).
   final int? partenaireId;
 
   @override
   Widget build(BuildContext context) {
-    if (telephone.isEmpty && whatsapp.isEmpty) return const SizedBox.shrink();
+    final whatsapp = this.whatsapp;
+    final avecWhatsapp = afficherWhatsappExterne(whatsapp);
+    if (telephone.isEmpty && !avecWhatsapp) return const SizedBox.shrink();
     return Row(
       children: [
         if (telephone.isNotEmpty)
@@ -224,18 +230,12 @@ class BoutonsContact extends StatelessWidget {
               label: const Text('Appeler'),
             ),
           ),
-        if (telephone.isNotEmpty && whatsapp.isNotEmpty)
-          const SizedBox(width: 12),
-        if (whatsapp.isNotEmpty)
+        if (telephone.isNotEmpty && avecWhatsapp) const SizedBox(width: 12),
+        if (avecWhatsapp)
           Expanded(
-            child: OutlinedButton.icon(
-              onPressed: () => whatsappPartenaire(
-                context,
-                whatsapp,
-                partenaireId: partenaireId,
-              ),
-              icon: const FaIcon(FontAwesomeIcons.whatsapp, size: 18),
-              label: const Text('WhatsApp'),
+            child: BoutonWhatsappExterne(
+              numero: whatsapp,
+              partenaireId: partenaireId,
             ),
           ),
       ],

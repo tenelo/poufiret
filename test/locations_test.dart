@@ -44,7 +44,8 @@ final _meta = _repo.metaDepuis(
 const _jsonPageLoueur = '''
 {
   "loueur": {"id": 70, "nom": "Immo Ferké", "logo": null, "couverture": null,
-             "telephone_pro": "0700000070", "whatsapp": "0700000070"},
+             "telephone_pro": "0700000070", "whatsapp": "0700000070",
+             "whatsapp_externe": "2250700000070"},
   "resultats": [
     {"id": 1, "titre": "Villa 3 pièces à Bromakoté", "photo": null,
      "type_logement": "villa", "type_logement_libelle": "Villa",

@@ -8,6 +8,7 @@ import '../../../global/ui/liens_externes.dart';
 import '../../analytics/donnees/service_suivi.dart';
 import '../metier_domaine/commande_plat.dart';
 import '../metier_domaine/restaurant_models.dart';
+import '../../../global/widgets/bouton_whatsapp.dart';
 
 const _jours = [
   'Lundi',
@@ -114,7 +115,7 @@ class _Infos extends StatelessWidget {
               aujourdhui: DateTime.now().weekday - 1 == jour,
             ),
 
-        if (telephones.isNotEmpty || r.whatsapp.isNotEmpty) ...[
+        if (telephones.isNotEmpty || r.whatsappExterne != null) ...[
           const _Titre('Contact'),
           for (final t in telephones.entries)
             ListTile(
@@ -127,22 +128,20 @@ class _Infos extends StatelessWidget {
               onTap: () =>
                   appelerPartenaire(context, t.key, partenaireId: r.id),
             ),
-          if (r.whatsapp.isNotEmpty)
+          // Vrai WhatsApp, seulement si le partenaire l'affiche.
+          if (r.whatsappExterne case final numero?)
             ListTile(
               contentPadding: EdgeInsets.zero,
               dense: true,
-              leading: FaIcon(
+              leading: const FaIcon(
                 FontAwesomeIcons.whatsapp,
-                color: Config.couleurSucces,
+                color: couleurWhatsapp,
               ),
-              title: Text(r.whatsapp),
+              title: Text(numero),
               subtitle: const Text('WhatsApp'),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => whatsappPartenaire(
-                context,
-                r.whatsapp,
-                partenaireId: r.id,
-              ),
+              onTap: () =>
+                  ouvrirWhatsappExterne(context, numero, partenaireId: r.id),
             ),
         ],
 

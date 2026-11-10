@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import '../../../global/ui/whatsapp_externe.dart';
 
 part 'article_detail.freezed.dart';
 part 'article_detail.g.dart';
@@ -80,6 +81,10 @@ abstract class ArticleDetail with _$ArticleDetail {
     @JsonKey(name: 'nb_favoris') @Default(0) int nbFavoris,
     @JsonKey(name: 'nb_commentaires') @Default(0) int nbCommentaires,
     @JsonKey(name: 'partenaire_nom') @Default('') String partenaireNom,
+
+    /// Vrai WhatsApp, si le partenaire l'affiche (null sinon).
+    @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)
+    String? whatsappExterne,
     int? partenaire,
     int? categorie,
     @ImagesUrlConverter() @Default(<String>[]) List<String> images,

@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../global/json/convertisseurs.dart';
 import '../../geo/metier_domaine/localisation.dart';
+import '../../../global/ui/whatsapp_externe.dart';
 
 part 'restaurant_models.freezed.dart';
 part 'restaurant_models.g.dart';
@@ -329,6 +330,10 @@ abstract class Restaurant with _$Restaurant {
     @JsonKey(name: 'quartier_nom') String? quartierNom,
     @JsonKey(name: 'telephone_pro') @Default('') String telephonePro,
     @Default('') String whatsapp,
+
+    /// Vrai WhatsApp, si le partenaire l'affiche (null sinon).
+    @JsonKey(name: 'whatsapp_externe', readValue: lireWhatsappExterne)
+    String? whatsappExterne,
     @JsonKey(fromJson: versDoubleNullable) double? latitude,
     @JsonKey(fromJson: versDoubleNullable) double? longitude,
 

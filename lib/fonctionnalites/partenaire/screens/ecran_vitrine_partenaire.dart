@@ -17,6 +17,7 @@ import '../metier_domaine/partenaire_vitrine.dart';
 import '../../../global/ui/notificateur.dart';
 import '../../../global/widgets/image_reseau.dart';
 import '../../avis/widgets/widgets_avis.dart';
+import '../../../global/widgets/bouton_whatsapp.dart';
 
 /// Vitrine publique d'un partenaire (côté client).
 /// Affiche couverture, logo, infos, localisation, contacts.
@@ -387,6 +388,11 @@ class _Infos extends ConsumerWidget {
                       }
                     },
                   ),
+                  // Vrai WhatsApp, si le partenaire l'affiche.
+                  IconeWhatsappExterne(
+                    numero: p.whatsappExterne,
+                    partenaireId: p.id,
+                  ),
                 ],
               ),
             ],
@@ -441,7 +447,7 @@ class _Infos extends ConsumerWidget {
             ),
           ),
 
-        if (p.telephonePro.isNotEmpty || p.whatsapp.isNotEmpty)
+        if (p.telephonePro.isNotEmpty || p.whatsappExterne != null)
           _CarteSection(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,12 +464,14 @@ class _Infos extends ConsumerWidget {
                       Text(p.telephonePro, style: theme.textTheme.bodyMedium),
                     ]),
                   ),
-                if (p.whatsapp.isNotEmpty)
+                // WhatsApp : seulement si le partenaire choisit de l'afficher.
+                if (p.whatsappExterne != null)
                   Row(children: [
-                    Icon(Icons.chat_outlined,
-                        size: 18, color: theme.colorScheme.onSurfaceVariant),
+                    const FaIcon(FontAwesomeIcons.whatsapp,
+                        size: 18, color: couleurWhatsapp),
                     const SizedBox(width: 6),
-                    Text(p.whatsapp, style: theme.textTheme.bodyMedium),
+                    Text(p.whatsappExterne!,
+                        style: theme.textTheme.bodyMedium),
                   ]),
               ],
             ),
