@@ -382,26 +382,26 @@ void main() {
   });
 
   group('montant estimé', () {
-    test('jours comptés bornes incluses', () {
-      expect(nombreJours(_j(10), _j(12)), 3);
-      expect(nombreJours(_j(10), _j(10)), 1);
-      expect(nombreJours(DateTime(2026, 10, 10, 18), _j(11)), 2);
+    test('jours comptés comme le serveur : restitution − prise en charge', () {
+      expect(nombreJours(_j(10), _j(12)), 2);
+      expect(nombreJours(_j(10), _j(10)), 0);
+      expect(nombreJours(DateTime(2026, 10, 10, 18), _j(11)), 1);
       // Passage à l'heure d'hiver ou fin de mois : pas de jour perdu.
-      expect(nombreJours(_j(24), _j(2, 11)), 10);
-      expect(nombreJours(DateTime(2026, 12, 30), DateTime(2027, 1, 2)), 4);
+      expect(nombreJours(_j(24), _j(2, 11)), 9);
+      expect(nombreJours(DateTime(2026, 12, 30), DateTime(2027, 1, 2)), 3);
     });
 
-    test('3 jours × 25 000 F = 75 000 F, puis avec chauffeur', () {
+    test('2 jours × 25 000 F = 50 000 F, puis avec chauffeur', () {
       final sans = EstimationLocation.pour(
         _vehicule,
         du: _j(10),
         au: _j(12),
         avecChauffeur: false,
       );
-      expect(sans.total, 75000);
+      expect(sans.total, 50000);
       expect(
         sans.libelle,
-        '3 jours × ${formatMontant(25000)} = ${formatMontant(75000)}',
+        '2 jours × ${formatMontant(25000)} = ${formatMontant(50000)}',
       );
       final avec = EstimationLocation.pour(
         _vehicule,
@@ -409,12 +409,12 @@ void main() {
         au: _j(12),
         avecChauffeur: true,
       );
-      expect(avec.total, 105000);
+      expect(avec.total, 70000);
       expect(
         EstimationLocation.pour(
           _vehicule,
           du: _j(10),
-          au: _j(10),
+          au: _j(11),
           avecChauffeur: false,
         ).libelle,
         '1 jour × ${formatMontant(25000)} = ${formatMontant(25000)}',
@@ -465,8 +465,10 @@ void main() {
     });
 
     test('durée minimale et chevauchement', () {
-      expect(v.erreurPlage(_j(10), _j(11)), isNull);
-      expect(v.erreurPlage(_j(10), _j(10)), contains('Durée minimale'));
+      // Durée minimale 2 jours : du 10 au 12 suffit, du 10 au 11 non.
+      expect(v.erreurPlage(_j(10), _j(12)), isNull);
+      expect(v.erreurPlage(_j(10), _j(11)), contains('Durée minimale'));
+      expect(v.erreurPlage(_j(10), _j(10)), contains('doit suivre'));
       expect(v.erreurPlage(_j(14), _j(16)), contains('déjà réservé'));
       expect(v.erreurPlage(_j(12), _j(10)), isNotNull);
     });
@@ -745,7 +747,8 @@ void main() {
       ),
     );
 
-    final troisJours = DateTimeRange(start: _j(10, 11), end: _j(12, 11));
+    // Du 10 au 13 : 3 jours facturés (le 13, jour de restitution, ne compte pas).
+    final troisJours = DateTimeRange(start: _j(10, 11), end: _j(13, 11));
 
     testWidgets("visiteur : invitation à s'inscrire", (tester) async {
       await _monter(tester, bouton(_vehicule), utilisateur: null);
@@ -794,7 +797,7 @@ void main() {
         overrides: [locationsRepositoryProvider.overrideWithValue(serveur)],
       );
       expect(
-        find.text('Du 10/11/2026 au 12/11/2026 · 3 jours'),
+        find.text('Du 10/11/2026 au 13/11/2026 · 3 jours'),
         findsOneWidget,
       );
       expect(
@@ -824,7 +827,7 @@ void main() {
       expect(serveur.envois.single, {
         'objet_id': 1,
         'date_debut': '2026-11-10',
-        'date_fin': '2026-11-12',
+        'date_fin': '2026-11-13',
         'avec_chauffeur': true,
         'lieu_prise_en_charge': 'Gare routière',
         'telephone_contact': '0707070707',
@@ -866,7 +869,7 @@ void main() {
       final serveur = _FauxLocations();
       await _monter(
         tester,
-        feuille(_vehicule, DateTimeRange(start: _j(10, 11), end: _j(10, 11))),
+        feuille(_vehicule, DateTimeRange(start: _j(10, 11), end: _j(11, 11))),
         overrides: [locationsRepositoryProvider.overrideWithValue(serveur)],
       );
       expect(

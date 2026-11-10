@@ -378,11 +378,13 @@ class _FeuilleReservationVehiculeState
     );
   }
 
-  /// « Du 20/10/2026 au 22/10/2026 · 3 jours ».
+  /// « Du 20/10/2026 au 22/10/2026 · 2 jours » (jour de restitution non
+  /// compté, comme le serveur) ; « Le 20/10/2026 » sur un seul jour.
   static String _libellePlage(DateTimeRange plage) {
     final du = formatDateCourte(formatDateIso(plage.start));
     final au = formatDateCourte(formatDateIso(plage.end));
+    if (du == au) return 'Le $du';
     final jours = pluriel(nombreJours(plage.start, plage.end), 'jour');
-    return du == au ? 'Le $du · $jours' : 'Du $du au $au · $jours';
+    return 'Du $du au $au · $jours';
   }
 }

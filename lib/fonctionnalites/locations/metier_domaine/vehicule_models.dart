@@ -263,7 +263,10 @@ abstract class Vehicule with _$Vehicule {
 
   /// Problème de la plage choisie, ou null si elle convient.
   String? erreurPlage(DateTime du, DateTime au) {
-    if (au.isBefore(du)) return 'La date de fin précède la date de début.';
+    // Comme le serveur : restitution strictement après la prise en charge.
+    if (!jourSeul(au).isAfter(jourSeul(du))) {
+      return 'La date de restitution doit suivre celle de prise en charge.';
+    }
     if (!plageLibre(du, au)) {
       return 'Le véhicule est déjà réservé sur une partie de ces dates.';
     }
@@ -274,12 +277,13 @@ abstract class Vehicule with _$Vehicule {
   }
 }
 
-/// Nombre de jours facturés de [du] à [au], bornes incluses : du 10 au 12
-/// = 3 jours ; un aller-retour dans la journée = 1 jour.
+/// Jours facturés, comme le serveur : date de restitution − date de prise
+/// en charge (du 10 au 12 = 2 jours, le jour de restitution est libre).
 int nombreJours(DateTime du, DateTime au) {
   final d = jourSeul(du), a = jourSeul(au);
   // Arrondi : un changement d'heure ne fausse pas le compte.
-  return (a.difference(d).inHours / 24).round() + 1;
+  final jours = (a.difference(d).inHours / 24).round();
+  return jours < 0 ? 0 : jours;
 }
 
 /// La date seule, sans l'heure.
