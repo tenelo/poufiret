@@ -28,6 +28,9 @@ import 'package:poufiret/fonctionnalites/locations/screens/ecran_mes_demandes.da
 import 'package:poufiret/fonctionnalites/locations/widgets/carte_hebergement.dart';
 import 'package:poufiret/fonctionnalites/locations/widgets/entete_etablissement.dart';
 import 'package:poufiret/fonctionnalites/locations/widgets/feuille_reservation_hebergement.dart';
+import 'package:poufiret/fonctionnalites/locations/widgets/feuille_sejour.dart';
+import 'package:poufiret/fonctionnalites/locations/metier_domaine/sejour.dart';
+import 'package:poufiret/fonctionnalites/locations/metier_domaine/disponibilites.dart';
 import 'package:poufiret/fonctionnalites/locations/widgets/page_etablissement.dart';
 import 'package:poufiret/fonctionnalites/locations/widgets/visite_immersive.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
@@ -130,6 +133,17 @@ class _FauxLocations extends LocationsRepository {
 
   /// Unités libres renvoyées (null : la vérification échoue).
   int? disponibles = 3;
+
+  /// Jours complets par hébergement (endpoint `disponibilites`).
+  Map<int, Set<DateTime>> complets = const {};
+
+  @override
+  Future<Disponibilites> disponibilites({
+    required bool hebergement,
+    required int id,
+    required DateTime du,
+    required DateTime au,
+  }) async => Disponibilites(joursComplets: complets[id] ?? const {});
   Map<String, dynamic>? refus;
   List<DemandeReservation> demandes = const [];
 
@@ -574,9 +588,11 @@ void main() {
       expect(find.byTooltip('WhatsApp'), findsOneWidget);
       expect(find.text('Itinéraire'), findsOneWidget);
       expect(find.text('Localisation'), findsOneWidget);
-      // Vue 360° de l'établissement : la visionneuse de M1.
-      expect(find.text('Vue 360°'), findsOneWidget);
-      expect(find.byType(VisiteImmersive), findsOneWidget);
+      // Vue 360° : bouton sur la galerie, plus de section au milieu.
+      expect(find.byType(BoutonVisite360), findsOneWidget);
+      expect(find.text('Visite 360°'), findsOneWidget);
+      expect(find.text('Vue 360°'), findsNothing);
+      expect(find.byType(VisiteImmersive), findsNothing);
       // Équipements : libellés reçus, sinon valeurs rendues lisibles.
       expect(find.text('Piscine'), findsOneWidget);
       expect(find.text('Salle de sport'), findsOneWidget);
@@ -633,10 +649,16 @@ void main() {
         findsOneWidget,
       );
 
-      // « Voir tout (2) » : la liste complète actuelle, avec Filtrer.
+      // « Voir tout (2) » : les dates d'abord ; « Passer » : la liste
+      // complète actuelle, avec Filtrer.
       await tester.tap(find.text('Voir tout (2)'));
       await avancer(tester);
+      expect(find.byType(FeuilleSejour), findsOneWidget);
+      expect(find.text('Voir les disponibilités'), findsOneWidget);
+      await tester.tap(find.text('Passer'));
       await avancer(tester);
+      await avancer(tester);
+      expect(find.byType(RappelSejour), findsNothing);
       expect(find.byType(CarteHebergement), findsNWidgets(2));
       expect(find.text('2 hébergements disponibles'), findsOneWidget);
       expect(find.text('Chambre double climatisée'), findsOneWidget);
@@ -692,6 +714,8 @@ void main() {
       );
       expect(find.text('Itinéraire'), findsNothing);
       expect(find.text('Vue 360°'), findsNothing);
+      // Sans vue 360° : pas de bouton sur la galerie.
+      expect(find.byType(BoutonVisite360), findsNothing);
       expect(find.byTooltip('WhatsApp'), findsNothing);
       expect(find.byTooltip('Discuter'), findsOneWidget);
       expect(find.byIcon(Icons.star_rounded), findsNothing);
@@ -720,17 +744,27 @@ void main() {
       }
     }
 
-    testWidgets('visible hors de la section, masquée une fois arrivé', (
+    testWidgets('visible hors de la section ; masquée une fois arrivé', (
       tester,
     ) async {
       await monter(tester, _page);
       await avancer(tester);
       expect(find.byType(BarreChambres), findsOneWidget);
       expect(find.text('À partir de ${formatPrixNuit(25000)}'), findsOneWidget);
+      // « Voir les chambres » : la feuille des dates.
       await tester.tap(find.text('Voir les chambres'));
       await avancer(tester);
+      expect(find.byType(FeuilleSejour), findsOneWidget);
+      Navigator.of(tester.element(find.byType(FeuilleSejour))).pop();
+      await avancer(tester);
+      // Arrivé aux chambres en défilant : plus de barre.
+      await tester.scrollUntilVisible(
+        find.text('Voir tout (2)'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await avancer(tester);
       expect(find.byType(BarreChambres), findsNothing);
-      expect(tester.getTopLeft(find.text('Nos chambres')).dy, lessThan(480));
       expect(tester.takeException(), isNull);
     });
 
@@ -762,9 +796,150 @@ void main() {
       );
       await avancer(tester);
       expect(find.text('Voir les logements'), findsOneWidget);
+      expect(find.text('Nos logements'), findsOneWidget);
       await tester.tap(find.text('Voir les logements'));
       await avancer(tester);
-      expect(find.text('Nos logements'), findsOneWidget);
+      expect(find.byType(FeuilleSejour), findsOneWidget);
+    });
+  });
+
+  group('séjour cherché (dates, voyageurs)', () {
+    final arrivee = DateTime(2030, 1, 10);
+    final depart = DateTime(2030, 1, 12);
+
+    Future<_FauxLocations> monterListe(
+      WidgetTester tester, {
+      required Sejour sejour,
+    }) async {
+      // Chambre double (id 1) complète le 10 ; suite (id 2) libre.
+      final serveur = _FauxLocations()
+        ..complets = {
+          1: {arrivee},
+        };
+      await _monter(
+        tester,
+        EcranLoueur(
+          partenaireId: 90,
+          type: TypeLocation.hebergement,
+          listeSeule: true,
+          sejour: sejour,
+        ),
+        overrides: [
+          vueVitrineProvider(partenaireId: 90).overrideWith((ref) async {}),
+          pageEtablissementProvider(
+            partenaireId: 90,
+          ).overrideWith((ref) => Stream.value(_page)),
+          locationsRepositoryProvider.overrideWithValue(serveur),
+        ],
+        taille: const Size(420, 1200),
+      );
+      return serveur;
+    }
+
+    testWidgets('statut par hébergement, complets en fin et grisés', (
+      tester,
+    ) async {
+      await monterListe(
+        tester,
+        sejour: Sejour(arrivee: arrivee, depart: depart, adultes: 2),
+      );
+      // Rappel des dates en haut.
+      expect(find.byType(RappelSejour), findsOneWidget);
+      expect(
+        find.text('Du 10/01/2030 au 12/01/2030 · 2 nuits'),
+        findsOneWidget,
+      );
+      expect(find.text('2 adultes'), findsOneWidget);
+      expect(find.byType(CarteHebergement), findsNWidgets(2));
+      expect(find.text('Disponible'), findsOneWidget);
+      expect(find.text('Complet à ces dates'), findsOneWidget);
+      // Le complet passe en fin de liste, grisé.
+      expect(
+        tester.getTopLeft(find.text('Suite familiale')).dy,
+        lessThan(tester.getTopLeft(find.text('Chambre double climatisée')).dy),
+      );
+      expect(
+        find.ancestor(
+          of: find.text('Complet à ces dates'),
+          matching: find.byType(Opacity),
+        ),
+        findsWidgets,
+      );
+    });
+
+    testWidgets('capacité insuffisante : hébergement retiré', (tester) async {
+      await monterListe(
+        tester,
+        sejour: Sejour(arrivee: arrivee, depart: depart, adultes: 3),
+      );
+      // Chambre double : 2 adultes max ; suite : 4.
+      expect(find.byType(CarteHebergement), findsOneWidget);
+      expect(find.text('Suite familiale'), findsOneWidget);
+      expect(find.text('Chambre double climatisée'), findsNothing);
+    });
+
+    testWidgets('« Modifier » rouvre la feuille pré-remplie', (tester) async {
+      await monterListe(
+        tester,
+        sejour: Sejour(arrivee: arrivee, depart: depart, adultes: 3),
+      );
+      await tester.tap(find.text('Modifier'));
+      await tester.pumpAndSettle();
+      expect(find.byType(FeuilleSejour), findsOneWidget);
+      expect(
+        tester
+            .widget<Compteur>(find.widgetWithText(Compteur, 'Adultes'))
+            .valeur,
+        3,
+      );
+      // Un adulte de moins : la chambre double revient.
+      await tester.tap(find.byTooltip('Adultes : un de moins'));
+      await tester.pump();
+      await tester.tap(find.text('Voir les disponibilités'));
+      await tester.pumpAndSettle();
+      expect(find.byType(CarteHebergement), findsNWidgets(2));
+      expect(find.text('2 adultes'), findsOneWidget);
+    });
+
+    testWidgets('réservation pré-remplie : dates et voyageurs', (tester) async {
+      await _monter(
+        tester,
+        EcranHebergement(
+          hebergementId: 1,
+          sejour: Sejour(
+            arrivee: arrivee,
+            depart: depart,
+            adultes: 2,
+            enfants: 1,
+          ),
+        ),
+        overrides: [
+          hebergementDetailProvider(
+            id: 1,
+          ).overrideWith((ref) => Stream.value(_hebergement)),
+        ],
+        stabiliser: false,
+      );
+      await tester.tap(find.text('Réserver'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.byType(FeuilleReservationHebergement), findsOneWidget);
+      expect(
+        find.textContaining('10/01/2030', findRichText: true),
+        findsWidgets,
+      );
+      expect(
+        tester
+            .widget<Compteur>(find.widgetWithText(Compteur, 'Adultes'))
+            .valeur,
+        2,
+      );
+      expect(
+        tester
+            .widget<Compteur>(find.widgetWithText(Compteur, 'Enfants'))
+            .valeur,
+        1,
+      );
     });
   });
 

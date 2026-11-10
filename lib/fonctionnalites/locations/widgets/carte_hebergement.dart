@@ -3,39 +3,69 @@ import 'package:flutter/material.dart';
 import '../../../global/widgets/image_reseau.dart';
 import '../metier_domaine/hebergement_models.dart';
 import '../metier_domaine/location_models.dart';
+import '../metier_domaine/sejour.dart';
 import '../screens/ecran_hebergement.dart';
 import 'carte_logement.dart';
 
 /// Carte d'un hébergement : photo à gauche ; à droite le titre, le type,
 /// « 2 adultes · 1 enfant », les lits et « 25 000 F/nuit ».
 class CarteHebergement extends StatelessWidget {
-  const CarteHebergement({super.key, required this.hebergement});
+  const CarteHebergement({
+    super.key,
+    required this.hebergement,
+    this.sejour,
+    this.complet,
+  });
 
   final HebergementResume hebergement;
+
+  /// Séjour cherché : statut affiché, réservation pré-remplie.
+  final Sejour? sejour;
+
+  /// Complet à ces dates (null : pas encore vérifié, ou sans séjour).
+  final bool? complet;
 
   @override
   Widget build(BuildContext context) {
     final h = hebergement;
-    return CarteLocation(
+    final sejour = this.sejour;
+    final complet = this.complet;
+    final carte = CarteLocation(
       photo: h.photo,
       iconeSansPhoto: Icons.hotel_outlined,
       titre: h.titre,
       sousTitre: h.type,
       prix: formatPrixNuit(h.prixNuit),
       puces: [
+        if (sejour != null)
+          complet == null
+              ? 'Vérification…'
+              : complet
+              ? 'Complet à ces dates'
+              : 'Disponible',
         if (h.capacite.isNotEmpty) h.capacite,
         if (h.lits.isNotEmpty) h.lits,
       ],
-      onTap: () => ouvrirHebergement(context, h),
+      onTap: () => ouvrirHebergement(context, h, sejour: sejour),
     );
+    // Complet : grisé (toujours consultable).
+    return complet == true ? Opacity(opacity: 0.5, child: carte) : carte;
   }
 }
 
 /// Ouvre la fiche d'un hébergement.
-void ouvrirHebergement(BuildContext context, HebergementResume h) {
+void ouvrirHebergement(
+  BuildContext context,
+  HebergementResume h, {
+  Sejour? sejour,
+}) {
   Navigator.of(context).push(
     MaterialPageRoute(
-      builder: (_) => EcranHebergement(hebergementId: h.id, titre: h.titre),
+      builder: (_) => EcranHebergement(
+        hebergementId: h.id,
+        titre: h.titre,
+        sejour: sejour,
+      ),
     ),
   );
 }

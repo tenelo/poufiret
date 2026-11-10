@@ -25,7 +25,8 @@ bool estResidence(Etablissement e) =>
 
 /// Page d'un établissement (hôtel, résidence) : en-tête, puis tout de suite
 /// ses chambres en carrousel, puis le reste de la fiche. Une barre fixe
-/// « Voir les chambres » ramène au carrousel tant qu'il n'est pas visible.
+/// « Voir les chambres » (tant que le carrousel n'est pas visible) ouvre,
+/// comme « Voir tout », le choix des dates puis la liste.
 class VuePageEtablissement extends StatefulWidget {
   const VuePageEtablissement({
     super.key,
@@ -41,7 +42,8 @@ class VuePageEtablissement extends StatefulWidget {
   final List<HebergementResume> disponibles;
   final Future<void> Function() onRefresh;
 
-  /// « Voir tout (N) » : la liste complète avec le bouton Filtrer.
+  /// « Voir tout (N) » et « Voir les chambres » : choix des dates, puis la
+  /// liste des hébergements.
   final VoidCallback voirTout;
 
   @override
@@ -101,16 +103,6 @@ class _VuePageEtablissementState extends State<VuePageEtablissement> {
     if (barre != _barre) setState(() => _barre = barre);
   }
 
-  void _allerAuxChambres() {
-    final contexte = _cleSection.currentContext;
-    if (contexte == null) return;
-    Scrollable.ensureVisible(
-      contexte,
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeOut,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final e = widget.etablissement;
@@ -156,7 +148,7 @@ class _VuePageEtablissementState extends State<VuePageEtablissement> {
                 child: BarreChambres(
                   prixMin: prixMin,
                   residence: estResidence(e),
-                  onVoir: _allerAuxChambres,
+                  onVoir: widget.voirTout,
                 ),
               ),
           ],

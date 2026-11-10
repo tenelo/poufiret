@@ -10,10 +10,11 @@ import 'carte_logement.dart';
 import 'elements_fiche.dart';
 import 'visite_immersive.dart';
 
-/// Page d'un établissement (hôtel, résidence) : galerie, nom, étoiles,
-/// type, localisation ; contacts et position ; [sectionHebergements] (les
-/// chambres, tout de suite visibles) ; présentation, vue 360°, équipements,
-/// informations pratiques ; annulation et conditions repliables.
+/// Page d'un établissement (hôtel, résidence) : galerie (avec le bouton
+/// « Visite 360° » s'il y en a une), nom, étoiles, type, localisation ;
+/// contacts et position ; [sectionHebergements] (les chambres, tout de suite
+/// visibles) ; présentation, équipements, informations pratiques ;
+/// annulation et conditions repliables.
 class EnteteEtablissement extends ConsumerWidget {
   const EnteteEtablissement({
     super.key,
@@ -49,17 +50,29 @@ class EnteteEtablissement extends ConsumerWidget {
       children: [
         AspectRatio(
           aspectRatio: 16 / 10,
-          child: CarrouselImages(
-            images: images,
-            titre: e.nom,
-            constructeurVide: (_) => ColoredBox(
-              color: theme.colorScheme.surfaceContainerHighest,
-              child: Icon(
-                Icons.hotel_outlined,
-                size: 48,
-                color: theme.colorScheme.outline,
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              CarrouselImages(
+                images: images,
+                titre: e.nom,
+                constructeurVide: (_) => ColoredBox(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  child: Icon(
+                    Icons.hotel_outlined,
+                    size: 48,
+                    color: theme.colorScheme.outline,
+                  ),
+                ),
               ),
-            ),
+              // Vue 360° : bouton sur la galerie (coin bas-gauche).
+              if (panoramas.isNotEmpty)
+                Positioned(
+                  left: 10,
+                  bottom: 10,
+                  child: BoutonVisite360(panoramas: panoramas),
+                ),
+            ],
           ),
         ),
         Padding(
@@ -146,11 +159,6 @@ class EnteteEtablissement extends ConsumerWidget {
         ?sectionHebergements,
         if (e.description.isNotEmpty)
           SectionFiche(titre: 'Présentation', child: Text(e.description)),
-        if (panoramas.isNotEmpty)
-          SectionFiche(
-            titre: 'Vue 360°',
-            child: VisiteImmersive(panoramas: panoramas),
-          ),
         if (e.equipements.isNotEmpty)
           SectionFiche(
             titre: 'Équipements',

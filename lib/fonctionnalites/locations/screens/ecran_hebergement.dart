@@ -10,6 +10,7 @@ import '../../../global/widgets/message_erreur.dart';
 import '../donnees/locations_providers.dart';
 import '../metier_domaine/hebergement_models.dart';
 import '../metier_domaine/location_models.dart';
+import '../metier_domaine/sejour.dart';
 import '../widgets/carte_logement.dart';
 import '../widgets/elements_fiche.dart';
 import '../widgets/feuille_reservation_hebergement.dart';
@@ -23,9 +24,13 @@ class EcranHebergement extends ConsumerWidget {
     super.key,
     required this.hebergementId,
     this.titre = '',
+    this.sejour,
   });
 
   final int hebergementId;
+
+  /// Séjour cherché sur la page établissement : pré-remplit « Réserver ».
+  final Sejour? sejour;
 
   /// Titre déjà connu de l'écran précédent, affiché pendant le chargement.
   final String titre;
@@ -51,15 +56,17 @@ class EcranHebergement extends ConsumerWidget {
               onReessayer: () => ref.invalidate(provider),
             ),
           ),
-          data: (hebergement) => _Fiche(hebergement: hebergement),
+          data: (hebergement) =>
+              _Fiche(hebergement: hebergement, sejour: sejour),
         );
   }
 }
 
 class _Fiche extends ConsumerWidget {
-  const _Fiche({required this.hebergement});
+  const _Fiche({required this.hebergement, this.sejour});
 
   final Hebergement hebergement;
+  final Sejour? sejour;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -77,7 +84,12 @@ class _Fiche extends ConsumerWidget {
         titreCarte: h.titre,
         nomMarqueur: h.titre,
         action: FilledButton.icon(
-          onPressed: () => reserverHebergement(context, ref, hebergement: h),
+          onPressed: () => reserverHebergement(
+            context,
+            ref,
+            hebergement: h,
+            sejour: sejour,
+          ),
           icon: const Icon(Icons.event_available_outlined),
           label: const Text('Réserver'),
         ),

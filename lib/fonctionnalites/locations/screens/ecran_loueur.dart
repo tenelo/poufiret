@@ -21,6 +21,8 @@ import '../widgets/page_etablissement.dart';
 import '../widgets/feuille_filtre_hebergements.dart';
 import '../widgets/feuille_filtre_logements.dart';
 import '../widgets/feuille_filtre_vehicules.dart';
+import '../widgets/feuille_sejour.dart';
+import '../metier_domaine/sejour.dart';
 
 /// Page d'un loueur : en-tête (couverture, logo, nom, appel, WhatsApp) puis
 /// ses biens disponibles, filtrables. La page est la même pour tous les
@@ -34,6 +36,7 @@ class EcranLoueur extends ConsumerStatefulWidget {
     this.nom = '',
     this.siIntrouvable,
     this.listeSeule = false,
+    this.sejour,
   });
 
   final int partenaireId;
@@ -49,6 +52,11 @@ class EcranLoueur extends ConsumerStatefulWidget {
   /// Établissement : seulement la liste complète et son filtre (« Voir
   /// tout » de la page établissement), sans l'en-tête.
   final bool listeSeule;
+
+  /// Établissement, liste seule : séjour cherché (dates, voyageurs). La
+  /// liste ne garde que les hébergements assez grands, avec leur statut à
+  /// ces dates ; null : la liste complète.
+  final Sejour? sejour;
 
   @override
   ConsumerState<EcranLoueur> createState() => _EcranLoueurState();
@@ -157,6 +165,9 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
   FiltreVehicules _filtreVehicules = const FiltreVehicules();
   FiltreHebergements _filtreHebergements = const FiltreHebergements();
 
+  /// Séjour cherché (liste des hébergements d'un établissement).
+  late Sejour? _sejour = widget.sejour;
+
   /// Dernier loueur reçu : l'en-tête reste affiché pendant qu'un nouveau
   /// filtre charge.
   Loueur? _loueur;
@@ -248,10 +259,7 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
       page: page,
       cartes: disponibles == null
           ? null
-          : [
-              for (final h in _filtreHebergements.appliquer(disponibles))
-                CarteHebergement(key: ValueKey(h.id), hebergement: h),
-            ],
+          : _cartesHebergements(_filtreHebergements.appliquer(disponibles)),
       nombreFiltres: _filtreHebergements.nombre,
       filtrer: () async {
         final choisi = await ouvrirFiltreHebergements(
@@ -265,6 +273,62 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
       },
       textes: _Textes.hebergements,
     );
+  }
+
+  /// Cartes des hébergements ; avec un séjour : capacité suffisante,
+  /// statut « Disponible » / « Complet à ces dates », complets en fin.
+  List<Widget> _cartesHebergements(List<HebergementResume> hebergements) {
+    final sejour = _sejour;
+    if (sejour == null) {
+      return [
+        for (final h in hebergements)
+          CarteHebergement(key: ValueKey(h.id), hebergement: h),
+      ];
+    }
+    final complets = <int, bool>{
+      // Statut pas encore connu : entrée absente.
+      for (final h in hebergements.where(sejour.capaciteSuffisante))
+        h.id: ?ref
+            .watch(completSejourProvider((h.id, sejour.arrivee, sejour.depart)))
+            .value,
+    };
+    return [
+      for (final h in hebergementsPourSejour(hebergements, sejour, complets))
+        CarteHebergement(
+          key: ValueKey(h.id),
+          hebergement: h,
+          sejour: sejour,
+          complet: complets[h.id],
+        ),
+    ];
+  }
+
+  /// « Voir tout » / « Voir les chambres » : les dates d'abord, puis la
+  /// liste (complète si « Passer »).
+  Future<void> _voirHebergements(PageEtablissement page, String nom) async {
+    final choix = await choisirSejour(context, hebergements: page.disponibles);
+    if (choix == null || !mounted) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => EcranLoueur(
+          partenaireId: widget.partenaireId,
+          type: TypeLocation.hebergement,
+          nom: nom,
+          listeSeule: true,
+          sejour: choix.sejour,
+        ),
+      ),
+    );
+  }
+
+  /// Rappel des dates : « Modifier » rouvre la feuille.
+  Future<void> _modifierSejour(PageEtablissement page) async {
+    final choix = await choisirSejour(
+      context,
+      hebergements: page.disponibles,
+      initial: _sejour,
+    );
+    if (choix != null && mounted) setState(() => _sejour = choix.sejour);
   }
 
   @override
@@ -313,16 +377,7 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
           etablissement: page.etablissement,
           disponibles: page.disponibles,
           onRefresh: () => rafraichir(ref, liste.provider),
-          voirTout: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => EcranLoueur(
-                partenaireId: widget.partenaireId,
-                type: TypeLocation.hebergement,
-                nom: loueur.nom,
-                listeSeule: true,
-              ),
-            ),
-          ),
+          voirTout: () => _voirHebergements(page, loueur.nom),
         ),
       );
     }
@@ -349,6 +404,11 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
                         loueur: loueur,
                         largeur: largeur,
                         icone: textes.icone,
+                      ),
+                    if (widget.listeSeule && page != null && _sejour != null)
+                      RappelSejour(
+                        sejour: _sejour!,
+                        onModifier: () => _modifierSejour(page),
                       ),
                     if (liste.avecSelecteur)
                       SelecteurLouerAcheter(

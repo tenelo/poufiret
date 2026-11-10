@@ -10,6 +10,7 @@ import '../donnees/locations_providers.dart';
 import '../metier_domaine/disponibilites.dart';
 import '../metier_domaine/hebergement_models.dart';
 import '../metier_domaine/location_models.dart';
+import '../metier_domaine/sejour.dart';
 import '../metier_domaine/vehicule_models.dart' show jourSeul;
 import 'elements_fiche.dart';
 
@@ -19,6 +20,7 @@ void reserverHebergement(
   BuildContext context,
   WidgetRef ref, {
   required Hebergement hebergement,
+  Sejour? sejour,
 }) {
   murInscription(context, ref, () {
     showModalBottomSheet<void>(
@@ -27,7 +29,15 @@ void reserverHebergement(
       useSafeArea: true,
       showDragHandle: true,
       constraints: const BoxConstraints(maxWidth: 700),
-      builder: (_) => FeuilleReservationHebergement(hebergement: hebergement),
+      // Séjour cherché sur la page de l'établissement : pré-rempli.
+      builder: (_) => FeuilleReservationHebergement(
+        hebergement: hebergement,
+        plageInitiale: sejour == null
+            ? null
+            : DateTimeRange(start: sejour.arrivee, end: sejour.depart),
+        adultesInitial: sejour?.adultes,
+        enfantsInitial: sejour?.enfants,
+      ),
     );
   });
 }
@@ -40,9 +50,15 @@ class FeuilleReservationHebergement extends ConsumerStatefulWidget {
     super.key,
     required this.hebergement,
     this.plageInitiale,
+    this.adultesInitial,
+    this.enfantsInitial,
   });
 
   final Hebergement hebergement;
+
+  /// Voyageurs déjà choisis (séjour cherché sur la page établissement).
+  final int? adultesInitial;
+  final int? enfantsInitial;
 
   /// Séjour déjà choisi à l'ouverture (sinon le client le choisit).
   final DateTimeRange? plageInitiale;
@@ -60,8 +76,8 @@ class _FeuilleReservationHebergementState
   );
   final _message = TextEditingController();
   late DateTimeRange? _plage = widget.plageInitiale;
-  int _adultes = 1;
-  int _enfants = 0;
+  late int _adultes = widget.adultesInitial ?? 1;
+  late int _enfants = widget.enfantsInitial ?? 0;
   int _unites = 1;
   bool _datesManquantes = false;
   bool _envoi = false;

@@ -6,6 +6,60 @@ import '../../../global/config/config.dart';
 import '../../../global/widgets/image_reseau.dart';
 import '../metier_domaine/location_models.dart';
 
+/// Ouvre la visite 360° en plein écran (bouton de la galerie d'un
+/// établissement).
+void ouvrirVisite360(BuildContext context, List<Panorama> panoramas) {
+  Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => Scaffold(
+        appBar: AppBar(title: const Text('Visite 360°')),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: VisiteImmersive(panoramas: panoramas),
+        ),
+      ),
+    ),
+  );
+}
+
+/// Bouton « Visite 360° » posé sur une galerie : pastille translucide,
+/// comme le compteur de photos.
+class BoutonVisite360 extends StatelessWidget {
+  const BoutonVisite360({super.key, required this.panoramas});
+
+  final List<Panorama> panoramas;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black54,
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => ouvrirVisite360(context, panoramas),
+        child: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.threesixty, size: 18, color: Colors.white),
+              SizedBox(width: 6),
+              Text(
+                'Visite 360°',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 /// « Visite immersive » d'un logement : une visionneuse pour la vue choisie,
 /// puis les miniatures des vues disponibles.
 ///
