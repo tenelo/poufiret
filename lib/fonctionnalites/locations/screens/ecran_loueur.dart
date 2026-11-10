@@ -17,7 +17,7 @@ import '../widgets/carte_hebergement.dart';
 import '../widgets/carte_logement.dart';
 import '../widgets/carte_vehicule.dart';
 import '../widgets/elements_fiche.dart';
-import '../widgets/entete_etablissement.dart';
+import '../widgets/page_etablissement.dart';
 import '../widgets/feuille_filtre_hebergements.dart';
 import '../widgets/feuille_filtre_logements.dart';
 import '../widgets/feuille_filtre_vehicules.dart';
@@ -33,6 +33,7 @@ class EcranLoueur extends ConsumerStatefulWidget {
     this.type = TypeLocation.logement,
     this.nom = '',
     this.siIntrouvable,
+    this.listeSeule = false,
   });
 
   final int partenaireId;
@@ -44,6 +45,10 @@ class EcranLoueur extends ConsumerStatefulWidget {
   /// Écran affiché à la place si le serveur ne connaît pas ce loueur (404) :
   /// partenaire rangé dans la catégorie sans page loueur.
   final Widget? siIntrouvable;
+
+  /// Établissement : seulement la liste complète et son filtre (« Voir
+  /// tout » de la page établissement), sans l'en-tête.
+  final bool listeSeule;
 
   @override
   ConsumerState<EcranLoueur> createState() => _EcranLoueurState();
@@ -59,8 +64,8 @@ class _Liste {
     required this.nombreFiltres,
     required this.filtrer,
     required this.textes,
-    this.entete,
     this.avecSelecteur = false,
+    this.page,
   });
 
   final AsyncValue<Object?> async;
@@ -73,11 +78,11 @@ class _Liste {
   final VoidCallback filtrer;
   final _Textes textes;
 
-  /// En-tête propre au type (établissement) ; sinon l'en-tête du loueur.
-  final Widget? entete;
-
   /// Sélecteur « Louer | Acheter » : le loueur a des annonces des deux types.
   final bool avecSelecteur;
+
+  /// Établissement reçu (hôtel, résidence).
+  final PageEtablissement? page;
 }
 
 /// Le loueur a-t-il des annonces à louer et des annonces à vendre ?
@@ -240,9 +245,7 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
       async: async,
       provider: provider,
       loueur: page?.etablissement.loueur,
-      entete: page == null
-          ? null
-          : EnteteEtablissement(etablissement: page.etablissement),
+      page: page,
       cartes: disponibles == null
           ? null
           : [
@@ -301,6 +304,29 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
       );
     }
 
+    // Établissement : chambres en carrousel juste après les contacts.
+    final page = liste.page;
+    if (page != null && !widget.listeSeule) {
+      return Scaffold(
+        appBar: AppBar(title: Text(loueur.nom)),
+        body: VuePageEtablissement(
+          etablissement: page.etablissement,
+          disponibles: page.disponibles,
+          onRefresh: () => rafraichir(ref, liste.provider),
+          voirTout: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => EcranLoueur(
+                partenaireId: widget.partenaireId,
+                type: TypeLocation.hebergement,
+                nom: loueur.nom,
+                listeSeule: true,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     final cartes = liste.cartes;
     return Scaffold(
       appBar: AppBar(title: Text(loueur.nom)),
@@ -318,12 +344,12 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.only(bottom: 24),
                   children: [
-                    liste.entete ??
-                        _Entete(
-                          loueur: loueur,
-                          largeur: largeur,
-                          icone: textes.icone,
-                        ),
+                    if (!widget.listeSeule)
+                      _Entete(
+                        loueur: loueur,
+                        largeur: largeur,
+                        icone: textes.icone,
+                      ),
                     if (liste.avecSelecteur)
                       SelecteurLouerAcheter(
                         mode: _mode,

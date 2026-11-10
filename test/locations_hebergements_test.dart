@@ -28,6 +28,7 @@ import 'package:poufiret/fonctionnalites/locations/screens/ecran_mes_demandes.da
 import 'package:poufiret/fonctionnalites/locations/widgets/carte_hebergement.dart';
 import 'package:poufiret/fonctionnalites/locations/widgets/entete_etablissement.dart';
 import 'package:poufiret/fonctionnalites/locations/widgets/feuille_reservation_hebergement.dart';
+import 'package:poufiret/fonctionnalites/locations/widgets/page_etablissement.dart';
 import 'package:poufiret/fonctionnalites/locations/widgets/visite_immersive.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
 import 'package:poufiret/global/ui/format_montant.dart';
@@ -183,8 +184,9 @@ Future<void> _monter(
   List<Override> overrides = const [],
   Utilisateur? utilisateur = _utilisateur,
   bool stabiliser = true,
+  Size taille = const Size(420, 3200),
 }) async {
-  tester.view.physicalSize = const Size(420, 3200);
+  tester.view.physicalSize = taille;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
@@ -527,7 +529,7 @@ void main() {
       expect(find.byType(EcranLoueur), findsOneWidget);
       expect(find.byType(EnteteEtablissement), findsOneWidget);
       expect(find.byType(EcranArticles), findsNothing);
-      expect(find.byType(CarteHebergement), findsNWidgets(2));
+      expect(find.byType(CarteHebergementCompacte), findsNWidgets(2));
     });
 
     testWidgets('partenaire sans établissement (404) : sa fiche habituelle', (
@@ -549,6 +551,12 @@ void main() {
       ).overrideWith((ref) => Stream.value(_page)),
     ];
 
+    Future<void> avancer(WidgetTester tester) async {
+      for (var i = 0; i < 5; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+    }
+
     testWidgets('en-tête, infos pratiques, cartes, Filtrer', (tester) async {
       await _monter(
         tester,
@@ -560,8 +568,10 @@ void main() {
       expect(find.byIcon(Icons.star_rounded), findsNWidgets(3));
       expect(find.text('Hôtel'), findsOneWidget);
       expect(find.text('Ferké - Centre'), findsOneWidget);
+      // Ligne de contact : Appeler, Discuter et WhatsApp (fourni).
       expect(find.text('Appeler'), findsOneWidget);
-      expect(find.text('WhatsApp'), findsOneWidget);
+      expect(find.byTooltip('Discuter'), findsOneWidget);
+      expect(find.byTooltip('WhatsApp'), findsOneWidget);
       expect(find.text('Itinéraire'), findsOneWidget);
       expect(find.text('Localisation'), findsOneWidget);
       // Vue 360° de l'établissement : la visionneuse de M1.
@@ -571,10 +581,49 @@ void main() {
       expect(find.text('Piscine'), findsOneWidget);
       expect(find.text('Salle de sport'), findsOneWidget);
       expect(find.text('Wifi'), findsOneWidget);
-      // Arrivée, départ, petit-déjeuner, annulation, conditions.
+      // Arrivée, départ, petit-déjeuner.
       expect(find.text('à partir de 14h00'), findsOneWidget);
       expect(find.text('avant 12h00'), findsOneWidget);
       expect(find.text('En option (${formatMontant(3000)})'), findsOneWidget);
+
+      // Ordre : en-tête, contacts, position, chambres, puis le reste.
+      double y(String texte) => tester.getTopLeft(find.text(texte).first).dy;
+      final ordre = [
+        'Ferké - Centre',
+        'Appeler',
+        'Itinéraire',
+        'Nos chambres',
+        'Présentation',
+        'Équipements',
+        'Informations pratiques',
+        "Politique d'annulation",
+        'Conditions',
+      ];
+      for (var i = 1; i < ordre.length; i++) {
+        expect(y(ordre[i - 1]), lessThan(y(ordre[i])), reason: ordre[i]);
+      }
+
+      // Chambres : prix minimum, carrousel des disponibles, « Voir tout ».
+      expect(find.text('à partir de ${formatPrixNuit(25000)}'), findsOneWidget);
+      expect(find.byType(CarteHebergementCompacte), findsNWidgets(2));
+      expect(find.text('Chambre double climatisée'), findsOneWidget);
+      expect(find.text('Suite familiale'), findsOneWidget);
+      expect(find.text('2 adultes · 1 enfant'), findsOneWidget);
+      expect(find.text('Studio meublé'), findsNothing);
+      // Carte ~75 % de la largeur : la suivante dépasse.
+      final carte = tester.getSize(find.byType(CarteHebergementCompacte).first);
+      expect(carte.width, moreOrLessEquals(420 * 0.75, epsilon: 1));
+      // Section visible sur ce grand écran : pas de barre du bas.
+      expect(find.byType(BarreChambres), findsNothing);
+
+      // Annulation et conditions : repliées par défaut.
+      expect(
+        find.text("Annulation gratuite jusqu'à 24 h avant l'arrivée"),
+        findsNothing,
+      );
+      await tester.tap(find.text("Politique d'annulation"));
+      await tester.tap(find.text('Conditions'));
+      await avancer(tester);
       expect(
         find.text("Annulation gratuite jusqu'à 24 h avant l'arrivée"),
         findsOneWidget,
@@ -583,7 +632,12 @@ void main() {
         find.text("Pièce d'identité demandée à l'arrivée."),
         findsOneWidget,
       );
-      // Hébergements disponibles seulement.
+
+      // « Voir tout (2) » : la liste complète actuelle, avec Filtrer.
+      await tester.tap(find.text('Voir tout (2)'));
+      await avancer(tester);
+      await avancer(tester);
+      expect(find.byType(CarteHebergement), findsNWidgets(2));
       expect(find.text('2 hébergements disponibles'), findsOneWidget);
       expect(find.text('Chambre double climatisée'), findsOneWidget);
       expect(find.text('Chambre'), findsOneWidget);
@@ -638,9 +692,79 @@ void main() {
       );
       expect(find.text('Itinéraire'), findsNothing);
       expect(find.text('Vue 360°'), findsNothing);
-      expect(find.text('WhatsApp'), findsNothing);
+      expect(find.byTooltip('WhatsApp'), findsNothing);
+      expect(find.byTooltip('Discuter'), findsOneWidget);
       expect(find.byIcon(Icons.star_rounded), findsNothing);
       expect(find.text('Appeler'), findsOneWidget);
+    });
+  });
+
+  group('page établissement : barre du bas', () {
+    Future<void> monter(WidgetTester tester, PageEtablissement page) => _monter(
+      tester,
+      const EcranLoueur(partenaireId: 90, type: TypeLocation.hebergement),
+      overrides: [
+        vueVitrineProvider(partenaireId: 90).overrideWith((ref) async {}),
+        pageEtablissementProvider(
+          partenaireId: 90,
+        ).overrideWith((ref) => Stream.value(page)),
+      ],
+      stabiliser: false,
+      // Petit écran : les chambres sont sous la ligne de flottaison.
+      taille: const Size(360, 480),
+    );
+
+    Future<void> avancer(WidgetTester tester) async {
+      for (var i = 0; i < 6; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+    }
+
+    testWidgets('visible hors de la section, masquée une fois arrivé', (
+      tester,
+    ) async {
+      await monter(tester, _page);
+      await avancer(tester);
+      expect(find.byType(BarreChambres), findsOneWidget);
+      expect(find.text('À partir de ${formatPrixNuit(25000)}'), findsOneWidget);
+      await tester.tap(find.text('Voir les chambres'));
+      await avancer(tester);
+      expect(find.byType(BarreChambres), findsNothing);
+      expect(tester.getTopLeft(find.text('Nos chambres')).dy, lessThan(480));
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('0 hébergement : message, ni carrousel ni barre', (
+      tester,
+    ) async {
+      await monter(tester, _page.copyWith(hebergements: const []));
+      await avancer(tester);
+      expect(find.byType(BarreChambres), findsNothing);
+      await tester.scrollUntilVisible(
+        find.text('Aucune chambre disponible pour le moment.'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Nos chambres'), findsOneWidget);
+      expect(find.byType(CarteHebergementCompacte), findsNothing);
+      expect(find.textContaining('Voir tout'), findsNothing);
+      expect(find.byType(BarreChambres), findsNothing);
+    });
+
+    testWidgets('résidence : « Nos logements »', (tester) async {
+      await monter(
+        tester,
+        _page.copyWith(
+          etablissement: _page.etablissement.copyWith(
+            typeEtablissement: 'residence_meublee',
+          ),
+        ),
+      );
+      await avancer(tester);
+      expect(find.text('Voir les logements'), findsOneWidget);
+      await tester.tap(find.text('Voir les logements'));
+      await avancer(tester);
+      expect(find.text('Nos logements'), findsOneWidget);
     });
   });
 

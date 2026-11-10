@@ -375,6 +375,32 @@ void main() {
   group('page loueur', () {
     const meubles = FiltreLogements(meuble: true);
 
+    testWidgets('ligne de contact : WhatsApp seulement si fourni', (
+      tester,
+    ) async {
+      final sansWhatsapp = _page.copyWith(
+        loueur: _page.loueur.copyWith(whatsappExterne: null),
+      );
+      await _monter(
+        tester,
+        const EcranLoueur(partenaireId: 70),
+        overrides: [
+          vueVitrineProvider(partenaireId: 70).overrideWith((ref) async {}),
+          pageLoueurProvider(
+            partenaireId: 70,
+          ).overrideWith((ref) => Stream.value(sansWhatsapp)),
+        ],
+      );
+      expect(find.text('Appeler'), findsOneWidget);
+      expect(find.byTooltip('Discuter'), findsOneWidget);
+      expect(find.byTooltip('WhatsApp'), findsNothing);
+      // Même ligne que « Appeler ».
+      expect(
+        tester.getCenter(find.byTooltip('Discuter')).dy,
+        moreOrLessEquals(tester.getCenter(find.text('Appeler')).dy, epsilon: 1),
+      );
+    });
+
     testWidgets('en-tête, cartes, bouton Filtrer sans puces de filtre', (
       tester,
     ) async {

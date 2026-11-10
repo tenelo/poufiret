@@ -10,13 +10,21 @@ import 'carte_logement.dart';
 import 'elements_fiche.dart';
 import 'visite_immersive.dart';
 
-/// En-tête de la page d'un établissement (hôtel, résidence) : galerie, nom,
-/// étoiles, type, localisation, contacts, position, vue 360°, équipements
-/// et informations pratiques. La liste des hébergements suit.
+/// Page d'un établissement (hôtel, résidence) : galerie, nom, étoiles,
+/// type, localisation ; contacts et position ; [sectionHebergements] (les
+/// chambres, tout de suite visibles) ; présentation, vue 360°, équipements,
+/// informations pratiques ; annulation et conditions repliables.
 class EnteteEtablissement extends ConsumerWidget {
-  const EnteteEtablissement({super.key, required this.etablissement});
+  const EnteteEtablissement({
+    super.key,
+    required this.etablissement,
+    this.sectionHebergements,
+  });
 
   final Etablissement etablissement;
+
+  /// Section « Nos chambres », placée juste après les contacts.
+  final Widget? sectionHebergements;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -114,10 +122,11 @@ class EnteteEtablissement extends ConsumerWidget {
                 ),
               ],
               const SizedBox(height: 10),
-              BoutonsContact(
+              LigneContactLoueur(
                 telephone: e.telephonePro,
                 whatsapp: e.whatsappExterne,
                 partenaireId: e.id,
+                nom: e.nom,
               ),
               if (e.aPosition) ...[
                 const SizedBox(height: 8),
@@ -134,6 +143,7 @@ class EnteteEtablissement extends ConsumerWidget {
             ],
           ),
         ),
+        ?sectionHebergements,
         if (e.description.isNotEmpty)
           SectionFiche(titre: 'Présentation', child: Text(e.description)),
         if (panoramas.isNotEmpty)
@@ -158,13 +168,15 @@ class EnteteEtablissement extends ConsumerWidget {
             titre: 'Informations pratiques',
             child: Column(children: infos),
           ),
+        if (e.politiqueAnnulationLisible.isNotEmpty || e.conditions.isNotEmpty)
+          const SizedBox(height: 12),
         if (e.politiqueAnnulationLisible.isNotEmpty)
-          SectionFiche(
+          SectionRepliable(
             titre: "Politique d'annulation",
             child: Text(e.politiqueAnnulationLisible),
           ),
         if (e.conditions.isNotEmpty)
-          SectionFiche(
+          SectionRepliable(
             titre: 'Conditions',
             child: Text(
               e.conditions,
@@ -175,6 +187,33 @@ class EnteteEtablissement extends ConsumerWidget {
           ),
         const Divider(height: 32),
       ],
+    );
+  }
+}
+
+/// Section titrée repliable, fermée par défaut.
+class SectionRepliable extends StatelessWidget {
+  const SectionRepliable({super.key, required this.titre, required this.child});
+
+  final String titre;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionTile(
+      title: Text(
+        titre,
+        style: Theme.of(
+          context,
+        ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+      ),
+      tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+      childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      expandedAlignment: Alignment.centerLeft,
+      expandedCrossAxisAlignment: CrossAxisAlignment.start,
+      shape: const Border(),
+      collapsedShape: const Border(),
+      children: [child],
     );
   }
 }
