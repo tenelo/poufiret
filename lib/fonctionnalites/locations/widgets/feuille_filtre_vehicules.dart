@@ -1,84 +1,140 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../donnees/locations_providers.dart';
+import '../../../global/ui/format_montant.dart';
 import '../metier_domaine/location_models.dart';
 import '../metier_domaine/vehicule_models.dart';
 
-/// Ouvre la feuille « Filtrer » des véhicules d'un loueur. Renvoie le
-/// nouveau filtre, ou null si la feuille est refermée sans appliquer.
+/// Ouvre la feuille « Filtrer » des véhicules d'un loueur. Les lignes ne
+/// proposent que les valeurs présentes chez lui ([options], calculées sur
+/// les annonces du type affiché) ; [achat] : prix de vente au lieu du prix
+/// par jour. Renvoie le nouveau filtre, ou null si la feuille est refermée
+/// sans appliquer.
 Future<FiltreVehicules?> ouvrirFiltreVehicules(
   BuildContext context,
-  FiltreVehicules actuel,
-) {
+  FiltreVehicules actuel, {
+  required OptionsFiltreVehicules options,
+  required bool achat,
+}) {
   return showModalBottomSheet<FiltreVehicules>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     showDragHandle: true,
     constraints: const BoxConstraints(maxWidth: 700),
-    builder: (_) => _FeuilleFiltre(actuel: actuel),
+    builder: (_) =>
+        _FeuilleFiltre(actuel: actuel, options: options, achat: achat),
   );
 }
 
-class _FeuilleFiltre extends ConsumerStatefulWidget {
-  const _FeuilleFiltre({required this.actuel});
+class _FeuilleFiltre extends StatefulWidget {
+  const _FeuilleFiltre({
+    required this.actuel,
+    required this.options,
+    required this.achat,
+  });
 
   final FiltreVehicules actuel;
+  final OptionsFiltreVehicules options;
+  final bool achat;
 
   @override
-  ConsumerState<_FeuilleFiltre> createState() => _FeuilleFiltreState();
+  State<_FeuilleFiltre> createState() => _FeuilleFiltreState();
 }
 
-class _FeuilleFiltreState extends ConsumerState<_FeuilleFiltre> {
+class _FeuilleFiltreState extends State<_FeuilleFiltre> {
   late String? _categorie = widget.actuel.categorie;
-  late String? _boite = widget.actuel.boite;
+  late String? _marque = widget.actuel.marque;
+  late int? _prixMax = widget.actuel.prixMax;
   late int? _placesMin = widget.actuel.placesMin;
+  late String? _boite = widget.actuel.boite;
   late bool _avecChauffeur = widget.actuel.avecChauffeur;
-  late final _prixMax = TextEditingController(
-    text: widget.actuel.prixMax?.toString() ?? '',
-  );
 
-  @override
-  void dispose() {
-    _prixMax.dispose();
-    super.dispose();
-  }
+  OptionsFiltreVehicules get _o => widget.options;
+
+  /// Valeur gardée seulement si la ligne la propose encore.
+  T? _siProposee<T>(T? valeur, Iterable<T> proposees) =>
+      proposees.contains(valeur) ? valeur : null;
 
   void _appliquer() => Navigator.of(context).pop(
     FiltreVehicules(
-      categorie: _categorie,
-      prixMax: int.tryParse(_prixMax.text),
-      placesMin: _placesMin,
-      boite: _boite,
-      avecChauffeur: _avecChauffeur,
+      categorie: _siProposee(_categorie, _o.categories.map((c) => c.$1)),
+      marque: _siProposee(_marque, _o.marques),
+      prixMax: _siProposee(_prixMax, _o.prix),
+      placesMin: _siProposee(_placesMin, _o.places),
+      boite: _siProposee(_boite, _o.boites),
+      avecChauffeur: _o.chauffeur && _avecChauffeur,
+      mode: widget.actuel.mode,
     ),
   );
 
-  /// Liste déroulante « Tous » + options de référence.
-  Widget _choix({
+  /// Liste déroulante : [tous] (valeur null) + les options du loueur.
+  Widget _liste<T>({
     required String libelle,
-    required List<OptionMeta> options,
-    required String? valeur,
-    required ValueChanged<String?> onChanged,
-  }) => DropdownButtonFormField<String?>(
-    initialValue: options.any((o) => o.valeur == valeur) ? valeur : null,
+    required String tous,
+    required List<(T, String)> options,
+    required T? valeur,
+    required ValueChanged<T?> onChanged,
+  }) => DropdownButtonFormField<T?>(
+    initialValue: options.any((o) => o.$1 == valeur) ? valeur : null,
     isExpanded: true,
     decoration: InputDecoration(labelText: libelle),
     items: [
-      const DropdownMenuItem(value: null, child: Text('Toutes')),
-      for (final o in options)
-        DropdownMenuItem(value: o.valeur, child: Text(o.libelle)),
+      DropdownMenuItem<T?>(value: null, child: Text(tous)),
+      for (final (v, texte) in options)
+        DropdownMenuItem<T?>(value: v, child: Text(texte)),
     ],
     onChanged: onChanged,
   );
 
   @override
   Widget build(BuildContext context) {
-    final meta = ref.watch(metaLocationsProvider).value;
+    // Lignes affichées : seulement celles qui offrent un vrai choix.
+    final lignes = <Widget>[
+      if (_o.categories.isNotEmpty)
+        _liste<String>(
+          libelle: 'Catégorie',
+          tous: 'Toutes',
+          options: _o.categories,
+          valeur: _categorie,
+          onChanged: (v) => setState(() => _categorie = v),
+        ),
+      if (_o.marques.isNotEmpty)
+        _liste<String>(
+          libelle: 'Marque',
+          tous: 'Toutes',
+          options: [for (final m in _o.marques) (m, m)],
+          valeur: _marque,
+          onChanged: (v) => setState(() => _marque = v),
+        ),
+      if (_o.prix.isNotEmpty)
+        _liste<int>(
+          libelle: 'Prix maximum',
+          tous: 'Tous',
+          options: [
+            for (final p in _o.prix)
+              (p, widget.achat ? formatMontant(p) : formatPrixJour(p)),
+          ],
+          valeur: _prixMax,
+          onChanged: (v) => setState(() => _prixMax = v),
+        ),
+      if (_o.places.isNotEmpty)
+        _liste<int>(
+          libelle: 'Places (minimum)',
+          tous: 'Peu importe',
+          options: [for (final n in _o.places) (n, '$n et plus')],
+          valeur: _placesMin,
+          onChanged: (v) => setState(() => _placesMin = v),
+        ),
+      if (_o.boites.isNotEmpty)
+        _liste<String>(
+          libelle: 'Boîte de vitesses',
+          tous: 'Toutes',
+          options: [for (final b in _o.boites) (b, b)],
+          valeur: _boite,
+          onChanged: (v) => setState(() => _boite = v),
+        ),
+    ];
     return Padding(
-      // La feuille remonte au-dessus du clavier.
       padding: EdgeInsets.fromLTRB(
         16,
         0,
@@ -97,47 +153,17 @@ class _FeuilleFiltreState extends ConsumerState<_FeuilleFiltre> {
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
-            _choix(
-              libelle: 'Catégorie',
-              options: meta?.categoriesVehicule ?? const [],
-              valeur: _categorie,
-              onChanged: (v) => setState(() => _categorie = v),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _prixMax,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(
-                labelText: 'Prix maximum',
-                suffixText: 'F/jour',
+            for (final (i, ligne) in lignes.indexed) ...[
+              if (i > 0) const SizedBox(height: 12),
+              ligne,
+            ],
+            if (_o.chauffeur)
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                title: const Text('Avec chauffeur'),
+                value: _avecChauffeur,
+                onChanged: (v) => setState(() => _avecChauffeur = v),
               ),
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<int?>(
-              initialValue: _placesMin,
-              isExpanded: true,
-              decoration: const InputDecoration(labelText: 'Places (minimum)'),
-              items: [
-                const DropdownMenuItem(value: null, child: Text('Peu importe')),
-                for (final n in const [2, 4, 5, 7, 9, 15])
-                  DropdownMenuItem(value: n, child: Text('$n et plus')),
-              ],
-              onChanged: (v) => setState(() => _placesMin = v),
-            ),
-            const SizedBox(height: 12),
-            _choix(
-              libelle: 'Boîte de vitesses',
-              options: meta?.boites ?? const [],
-              valeur: _boite,
-              onChanged: (v) => setState(() => _boite = v),
-            ),
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('Avec chauffeur'),
-              value: _avecChauffeur,
-              onChanged: (v) => setState(() => _avecChauffeur = v),
-            ),
             const SizedBox(height: 8),
             Row(
               children: [

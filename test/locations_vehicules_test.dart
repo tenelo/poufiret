@@ -349,35 +349,331 @@ void main() {
       expect(visite.montantEstime, isNull);
     });
 
-    test('filtre : disponibles par défaut, critères en paramètres', () {
+    test('filtre : seuls disponible et mode partent au serveur', () {
       expect(const FiltreVehicules().parametres, {'disponible': 1});
       expect(const FiltreVehicules().nombre, 0);
       const filtre = FiltreVehicules(
         categorie: 'berline',
+        marque: 'Toyota',
         prixMax: 30000,
         placesMin: 5,
-        boite: 'automatique',
+        boite: 'Automatique',
         avecChauffeur: true,
+        mode: 'location',
       );
-      expect(filtre.parametres, {
-        'disponible': 1,
-        'categorie': 'berline',
-        'prix_max': 30000,
-        'places_min': 5,
-        'boite': 'automatique',
-        'avec_chauffeur': 1,
-      });
-      expect(filtre.nombre, 5);
+      // Les critères s'appliquent dans l'app, sur la liste complète.
+      expect(filtre.parametres, {'disponible': 1, 'mode': 'location'});
+      expect(filtre.nombre, 6);
       expect(
         filtre,
         const FiltreVehicules(
           categorie: 'berline',
+          marque: 'Toyota',
           prixMax: 30000,
           placesMin: 5,
-          boite: 'automatique',
+          boite: 'Automatique',
           avecChauffeur: true,
+          mode: 'location',
         ),
       );
+      expect(filtre == filtre.sansPrix(), isFalse);
+      expect(filtre.sansPrix().prixMax, isNull);
+      expect(filtre.sansPrix().marque, 'Toyota');
+    });
+  });
+
+  group('filtre limité aux annonces du loueur', () {
+    VehiculeResume v(Map<String, dynamic> json) =>
+        VehiculeResume.fromJson({'boite_libelle': 'Automatique', ...json});
+
+    // Flotte à louer : catégorie lue sous categorie_vehicule (API).
+    final corolla = v({
+      'id': 1,
+      'categorie_vehicule': 'berline',
+      'categorie_libelle': 'Berline',
+      'marque': 'Toyota',
+      'nb_places': 5,
+      'prix_jour': 25000,
+      'chauffeur_disponible': true,
+    });
+    final sportage = v({
+      'id': 2,
+      'categorie_vehicule': 'suv',
+      'categorie_libelle': 'SUV',
+      'marque': 'Kia',
+      'nb_places': 7,
+      'prix_jour': 40000,
+    });
+    // Chauffeur imposé : la carte affiche le prix avec chauffeur.
+    final elantra = v({
+      'id': 3,
+      'categorie_vehicule': 'berline',
+      'categorie_libelle': 'Berline',
+      'marque': 'Hyundai',
+      'nb_places': 5,
+      'prix_jour': 30000,
+      'prix_jour_avec_chauffeur': 45000,
+      'chauffeur_disponible': true,
+      'chauffeur_obligatoire': true,
+    });
+    final flotte = [corolla, sportage, elantra];
+
+    test('catégorie lue depuis categorie_vehicule', () {
+      expect(corolla.categorie, 'berline');
+      expect(sportage.categorie, 'suv');
+      // Ancienne forme (clé categorie) toujours lue.
+      expect(v({'id': 9, 'categorie': 'minibus'}).categorie, 'minibus');
+    });
+
+    test('options : seulement ce que possède le loueur', () {
+      final o = OptionsFiltreVehicules.depuis(flotte, achat: false);
+      expect(o.categories, [('berline', 'Berline'), ('suv', 'SUV')]);
+      // Marques par ordre alphabétique.
+      expect(o.marques, ['Hyundai', 'Kia', 'Toyota']);
+      // Prix de la carte (45 000 avec chauffeur imposé), du plus bas.
+      expect(o.prix, [25000, 40000, 45000]);
+      expect(o.places, [5, 7]);
+      // Une seule boîte chez lui : ligne masquée.
+      expect(o.boites, isEmpty);
+      expect(o.chauffeur, isTrue);
+    });
+
+    test('ligne masquée quand une seule valeur possible', () {
+      final o = OptionsFiltreVehicules.depuis([
+        corolla,
+        corolla.copyWith(id: 4),
+      ], achat: false);
+      expect(o.categories, isEmpty);
+      expect(o.marques, isEmpty);
+      expect(o.prix, isEmpty);
+      expect(o.places, isEmpty);
+      expect(o.boites, isEmpty);
+      // Tous avec chauffeur, ou aucun : pas de ligne.
+      expect(o.chauffeur, isFalse);
+      expect(
+        OptionsFiltreVehicules.depuis([sportage], achat: false).chauffeur,
+        isFalse,
+      );
+      // Une marque connue et une inconnue : choisir la connue filtre encore.
+      expect(
+        OptionsFiltreVehicules.depuis([
+          corolla,
+          sportage.copyWith(marque: ''),
+        ], achat: false).marques,
+        ['Toyota'],
+      );
+    });
+
+    test('filtre par marque, prix de la carte, places, chauffeur', () {
+      List<int> ids(FiltreVehicules f) =>
+          f.appliquer(flotte, achat: false).map((v) => v.id).toList();
+      expect(ids(const FiltreVehicules(marque: 'Kia')), [2]);
+      expect(ids(const FiltreVehicules(categorie: 'berline')), [1, 3]);
+      // Elantra : 45 000 sur sa carte, au-dessus de 40 000.
+      expect(ids(const FiltreVehicules(prixMax: 40000)), [1, 2]);
+      expect(ids(const FiltreVehicules(placesMin: 7)), [2]);
+      expect(ids(const FiltreVehicules(avecChauffeur: true)), [1, 3]);
+      expect(
+        ids(const FiltreVehicules(categorie: 'berline', marque: 'Toyota')),
+        [1],
+      );
+    });
+
+    test('changement de type : critères absents retirés, présents gardés', () {
+      // Nouveau type : Sportage seul (SUV, Kia, 7 places, sans chauffeur).
+      const avant = FiltreVehicules(
+        categorie: 'suv',
+        marque: 'Toyota',
+        prixMax: 25000,
+        placesMin: 7,
+        boite: 'Manuelle',
+        avecChauffeur: true,
+        mode: 'location',
+      );
+      final apres = avant.limiteA([sportage]);
+      expect(apres.categorie, 'suv');
+      expect(apres.placesMin, 7);
+      expect(apres.marque, isNull);
+      expect(apres.boite, isNull);
+      expect(apres.avecChauffeur, isFalse);
+      expect(apres.mode, 'location');
+      // Le prix relève de sansPrix (remis à « Tous » au changement).
+      expect(apres.prixMax, 25000);
+      expect(avant.limiteA(flotte).marque, 'Toyota');
+      expect(avant.limiteA(flotte).avecChauffeur, isTrue);
+    });
+
+    testWidgets('page loueur : Louer → Acheter retire la marque absente', (
+      tester,
+    ) async {
+      final aVendre = [
+        v({
+          'id': 11,
+          'categorie_vehicule': 'suv',
+          'categorie_libelle': 'SUV',
+          'marque': 'Toyota',
+          'nb_places': 7,
+          'mode': 'vente',
+          'prix_vente': 9500000,
+        }),
+        v({
+          'id': 12,
+          'categorie_vehicule': 'berline',
+          'categorie_libelle': 'Berline',
+          'marque': 'Peugeot',
+          'nb_places': 5,
+          'mode': 'vente',
+          'prix_vente': 6000000,
+        }),
+      ];
+      final aLouer = [corolla, sportage];
+      PageLoueurVehicules page(List<VehiculeResume> r) =>
+          _page.copyWith(resultats: r);
+      await _monter(
+        tester,
+        const EcranLoueur(partenaireId: 80, type: TypeLocation.vehicule),
+        overrides: [
+          vueVitrineProvider(partenaireId: 80).overrideWith((ref) async {}),
+          pageLoueurVehiculesProvider(
+            partenaireId: 80,
+          ).overrideWith((ref) => Stream.value(page([...aLouer, ...aVendre]))),
+          pageLoueurVehiculesProvider(
+            partenaireId: 80,
+            filtre: const FiltreVehicules(mode: 'location'),
+          ).overrideWith((ref) => Stream.value(page(aLouer))),
+          pageLoueurVehiculesProvider(
+            partenaireId: 80,
+            filtre: const FiltreVehicules(mode: 'vente'),
+          ).overrideWith((ref) => Stream.value(page(aVendre))),
+        ],
+      );
+      Finder champ(String libelle) => find.ancestor(
+        of: find.text(libelle),
+        matching: find.byType(InputDecorator),
+      );
+      // Louer : catégorie SUV (aussi à vendre) et marque Kia (louée seule).
+      await tester.tap(find.text('Filtrer'));
+      await tester.pumpAndSettle();
+      await tester.tap(champ('Catégorie'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('SUV').last);
+      await tester.pumpAndSettle();
+      await tester.tap(champ('Marque'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Kia').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Appliquer'));
+      await tester.pumpAndSettle();
+      expect(find.text('Filtrer (2)'), findsOneWidget);
+      expect(find.text('1 véhicule disponible'), findsOneWidget);
+
+      // Acheter : pas de Kia à vendre → marque retirée ; SUV gardée.
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Acheter'));
+      await tester.pumpAndSettle();
+      expect(find.text('Filtrer (1)'), findsOneWidget);
+      expect(find.text('1 véhicule à vendre'), findsOneWidget);
+      await tester.tap(find.text('Filtrer (1)'));
+      await tester.pumpAndSettle();
+      expect(
+        find.descendant(of: champ('Catégorie'), matching: find.text('SUV')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: champ('Marque'), matching: find.text('Toutes')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('page loueur : prix en liste qui suit Louer / Acheter', (
+      tester,
+    ) async {
+      // Deux à louer, deux à vendre : sélecteur Louer | Acheter.
+      final aVendre = [
+        v({
+          'id': 10,
+          'categorie_vehicule': 'berline',
+          'categorie_libelle': 'Berline',
+          'marque': 'Peugeot',
+          'nb_places': 5,
+          'mode': 'vente',
+          'prix_vente': 6000000,
+        }),
+        v({
+          'id': 11,
+          'categorie_vehicule': 'suv',
+          'categorie_libelle': 'SUV',
+          'marque': 'Toyota',
+          'nb_places': 7,
+          'mode': 'vente',
+          'prix_vente': 9500000,
+        }),
+      ];
+      final aLouer = [corolla, sportage];
+      PageLoueurVehicules page(List<VehiculeResume> r) =>
+          _page.copyWith(resultats: r);
+      // Le champ lui-même (son libellé flotte au-dessus).
+      final champPrix = find.ancestor(
+        of: find.text('Prix maximum'),
+        matching: find.byType(InputDecorator),
+      );
+      await _monter(
+        tester,
+        const EcranLoueur(partenaireId: 80, type: TypeLocation.vehicule),
+        overrides: [
+          vueVitrineProvider(partenaireId: 80).overrideWith((ref) async {}),
+          pageLoueurVehiculesProvider(
+            partenaireId: 80,
+          ).overrideWith((ref) => Stream.value(page([...aLouer, ...aVendre]))),
+          pageLoueurVehiculesProvider(
+            partenaireId: 80,
+            filtre: const FiltreVehicules(mode: 'location'),
+          ).overrideWith((ref) => Stream.value(page(aLouer))),
+          pageLoueurVehiculesProvider(
+            partenaireId: 80,
+            filtre: const FiltreVehicules(mode: 'vente'),
+          ).overrideWith((ref) => Stream.value(page(aVendre))),
+        ],
+      );
+      expect(find.text('2 véhicules disponibles'), findsOneWidget);
+
+      // Louer : prix par jour du loueur, en liste.
+      await tester.tap(find.text('Filtrer'));
+      await tester.pumpAndSettle();
+      expect(find.text('Marque'), findsOneWidget);
+      expect(find.text('Boîte de vitesses'), findsNothing);
+      expect(
+        tester.getTopLeft(find.text('Catégorie')).dy,
+        lessThan(tester.getTopLeft(find.text('Marque')).dy),
+      );
+      await tester.tap(champPrix);
+      await tester.pumpAndSettle();
+      expect(find.text(formatPrixJour(25000)).last, findsOneWidget);
+      expect(find.text(formatPrixJour(40000)).last, findsOneWidget);
+      await tester.tap(find.text(formatPrixJour(25000)).last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Appliquer'));
+      await tester.pumpAndSettle();
+      expect(find.text('Filtrer (1)'), findsOneWidget);
+      expect(find.text('1 véhicule disponible'), findsOneWidget);
+
+      // Acheter : le prix maximum revient à « Tous ».
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Acheter'));
+      await tester.pumpAndSettle();
+      expect(find.text('Filtrer'), findsOneWidget);
+      expect(find.text('2 véhicules à vendre'), findsOneWidget);
+      await tester.tap(find.text('Filtrer'));
+      await tester.pumpAndSettle();
+      await tester.tap(champPrix);
+      await tester.pumpAndSettle();
+      // Prix de vente, sans « /jour ».
+      expect(find.text(formatMontant(6000000)).last, findsOneWidget);
+      expect(find.text(formatMontant(9500000)).last, findsOneWidget);
+      expect(find.text(formatPrixJour(25000)), findsNothing);
+      await tester.tap(find.text(formatMontant(6000000)).last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Appliquer'));
+      await tester.pumpAndSettle();
+      expect(find.text('1 véhicule à vendre'), findsOneWidget);
     });
   });
 
@@ -1024,15 +1320,19 @@ void main() {
           ),
         );
       final repo = LocationsRepository(dio);
-      await repo.vehiculesBrut(80, const FiltreVehicules(placesMin: 7));
+      await repo.vehiculesBrut(
+        80,
+        const FiltreVehicules(placesMin: 7, mode: 'location'),
+      );
       await repo.vehiculeBrut(1);
       expect(
         requetes.first.path,
         '/api/v1/locations/partenaires/80/vehicules/',
       );
+      // Les critères (places…) ne partent plus : seul le type d'annonce.
       expect(requetes.first.queryParameters, {
         'disponible': 1,
-        'places_min': 7,
+        'mode': 'location',
       });
       expect(requetes.last.path, '/api/v1/locations/vehicules/1/');
     });

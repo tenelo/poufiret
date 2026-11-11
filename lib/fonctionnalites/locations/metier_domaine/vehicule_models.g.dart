@@ -11,7 +11,7 @@ _VehiculeResume _$VehiculeResumeFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num).toInt(),
       titre: json['titre'] as String? ?? '',
       photo: json['photo'] as String? ?? '',
-      categorie: json['categorie'] as String? ?? '',
+      categorie: _lireCategorie(json, 'categorie') as String? ?? '',
       categorieLibelle: json['categorie_libelle'] as String? ?? '',
       marque: json['marque'] as String? ?? '',
       modele: json['modele'] as String? ?? '',

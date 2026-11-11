@@ -9,6 +9,10 @@ part 'vehicule_models.freezed.dart';
 part 'vehicule_models.g.dart';
 
 /// Un véhicule dans une liste (page loueur, « autres véhicules »).
+/// Catégorie d'une carte : `categorie_vehicule` (API), sinon `categorie`.
+Object? _lireCategorie(Map json, String cle) =>
+    json['categorie_vehicule'] ?? json[cle];
+
 @freezed
 abstract class VehiculeResume with _$VehiculeResume {
   const VehiculeResume._();
@@ -17,7 +21,9 @@ abstract class VehiculeResume with _$VehiculeResume {
     required int id,
     @Default('') String titre,
     @Default('') String photo,
-    @Default('') String categorie,
+
+    /// Code de catégorie : l'API l'envoie sous `categorie_vehicule`.
+    @JsonKey(readValue: _lireCategorie) @Default('') String categorie,
     @JsonKey(name: 'categorie_libelle') @Default('') String categorieLibelle,
     @Default('') String marque,
     @Default('') String modele,
@@ -314,10 +320,21 @@ class EstimationLocation {
       '${formatMontant(total)}';
 }
 
-/// Filtres de la liste des véhicules d'un loueur.
+/// Prix d'une annonce pour le type affiché : prix de vente en « Acheter »,
+/// sinon le prix par jour de la carte (avec chauffeur s'il est imposé).
+/// Null si l'annonce n'en a pas.
+int? prixVehicule(VehiculeResume v, {required bool achat}) {
+  final prix = achat ? v.vente.prixVente : v.prixAffiche;
+  return prix == null || prix <= 0 ? null : prix;
+}
+
+/// Filtres de la liste des véhicules d'un loueur. Seul [mode] (Louer |
+/// Acheter) part au serveur ; les autres critères s'appliquent dans l'app
+/// à la liste complète déjà chargée ([appliquer]).
 class FiltreVehicules {
   const FiltreVehicules({
     this.categorie,
+    this.marque,
     this.prixMax,
     this.placesMin,
     this.boite,
@@ -325,7 +342,17 @@ class FiltreVehicules {
     this.mode,
   });
 
+  /// Code de catégorie (`categorie_vehicule`).
   final String? categorie;
+  final String? marque;
+
+  /// Prix maximum du type affiché (par jour, ou de vente en « Acheter »).
+  final int? prixMax;
+  final int? placesMin;
+
+  /// Boîte de vitesses, par son libellé (l'API n'envoie que lui).
+  final String? boite;
+  final bool avecChauffeur;
 
   /// Louer | Acheter : `location` ou `vente` (null : toutes les annonces).
   final String? mode;
@@ -333,46 +360,184 @@ class FiltreVehicules {
   /// Même filtre, pour le type d'annonce choisi.
   FiltreVehicules avecMode(String? mode) => FiltreVehicules(
     categorie: categorie,
+    marque: marque,
     prixMax: prixMax,
     placesMin: placesMin,
     boite: boite,
     avecChauffeur: avecChauffeur,
     mode: mode,
   );
-  final int? prixMax;
-  final int? placesMin;
-  final String? boite;
-  final bool avecChauffeur;
+
+  /// Même filtre, prix maximum remis à « Tous » (changement de type).
+  FiltreVehicules sansPrix() => FiltreVehicules(
+    categorie: categorie,
+    marque: marque,
+    placesMin: placesMin,
+    boite: boite,
+    avecChauffeur: avecChauffeur,
+    mode: mode,
+  );
+
+  /// Même filtre, sans les critères dont la valeur n'existe dans aucune
+  /// de [annonces] (changement de type Louer ↔ Acheter) : ils repassent à
+  /// « Toutes » / « Peu importe » / interrupteur éteint. Le prix est gardé
+  /// tel quel (voir [sansPrix]).
+  FiltreVehicules limiteA(List<VehiculeResume> annonces) {
+    bool existe(bool Function(VehiculeResume) test) => annonces.any(test);
+    return FiltreVehicules(
+      categorie: categorie != null && existe((v) => v.categorie == categorie)
+          ? categorie
+          : null,
+      marque: marque != null && existe((v) => v.marque.trim() == marque)
+          ? marque
+          : null,
+      prixMax: prixMax,
+      placesMin: placesMin != null && existe((v) => v.nbPlaces == placesMin)
+          ? placesMin
+          : null,
+      boite: boite != null && existe((v) => v.boiteLibelle.trim() == boite)
+          ? boite
+          : null,
+      avecChauffeur: avecChauffeur && existe((v) => v.chauffeurDisponible),
+      mode: mode,
+    );
+  }
 
   /// Nombre de critères actifs (pastille du bouton « Filtrer »).
   int get nombre => [
     categorie != null,
+    marque != null,
     prixMax != null,
     placesMin != null,
     boite != null,
     avecChauffeur,
   ].where((actif) => actif).length;
 
-  /// Paramètres de requête. Seuls les véhicules disponibles sont demandés.
-  Map<String, dynamic> get parametres => {
-    'disponible': 1,
-    'categorie': ?categorie,
-    'prix_max': ?prixMax,
-    'places_min': ?placesMin,
-    'boite': ?boite,
-    if (avecChauffeur) 'avec_chauffeur': 1,
-    'mode': ?mode,
-  };
+  /// Paramètres de requête : seuls les véhicules disponibles, du type
+  /// choisi. Les autres critères sont appliqués dans l'app.
+  Map<String, dynamic> get parametres => {'disponible': 1, 'mode': ?mode};
 
-  /// Signature stable, pour la clé de cache.
+  /// Signature stable de la requête, pour la clé de cache.
   String get cle =>
       (parametres.entries.map((e) => '${e.key}=${e.value}').toList()..sort())
           .join('&');
 
-  @override
-  bool operator ==(Object other) =>
-      other is FiltreVehicules && other.cle == cle;
+  /// Vrai si [v] passe tous les critères ([achat] : prix de vente).
+  bool garde(VehiculeResume v, {required bool achat}) {
+    if (categorie != null && v.categorie != categorie) return false;
+    if (marque != null && v.marque.trim() != marque) return false;
+    if (prixMax != null) {
+      final prix = prixVehicule(v, achat: achat);
+      if (prix == null || prix > prixMax!) return false;
+    }
+    if (placesMin != null && v.nbPlaces < placesMin!) return false;
+    if (boite != null && v.boiteLibelle.trim() != boite) return false;
+    if (avecChauffeur && !v.chauffeurDisponible) return false;
+    return true;
+  }
+
+  List<VehiculeResume> appliquer(
+    List<VehiculeResume> vehicules, {
+    required bool achat,
+  }) => [
+    for (final v in vehicules)
+      if (garde(v, achat: achat)) v,
+  ];
 
   @override
-  int get hashCode => cle.hashCode;
+  bool operator ==(Object other) =>
+      other is FiltreVehicules &&
+      other.categorie == categorie &&
+      other.marque == marque &&
+      other.prixMax == prixMax &&
+      other.placesMin == placesMin &&
+      other.boite == boite &&
+      other.avecChauffeur == avecChauffeur &&
+      other.mode == mode;
+
+  @override
+  int get hashCode => Object.hash(
+    categorie,
+    marque,
+    prixMax,
+    placesMin,
+    boite,
+    avecChauffeur,
+    mode,
+  );
+}
+
+/// Valeurs proposées par la feuille « Filtrer », calculées sur les
+/// annonces du loueur pour le type affiché. Une liste vide = ligne masquée
+/// (moins de deux valeurs possibles : le filtre ne changerait rien).
+class OptionsFiltreVehicules {
+  const OptionsFiltreVehicules({
+    this.categories = const [],
+    this.marques = const [],
+    this.prix = const [],
+    this.places = const [],
+    this.boites = const [],
+    this.chauffeur = false,
+  });
+
+  factory OptionsFiltreVehicules.depuis(
+    List<VehiculeResume> vehicules, {
+    required bool achat,
+  }) {
+    String? texte(String t) => t.trim().isEmpty ? null : t.trim();
+    final libelles = <String, String>{
+      for (final v in vehicules)
+        if (texte(v.categorie) != null)
+          v.categorie: texte(v.categorieLibelle) ?? lisible(v.categorie),
+    };
+    final categories = _siPlusieurs(
+      vehicules.map((v) => texte(v.categorie)),
+      ordre: (a, b) =>
+          libelles[a]!.toLowerCase().compareTo(libelles[b]!.toLowerCase()),
+    );
+    final avecChauffeur = vehicules.where((v) => v.chauffeurDisponible).length;
+    return OptionsFiltreVehicules(
+      categories: [for (final c in categories) (c, libelles[c]!)],
+      marques: _siPlusieurs(
+        vehicules.map((v) => texte(v.marque)),
+        ordre: (a, b) => a.toLowerCase().compareTo(b.toLowerCase()),
+      ),
+      prix: _siPlusieurs(
+        vehicules.map((v) => prixVehicule(v, achat: achat)),
+        ordre: (a, b) => a.compareTo(b),
+      ),
+      places: _siPlusieurs(
+        vehicules.map((v) => v.nbPlaces > 0 ? v.nbPlaces : null),
+        ordre: (a, b) => a.compareTo(b),
+      ),
+      boites: _siPlusieurs(
+        vehicules.map((v) => texte(v.boiteLibelle)),
+        ordre: (a, b) => a.toLowerCase().compareTo(b.toLowerCase()),
+      ),
+      chauffeur: avecChauffeur > 0 && avecChauffeur < vehicules.length,
+    );
+  }
+
+  /// (code, libellé), triées par libellé.
+  final List<(String, String)> categories;
+  final List<String> marques;
+
+  /// Prix distincts, du plus bas au plus haut.
+  final List<int> prix;
+  final List<int> places;
+  final List<String> boites;
+
+  /// Ligne « Avec chauffeur » : certains véhicules seulement en ont un.
+  final bool chauffeur;
+
+  /// Valeurs connues triées, si au moins deux valeurs distinctes existent
+  /// (une valeur absente compte : choisir la seule connue filtre encore).
+  static List<T> _siPlusieurs<T extends Object>(
+    Iterable<T?> valeurs, {
+    required int Function(T, T) ordre,
+  }) {
+    final distinctes = valeurs.toSet();
+    final connues = distinctes.whereType<T>().toList()..sort(ordre);
+    return distinctes.length >= 2 ? connues : const [];
+  }
 }

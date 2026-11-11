@@ -217,21 +217,45 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
         .value
         ?.resultats;
     final selecteur = aLesDeuxModes([...?tout?.map((v) => v.vente)]);
+    // Seul le type d'annonce (Louer | Acheter) part au serveur ; les autres
+    // critères filtrent ici la liste complète reçue.
     final provider = pageLoueurVehiculesProvider(
       partenaireId: widget.partenaireId,
-      filtre: _filtreVehicules.avecMode(selecteur ? _mode : null),
+      filtre: FiltreVehicules(mode: selecteur ? _mode : null),
     );
     final async = ref.watch(provider);
+    final annonces = async.value?.resultats;
+    // Prix de vente en « Acheter », ou chez un loueur qui ne fait que vendre.
+    final achat = selecteur
+        ? _achat
+        : annonces != null &&
+              annonces.isNotEmpty &&
+              annonces.every((v) => !v.vente.mode.aLouer);
     return _Liste(
       async: async,
       provider: provider,
       loueur: async.value?.loueur,
-      cartes: async.value?.resultats
-          .map((v) => CarteVehicule(key: ValueKey(v.id), vehicule: v))
-          .toList(),
+      cartes: annonces == null
+          ? null
+          : [
+              for (final v in _filtreVehicules.appliquer(
+                annonces,
+                achat: achat,
+              ))
+                CarteVehicule(key: ValueKey(v.id), vehicule: v),
+            ],
       nombreFiltres: _filtreVehicules.nombre,
       filtrer: () async {
-        final choisi = await ouvrirFiltreVehicules(context, _filtreVehicules);
+        final choisi = await ouvrirFiltreVehicules(
+          context,
+          _filtreVehicules,
+          // Options : ce que le loueur propose dans le type affiché.
+          options: OptionsFiltreVehicules.depuis(
+            annonces ?? const [],
+            achat: achat,
+          ),
+          achat: achat,
+        );
         if (choisi != null && mounted) {
           setState(() => _filtreVehicules = choisi);
         }
@@ -241,6 +265,28 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
           : _Textes.vehicules,
       avecSelecteur: selecteur,
     );
+  }
+
+  /// Filtre véhicules au passage à [mode] (Louer ↔ Acheter) : prix remis à
+  /// « Tous » (non comparables), critères absents des annonces du nouveau
+  /// type retirés. Ces annonces sont prises dans la liste complète déjà
+  /// chargée, comme le serveur (location + vente compte dans les deux).
+  FiltreVehicules _filtreVehiculesPour(String mode) {
+    final filtre = _filtreVehicules.sansPrix();
+    if (widget.type != TypeLocation.vehicule) return filtre;
+    final tout =
+        ref
+            .read(
+              pageLoueurVehiculesProvider(partenaireId: widget.partenaireId),
+            )
+            .value
+            ?.resultats ??
+        const <VehiculeResume>[];
+    final vente = mode == ModeAnnonce.vente.valeur;
+    return filtre.limiteA([
+      for (final v in tout)
+        if (vente ? v.vente.mode.aVendre : v.vente.mode.aLouer) v,
+    ]);
   }
 
   /// Établissement (hôtel, résidence) : son en-tête détaillé, puis ses
@@ -413,7 +459,10 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
                     if (liste.avecSelecteur)
                       SelecteurLouerAcheter(
                         mode: _mode,
-                        onChange: (mode) => setState(() => _mode = mode),
+                        onChange: (mode) => setState(() {
+                          _mode = mode;
+                          _filtreVehicules = _filtreVehiculesPour(mode);
+                        }),
                       ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 4, 12, 4),
