@@ -209,7 +209,7 @@ class _Indicateurs extends StatelessWidget {
             width: i == actif ? 18 : 6,
             height: 6,
             decoration: BoxDecoration(
-              color: i == actif ? Config.couleurPrimaire : Config.couleurClaire,
+              color: i == actif ? Config.couleurPrimaire : Colors.grey.shade400,
               borderRadius: BorderRadius.circular(3),
             ),
           ),

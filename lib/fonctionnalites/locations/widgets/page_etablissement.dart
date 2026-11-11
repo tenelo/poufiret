@@ -223,13 +223,13 @@ class SectionHebergements extends StatelessWidget {
                 ),
                 if (hebergements.isNotEmpty) ...[
                   // Dates d'abord : la liste avec Disponible / Complet.
-                  IconButton(
-                    onPressed: choisirDates,
-                    tooltip: 'Choisir mes dates',
-                    visualDensity: VisualDensity.compact,
-                    icon: Icon(
-                      Icons.calendar_month_outlined,
-                      color: theme.colorScheme.primary,
+                  Tooltip(
+                    message: 'Choisir mes dates',
+                    child: TextButton.icon(
+                      onPressed: choisirDates,
+                      iconAlignment: IconAlignment.end,
+                      icon: const Icon(Icons.calendar_month_outlined),
+                      label: const Text('Disponibilité'),
                     ),
                   ),
                   TextButton(

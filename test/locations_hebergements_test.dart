@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +36,7 @@ import 'package:poufiret/fonctionnalites/locations/widgets/page_etablissement.da
 import 'package:poufiret/fonctionnalites/locations/widgets/visite_immersive.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
 import 'package:poufiret/global/ui/format_montant.dart';
+import 'package:poufiret/global/ui/theme_poufiret.dart';
 
 final _repo = LocationsRepository(Dio());
 
@@ -211,6 +213,9 @@ Future<void> _monter(
         ...overrides,
       ],
       child: MaterialApp(
+        // Thème de l'appli (police Inter) : les largeurs sont celles de
+        // l'écran réel.
+        theme: ThemePoufiret.clair,
         home: Consumer(
           builder: (context, ref, _) {
             ref.watch(authProvider);
@@ -231,7 +236,20 @@ Future<void> _monter(
   }
 }
 
+/// Charge la vraie police de l'appli : la police de substitution des tests,
+/// bien plus large, ferait déborder des lignes qui tiennent à l'écran.
+Future<void> _chargerPolice() async {
+  final chargeur = FontLoader(police);
+  for (final graisse in ['Regular', 'Medium', 'SemiBold', 'Bold']) {
+    final octets = File('assets/fonts/Inter-$graisse.ttf').readAsBytesSync();
+    chargeur.addFont(Future.value(ByteData.sublistView(octets)));
+  }
+  await chargeur.load();
+}
+
 void main() {
+  setUpAll(_chargerPolice);
+
   group('parsing', () {
     test('établissement : étoiles, heures, équipements, petit-déjeuner', () {
       final e = _page.etablissement;
