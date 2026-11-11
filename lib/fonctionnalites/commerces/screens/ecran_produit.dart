@@ -273,6 +273,8 @@ class _FicheState extends ConsumerState<_Fiche> {
                       titre: p.nom,
                       ratio: g.ratioPhoto,
                       iconeVide: g.icone,
+                      // La page éleveur garde sa rangée défilante.
+                      rangeeDefilante: g == Gabarit.elevage,
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
