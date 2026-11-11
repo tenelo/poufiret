@@ -403,6 +403,23 @@ class FiltreVehicules {
     );
   }
 
+  /// Même filtre, sans les critères que la feuille ne propose pas dans
+  /// [options] (ligne masquée : une seule valeur possible) ; ils repassent
+  /// à leur valeur neutre.
+  FiltreVehicules limiteAuxOptions(OptionsFiltreVehicules options) {
+    T? propose<T>(T? valeur, Iterable<T> valeurs) =>
+        valeurs.contains(valeur) ? valeur : null;
+    return FiltreVehicules(
+      categorie: propose(categorie, options.categories.map((c) => c.$1)),
+      marque: propose(marque, options.marques),
+      prixMax: propose(prixMax, options.prix),
+      placesMin: propose(placesMin, options.places),
+      boite: propose(boite, options.boites),
+      avecChauffeur: avecChauffeur && options.chauffeur,
+      mode: mode,
+    );
+  }
+
   /// Nombre de critères actifs (pastille du bouton « Filtrer »).
   int get nombre => [
     categorie != null,

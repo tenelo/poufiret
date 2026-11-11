@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../metier_domaine/hebergement_models.dart';
 import '../metier_domaine/location_models.dart';
 
-/// Ouvre la feuille « Filtrer » des hébergements d'un établissement. Les
-/// types proposés sont ceux de ses hébergements. Renvoie le nouveau filtre,
-/// ou null si la feuille est refermée sans appliquer.
+/// Ouvre la feuille « Filtrer » des hébergements d'un établissement. Chaque
+/// ligne ne propose que les valeurs de ses [hebergements] ; une ligne qui
+/// n'offrirait qu'une valeur est masquée. Renvoie le nouveau filtre, ou null
+/// si la feuille est refermée sans appliquer.
 Future<FiltreHebergements?> ouvrirFiltreHebergements(
   BuildContext context,
   FiltreHebergements actuel, {
   required List<HebergementResume> hebergements,
 }) {
-  final types = <String, String>{
-    for (final h in hebergements)
-      if (h.typeHebergement.isNotEmpty) h.typeHebergement: h.type,
-  };
   return showModalBottomSheet<FiltreHebergements>(
     context: context,
     isScrollControlled: true,
@@ -24,19 +20,16 @@ Future<FiltreHebergements?> ouvrirFiltreHebergements(
     constraints: const BoxConstraints(maxWidth: 700),
     builder: (_) => _FeuilleFiltre(
       actuel: actuel,
-      types: [
-        for (final e in types.entries)
-          OptionMeta(valeur: e.key, libelle: e.value),
-      ],
+      options: OptionsFiltreHebergements.depuis(hebergements),
     ),
   );
 }
 
 class _FeuilleFiltre extends StatefulWidget {
-  const _FeuilleFiltre({required this.actuel, required this.types});
+  const _FeuilleFiltre({required this.actuel, required this.options});
 
   final FiltreHebergements actuel;
-  final List<OptionMeta> types;
+  final OptionsFiltreHebergements options;
 
   @override
   State<_FeuilleFiltre> createState() => _FeuilleFiltreState();
@@ -44,21 +37,67 @@ class _FeuilleFiltre extends StatefulWidget {
 
 class _FeuilleFiltreState extends State<_FeuilleFiltre> {
   late String? _type = widget.actuel.type;
+  late int? _prixMax = widget.actuel.prixMax;
   late int? _capacite = widget.actuel.capacite;
-  late final _prixMax = TextEditingController(
-    text: widget.actuel.prixMax?.toString() ?? '',
+
+  OptionsFiltreHebergements get _o => widget.options;
+
+  /// Valeur gardée seulement si la ligne la propose encore.
+  T? _siProposee<T>(T? valeur, Iterable<T> proposees) =>
+      proposees.contains(valeur) ? valeur : null;
+
+  /// Liste déroulante : [tous] (valeur null) + les options du partenaire.
+  Widget _liste<T>({
+    required String libelle,
+    required String tous,
+    required List<(T, String)> options,
+    required T? valeur,
+    required ValueChanged<T?> onChanged,
+  }) => DropdownButtonFormField<T?>(
+    initialValue: options.any((o) => o.$1 == valeur) ? valeur : null,
+    isExpanded: true,
+    decoration: InputDecoration(labelText: libelle),
+    items: [
+      DropdownMenuItem<T?>(value: null, child: Text(tous)),
+      for (final (v, texte) in options)
+        DropdownMenuItem<T?>(value: v, child: Text(texte)),
+    ],
+    onChanged: onChanged,
   );
 
   @override
-  void dispose() {
-    _prixMax.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Lignes affichées : seulement celles qui offrent un vrai choix.
+    final lignes = <Widget>[
+      if (_o.types.isNotEmpty)
+        _liste<String>(
+          libelle: "Type d'hébergement",
+          tous: 'Tous',
+          options: _o.types,
+          valeur: _type,
+          onChanged: (v) => setState(() => _type = v),
+        ),
+      if (_o.prix.isNotEmpty)
+        _liste<int>(
+          libelle: 'Prix maximum',
+          tous: 'Tous',
+          options: [for (final p in _o.prix) (p, formatPrixNuit(p))],
+          valeur: _prixMax,
+          onChanged: (v) => setState(() => _prixMax = v),
+        ),
+      if (_o.capacites.isNotEmpty)
+        _liste<int>(
+          libelle: 'Capacité',
+          tous: 'Peu importe',
+          options: [
+            for (final n in _o.capacites)
+              (n, '${pluriel(n, 'personne')} et plus'),
+          ],
+          valeur: _capacite,
+          onChanged: (v) => setState(() => _capacite = v),
+        ),
+    ];
     return Padding(
-      // La feuille remonte au-dessus du clavier.
       padding: EdgeInsets.fromLTRB(
         16,
         0,
@@ -77,46 +116,10 @@ class _FeuilleFiltreState extends State<_FeuilleFiltre> {
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
-            DropdownButtonFormField<String?>(
-              initialValue: widget.types.any((t) => t.valeur == _type)
-                  ? _type
-                  : null,
-              isExpanded: true,
-              decoration: const InputDecoration(
-                labelText: "Type d'hébergement",
-              ),
-              items: [
-                const DropdownMenuItem(value: null, child: Text('Tous')),
-                for (final t in widget.types)
-                  DropdownMenuItem(value: t.valeur, child: Text(t.libelle)),
-              ],
-              onChanged: (v) => setState(() => _type = v),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _prixMax,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(
-                labelText: 'Prix maximum',
-                suffixText: 'F/nuit',
-              ),
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<int?>(
-              initialValue: _capacite,
-              isExpanded: true,
-              decoration: const InputDecoration(labelText: 'Capacité'),
-              items: [
-                const DropdownMenuItem(value: null, child: Text('Peu importe')),
-                for (var n = 1; n <= 6; n++)
-                  DropdownMenuItem(
-                    value: n,
-                    child: Text('${pluriel(n, 'personne')} et plus'),
-                  ),
-              ],
-              onChanged: (v) => setState(() => _capacite = v),
-            ),
+            for (final (i, ligne) in lignes.indexed) ...[
+              if (i > 0) const SizedBox(height: 12),
+              ligne,
+            ],
             const SizedBox(height: 16),
             Row(
               children: [
@@ -132,9 +135,9 @@ class _FeuilleFiltreState extends State<_FeuilleFiltre> {
                   child: FilledButton(
                     onPressed: () => Navigator.of(context).pop(
                       FiltreHebergements(
-                        type: _type,
-                        prixMax: int.tryParse(_prixMax.text),
-                        capacite: _capacite,
+                        type: _siProposee(_type, _o.types.map((t) => t.$1)),
+                        prixMax: _siProposee(_prixMax, _o.prix),
+                        capacite: _siProposee(_capacite, _o.capacites),
                       ),
                     ),
                     child: const Text('Appliquer'),

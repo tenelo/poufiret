@@ -269,7 +269,7 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
 
   /// Filtre véhicules au passage à [mode] (Louer ↔ Acheter) : prix remis à
   /// « Tous » (non comparables), critères absents des annonces du nouveau
-  /// type retirés. Ces annonces sont prises dans la liste complète déjà
+  /// type, ou dont la ligne y est masquée, retirés. Ces annonces sont prises dans la liste complète déjà
   /// chargée, comme le serveur (location + vente compte dans les deux).
   FiltreVehicules _filtreVehiculesPour(String mode) {
     final filtre = _filtreVehicules.sansPrix();
@@ -283,10 +283,17 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
             ?.resultats ??
         const <VehiculeResume>[];
     final vente = mode == ModeAnnonce.vente.valeur;
-    return filtre.limiteA([
+    final annonces = [
       for (final v in tout)
         if (vente ? v.vente.mode.aVendre : v.vente.mode.aLouer) v,
-    ]);
+    ];
+    // Ligne masquée dans le nouveau type (une seule valeur) : critère retiré
+    // aussi, pour que « Filtrer (n) » reste juste.
+    return filtre
+        .limiteA(annonces)
+        .limiteAuxOptions(
+          OptionsFiltreVehicules.depuis(annonces, achat: vente),
+        );
   }
 
   /// Établissement (hôtel, résidence) : son en-tête détaillé, puis ses
@@ -349,11 +356,9 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
     ];
   }
 
-  /// « Voir tout » / « Voir les chambres » : les dates d'abord, puis la
-  /// liste (complète si « Passer »).
-  Future<void> _voirHebergements(PageEtablissement page, String nom) async {
-    final choix = await choisirSejour(context, hebergements: page.disponibles);
-    if (choix == null || !mounted) return;
+  /// Liste des hébergements de l'établissement ; avec [sejour] : statuts
+  /// Disponible / Complet à ces dates.
+  void _ouvrirListeHebergements(String nom, {Sejour? sejour}) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => EcranLoueur(
@@ -361,10 +366,18 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
           type: TypeLocation.hebergement,
           nom: nom,
           listeSeule: true,
-          sejour: choix.sejour,
+          sejour: sejour,
         ),
       ),
     );
+  }
+
+  /// Bouton calendrier : les dates d'abord, puis la liste avec les
+  /// statuts Disponible / Complet.
+  Future<void> _voirHebergements(PageEtablissement page, String nom) async {
+    final choix = await choisirSejour(context, hebergements: page.disponibles);
+    if (choix == null || !mounted) return;
+    _ouvrirListeHebergements(nom, sejour: choix.sejour);
   }
 
   /// Rappel des dates : « Modifier » rouvre la feuille.
@@ -423,7 +436,9 @@ class _EcranLoueurState extends ConsumerState<EcranLoueur> {
           etablissement: page.etablissement,
           disponibles: page.disponibles,
           onRefresh: () => rafraichir(ref, liste.provider),
-          voirTout: () => _voirHebergements(page, loueur.nom),
+          // « Voir tout » et « Voir les chambres » : la liste, sans dates.
+          voirTout: () => _ouvrirListeHebergements(loueur.nom),
+          choisirDates: () => _voirHebergements(page, loueur.nom),
         ),
       );
     }

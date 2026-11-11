@@ -9,12 +9,11 @@ import '../metier_domaine/sejour.dart';
 import '../metier_domaine/vehicule_models.dart' show jourSeul;
 import 'feuille_reservation_hebergement.dart' show Compteur;
 
-/// Choix fait dans la feuille : un séjour, ou « Passer » ([sejour] null :
-/// la liste complète, sans filtre).
+/// Choix fait dans la feuille : le séjour cherché.
 class ChoixSejour {
   const ChoixSejour(this.sejour);
 
-  final Sejour? sejour;
+  final Sejour sejour;
 }
 
 /// Ouvre la feuille « dates et voyageurs » avant la liste des hébergements.
@@ -51,8 +50,8 @@ final completSejourProvider = FutureProvider.autoDispose
     });
 
 /// Feuille « Vos dates » : arrivée et départ (calendrier, jours où tout est
-/// complet grisés), adultes, enfants ; « Voir les disponibilités » ou
-/// « Passer ».
+/// complet grisés), adultes, enfants ; « Voir les disponibilités », actif
+/// une fois les dates choisies.
 class FeuilleSejour extends ConsumerStatefulWidget {
   const FeuilleSejour({super.key, required this.hebergements, this.initial});
 
@@ -72,7 +71,6 @@ class _FeuilleSejourState extends ConsumerState<FeuilleSejour> {
         );
   late int _adultes = widget.initial?.adultes ?? 1;
   late int _enfants = widget.initial?.enfants ?? 0;
-  bool _datesManquantes = false;
   String? _erreurDates;
 
   /// Jours où TOUS les hébergements sont complets (chargés à la première
@@ -146,16 +144,11 @@ class _FeuilleSejourState extends ConsumerState<FeuilleSejour> {
       _plage = refus == null && !memeJour ? plage : null;
       _erreurDates =
           refus ?? (memeJour ? 'Choisissez au moins une nuit.' : null);
-      _datesManquantes = false;
     });
   }
 
-  void _voir() {
-    final plage = _plage;
-    if (plage == null) {
-      setState(() => _datesManquantes = true);
-      return;
-    }
+  /// Seulement avec des dates (bouton inactif sinon).
+  void _voir(DateTimeRange plage) {
     Navigator.pop(
       context,
       ChoixSejour(
@@ -176,11 +169,7 @@ class _FeuilleSejourState extends ConsumerState<FeuilleSejour> {
     final libelleDates = plage == null
         ? 'Choisir les dates'
         : Sejour(arrivee: plage.start, depart: plage.end).libelleDates;
-    final erreur =
-        _erreurDates ??
-        (_datesManquantes
-            ? 'Choisissez vos dates d\'arrivée et de départ.'
-            : null);
+    final erreur = _erreurDates;
     return SingleChildScrollView(
       padding: EdgeInsets.fromLTRB(
         20,
@@ -240,13 +229,8 @@ class _FeuilleSejourState extends ConsumerState<FeuilleSejour> {
           ),
           const SizedBox(height: 16),
           FilledButton(
-            onPressed: _voir,
+            onPressed: plage == null ? null : () => _voir(plage),
             child: const Text('Voir les disponibilités'),
-          ),
-          const SizedBox(height: 4),
-          TextButton(
-            onPressed: () => Navigator.pop(context, const ChoixSejour(null)),
-            child: const Text('Passer'),
           ),
         ],
       ),

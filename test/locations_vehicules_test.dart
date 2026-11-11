@@ -503,6 +503,92 @@ void main() {
       expect(avant.limiteA(flotte).avecChauffeur, isTrue);
     });
 
+    test('options : critère à ligne masquée repasse au neutre', () {
+      // Nouveau type : une seule boîte (Automatique), deux catégories.
+      final o = OptionsFiltreVehicules.depuis([
+        corolla,
+        sportage,
+      ], achat: false);
+      expect(o.boites, isEmpty);
+      const avant = FiltreVehicules(
+        categorie: 'suv',
+        boite: 'Automatique',
+        mode: 'vente',
+      );
+      final apres = avant.limiteAuxOptions(o);
+      expect(apres.boite, isNull);
+      expect(apres.categorie, 'suv');
+      expect(apres.mode, 'vente');
+      expect(apres.nombre, 1);
+    });
+
+    testWidgets('Louer → Acheter : boîte gardée mais ligne masquée retirée', (
+      tester,
+    ) async {
+      // En Louer : deux boîtes ; à vendre : toutes automatiques.
+      final aLouer = [corolla, sportage.copyWith(boiteLibelle: 'Manuelle')];
+      final aVendre = [
+        v({
+          'id': 11,
+          'categorie_vehicule': 'suv',
+          'categorie_libelle': 'SUV',
+          'marque': 'Toyota',
+          'nb_places': 7,
+          'mode': 'vente',
+          'prix_vente': 9500000,
+        }),
+        v({
+          'id': 12,
+          'categorie_vehicule': 'berline',
+          'categorie_libelle': 'Berline',
+          'marque': 'Peugeot',
+          'nb_places': 5,
+          'mode': 'vente',
+          'prix_vente': 6000000,
+        }),
+      ];
+      PageLoueurVehicules page(List<VehiculeResume> r) =>
+          _page.copyWith(resultats: r);
+      await _monter(
+        tester,
+        const EcranLoueur(partenaireId: 80, type: TypeLocation.vehicule),
+        overrides: [
+          vueVitrineProvider(partenaireId: 80).overrideWith((ref) async {}),
+          pageLoueurVehiculesProvider(
+            partenaireId: 80,
+          ).overrideWith((ref) => Stream.value(page([...aLouer, ...aVendre]))),
+          pageLoueurVehiculesProvider(
+            partenaireId: 80,
+            filtre: const FiltreVehicules(mode: 'location'),
+          ).overrideWith((ref) => Stream.value(page(aLouer))),
+          pageLoueurVehiculesProvider(
+            partenaireId: 80,
+            filtre: const FiltreVehicules(mode: 'vente'),
+          ).overrideWith((ref) => Stream.value(page(aVendre))),
+        ],
+      );
+      await tester.tap(find.text('Filtrer'));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.ancestor(
+          of: find.text('Boîte de vitesses'),
+          matching: find.byType(InputDecorator),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Automatique').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Appliquer'));
+      await tester.pumpAndSettle();
+      expect(find.text('Filtrer (1)'), findsOneWidget);
+
+      // Acheter : boîte présente mais ligne masquée → retirée du compte.
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Acheter'));
+      await tester.pumpAndSettle();
+      expect(find.text('Filtrer'), findsOneWidget);
+      expect(find.text('2 véhicules à vendre'), findsOneWidget);
+    });
+
     testWidgets('page loueur : Louer → Acheter retire la marque absente', (
       tester,
     ) async {

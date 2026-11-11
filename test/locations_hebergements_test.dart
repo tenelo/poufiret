@@ -649,16 +649,14 @@ void main() {
         findsOneWidget,
       );
 
-      // « Voir tout (2) » : les dates d'abord ; « Passer » : la liste
-      // complète actuelle, avec Filtrer.
+      // « Voir tout (2) » : la liste directement, sans feuille de dates
+      // ni statut, avec Filtrer.
       await tester.tap(find.text('Voir tout (2)'));
       await avancer(tester);
-      expect(find.byType(FeuilleSejour), findsOneWidget);
-      expect(find.text('Voir les disponibilités'), findsOneWidget);
-      await tester.tap(find.text('Passer'));
-      await avancer(tester);
+      expect(find.byType(FeuilleSejour), findsNothing);
       await avancer(tester);
       expect(find.byType(RappelSejour), findsNothing);
+      expect(find.text('Disponible'), findsNothing);
       expect(find.byType(CarteHebergement), findsNWidgets(2));
       expect(find.text('2 hébergements disponibles'), findsOneWidget);
       expect(find.text('Chambre double climatisée'), findsOneWidget);
@@ -676,16 +674,114 @@ void main() {
       expect(find.text("Type d'hébergement"), findsOneWidget);
       expect(find.text('Prix maximum'), findsOneWidget);
       expect(find.text('Capacité'), findsOneWidget);
-      await tester.enterText(
-        find.widgetWithText(TextField, 'Prix maximum'),
-        '30000',
+      // Prix en liste : ceux du partenaire, du plus bas au plus haut.
+      expect(find.byType(TextField), findsNothing);
+      await tester.tap(
+        find.ancestor(
+          of: find.text('Prix maximum'),
+          matching: find.byType(InputDecorator),
+        ),
       );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text(formatPrixNuit(25000)).last, findsOneWidget);
+      expect(find.text(formatPrixNuit(60000)).last, findsOneWidget);
+      await tester.tap(find.text(formatPrixNuit(25000)).last);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
       await tester.tap(find.text('Appliquer'));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
       expect(find.text('Filtrer (1)'), findsOneWidget);
       expect(find.text('1 hébergement disponible'), findsOneWidget);
       expect(find.text('Suite familiale'), findsNothing);
+    });
+
+    testWidgets('bouton calendrier : la feuille des dates', (tester) async {
+      await _monter(
+        tester,
+        const EcranLoueur(partenaireId: 90, type: TypeLocation.hebergement),
+        overrides: overrides,
+        stabiliser: false,
+      );
+      // Sur la ligne du titre, juste avant « Voir tout ».
+      final calendrier = find.byTooltip('Choisir mes dates');
+      expect(calendrier, findsOneWidget);
+      expect(
+        tester.getCenter(calendrier).dx,
+        lessThan(tester.getTopLeft(find.text('Voir tout (2)')).dx),
+      );
+      await tester.tap(calendrier);
+      await avancer(tester);
+      expect(find.byType(FeuilleSejour), findsOneWidget);
+      // Plus de « Passer » ; « Voir les disponibilités » inactif sans dates.
+      expect(find.text('Passer'), findsNothing);
+      final voir = find.widgetWithText(FilledButton, 'Voir les disponibilités');
+      expect(tester.widget<FilledButton>(voir).onPressed, isNull);
+    });
+
+    testWidgets('petit écran : titre, calendrier et Voir tout tiennent', (
+      tester,
+    ) async {
+      await _monter(
+        tester,
+        const EcranLoueur(partenaireId: 90, type: TypeLocation.hebergement),
+        overrides: overrides,
+        stabiliser: false,
+        taille: const Size(320, 3200),
+      );
+      expect(find.byTooltip('Choisir mes dates'), findsOneWidget);
+      expect(find.text('Voir tout (2)'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    test('filtre : options limitées au partenaire, ligne à une valeur', () {
+      final o = OptionsFiltreHebergements.depuis(_page.disponibles);
+      expect(o.types, [('chambre', 'Chambre'), ('suite', 'Suite')]);
+      expect(o.prix, [25000, 60000]);
+      expect(o.capacites, [3, 6]);
+      // Une seule offre (ou toutes identiques) : lignes masquées.
+      final seule = OptionsFiltreHebergements.depuis([_page.disponibles.first]);
+      expect(seule.types, isEmpty);
+      expect(seule.prix, isEmpty);
+      expect(seule.capacites, isEmpty);
+      // Même type et même capacité, prix différents : seul le prix reste.
+      final h = _page.disponibles.first;
+      final memes = OptionsFiltreHebergements.depuis([
+        h,
+        h.copyWith(id: 9, prixNuit: 30000),
+      ]);
+      expect(memes.types, isEmpty);
+      expect(memes.capacites, isEmpty);
+      expect(memes.prix, [25000, 30000]);
+    });
+
+    testWidgets('feuille : ligne masquée quand une seule valeur', (
+      tester,
+    ) async {
+      final h = _page.disponibles.first;
+      final memes = _page.copyWith(
+        hebergements: [h, h.copyWith(id: 9, prixNuit: 30000)],
+      );
+      await _monter(
+        tester,
+        const EcranLoueur(
+          partenaireId: 90,
+          type: TypeLocation.hebergement,
+          listeSeule: true,
+        ),
+        overrides: [
+          vueVitrineProvider(partenaireId: 90).overrideWith((ref) async {}),
+          pageEtablissementProvider(
+            partenaireId: 90,
+          ).overrideWith((ref) => Stream.value(memes)),
+        ],
+      );
+      await tester.tap(find.text('Filtrer'));
+      await tester.pumpAndSettle();
+      expect(find.text('Prix maximum'), findsOneWidget);
+      expect(find.text("Type d'hébergement"), findsNothing);
+      expect(find.text('Capacité'), findsNothing);
     });
 
     testWidgets('sans position, panorama ni contacts : masqués', (
@@ -751,11 +847,14 @@ void main() {
       await avancer(tester);
       expect(find.byType(BarreChambres), findsOneWidget);
       expect(find.text('À partir de ${formatPrixNuit(25000)}'), findsOneWidget);
-      // « Voir les chambres » : la feuille des dates.
+      // « Voir les chambres » : la liste directement, comme « Voir tout ».
       await tester.tap(find.text('Voir les chambres'));
       await avancer(tester);
-      expect(find.byType(FeuilleSejour), findsOneWidget);
-      Navigator.of(tester.element(find.byType(FeuilleSejour))).pop();
+      expect(find.byType(FeuilleSejour), findsNothing);
+      expect(find.text('2 hébergements disponibles'), findsOneWidget);
+      Navigator.of(
+        tester.element(find.text('2 hébergements disponibles')),
+      ).pop();
       await avancer(tester);
       // Arrivé aux chambres en défilant : plus de barre.
       await tester.scrollUntilVisible(
@@ -799,7 +898,8 @@ void main() {
       expect(find.text('Nos logements'), findsOneWidget);
       await tester.tap(find.text('Voir les logements'));
       await avancer(tester);
-      expect(find.byType(FeuilleSejour), findsOneWidget);
+      expect(find.byType(FeuilleSejour), findsNothing);
+      expect(find.text('2 hébergements disponibles'), findsOneWidget);
     });
   });
 
@@ -886,6 +986,15 @@ void main() {
       await tester.tap(find.text('Modifier'));
       await tester.pumpAndSettle();
       expect(find.byType(FeuilleSejour), findsOneWidget);
+      expect(find.text('Passer'), findsNothing);
+      expect(
+        tester
+            .widget<FilledButton>(
+              find.widgetWithText(FilledButton, 'Voir les disponibilités'),
+            )
+            .onPressed,
+        isNotNull,
+      );
       expect(
         tester
             .widget<Compteur>(find.widgetWithText(Compteur, 'Adultes'))

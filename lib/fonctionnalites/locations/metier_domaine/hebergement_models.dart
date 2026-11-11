@@ -388,3 +388,57 @@ class FiltreHebergements {
   @override
   int get hashCode => Object.hash(type, prixMax, capacite);
 }
+
+/// Valeurs proposées par la feuille « Filtrer », calculées sur les
+/// hébergements de l'établissement. Une liste vide = ligne masquée (moins
+/// de deux valeurs possibles : le filtre ne changerait rien).
+class OptionsFiltreHebergements {
+  const OptionsFiltreHebergements({
+    this.types = const [],
+    this.prix = const [],
+    this.capacites = const [],
+  });
+
+  factory OptionsFiltreHebergements.depuis(List<HebergementResume> liste) {
+    final libelles = <String, String>{
+      for (final h in liste)
+        if (h.typeHebergement.isNotEmpty) h.typeHebergement: h.type,
+    };
+    final types = _siPlusieurs(
+      liste.map((h) => h.typeHebergement.isEmpty ? null : h.typeHebergement),
+      ordre: (a, b) =>
+          libelles[a]!.toLowerCase().compareTo(libelles[b]!.toLowerCase()),
+    );
+    return OptionsFiltreHebergements(
+      types: [for (final t in types) (t, libelles[t]!)],
+      prix: _siPlusieurs(
+        liste.map((h) => h.prixNuit > 0 ? h.prixNuit : null),
+        ordre: (a, b) => a.compareTo(b),
+      ),
+      capacites: _siPlusieurs(
+        liste.map((h) => h.capaciteTotale > 0 ? h.capaciteTotale : null),
+        ordre: (a, b) => a.compareTo(b),
+      ),
+    );
+  }
+
+  /// (code, libellé), triés par libellé.
+  final List<(String, String)> types;
+
+  /// Prix par nuit distincts, du plus bas au plus haut.
+  final List<int> prix;
+
+  /// Capacités (personnes) distinctes, croissantes.
+  final List<int> capacites;
+
+  /// Valeurs connues triées, si au moins deux valeurs distinctes existent
+  /// (une valeur absente compte : choisir la seule connue filtre encore).
+  static List<T> _siPlusieurs<T extends Object>(
+    Iterable<T?> valeurs, {
+    required int Function(T, T) ordre,
+  }) {
+    final distinctes = valeurs.toSet();
+    final connues = distinctes.whereType<T>().toList()..sort(ordre);
+    return distinctes.length >= 2 ? connues : const [];
+  }
+}

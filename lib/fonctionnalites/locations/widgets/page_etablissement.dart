@@ -24,9 +24,10 @@ bool estResidence(Etablissement e) =>
     e.typeEtablissement == 'residence_meublee';
 
 /// Page d'un établissement (hôtel, résidence) : en-tête, puis tout de suite
-/// ses chambres en carrousel, puis le reste de la fiche. Une barre fixe
-/// « Voir les chambres » (tant que le carrousel n'est pas visible) ouvre,
-/// comme « Voir tout », le choix des dates puis la liste.
+/// ses chambres en carrousel, puis le reste de la fiche. « Voir tout » et
+/// la barre fixe « Voir les chambres » (tant que le carrousel n'est pas
+/// visible) ouvrent la liste ; le bouton calendrier ouvre le choix des
+/// dates, puis la liste.
 class VuePageEtablissement extends StatefulWidget {
   const VuePageEtablissement({
     super.key,
@@ -34,6 +35,7 @@ class VuePageEtablissement extends StatefulWidget {
     required this.disponibles,
     required this.onRefresh,
     required this.voirTout,
+    required this.choisirDates,
   });
 
   final Etablissement etablissement;
@@ -42,9 +44,13 @@ class VuePageEtablissement extends StatefulWidget {
   final List<HebergementResume> disponibles;
   final Future<void> Function() onRefresh;
 
-  /// « Voir tout (N) » et « Voir les chambres » : choix des dates, puis la
-  /// liste des hébergements.
+  /// « Voir tout (N) » et « Voir les chambres » : la liste des
+  /// hébergements, sans dates.
   final VoidCallback voirTout;
+
+  /// Bouton calendrier : choix des dates, puis la liste avec les statuts
+  /// Disponible / Complet.
+  final VoidCallback choisirDates;
 
   @override
   State<VuePageEtablissement> createState() => _VuePageEtablissementState();
@@ -133,6 +139,7 @@ class _VuePageEtablissementState extends State<VuePageEtablissement> {
                           hebergements: widget.disponibles,
                           largeur: largeur,
                           voirTout: widget.voirTout,
+                          choisirDates: widget.choisirDates,
                         ),
                       ),
                     ],
@@ -159,7 +166,8 @@ class _VuePageEtablissementState extends State<VuePageEtablissement> {
 }
 
 /// « Nos chambres » / « Nos logements » : prix minimum, carrousel
-/// horizontal (la carte suivante dépasse) et « Voir tout (N) ».
+/// horizontal (la carte suivante dépasse), bouton calendrier (dates) et
+/// « Voir tout (N) ».
 class SectionHebergements extends StatelessWidget {
   const SectionHebergements({
     super.key,
@@ -167,6 +175,7 @@ class SectionHebergements extends StatelessWidget {
     required this.hebergements,
     required this.largeur,
     required this.voirTout,
+    required this.choisirDates,
   });
 
   final bool residence;
@@ -175,6 +184,7 @@ class SectionHebergements extends StatelessWidget {
   /// Largeur de la page : une carte en prend ~75 %.
   final double largeur;
   final VoidCallback voirTout;
+  final VoidCallback choisirDates;
 
   @override
   Widget build(BuildContext context) {
@@ -211,11 +221,22 @@ class SectionHebergements extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (hebergements.isNotEmpty)
+                if (hebergements.isNotEmpty) ...[
+                  // Dates d'abord : la liste avec Disponible / Complet.
+                  IconButton(
+                    onPressed: choisirDates,
+                    tooltip: 'Choisir mes dates',
+                    visualDensity: VisualDensity.compact,
+                    icon: Icon(
+                      Icons.calendar_month_outlined,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
                   TextButton(
                     onPressed: voirTout,
                     child: Text('Voir tout (${hebergements.length})'),
                   ),
+                ],
               ],
             ),
           ),
