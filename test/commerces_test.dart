@@ -251,26 +251,6 @@ class _PanierVivant extends OrdersRepository {
     );
     return _panier;
   }
-
-  @override
-  Future<Panier> modifierLigne({
-    required int ligneId,
-    num? quantite,
-    String? noteSpeciale,
-  }) async {
-    final i = lignes.indexWhere((l) => l.id == ligneId);
-    lignes[i] = lignes[i].copyWith(
-      quantite: quantite!,
-      prixLigne: (1000 * quantite).round(),
-    );
-    return _panier;
-  }
-
-  @override
-  Future<Panier?> supprimerLigne(int ligneId) async {
-    lignes.removeWhere((l) => l.id == ligneId);
-    return lignes.isEmpty ? null : _panier;
-  }
 }
 
 Future<void> _monter(
@@ -808,6 +788,16 @@ void main() {
       expect(find.text('Basket Air'), findsOneWidget);
       expect(find.text(formatMontant(25000)), findsOneWidget);
       expect(find.text('Épuisé'), findsOneWidget);
+      // Aucun bouton d'ajout sur les tuiles ; le prix les ferme.
+      expect(find.byTooltip('Ajouter au panier'), findsNothing);
+      final tuile = tester.getRect(
+        find.ancestor(
+          of: find.text('Basket Air'),
+          matching: find.byType(TuileGrilleProduit),
+        ),
+      );
+      final prix = tester.getRect(find.text(formatMontant(25000)));
+      expect(tuile.bottom - prix.bottom, closeTo(8, 1));
       // Pas de recherche, pas de puces : un seul bouton « Filtrer ».
       expect(find.byType(TextField), findsNothing);
       expect(find.byType(FilterChip), findsNothing);
@@ -872,8 +862,9 @@ void main() {
       // Sur ordonnance : mention et appel au lieu d'Ajouter.
       expect(find.text('Sur ordonnance'), findsOneWidget);
       expect(find.text('Appeler la pharmacie'), findsOneWidget);
-      // Les autres : le « + » du panier.
-      expect(find.byTooltip('Ajouter au panier'), findsOneWidget);
+      // Les autres : aucun bouton d'ajout (ajout depuis la fiche).
+      expect(find.byTooltip('Ajouter au panier'), findsNothing);
+      expect(find.text('Ajouter'), findsNothing);
 
       // Onglet suivant : un rayon à la fois.
       await tester.tap(find.text('Hygiène'));
@@ -973,6 +964,9 @@ void main() {
       expect(find.text('Antoine de Saint-Exupéry'), findsOneWidget);
       expect(find.text('Primaire · CM2'), findsOneWidget);
       expect(find.text('Occasion'), findsOneWidget);
+      // Aucun bouton d'ajout sur la ligne du livre.
+      expect(find.byTooltip('Ajouter au panier'), findsNothing);
+      expect(find.text('Ajouter'), findsNothing);
       await tester.tap(find.text('Filtrer'));
       await tester.pumpAndSettle();
       expect(find.text('Niveau'), findsOneWidget);
@@ -1044,6 +1038,14 @@ void main() {
         // Comme sur la boulangerie : dans la barre et à côté du nom.
         expect(find.byTooltip('Infos'), findsOneWidget);
         expect(find.text('Infos'), findsOneWidget);
+        // Contacts sur la ligne du nom (pas de ligne à part).
+        expect(
+          find.descendant(
+            of: find.byType(LigneNomBoutique),
+            matching: find.byTooltip('Discuter'),
+          ),
+          findsOneWidget,
+        );
         await tester.tap(find.text('Infos'));
         await tester.pumpAndSettle();
         expect(find.byType(DraggableScrollableSheet), findsOneWidget);
@@ -1184,69 +1186,74 @@ void main() {
       expect(find.byType(FlexibleSpaceBar), findsOneWidget);
     });
 
-    testWidgets('« + » ajoute, compteur, retour à 0, barre du panier', (
-      tester,
-    ) async {
-      final panier = await monterBoutique(tester);
-      expect(find.textContaining('Voir le panier'), findsNothing);
-      final plus = find.descendant(
-        of: find.ancestor(
-          of: find.text('Baguette'),
-          matching: find.byType(TuileGrilleProduit),
-        ),
-        matching: find.byTooltip('Ajouter au panier'),
-      );
-      await tester.tap(plus);
-      await tester.pumpAndSettle();
-      expect(panier.lignes.single.article, 1);
-      // Pas de message : la barre du panier suffit.
-      expect(find.text('Ajouté au panier.'), findsNothing);
-      expect(find.byType(SnackBar), findsNothing);
-      // Le « + » devient « − 1 + » ; la barre apparaît.
-      expect(find.byKey(const ValueKey('compteur-tuile')), findsOneWidget);
-      expect(find.text('1'), findsOneWidget);
-      expect(
-        find.text('1 article · ${formatMontant(1000)} — Voir le panier'),
-        findsOneWidget,
-      );
-      await tester.tap(find.byTooltip('Ajouter un'));
-      await tester.pumpAndSettle();
-      expect(panier.lignes.single.quantite, 2);
-      expect(
-        find.text('2 articles · ${formatMontant(2000)} — Voir le panier'),
-        findsOneWidget,
-      );
-      await tester.tap(find.byTooltip('Retirer un'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byTooltip('Retirer un'));
-      await tester.pumpAndSettle();
-      // Revenu à 0 : retiré du panier, barre masquée, « + » revenu.
-      expect(panier.lignes, isEmpty);
-      expect(find.textContaining('Voir le panier'), findsNothing);
-      expect(find.byKey(const ValueKey('compteur-tuile')), findsNothing);
-      expect(plus, findsOneWidget);
-    });
+    /// Tuile du produit [nom].
+    Finder tuileDe(String nom) => find.ancestor(
+      of: find.text(nom),
+      matching: find.byType(TuileGrilleProduit),
+    );
 
-    testWidgets('« + » d\'un produit à variantes : ouvre sa fiche', (
+    testWidgets('tuiles : aucune commande d\'ajout ; appui = fiche', (
       tester,
     ) async {
       final panier = await monterBoutique(tester, fiche: avecVariantes);
-      final plus = find.descendant(
-        of: find.ancestor(
-          of: find.text('Croissant'),
-          matching: find.byType(TuileGrilleProduit),
+      expect(find.byType(TuileGrilleProduit), findsNWidgets(3));
+      expect(find.byTooltip('Ajouter au panier'), findsNothing);
+      expect(
+        find.descendant(
+          of: find.byType(TuileGrilleProduit),
+          matching: find.byWidgetPredicate(
+            (w) => w is IconButton || w is ButtonStyleButton,
+          ),
         ),
-        matching: find.byTooltip('Ajouter au panier'),
+        findsNothing,
       );
-      await tester.ensureVisible(plus);
-      await tester.tap(plus);
+      // Appui sur la tuile : la fiche du produit s'ouvre, rien n'est ajouté.
+      await tester.tap(tuileDe('Croissant'));
       await tester.pumpAndSettle();
-      // Aucun ajout direct : la fiche (feuille du produit) s'ouvre.
       expect(panier.lignes, isEmpty);
       expect(find.text('Amandes'), findsWidgets);
     });
 
-    testWidgets('produit épuisé : pas de « + »', (tester) async {
+    testWidgets('ajout depuis la fiche : barre du panier', (tester) async {
+      final panier = await monterBoutique(tester);
+      expect(find.textContaining('Voir le panier'), findsNothing);
+      await tester.tap(tuileDe('Baguette'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.textContaining('Ajouter au panier ·'));
+      await tester.pumpAndSettle();
+      expect(panier.lignes.single.article, 1);
+      // Message de la fiche, inchangé.
+      expect(find.text('Ajouté au panier.'), findsOneWidget);
+      expect(
+        find.text('1 article · ${formatMontant(1000)} — Voir le panier'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('tuile ajustée : image, nom (2 lignes), prix, rien dessous', (
+      tester,
+    ) async {
+      await monterBoutique(tester);
+      final tuile = tester.getRect(tuileDe('Baguette'));
+      final nom = tester.getRect(find.text('Baguette'));
+      final prix = tester.getRect(
+        find.descendant(
+          of: tuileDe('Baguette'),
+          matching: find.text(formatMontant(1000)),
+        ),
+      );
+      // Photo carrée + marges (8 + 8) + 2 lignes de nom + le prix.
+      expect(
+        tuile.height,
+        closeTo(tuile.width + 16 + 2 * nom.height + prix.height, 1),
+      );
+      // Le prix ferme la tuile : seule la marge basse dessous.
+      expect(tuile.bottom - prix.bottom, closeTo(8, 1));
+    });
+
+    testWidgets('produit épuisé : mention, toujours sans bouton', (
+      tester,
+    ) async {
       await monterBoutique(
         tester,
         fiche: r.copyWith(
@@ -1264,16 +1271,61 @@ void main() {
         ),
       );
       expect(find.text('Épuisé'), findsOneWidget);
-      expect(find.byTooltip('Ajouter au panier'), findsNothing);
+      final tuile = tester.getRect(tuileDe('Brioche'));
+      final prix = tester.getRect(
+        find.descendant(
+          of: tuileDe('Brioche'),
+          matching: find.text(formatMontant(1000)),
+        ),
+      );
+      expect(tuile.bottom - prix.bottom, closeTo(8, 1));
+      expect(tester.takeException(), isNull);
     });
 
-    testWidgets('320 px : en-tête et tuiles sans débordement', (tester) async {
-      await monterBoutique(tester, largeur: 320);
-      expect(tester.takeException(), isNull);
-      await tester.tap(find.byTooltip('Ajouter au panier').first);
-      await tester.pumpAndSettle();
-      expect(find.byKey(const ValueKey('compteur-tuile')), findsOneWidget);
-      expect(tester.takeException(), isNull);
+    testWidgets('contacts sur la ligne du nom, à côté de « Infos »', (
+      tester,
+    ) async {
+      for (final fiche in [
+        r,
+        r.copyWith(couverture: 'https://exemple.test/c.jpg'),
+      ]) {
+        await monterBoutique(tester, fiche: fiche, largeur: 700);
+        final infos = tester.getRect(find.widgetWithText(TextButton, 'Infos'));
+        final nom = tester.getRect(find.text(r.nom).last);
+        for (final contact in [
+          find.widgetWithText(OutlinedButton, 'Appeler'),
+          find.byTooltip('Discuter'),
+          find.byTooltip('WhatsApp'),
+        ]) {
+          final rect = tester.getRect(contact);
+          // Même ligne que le nom, à droite de « Infos ».
+          expect(rect.top, lessThan(nom.bottom));
+          expect(rect.left, greaterThanOrEqualTo(infos.right));
+        }
+        expect(tester.takeException(), isNull);
+      }
+    });
+
+    testWidgets('320 px : contacts sous le nom, à gauche, sans débordement', (
+      tester,
+    ) async {
+      for (final fiche in [
+        r,
+        r.copyWith(couverture: 'https://exemple.test/c.jpg'),
+      ]) {
+        await monterBoutique(tester, fiche: fiche, largeur: 320);
+        expect(tester.takeException(), isNull);
+        final infos = tester.getRect(find.widgetWithText(TextButton, 'Infos'));
+        final appeler = tester.getRect(
+          find.widgetWithText(OutlinedButton, 'Appeler'),
+        );
+        final discuter = tester.getRect(find.byTooltip('Discuter'));
+        // Passés à la ligne : sous le nom et « Infos », alignés à gauche.
+        expect(appeler.top, greaterThan(infos.bottom));
+        expect(appeler.left, 16);
+        expect(discuter.top, appeler.top);
+        expect(find.byTooltip('Ajouter au panier'), findsNothing);
+      }
     });
 
     testWidgets('page restaurant inchangée', (tester) async {
@@ -1315,6 +1367,7 @@ void main() {
       expect(find.byIcon(Icons.restaurant_outlined), findsOneWidget);
       expect(find.byIcon(Icons.storefront_outlined), findsNothing);
       expect(find.byTooltip('Discuter'), findsNothing);
+      expect(find.byType(LigneNomBoutique), findsNothing);
       expect(find.byTooltip('Ajouter au panier'), findsNothing);
     });
 

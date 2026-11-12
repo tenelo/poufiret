@@ -30,10 +30,9 @@ import '../../commerces/metier_domaine/catalogue_commerce.dart';
 import '../../commerces/metier_domaine/fiche_produit.dart';
 import '../../commerces/metier_domaine/gabarits.dart';
 import '../../commerces/screens/ecran_catalogue.dart'
-    show IconeCommerce, telephoneCommerce;
+    show IconeCommerce, LigneNomBoutique;
 import '../../commerces/screens/ecran_produit.dart';
 import '../../commerces/widgets/ajout_panier.dart';
-import '../../locations/widgets/elements_fiche.dart' show LigneContactLoueur;
 import '../../commerces/widgets/liste_produits_paginee.dart';
 import '../../commerces/widgets/tuiles_produits.dart';
 
@@ -150,8 +149,14 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
       mention: p.mentionSurCommande,
       icone: Icons.bakery_dining_outlined,
       onTap: onTap,
-      // « + » / compteur ; la fiche si un choix est à faire.
-      action: BoutonPanierTuile(produit: p, onOuvrirFiche: onTap),
+    );
+    // Tuile ajustée à son contenu : la mention seulement si l'un des
+    // produits en a une ; rien de vide sous le prix.
+    double hauteurTexte(List<Plat> produits) => hauteurTexteAjustee(
+      context,
+      mention: produits.any(
+        (p) => p.toutEpuise || p.mentionSurCommande.isNotEmpty,
+      ),
     );
     if (r.paginationPublique) {
       final rayon = r.carte.isEmpty
@@ -169,7 +174,7 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
             key: ValueKey(requete.cle),
             requete: requete,
             presentation: Presentation.grille,
-            hauteurTexte: hauteurTexteTuileAction,
+            hauteurTexteSelon: hauteurTexte,
             tuile: (context, p) => tuile(p, () {
               // Produit trouvé par une recherche : le toucher est compté.
               if (enRecherche) {
@@ -194,6 +199,7 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
         ),
       ];
     }
+    final hauteurLocale = hauteurTexte(plats);
     return [
       SliverPadding(
         padding: marge.add(const EdgeInsets.fromLTRB(12, 12, 12, 0)),
@@ -202,7 +208,7 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
             gridDelegate: grilleProduits(
               context,
               contraintes.crossAxisExtent,
-              hauteurTexte: hauteurTexteTuileAction,
+              hauteurTexte: hauteurLocale,
             ),
             itemCount: plats.length,
             itemBuilder: (context, i) =>
@@ -472,8 +478,8 @@ class _BarreCouverture extends StatelessWidget {
 }
 
 /// Logo, nom, délai, services et accès aux infos pratiques. Commerce
-/// (boulangerie) : icône du commerce sans logo, localisation, pas de délai
-/// de préparation, puis Appeler, Discuter et WhatsApp.
+/// (boulangerie) : icône du commerce sans logo, localisation, Appeler,
+/// Discuter et WhatsApp sur la ligne du nom, pas de délai de préparation.
 class _Entete extends StatelessWidget {
   const _Entete({required this.restaurant, this.commerce = false});
 
@@ -484,66 +490,71 @@ class _Entete extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final r = restaurant;
+    final medaillon = [
+      if (r.logo.isNotEmpty) ...[
+        MedaillonLogo(url: r.logo, rayon: 26),
+        const SizedBox(width: 12),
+      ] else if (commerce) ...[
+        const IconeCommerce(gabarit: Gabarit.boulangerie, rayon: 26),
+        const SizedBox(width: 12),
+      ],
+    ];
+    final textes = Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            r.nom,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          if (r.nbAvis > 0)
+            ResumeNote(
+              noteMoyenne: r.noteMoyenne,
+              nbAvis: r.nbAvis,
+              taille: 14,
+            ),
+          if (commerce && r.localisation.isNotEmpty)
+            Text(
+              r.localisation,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Config.couleurTexteSecondaire,
+              ),
+            ),
+        ],
+      ),
+    );
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (r.logo.isNotEmpty) ...[
-                MedaillonLogo(url: r.logo, rayon: 26),
-                const SizedBox(width: 12),
-              ] else if (commerce) ...[
-                const IconeCommerce(gabarit: Gabarit.boulangerie, rayon: 26),
-                const SizedBox(width: 12),
-              ],
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      r.nom,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    if (r.nbAvis > 0)
-                      ResumeNote(
-                        noteMoyenne: r.noteMoyenne,
-                        nbAvis: r.nbAvis,
-                        taille: 14,
-                      ),
-                    if (commerce && r.localisation.isNotEmpty)
-                      Text(
-                        r.localisation,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: Config.couleurTexteSecondaire,
-                        ),
-                      ),
-                  ],
+          if (commerce)
+            // « Infos » et Appeler, Discuter, WhatsApp sur la ligne du nom.
+            LigneNomBoutique(
+              commerce: r,
+              centrer: false,
+              identite: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [...medaillon, textes],
+              ),
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ...medaillon,
+                textes,
+                TextButton.icon(
+                  onPressed: () => ouvrirFeuilleInfos(context, r),
+                  icon: const Icon(Icons.info_outline, size: 18),
+                  label: const Text('Infos'),
                 ),
-              ),
-              TextButton.icon(
-                onPressed: () => ouvrirFeuilleInfos(context, r),
-                icon: const Icon(Icons.info_outline, size: 18),
-                label: const Text('Infos'),
-              ),
-            ],
-          ),
+              ],
+            ),
           const SizedBox(height: 10),
           InfosPratiques(restaurant: r, commerce: commerce),
-          if (commerce) ...[
-            // Appeler, Discuter, WhatsApp : la ligne de la page loueur.
-            const SizedBox(height: 10),
-            LigneContactLoueur(
-              telephone: telephoneCommerce(r),
-              whatsapp: r.whatsappExterne,
-              partenaireId: r.id,
-              nom: r.nom,
-            ),
-          ],
         ],
       ),
     );
@@ -600,7 +611,11 @@ class _SectionMenuDuJour extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
             child: Row(
               children: [
-                Icon(Icons.today_outlined, color: theme.colorScheme.primary, size: 20),
+                Icon(
+                  Icons.today_outlined,
+                  color: theme.colorScheme.primary,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(

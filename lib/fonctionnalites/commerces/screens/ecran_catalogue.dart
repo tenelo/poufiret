@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../global/cache/contexte_cache.dart';
@@ -127,7 +128,7 @@ extension ProfilCatalogue on Gabarit {
   bool get avecCouverture => this == Gabarit.elevage;
 
   /// Commerce « boutique » (boulangerie, pharmacie, librairie, mode) :
-  /// ligne de contact, « + » sur les tuiles, barre du panier.
+  /// contacts sur la ligne du nom, « Infos », barre du panier.
   bool get boutique =>
       this == Gabarit.boulangerie ||
       this == Gabarit.pharmacie ||
@@ -144,13 +145,9 @@ extension ProfilCatalogue on Gabarit {
     Gabarit.elevage => Icons.storefront_outlined,
   };
 
-  /// Zone de texte des cases de grille (l'éleveur en affiche plus ; une
-  /// boutique y place son bouton panier).
-  double get hauteurTexteGrille => switch (this) {
-    Gabarit.elevage => hauteurTexteElevage,
-    _ when boutique => hauteurTexteTuileAction,
-    _ => 132,
-  };
+  /// Zone de texte des cases de grille (l'éleveur en affiche plus).
+  double get hauteurTexteGrille =>
+      this == Gabarit.elevage ? hauteurTexteElevage : 132;
 }
 
 class _Page extends ConsumerStatefulWidget {
@@ -242,11 +239,6 @@ class _PageState extends ConsumerState<_Page> {
 
   Widget _tuile(BuildContext context, Plat p) {
     final telephone = telephoneCommerce(widget.commerce);
-    // « + » / compteur du panier ; la fiche si un choix est à faire.
-    final panier = BoutonPanierTuile(
-      produit: p,
-      onOuvrirFiche: () => _ouvrir(p),
-    );
     return switch (widget.gabarit) {
       Gabarit.elevage => TuileElevage(
         key: ValueKey(p.id),
@@ -259,7 +251,6 @@ class _PageState extends ConsumerState<_Page> {
         surTitre: p.marque,
         icone: Icons.checkroom_outlined,
         onTap: () => _ouvrir(p),
-        action: panier,
       ),
       Gabarit.librairie => LigneProduit(
         key: ValueKey(p.id),
@@ -269,7 +260,6 @@ class _PageState extends ConsumerState<_Page> {
         lignes: [p.auteur, p.niveauClasse],
         mention: p.etatLivre,
         onTap: () => _ouvrir(p),
-        action: panier,
       ),
       _ => LigneProduit(
         key: ValueKey(p.id),
@@ -279,19 +269,18 @@ class _PageState extends ConsumerState<_Page> {
         mention: p.surOrdonnance ? 'Sur ordonnance' : '',
         couleurMention: Config.couleurErreur,
         onTap: () => _ouvrir(p),
-        action: p.surOrdonnance
-            ? (telephone.isEmpty
-                  ? null
-                  : TextButton.icon(
-                      onPressed: () => appelerPartenaire(
-                        context,
-                        telephone,
-                        partenaireId: widget.commerce.id,
-                      ),
-                      icon: const Icon(Icons.call_outlined, size: 18),
-                      label: const Text('Appeler la pharmacie'),
-                    ))
-            : panier,
+        // Pas de bouton d'ajout : on ajoute depuis la fiche produit.
+        action: p.surOrdonnance && telephone.isNotEmpty
+            ? TextButton.icon(
+                onPressed: () => appelerPartenaire(
+                  context,
+                  telephone,
+                  partenaireId: widget.commerce.id,
+                ),
+                icon: const Icon(Icons.call_outlined, size: 18),
+                label: const Text('Appeler la pharmacie'),
+              )
+            : null,
       ),
     };
   }
@@ -308,6 +297,14 @@ class _PageState extends ConsumerState<_Page> {
         : rayons[_rayon.clamp(0, rayons.length - 1)];
     final requete = _requete;
     final avecOnglets = rayons.length > 1 && !enRecherche;
+    // Mode (boutique en grille) : tuile ajustée à son contenu, rien de
+    // vide sous le prix.
+    double hauteurAjusteeMode(List<Plat> produits) => hauteurTexteAjustee(
+      context,
+      surTitre: produits.any((p) => p.marque.isNotEmpty),
+      mention: produits.any((p) => p.toutEpuise),
+    );
+    final hauteurAjustee = g == Gabarit.mode ? hauteurAjusteeMode : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -411,6 +408,7 @@ class _PageState extends ConsumerState<_Page> {
                       ? _GrilleLocale(
                           produits: rayon!.plats.where(_filtre.garde).toList(),
                           hauteurTexte: g.hauteurTexteGrille,
+                          hauteurTexteSelon: hauteurAjustee,
                           tuile: _tuile,
                         )
                       : SliverProduitsPagines(
@@ -418,6 +416,7 @@ class _PageState extends ConsumerState<_Page> {
                           requete: requete,
                           presentation: g.presentation,
                           hauteurTexte: g.hauteurTexteGrille,
+                          hauteurTexteSelon: hauteurAjustee,
                           tuile: _tuile,
                           vide: 'Aucun produit dans ce rayon pour le moment.',
                         ),
@@ -447,6 +446,38 @@ class _EnteteCommerce extends StatelessWidget {
     final jusquAu = c.fiche.deGardeJusquAu ?? '';
     // Avec couverture, le logo et le nom sont posés dessus.
     final avecCouverture = gabarit.avecCouverture && c.couverture.isNotEmpty;
+    final identite = Row(
+      children: [
+        if (c.logo.isNotEmpty) ...[
+          MedaillonLogo(url: c.logo, rayon: 24),
+          const SizedBox(width: 12),
+        ] else if (gabarit.boutique) ...[
+          // Sans logo : l'icône du commerce.
+          IconeCommerce(gabarit: gabarit),
+          const SizedBox(width: 12),
+        ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                c.nom,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              if (c.localisation.isNotEmpty)
+                Text(
+                  c.localisation,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: Config.couleurTexteSecondaire,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
     final entete = Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
       child: Column(
@@ -462,45 +493,11 @@ class _EnteteCommerce extends StatelessWidget {
               )
             else
               const SizedBox.shrink()
+          else if (gabarit.boutique)
+            // « Infos » et Appeler, Discuter, WhatsApp sur la ligne du nom.
+            LigneNomBoutique(commerce: c, identite: identite)
           else
-            Row(
-              children: [
-                if (c.logo.isNotEmpty) ...[
-                  MedaillonLogo(url: c.logo, rayon: 24),
-                  const SizedBox(width: 12),
-                ] else if (gabarit.boutique) ...[
-                  // Sans logo : l'icône du commerce.
-                  IconeCommerce(gabarit: gabarit),
-                  const SizedBox(width: 12),
-                ],
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        c.nom,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      if (c.localisation.isNotEmpty)
-                        Text(
-                          c.localisation,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: Config.couleurTexteSecondaire,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                if (gabarit.boutique)
-                  TextButton.icon(
-                    onPressed: () => ouvrirFeuilleInfos(context, c),
-                    icon: const Icon(Icons.info_outline, size: 18),
-                    label: const Text('Infos'),
-                  ),
-              ],
-            ),
+            identite,
           if (gabarit == Gabarit.pharmacie && garde)
             Padding(
               padding: const EdgeInsets.only(top: 8),
@@ -526,16 +523,8 @@ class _EnteteCommerce extends StatelessWidget {
                 ],
               ),
             ),
-          if (gabarit.boutique) ...[
-            // Appeler, Discuter, WhatsApp : la ligne de la page loueur.
-            const SizedBox(height: 10),
-            LigneContactLoueur(
-              telephone: telephone,
-              whatsapp: c.whatsappExterne,
-              partenaireId: c.id,
-              nom: c.nom,
-            ),
-          ] else if (telephone.isNotEmpty || c.whatsappExterne != null) ...[
+          if (!gabarit.boutique &&
+              (telephone.isNotEmpty || c.whatsappExterne != null)) ...[
             const SizedBox(height: 10),
             Row(
               children: [
@@ -583,6 +572,145 @@ class _EnteteCommerce extends StatelessWidget {
   }
 }
 
+/// Ligne du nom d'une boutique : [identite] (logo, nom...), « Infos », puis
+/// Appeler, Discuter et WhatsApp (selon ce qui existe) s'il reste au moins
+/// [largeurIdentiteMin] à l'identité ; sinon les contacts passent sous le
+/// nom, alignés à gauche.
+class LigneNomBoutique extends StatelessWidget {
+  const LigneNomBoutique({
+    super.key,
+    required this.commerce,
+    required this.identite,
+    this.centrer = true,
+  });
+
+  final Restaurant commerce;
+  final Widget identite;
+
+  /// Boutons centrés sur la hauteur de la ligne (sinon en haut).
+  final bool centrer;
+
+  static const largeurIdentiteMin = 170.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = commerce;
+    return _LigneAdaptative(
+      centrer: centrer,
+      children: [
+        identite,
+        TextButton.icon(
+          onPressed: () => ouvrirFeuilleInfos(context, c),
+          icon: const Icon(Icons.info_outline, size: 18),
+          label: const Text('Infos'),
+        ),
+        LigneContactLoueur(
+          telephone: telephoneCommerce(c),
+          whatsapp: c.whatsappExterne,
+          partenaireId: c.id,
+          nom: c.nom,
+          compacte: true,
+        ),
+      ],
+    );
+  }
+}
+
+/// Trois enfants : identité, « Infos », contacts (voir [LigneNomBoutique]).
+class _LigneAdaptative extends MultiChildRenderObjectWidget {
+  const _LigneAdaptative({required this.centrer, required super.children});
+
+  final bool centrer;
+
+  @override
+  _RenduLigneAdaptative createRenderObject(BuildContext context) =>
+      _RenduLigneAdaptative(centrer);
+
+  @override
+  void updateRenderObject(
+    BuildContext context,
+    _RenduLigneAdaptative renderObject,
+  ) => renderObject.centrer = centrer;
+}
+
+class _DonneesLigne extends ContainerBoxParentData<RenderBox> {}
+
+class _RenduLigneAdaptative extends RenderBox
+    with
+        ContainerRenderObjectMixin<RenderBox, _DonneesLigne>,
+        RenderBoxContainerDefaultsMixin<RenderBox, _DonneesLigne> {
+  _RenduLigneAdaptative(this._centrer);
+
+  bool _centrer;
+  set centrer(bool valeur) {
+    if (valeur == _centrer) return;
+    _centrer = valeur;
+    markNeedsLayout();
+  }
+
+  /// Entre « Infos » et les contacts ; sous le nom, si à la ligne.
+  static const _ecart = 8.0;
+  static const _ecartVertical = 10.0;
+
+  @override
+  void setupParentData(RenderBox child) {
+    if (child.parentData is! _DonneesLigne) child.parentData = _DonneesLigne();
+  }
+
+  @override
+  void performLayout() {
+    final identite = firstChild!;
+    final infos = childAfter(identite)!;
+    final contacts = childAfter(infos)!;
+    final largeur = constraints.maxWidth;
+    final libre = BoxConstraints(maxWidth: largeur);
+    infos.layout(libre, parentUsesSize: true);
+    contacts.layout(libre, parentUsesSize: true);
+    final enLigne =
+        largeur - infos.size.width - _ecart - contacts.size.width >=
+        LigneNomBoutique.largeurIdentiteMin;
+    final largeurIdentite = math.max(
+      0.0,
+      largeur - infos.size.width - (enLigne ? _ecart + contacts.size.width : 0),
+    );
+    identite.layout(
+      BoxConstraints.tightFor(width: largeurIdentite),
+      parentUsesSize: true,
+    );
+    final hauteurLigne = [
+      identite.size.height,
+      infos.size.height,
+      if (enLigne) contacts.size.height,
+    ].reduce(math.max);
+    void placer(RenderBox enfant, double x, double y) =>
+        (enfant.parentData! as _DonneesLigne).offset = Offset(x, y);
+    double haut(RenderBox enfant) =>
+        _centrer ? (hauteurLigne - enfant.size.height) / 2 : 0;
+    placer(identite, 0, haut(identite));
+    placer(infos, largeurIdentite, haut(infos));
+    var hauteur = hauteurLigne;
+    if (enLigne) {
+      placer(
+        contacts,
+        largeurIdentite + infos.size.width + _ecart,
+        haut(contacts),
+      );
+    } else {
+      placer(contacts, 0, hauteurLigne + _ecartVertical);
+      hauteur += _ecartVertical + contacts.size.height;
+    }
+    size = constraints.constrain(Size(largeur, hauteur));
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) =>
+      defaultPaint(context, offset);
+
+  @override
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) =>
+      defaultHitTestChildren(result, position: position);
+}
+
 /// Icône d'un commerce sans logo, à la place du médaillon.
 class IconeCommerce extends StatelessWidget {
   const IconeCommerce({super.key, required this.gabarit, this.rayon = 24});
@@ -606,11 +734,13 @@ class _GrilleLocale extends StatelessWidget {
   const _GrilleLocale({
     required this.produits,
     required this.hauteurTexte,
+    required this.hauteurTexteSelon,
     required this.tuile,
   });
 
   final List<Plat> produits;
   final double hauteurTexte;
+  final double Function(List<Plat> produits)? hauteurTexteSelon;
   final Widget Function(BuildContext context, Plat produit) tuile;
 
   @override
@@ -626,6 +756,7 @@ class _GrilleLocale extends StatelessWidget {
         ),
       );
     }
+    final hauteur = hauteurTexteSelon?.call(produits) ?? hauteurTexte;
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
       sliver: SliverLayoutBuilder(
@@ -633,7 +764,7 @@ class _GrilleLocale extends StatelessWidget {
           gridDelegate: grilleProduits(
             context,
             contraintes.crossAxisExtent,
-            hauteurTexte: hauteurTexte,
+            hauteurTexte: hauteur,
           ),
           itemCount: produits.length,
           itemBuilder: (context, i) => tuile(context, produits[i]),

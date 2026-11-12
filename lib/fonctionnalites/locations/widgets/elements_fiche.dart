@@ -251,7 +251,8 @@ class BoutonsContact extends StatelessWidget {
 
 /// Page d'un loueur : « Appeler » (place restante), carré bleu « Discuter »
 /// (messagerie interne) et carré vert WhatsApp (seulement si
-/// `whatsapp_externe`), sur une seule ligne.
+/// `whatsapp_externe`), sur une seule ligne. [compacte] : boutons à leur
+/// largeur naturelle, collés à gauche (ligne du nom d'une boutique).
 class LigneContactLoueur extends StatelessWidget {
   const LigneContactLoueur({
     super.key,
@@ -259,6 +260,7 @@ class LigneContactLoueur extends StatelessWidget {
     required this.whatsapp,
     required this.partenaireId,
     required this.nom,
+    this.compacte = false,
   });
 
   final String telephone;
@@ -269,6 +271,7 @@ class LigneContactLoueur extends StatelessWidget {
 
   /// Titre de la discussion.
   final String nom;
+  final bool compacte;
 
   /// Hauteur commune des trois boutons ; les carrés sont aussi larges.
   static const hauteur = 48.0;
@@ -277,26 +280,27 @@ class LigneContactLoueur extends StatelessWidget {
   Widget build(BuildContext context) {
     final whatsapp = this.whatsapp;
     final avecWhatsapp = whatsapp != null && afficherWhatsappExterne(whatsapp);
+    final appeler = OutlinedButton.icon(
+      onPressed: () =>
+          appelerPartenaire(context, telephone, partenaireId: partenaireId),
+      icon: const Icon(Icons.call_outlined, size: 18),
+      label: const Text('Appeler', maxLines: 1),
+    );
     return SizedBox(
       height: hauteur,
       child: Row(
+        mainAxisSize: compacte ? MainAxisSize.min : MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (telephone.isNotEmpty)
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: () => appelerPartenaire(
-                  context,
-                  telephone,
-                  partenaireId: partenaireId,
-                ),
-                icon: const Icon(Icons.call_outlined, size: 18),
-                label: const Text('Appeler', maxLines: 1),
-              ),
-            )
-          else
-            const Spacer(),
-          const SizedBox(width: 8),
+          if (compacte) ...[
+            if (telephone.isNotEmpty) ...[appeler, const SizedBox(width: 8)],
+          ] else ...[
+            if (telephone.isNotEmpty)
+              Expanded(child: appeler)
+            else
+              const Spacer(),
+            const SizedBox(width: 8),
+          ],
           _CarreDiscuter(partenaireId: partenaireId, nom: nom),
           if (avecWhatsapp) ...[
             const SizedBox(width: 8),

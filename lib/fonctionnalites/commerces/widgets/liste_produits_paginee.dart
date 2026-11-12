@@ -21,6 +21,7 @@ class SliverProduitsPagines extends ConsumerWidget {
     this.presentation = Presentation.liste,
     this.ratioPhoto = 1,
     this.hauteurTexte = 132,
+    this.hauteurTexteSelon,
     this.hauteurLigne,
     this.vide = 'Aucun produit pour le moment.',
     this.videRecherche = 'Aucun produit ne correspond à votre recherche.',
@@ -35,6 +36,10 @@ class SliverProduitsPagines extends ConsumerWidget {
 
   /// Hauteur de la zone de texte d'une case de grille, sous la photo.
   final double hauteurTexte;
+
+  /// Hauteur de la zone de texte selon les produits chargés (tuile ajustée
+  /// à son contenu) ; remplace [hauteurTexte].
+  final double Function(List<Plat> produits)? hauteurTexteSelon;
 
   /// Hauteur fixe d'une ligne de liste (sinon hauteur libre).
   final double? hauteurLigne;
@@ -89,6 +94,7 @@ class SliverProduitsPagines extends ConsumerWidget {
       return tuile(context, produits[i]);
     }
 
+    final hauteurTexte = hauteurTexteSelon?.call(produits) ?? this.hauteurTexte;
     final corps = switch (presentation) {
       Presentation.grille => SliverPadding(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
