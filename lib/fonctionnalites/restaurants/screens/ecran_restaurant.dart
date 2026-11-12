@@ -29,7 +29,11 @@ import '../../commerces/donnees/commerces_providers.dart';
 import '../../commerces/metier_domaine/catalogue_commerce.dart';
 import '../../commerces/metier_domaine/fiche_produit.dart';
 import '../../commerces/metier_domaine/gabarits.dart';
+import '../../commerces/screens/ecran_catalogue.dart'
+    show IconeCommerce, telephoneCommerce;
 import '../../commerces/screens/ecran_produit.dart';
+import '../../commerces/widgets/ajout_panier.dart';
+import '../../locations/widgets/elements_fiche.dart' show LigneContactLoueur;
 import '../../commerces/widgets/liste_produits_paginee.dart';
 import '../../commerces/widgets/tuiles_produits.dart';
 
@@ -146,6 +150,8 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
       mention: p.mentionSurCommande,
       icone: Icons.bakery_dining_outlined,
       onTap: onTap,
+      // « + » / compteur ; la fiche si un choix est à faire.
+      action: BoutonPanierTuile(produit: p, onOuvrirFiche: onTap),
     );
     if (r.paginationPublique) {
       final rayon = r.carte.isEmpty
@@ -163,6 +169,7 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
             key: ValueKey(requete.cle),
             requete: requete,
             presentation: Presentation.grille,
+            hauteurTexte: hauteurTexteTuileAction,
             tuile: (context, p) => tuile(p, () {
               // Produit trouvé par une recherche : le toucher est compté.
               if (enRecherche) {
@@ -192,7 +199,11 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
         padding: marge.add(const EdgeInsets.fromLTRB(12, 12, 12, 0)),
         sliver: SliverLayoutBuilder(
           builder: (context, contraintes) => SliverGrid.builder(
-            gridDelegate: grilleProduits(context, contraintes.crossAxisExtent),
+            gridDelegate: grilleProduits(
+              context,
+              contraintes.crossAxisExtent,
+              hauteurTexte: hauteurTexteTuileAction,
+            ),
             itemCount: plats.length,
             itemBuilder: (context, i) =>
                 tuile(plats[i], () => _ouvrirPlat(platId: plats[i].id)),
@@ -230,8 +241,12 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
         if (m.lignes.isNotEmpty) m,
     ];
 
+    // Boulangerie (commerce) : pas l'habillage d'un restaurant.
+    final commerce = widget.grille;
     return Scaffold(
-      bottomNavigationBar: _BarrePanier(restaurantId: r.id),
+      bottomNavigationBar: commerce
+          ? BarrePanierCommerce(partenaireId: r.id, largeurMax: _largeurContenu)
+          : _BarrePanier(restaurantId: r.id),
       body: LayoutBuilder(
         builder: (context, contraintes) {
           final largeur = math.min(contraintes.maxWidth, _largeurContenu);
@@ -246,13 +261,30 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                _BarreCouverture(
-                  restaurant: r,
-                  hauteur: (largeur * 0.5).clamp(160.0, 300.0),
-                ),
+                // Commerce sans couverture : barre simple, sans grande
+                // zone vide.
+                if (commerce && r.couverture.isEmpty)
+                  SliverAppBar(
+                    pinned: true,
+                    title: Text(r.nom),
+                    actions: [
+                      IconButton(
+                        icon: const Icon(Icons.info_outline),
+                        tooltip: 'Infos',
+                        onPressed: () => ouvrirFeuilleInfos(context, r),
+                      ),
+                    ],
+                  )
+                else
+                  _BarreCouverture(
+                    restaurant: r,
+                    hauteur: (largeur * 0.5).clamp(160.0, 300.0),
+                  ),
                 SliverPadding(
                   padding: marge,
-                  sliver: SliverToBoxAdapter(child: _Entete(restaurant: r)),
+                  sliver: SliverToBoxAdapter(
+                    child: _Entete(restaurant: r, commerce: commerce),
+                  ),
                 ),
                 if (!enRecherche && menus.isNotEmpty)
                   SliverPadding(
@@ -273,6 +305,9 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                     delegate: _EnteteCarte(
                       marge: marge,
                       champRecherche: _champRecherche,
+                      indice: commerce
+                          ? 'Rechercher un produit'
+                          : 'Rechercher dans la carte',
                       onRecherche: (v) => setState(() => _recherche = v),
                       // Pendant une recherche (liste ou grille), ses
                       // résultats remplacent la section : les onglets
@@ -315,21 +350,25 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                 ],
                 // Rayons paginés : la liste paginée affiche son propre vide.
                 if (enRecherche && !pagine && resultats.isEmpty)
-                  const SliverToBoxAdapter(
+                  SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.all(32),
+                      padding: const EdgeInsets.all(32),
                       child: Text(
-                        'Aucun plat ne correspond à votre recherche.',
+                        commerce
+                            ? 'Aucun produit ne correspond à votre recherche.'
+                            : 'Aucun plat ne correspond à votre recherche.',
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
                 if (r.carte.isEmpty && menus.isEmpty)
-                  const SliverToBoxAdapter(
+                  SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.all(32),
+                      padding: const EdgeInsets.all(32),
                       child: Text(
-                        "La carte de ce restaurant n'est pas encore en ligne.",
+                        commerce
+                            ? "Les produits de ce commerce ne sont pas encore en ligne."
+                            : "La carte de ce restaurant n'est pas encore en ligne.",
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -432,11 +471,14 @@ class _BarreCouverture extends StatelessWidget {
   }
 }
 
-/// Logo, nom, délai, services et accès aux infos pratiques.
+/// Logo, nom, délai, services et accès aux infos pratiques. Commerce
+/// (boulangerie) : icône du commerce sans logo, localisation, pas de délai
+/// de préparation, puis Appeler, Discuter et WhatsApp.
 class _Entete extends StatelessWidget {
-  const _Entete({required this.restaurant});
+  const _Entete({required this.restaurant, this.commerce = false});
 
   final Restaurant restaurant;
+  final bool commerce;
 
   @override
   Widget build(BuildContext context) {
@@ -452,6 +494,9 @@ class _Entete extends StatelessWidget {
             children: [
               if (r.logo.isNotEmpty) ...[
                 MedaillonLogo(url: r.logo, rayon: 26),
+                const SizedBox(width: 12),
+              ] else if (commerce) ...[
+                const IconeCommerce(gabarit: Gabarit.boulangerie, rayon: 26),
                 const SizedBox(width: 12),
               ],
               Expanded(
@@ -470,6 +515,13 @@ class _Entete extends StatelessWidget {
                         nbAvis: r.nbAvis,
                         taille: 14,
                       ),
+                    if (commerce && r.localisation.isNotEmpty)
+                      Text(
+                        r.localisation,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: Config.couleurTexteSecondaire,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -481,7 +533,17 @@ class _Entete extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          InfosPratiques(restaurant: r),
+          InfosPratiques(restaurant: r, commerce: commerce),
+          if (commerce) ...[
+            // Appeler, Discuter, WhatsApp : la ligne de la page loueur.
+            const SizedBox(height: 10),
+            LigneContactLoueur(
+              telephone: telephoneCommerce(r),
+              whatsapp: r.whatsappExterne,
+              partenaireId: r.id,
+              nom: r.nom,
+            ),
+          ],
         ],
       ),
     );
@@ -618,6 +680,7 @@ class _EnteteCarte extends SliverPersistentHeaderDelegate {
   _EnteteCarte({
     required this.marge,
     required this.champRecherche,
+    required this.indice,
     required this.onRecherche,
     required this.libelles,
     required this.sectionActive,
@@ -626,6 +689,9 @@ class _EnteteCarte extends SliverPersistentHeaderDelegate {
 
   final EdgeInsets marge;
   final TextEditingController champRecherche;
+
+  /// « Rechercher dans la carte » (restaurant) ou « Rechercher un produit ».
+  final String indice;
   final ValueChanged<String> onRecherche;
   final List<String> libelles;
   final int sectionActive;
@@ -665,9 +731,9 @@ class _EnteteCarte extends SliverPersistentHeaderDelegate {
                   controller: champRecherche,
                   onChanged: onRecherche,
                   textInputAction: TextInputAction.search,
-                  decoration: const InputDecoration(
-                    hintText: 'Rechercher dans la carte',
-                    prefixIcon: Icon(Icons.search),
+                  decoration: InputDecoration(
+                    hintText: indice,
+                    prefixIcon: const Icon(Icons.search),
                     isDense: true,
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -692,6 +758,7 @@ class _EnteteCarte extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(_EnteteCarte ancien) =>
       ancien.sectionActive != sectionActive ||
       ancien.marge != marge ||
+      ancien.indice != indice ||
       ancien.libelles.join('|') != libelles.join('|');
 }
 

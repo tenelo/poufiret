@@ -33,10 +33,19 @@ class BadgeTexte extends StatelessWidget {
 
 /// Délai de préparation et services, sur une ligne qui passe à la ligne.
 class InfosPratiques extends StatelessWidget {
-  const InfosPratiques({super.key, required this.restaurant, this.couleur});
+  const InfosPratiques({
+    super.key,
+    required this.restaurant,
+    this.couleur,
+    this.commerce = false,
+  });
 
   final Restaurant restaurant;
   final Color? couleur;
+
+  /// Commerce (boutique) : pas de délai de préparation, et une icône
+  /// neutre pour « sur place » (la fourchette reste aux restaurants).
+  final bool commerce;
 
   static const _icones = {
     'livraison': Icons.delivery_dining_outlined,
@@ -58,13 +67,18 @@ class InfosPratiques extends StatelessWidget {
         Text(texte, style: style),
       ],
     );
-    final delai = restaurant.fiche.delaiPreparationMin;
+    final delai = commerce ? null : restaurant.fiche.delaiPreparationMin;
     final elements = [
       if (delai != null && delai > 0)
         element(Icons.schedule_outlined, '$delai min'),
       for (final s in restaurant.fiche.services)
         if (libellesService[s] != null)
-          element(_icones[s] ?? Icons.check, libellesService[s]!),
+          element(
+            commerce && s == 'sur_place'
+                ? Icons.storefront_outlined
+                : _icones[s] ?? Icons.check,
+            libellesService[s]!,
+          ),
     ];
     if (elements.isEmpty) return const SizedBox.shrink();
     return Wrap(spacing: 12, runSpacing: 4, children: elements);

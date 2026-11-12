@@ -62,8 +62,15 @@ SliverGridDelegate grilleProduits(
   );
 }
 
+/// Zone de texte d'une case de grille avec bouton panier ([TuileGrilleProduit.action]) :
+/// nom (2 lignes), prix, mention, puis le bouton.
+const double hauteurTexteTuileAction = 156;
+
 /// Case de grille : photo (carrée, ou au [ratioPhoto] voulu), sur-titre
 /// (marque), nom, prix, mention (« Épuisé », « Sur commande… »).
+///
+/// Avec [action] (« + » / compteur du panier) : tuile resserrée, le prix
+/// suit le nom et le bouton se place en bas, à droite.
 class TuileGrilleProduit extends StatelessWidget {
   const TuileGrilleProduit({
     super.key,
@@ -73,6 +80,7 @@ class TuileGrilleProduit extends StatelessWidget {
     this.mention = '',
     this.ratioPhoto = 1,
     this.icone = Icons.shopping_bag_outlined,
+    this.action,
   });
 
   final Plat produit;
@@ -81,12 +89,42 @@ class TuileGrilleProduit extends StatelessWidget {
   final String mention;
   final double ratioPhoto;
   final IconData icone;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final p = produit;
     final epuise = p.toutEpuise;
+    final action = this.action;
+    final nom = Text(
+      p.nom,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+    );
+    final prix = Text(
+      prixLisible(p),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: theme.colorScheme.primary,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+    final note = epuise || mention.isNotEmpty
+        ? Text(
+            epuise ? 'Épuisé' : mention,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: epuise
+                  ? Config.couleurErreur
+                  : Config.couleurTexteSecondaire,
+              fontWeight: FontWeight.w600,
+            ),
+          )
+        : null;
     return Card(
       margin: EdgeInsets.zero,
       clipBehavior: Clip.antiAlias,
@@ -123,36 +161,18 @@ class TuileGrilleProduit extends StatelessWidget {
                             letterSpacing: 0.5,
                           ),
                         ),
-                      Text(
-                        p.nom,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const Spacer(),
-                      if (epuise || mention.isNotEmpty)
-                        Text(
-                          epuise ? 'Épuisé' : mention,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: epuise
-                                ? Config.couleurErreur
-                                : Config.couleurTexteSecondaire,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      Text(
-                        prixLisible(p),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      nom,
+                      if (action == null) ...[
+                        const Spacer(),
+                        ?note,
+                        prix,
+                      ] else ...[
+                        // Resserrée : le prix suit le nom, le bouton en bas.
+                        prix,
+                        ?note,
+                        const Spacer(),
+                        Align(alignment: Alignment.centerRight, child: action),
+                      ],
                     ],
                   ),
                 ),

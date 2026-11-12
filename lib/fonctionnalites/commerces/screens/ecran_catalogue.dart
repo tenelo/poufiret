@@ -16,6 +16,7 @@ import '../../analytics/donnees/service_suivi.dart';
 import '../../restaurants/donnees/restaurants_providers.dart';
 import '../../restaurants/metier_domaine/restaurant_models.dart';
 import '../../restaurants/widgets/carte_restaurant.dart' show MedaillonLogo;
+import '../../restaurants/widgets/feuille_infos_restaurant.dart';
 import '../donnees/commerces_providers.dart';
 import '../metier_domaine/catalogue_commerce.dart';
 import '../metier_domaine/fiche_produit.dart';
@@ -28,6 +29,7 @@ import '../widgets/tuile_elevage.dart';
 import '../widgets/tuiles_produits.dart';
 import 'ecran_produit.dart';
 import '../../../global/widgets/bouton_whatsapp.dart';
+import '../../locations/widgets/elements_fiche.dart' show LigneContactLoueur;
 
 const double _largeurContenu = 700;
 
@@ -124,9 +126,31 @@ extension ProfilCatalogue on Gabarit {
   /// Photo de couverture en tête de page.
   bool get avecCouverture => this == Gabarit.elevage;
 
-  /// Zone de texte des cases de grille (l'éleveur en affiche plus).
-  double get hauteurTexteGrille =>
-      this == Gabarit.elevage ? hauteurTexteElevage : 132;
+  /// Commerce « boutique » (boulangerie, pharmacie, librairie, mode) :
+  /// ligne de contact, « + » sur les tuiles, barre du panier.
+  bool get boutique =>
+      this == Gabarit.boulangerie ||
+      this == Gabarit.pharmacie ||
+      this == Gabarit.librairie ||
+      this == Gabarit.mode;
+
+  /// Icône du commerce (sans logo ni photo).
+  IconData get icone => switch (this) {
+    Gabarit.restaurant => Icons.restaurant,
+    Gabarit.boulangerie => Icons.bakery_dining_outlined,
+    Gabarit.pharmacie => Icons.medication_outlined,
+    Gabarit.mode => Icons.checkroom_outlined,
+    Gabarit.librairie => Icons.menu_book_outlined,
+    Gabarit.elevage => Icons.storefront_outlined,
+  };
+
+  /// Zone de texte des cases de grille (l'éleveur en affiche plus ; une
+  /// boutique y place son bouton panier).
+  double get hauteurTexteGrille => switch (this) {
+    Gabarit.elevage => hauteurTexteElevage,
+    _ when boutique => hauteurTexteTuileAction,
+    _ => 132,
+  };
 }
 
 class _Page extends ConsumerStatefulWidget {
@@ -218,6 +242,11 @@ class _PageState extends ConsumerState<_Page> {
 
   Widget _tuile(BuildContext context, Plat p) {
     final telephone = telephoneCommerce(widget.commerce);
+    // « + » / compteur du panier ; la fiche si un choix est à faire.
+    final panier = BoutonPanierTuile(
+      produit: p,
+      onOuvrirFiche: () => _ouvrir(p),
+    );
     return switch (widget.gabarit) {
       Gabarit.elevage => TuileElevage(
         key: ValueKey(p.id),
@@ -230,6 +259,7 @@ class _PageState extends ConsumerState<_Page> {
         surTitre: p.marque,
         icone: Icons.checkroom_outlined,
         onTap: () => _ouvrir(p),
+        action: panier,
       ),
       Gabarit.librairie => LigneProduit(
         key: ValueKey(p.id),
@@ -239,6 +269,7 @@ class _PageState extends ConsumerState<_Page> {
         lignes: [p.auteur, p.niveauClasse],
         mention: p.etatLivre,
         onTap: () => _ouvrir(p),
+        action: panier,
       ),
       _ => LigneProduit(
         key: ValueKey(p.id),
@@ -260,13 +291,7 @@ class _PageState extends ConsumerState<_Page> {
                       icon: const Icon(Icons.call_outlined, size: 18),
                       label: const Text('Appeler la pharmacie'),
                     ))
-            : p.commandable && !p.toutEpuise && p.variantesActives.isEmpty
-            ? FilledButton.tonal(
-                onPressed: () =>
-                    ajouterProduitAuPanier(context, ref, produit: p),
-                child: const Text('Ajouter'),
-              )
-            : null,
+            : panier,
       ),
     };
   }
@@ -285,7 +310,22 @@ class _PageState extends ConsumerState<_Page> {
     final avecOnglets = rayons.length > 1 && !enRecherche;
 
     return Scaffold(
-      appBar: AppBar(title: Text(c.nom)),
+      appBar: AppBar(
+        title: Text(c.nom),
+        // Boutique : « Infos », comme sur la boulangerie.
+        actions: [
+          if (g.boutique)
+            IconButton(
+              icon: const Icon(Icons.info_outline),
+              tooltip: 'Infos',
+              onPressed: () => ouvrirFeuilleInfos(context, c),
+            ),
+        ],
+      ),
+      // Boutique : « n article(s) · total — Voir le panier ».
+      bottomNavigationBar: g.boutique
+          ? BarrePanierCommerce(partenaireId: c.id, largeurMax: _largeurContenu)
+          : null,
       body: LayoutBuilder(
         builder: (context, contraintes) {
           final largeur = math.min(contraintes.maxWidth, _largeurContenu);
@@ -428,6 +468,10 @@ class _EnteteCommerce extends StatelessWidget {
                 if (c.logo.isNotEmpty) ...[
                   MedaillonLogo(url: c.logo, rayon: 24),
                   const SizedBox(width: 12),
+                ] else if (gabarit.boutique) ...[
+                  // Sans logo : l'icône du commerce.
+                  IconeCommerce(gabarit: gabarit),
+                  const SizedBox(width: 12),
                 ],
                 Expanded(
                   child: Column(
@@ -449,6 +493,12 @@ class _EnteteCommerce extends StatelessWidget {
                     ],
                   ),
                 ),
+                if (gabarit.boutique)
+                  TextButton.icon(
+                    onPressed: () => ouvrirFeuilleInfos(context, c),
+                    icon: const Icon(Icons.info_outline, size: 18),
+                    label: const Text('Infos'),
+                  ),
               ],
             ),
           if (gabarit == Gabarit.pharmacie && garde)
@@ -476,7 +526,16 @@ class _EnteteCommerce extends StatelessWidget {
                 ],
               ),
             ),
-          if (telephone.isNotEmpty || c.whatsappExterne != null) ...[
+          if (gabarit.boutique) ...[
+            // Appeler, Discuter, WhatsApp : la ligne de la page loueur.
+            const SizedBox(height: 10),
+            LigneContactLoueur(
+              telephone: telephone,
+              whatsapp: c.whatsappExterne,
+              partenaireId: c.id,
+              nom: c.nom,
+            ),
+          ] else if (telephone.isNotEmpty || c.whatsappExterne != null) ...[
             const SizedBox(height: 10),
             Row(
               children: [
@@ -520,6 +579,24 @@ class _EnteteCommerce extends StatelessWidget {
         ),
         entete,
       ],
+    );
+  }
+}
+
+/// Icône d'un commerce sans logo, à la place du médaillon.
+class IconeCommerce extends StatelessWidget {
+  const IconeCommerce({super.key, required this.gabarit, this.rayon = 24});
+
+  final Gabarit gabarit;
+  final double rayon;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return CircleAvatar(
+      radius: rayon,
+      backgroundColor: theme.colorScheme.primaryContainer,
+      child: Icon(gabarit.icone, color: theme.colorScheme.primary),
     );
   }
 }

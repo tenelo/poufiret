@@ -31,6 +31,8 @@ import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_provide
 import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_repository.dart';
 import 'package:poufiret/fonctionnalites/restaurants/metier_domaine/restaurant_models.dart';
 import 'package:poufiret/fonctionnalites/restaurants/screens/ecran_restaurant.dart';
+import 'package:poufiret/fonctionnalites/restaurants/widgets/carte_restaurant.dart'
+    show InfosPratiques;
 import 'package:poufiret/global/ui/format_montant.dart';
 import 'package:poufiret/global/widgets/visionneuse_images.dart';
 
@@ -209,13 +211,77 @@ class _FauxPanier extends OrdersRepository {
   }
 }
 
+/// Panier factice d'un commerce : garde ses lignes, comme le serveur.
+class _PanierVivant extends OrdersRepository {
+  _PanierVivant(this.partenaire) : super(dio: Dio());
+
+  final int partenaire;
+  final lignes = <LignePanier>[];
+  int _id = 0;
+
+  Panier get _panier => Panier(
+    id: 1,
+    partenaire: partenaire,
+    lignes: List.of(lignes),
+    total: lignes.fold(0, (t, l) => t + l.prixLigne),
+  );
+
+  @override
+  Future<List<Panier>> paniers() async => lignes.isEmpty ? [] : [_panier];
+
+  @override
+  Future<Panier> ajouterLigne({
+    int? articleId,
+    required num quantite,
+    int? varianteId,
+    int? ligneMenuId,
+    List<int>? optionIds,
+    List<int>? supplementIds,
+    String? noteSpeciale,
+  }) async {
+    lignes.add(
+      LignePanier(
+        id: ++_id,
+        article: articleId,
+        varianteId: varianteId,
+        quantite: quantite,
+        prixUnitaire: 1000,
+        prixLigne: (1000 * quantite).round(),
+      ),
+    );
+    return _panier;
+  }
+
+  @override
+  Future<Panier> modifierLigne({
+    required int ligneId,
+    num? quantite,
+    String? noteSpeciale,
+  }) async {
+    final i = lignes.indexWhere((l) => l.id == ligneId);
+    lignes[i] = lignes[i].copyWith(
+      quantite: quantite!,
+      prixLigne: (1000 * quantite).round(),
+    );
+    return _panier;
+  }
+
+  @override
+  Future<Panier?> supprimerLigne(int ligneId) async {
+    lignes.removeWhere((l) => l.id == ligneId);
+    return lignes.isEmpty ? null : _panier;
+  }
+}
+
 Future<void> _monter(
   WidgetTester tester,
   Widget ecran, {
   List<Override> overrides = const [],
   bool stabiliser = true,
+  bool panierVide = true,
+  double largeur = 420,
 }) async {
-  tester.view.physicalSize = const Size(420, 1600);
+  tester.view.physicalSize = Size(largeur, 1600);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
@@ -225,7 +291,8 @@ Future<void> _monter(
         metaGabaritsProvider.overrideWith(
           (ref) => Stream.value(MetaGabarits.vide),
         ),
-        paniersProvider.overrideWith((ref) async => const <Panier>[]),
+        if (panierVide)
+          paniersProvider.overrideWith((ref) async => const <Panier>[]),
         ...overrides,
       ],
       child: MaterialApp(
@@ -688,6 +755,7 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
       expect(panier.ajouts, [(10, 42)]);
+      // Depuis la fiche produit : le message « Ajouté au panier » reste.
       expect(find.text('Ajouté au panier.'), findsOneWidget);
     });
 
@@ -787,8 +855,10 @@ void main() {
         find.text("Pharmacie de garde jusqu'au 21/10/2026 à 08h00"),
         findsOneWidget,
       );
+      // Ligne de contact du loueur : Appeler, Discuter, WhatsApp.
       expect(find.text('Appeler'), findsOneWidget);
-      expect(find.text('WhatsApp'), findsOneWidget);
+      expect(find.byTooltip('Discuter'), findsOneWidget);
+      expect(find.byTooltip('WhatsApp'), findsOneWidget);
       expect(
         find.widgetWithText(TextField, 'Rechercher un médicament, un produit…'),
         findsOneWidget,
@@ -802,7 +872,8 @@ void main() {
       // Sur ordonnance : mention et appel au lieu d'Ajouter.
       expect(find.text('Sur ordonnance'), findsOneWidget);
       expect(find.text('Appeler la pharmacie'), findsOneWidget);
-      expect(find.text('Ajouter'), findsOneWidget);
+      // Les autres : le « + » du panier.
+      expect(find.byTooltip('Ajouter au panier'), findsOneWidget);
 
       // Onglet suivant : un rayon à la fois.
       await tester.tap(find.text('Hygiène'));
@@ -952,6 +1023,49 @@ void main() {
     });
   });
 
+  group('bouton « Infos » des boutiques', () {
+    for (final (id, valeur, gabarit) in [
+      (86, 'pharmacie', Gabarit.pharmacie),
+      (87, 'mode', Gabarit.mode),
+      (88, 'librairie', Gabarit.librairie),
+    ]) {
+      testWidgets('$valeur : « Infos » ouvre les informations', (tester) async {
+        await _monter(
+          tester,
+          EcranCatalogue(commerceId: id, gabarit: gabarit),
+          overrides: [
+            vueVitrineProvider(partenaireId: id).overrideWith((ref) async {}),
+            restaurantDetailProvider(id: id).overrideWith(
+              (ref) => Stream.value(_fiche(_commerce(id, valeur))),
+            ),
+            commercesRepositoryProvider.overrideWithValue(_FauxCommerces()),
+          ],
+        );
+        // Comme sur la boulangerie : dans la barre et à côté du nom.
+        expect(find.byTooltip('Infos'), findsOneWidget);
+        expect(find.text('Infos'), findsOneWidget);
+        await tester.tap(find.text('Infos'));
+        await tester.pumpAndSettle();
+        expect(find.byType(DraggableScrollableSheet), findsOneWidget);
+      });
+    }
+
+    testWidgets('élevage : pas de bouton « Infos » ajouté', (tester) async {
+      await _monter(
+        tester,
+        const EcranCatalogue(commerceId: 89, gabarit: Gabarit.elevage),
+        overrides: [
+          vueVitrineProvider(partenaireId: 89).overrideWith((ref) async {}),
+          restaurantDetailProvider(id: 89).overrideWith(
+            (ref) => Stream.value(_fiche(_commerce(89, 'elevage'))),
+          ),
+          commercesRepositoryProvider.overrideWithValue(_FauxCommerces()),
+        ],
+      );
+      expect(find.text('Infos'), findsNothing);
+    });
+  });
+
   group('boulangerie', () {
     final r = _fiche(
       _commerce(
@@ -981,6 +1095,228 @@ void main() {
         ],
       ),
     );
+
+    final avecVariantes = r.copyWith(
+      carte: [
+        r.carte.first.copyWith(
+          plats: [
+            ...r.carte.first.plats,
+            Plat.fromJson({
+              ..._produit(4),
+              'nom': 'Croissant',
+              'variantes': [
+                {'id': 41, 'nom': 'Nature', 'est_par_defaut': true},
+                {'id': 42, 'nom': 'Amandes', 'prix_supplement': 200},
+              ],
+            }),
+          ],
+        ),
+        ...r.carte.skip(1),
+      ],
+    );
+
+    Future<_PanierVivant> monterBoutique(
+      WidgetTester tester, {
+      Restaurant? fiche,
+      double largeur = 420,
+    }) async {
+      final panier = _PanierVivant(81);
+      await _monter(
+        tester,
+        const EcranRestaurant(restaurantId: 81, grille: true),
+        panierVide: false,
+        largeur: largeur,
+        overrides: [
+          vueVitrineProvider(partenaireId: 81).overrideWith((ref) async {}),
+          restaurantDetailProvider(
+            id: 81,
+          ).overrideWith((ref) => Stream.value(fiche ?? r)),
+          ordersRepositoryProvider.overrideWithValue(panier),
+        ],
+      );
+      return panier;
+    }
+
+    testWidgets('en-tête de commerce : icône, libellés, pas de délai', (
+      tester,
+    ) async {
+      await monterBoutique(
+        tester,
+        fiche: r.copyWith(fiche: r.fiche.copyWith(delaiPreparationMin: 20)),
+      );
+      // Sans couverture : barre simple, icône du commerce, pas de fourchette.
+      expect(find.byType(FlexibleSpaceBar), findsNothing);
+      expect(find.byIcon(Icons.restaurant), findsNothing);
+      expect(find.byIcon(Icons.bakery_dining_outlined), findsWidgets);
+      expect(find.text('Rechercher un produit'), findsOneWidget);
+      expect(find.text('Rechercher dans la carte'), findsNothing);
+      expect(find.text('20 min'), findsNothing);
+      // Le bouton « Infos » reste.
+      expect(find.text('Infos'), findsOneWidget);
+      // Ligne de contact du loueur.
+      expect(find.text('Appeler'), findsOneWidget);
+      expect(find.byTooltip('Discuter'), findsOneWidget);
+      expect(find.byTooltip('WhatsApp'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('« sur place » d\'un commerce : icône neutre', (tester) async {
+      await monterBoutique(
+        tester,
+        fiche: r.copyWith(fiche: r.fiche.copyWith(services: ['sur_place'])),
+      );
+      final services = find.byType(InfosPratiques);
+      expect(
+        find.descendant(
+          of: services,
+          matching: find.byIcon(Icons.storefront_outlined),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byIcon(Icons.restaurant_outlined), findsNothing);
+    });
+
+    testWidgets('avec couverture : affichage actuel', (tester) async {
+      await monterBoutique(
+        tester,
+        fiche: r.copyWith(couverture: 'https://exemple.test/c.jpg'),
+      );
+      expect(find.byType(FlexibleSpaceBar), findsOneWidget);
+    });
+
+    testWidgets('« + » ajoute, compteur, retour à 0, barre du panier', (
+      tester,
+    ) async {
+      final panier = await monterBoutique(tester);
+      expect(find.textContaining('Voir le panier'), findsNothing);
+      final plus = find.descendant(
+        of: find.ancestor(
+          of: find.text('Baguette'),
+          matching: find.byType(TuileGrilleProduit),
+        ),
+        matching: find.byTooltip('Ajouter au panier'),
+      );
+      await tester.tap(plus);
+      await tester.pumpAndSettle();
+      expect(panier.lignes.single.article, 1);
+      // Pas de message : la barre du panier suffit.
+      expect(find.text('Ajouté au panier.'), findsNothing);
+      expect(find.byType(SnackBar), findsNothing);
+      // Le « + » devient « − 1 + » ; la barre apparaît.
+      expect(find.byKey(const ValueKey('compteur-tuile')), findsOneWidget);
+      expect(find.text('1'), findsOneWidget);
+      expect(
+        find.text('1 article · ${formatMontant(1000)} — Voir le panier'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byTooltip('Ajouter un'));
+      await tester.pumpAndSettle();
+      expect(panier.lignes.single.quantite, 2);
+      expect(
+        find.text('2 articles · ${formatMontant(2000)} — Voir le panier'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byTooltip('Retirer un'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Retirer un'));
+      await tester.pumpAndSettle();
+      // Revenu à 0 : retiré du panier, barre masquée, « + » revenu.
+      expect(panier.lignes, isEmpty);
+      expect(find.textContaining('Voir le panier'), findsNothing);
+      expect(find.byKey(const ValueKey('compteur-tuile')), findsNothing);
+      expect(plus, findsOneWidget);
+    });
+
+    testWidgets('« + » d\'un produit à variantes : ouvre sa fiche', (
+      tester,
+    ) async {
+      final panier = await monterBoutique(tester, fiche: avecVariantes);
+      final plus = find.descendant(
+        of: find.ancestor(
+          of: find.text('Croissant'),
+          matching: find.byType(TuileGrilleProduit),
+        ),
+        matching: find.byTooltip('Ajouter au panier'),
+      );
+      await tester.ensureVisible(plus);
+      await tester.tap(plus);
+      await tester.pumpAndSettle();
+      // Aucun ajout direct : la fiche (feuille du produit) s'ouvre.
+      expect(panier.lignes, isEmpty);
+      expect(find.text('Amandes'), findsWidgets);
+    });
+
+    testWidgets('produit épuisé : pas de « + »', (tester) async {
+      await monterBoutique(
+        tester,
+        fiche: r.copyWith(
+          carte: [
+            r.carte.first.copyWith(
+              plats: [
+                Plat.fromJson({
+                  ..._produit(5),
+                  'nom': 'Brioche',
+                  'est_epuise': true,
+                }),
+              ],
+            ),
+          ],
+        ),
+      );
+      expect(find.text('Épuisé'), findsOneWidget);
+      expect(find.byTooltip('Ajouter au panier'), findsNothing);
+    });
+
+    testWidgets('320 px : en-tête et tuiles sans débordement', (tester) async {
+      await monterBoutique(tester, largeur: 320);
+      expect(tester.takeException(), isNull);
+      await tester.tap(find.byTooltip('Ajouter au panier').first);
+      await tester.pumpAndSettle();
+      expect(find.byKey(const ValueKey('compteur-tuile')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('page restaurant inchangée', (tester) async {
+      final resto = _fiche(
+        _commerce(
+          82,
+          'restaurant',
+          pagine: false,
+          fiche: {
+            'delai_preparation_min': 20,
+            'services': ['sur_place'],
+          },
+          sections: [
+            {
+              'id': 1,
+              'nom': 'Plats',
+              'produits': [
+                {..._produit(1), 'nom': 'Garba'},
+              ],
+            },
+          ],
+        ),
+      );
+      await _monter(
+        tester,
+        const EcranRestaurant(restaurantId: 82),
+        overrides: [
+          vueVitrineProvider(partenaireId: 82).overrideWith((ref) async {}),
+          restaurantDetailProvider(
+            id: 82,
+          ).overrideWith((ref) => Stream.value(resto)),
+        ],
+      );
+      expect(find.text('Rechercher dans la carte'), findsOneWidget);
+      expect(find.text('20 min'), findsOneWidget);
+      expect(find.byType(FlexibleSpaceBar), findsOneWidget);
+      expect(find.byIcon(Icons.restaurant), findsOneWidget);
+      // « Sur place » : la fourchette d'origine.
+      expect(find.byIcon(Icons.restaurant_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.storefront_outlined), findsNothing);
+      expect(find.byTooltip('Discuter'), findsNothing);
+      expect(find.byTooltip('Ajouter au panier'), findsNothing);
+    });
 
     testWidgets('grille, un rayon à la fois, sur commande', (tester) async {
       await _monter(
