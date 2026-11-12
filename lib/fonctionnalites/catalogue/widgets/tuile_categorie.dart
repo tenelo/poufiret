@@ -15,9 +15,14 @@ class GrilleCategories extends StatelessWidget {
     required this.categories,
     required this.onTap,
     this.onRefresh,
+    this.avecImages = true,
   });
   final List<Categorie> categories;
   final ValueChanged<Categorie> onTap;
+
+  /// Faux : chaque tuile montre l'icône de sa catégorie, aucune image n'est
+  /// affichée ni téléchargée (mode « icônes » de l'accueil).
+  final bool avecImages;
 
   /// Tirer pour rafraîchir (accueil) ; null : pas de rafraîchissement.
   final Future<void> Function()? onRefresh;
@@ -40,6 +45,7 @@ class GrilleCategories extends StatelessWidget {
           itemBuilder: (context, i) => TuileCategorie(
             categorie: categories[i],
             rang: i,
+            avecImage: avecImages,
             onTap: () => onTap(categories[i]),
           ),
         );
@@ -63,7 +69,11 @@ class TuileCategorie extends StatelessWidget {
     required this.categorie,
     required this.rang,
     required this.onTap,
+    this.avecImage = true,
   });
+
+  /// Faux : l'icône (emoji) même si la catégorie a une image.
+  final bool avecImage;
 
   /// Grisée si désactivée par l'admin OU si aucun partenaire enregistré.
   bool get _bientot =>
@@ -73,7 +83,7 @@ class TuileCategorie extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bientot = _bientot;
-    final image = categorie.imageTuile;
+    final image = avecImage ? categorie.imageTuile : '';
     final pastels = Config.pastels;
     final (fond, encre) = pastels[rang % pastels.length];
     final emoji = FittedBox(

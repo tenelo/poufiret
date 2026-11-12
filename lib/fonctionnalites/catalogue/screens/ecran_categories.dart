@@ -15,7 +15,7 @@ import 'package:poufiret/global/navigation/app_drawer.dart';
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
 import 'package:poufiret/fonctionnalites/publicites/widgets/carrousel_publicites.dart';
 import 'package:poufiret/fonctionnalites/catalogue/screens/ecran_recherche.dart';
-import 'package:poufiret/fonctionnalites/favoris/screens/ecran_favoris.dart';
+import 'package:poufiret/fonctionnalites/catalogue/donnees/grid_mode.dart';
 
 class EcranCategories extends ConsumerStatefulWidget {
   const EcranCategories({super.key});
@@ -53,6 +53,7 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
   @override
   Widget build(BuildContext context) {
     final categoriesAsync = ref.watch(categoriesProvider);
+    final modeGrille = ref.watch(modeGrilleProvider);
     // Nombre d'articles dans tous les paniers, pour le badge.
     final nbPanier = ref
         .watch(paniersProvider)
@@ -88,7 +89,7 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
         ],
       ),
       drawer: const AppDrawer(),
-      floatingActionButton: const _BoutonRecherche(),
+      floatingActionButton: const _BoutonModeGrille(),
       body: Column(
         children: [
           const _BarreRecherche(),
@@ -157,6 +158,7 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
                           if (i == 0) {
                             return GrilleCategories(
                               categories: toutes,
+                              avecImages: modeGrille == ModeGrille.images,
                               onTap: (c) => Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -239,111 +241,26 @@ class _BarreRecherche extends StatelessWidget {
   }
 }
 
-/// Bouton flottant en eventail : deroule Favoris au tap.
-///
-/// Ferme par defaut : un seul FAB. Ouvert : un mini-bouton (Favoris)
-/// apparait au-dessus avec une animation. La recherche a ete deplacee dans
-/// la barre [_BarreRecherche].
-class _BoutonRecherche extends StatefulWidget {
-  const _BoutonRecherche();
-  @override
-  State<_BoutonRecherche> createState() => _BoutonRechercheState();
-}
-
-class _BoutonRechercheState extends State<_BoutonRecherche> {
-  bool _ouvert = false;
-
-  void _basculer() => setState(() => _ouvert = !_ouvert);
-
-  void _ouvrir(Widget ecran) {
-    setState(() => _ouvert = false);
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => ecran));
-  }
+/// Bouton flottant : bascule la grille des catégories entre images et
+/// icônes (choix mémorisé sur l'appareil). Son icône montre le mode vers
+/// lequel on bascule.
+class _BoutonModeGrille extends ConsumerWidget {
+  const _BoutonModeGrille();
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        _ActionEventail(
-          visible: _ouvert,
-          index: 0,
-          icone: Icons.favorite,
-          label: 'Favoris',
-          onTap: () => _ouvrir(const EcranFavoris()),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          width: 45,
-          height: 45,
-          child: FloatingActionButton(
-            onPressed: _basculer,
-            tooltip: _ouvert ? 'Fermer' : 'Actions',
-            child: AnimatedRotation(
-              turns: _ouvert ? 0.125 : 0,
-              duration: const Duration(milliseconds: 200),
-              child: Icon(_ouvert ? Icons.close : Icons.add),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Une action de l'eventail : mini-bouton + etiquette, anime en apparition.
-class _ActionEventail extends StatelessWidget {
-  const _ActionEventail({
-    required this.visible,
-    required this.index,
-    required this.icone,
-    required this.label,
-    required this.onTap,
-  });
-  final bool visible;
-  final int index;
-  final IconData icone;
-  final String label;
-  final VoidCallback onTap;
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return AnimatedSlide(
-      offset: visible ? Offset.zero : const Offset(0, 0.3),
-      duration: Duration(milliseconds: 180 + index * 40),
-      curve: Curves.easeOut,
-      child: AnimatedOpacity(
-        opacity: visible ? 1 : 0,
-        duration: Duration(milliseconds: 180 + index * 40),
-        child: IgnorePointer(
-          ignoring: !visible,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Card(
-                  color: theme.colorScheme.surface,
-                  elevation: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    child: Text(label, style: theme.textTheme.labelLarge),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                FloatingActionButton.small(
-                  heroTag: 'fab_$label',
-                  onPressed: onTap,
-                  child: Icon(icone),
-                ),
-              ],
-            ),
-          ),
-        ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final enImages = ref.watch(modeGrilleProvider) == ModeGrille.images;
+    final libelle = enImages
+        ? 'Afficher les icônes des catégories'
+        : 'Afficher les images des catégories';
+    return SizedBox(
+      width: 45,
+      height: 45,
+      child: FloatingActionButton(
+        onPressed: () => ref.read(modeGrilleProvider.notifier).basculer(),
+        tooltip: libelle,
+        // L'infobulle sert aussi de libellé d'accessibilité.
+        child: Icon(enImages ? Icons.grid_view_rounded : Icons.image_outlined),
       ),
     );
   }

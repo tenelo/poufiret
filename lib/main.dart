@@ -11,6 +11,7 @@ import 'global/carte/services_google.dart';
 import 'global/reseau/etat_reseau.dart';
 import 'global/config/config.dart';
 import 'global/ui/mode_theme.dart';
+import 'fonctionnalites/catalogue/donnees/grid_mode.dart';
 import 'global/ui/theme_poufiret.dart';
 import 'fonctionnalites/analytics/donnees/analytics_providers.dart';
 import 'fonctionnalites/analytics/donnees/service_suivi.dart';
@@ -30,6 +31,7 @@ Future<void> main() async {
   // connexion TLS du pool partagé) pendant que Firebase s'initialise.
   final controleVersion = VersionRepository().verifier();
   final modeTheme = ModeThemeNotifier.lire();
+  final modeGrille = ModeGrilleNotifier.lire();
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(fcmBackgroundHandler);
   runApp(
@@ -37,6 +39,7 @@ Future<void> main() async {
       overrides: [
         controleVersionProvider.overrideWith((ref) => controleVersion),
         modeThemeInitialProvider.overrideWithValue(await modeTheme),
+        modeGrilleInitialProvider.overrideWithValue(await modeGrille),
       ],
       child: const PoufiretApp(),
     ),
