@@ -67,11 +67,11 @@ final carrouselPublicitesProvider = CarrouselPublicitesProvider._();
 final class CarrouselPublicitesProvider
     extends
         $FunctionalProvider<
-          AsyncValue<PubsAffichees>,
-          PubsAffichees,
-          Stream<PubsAffichees>
+          AsyncValue<ElementsCarrousel>,
+          ElementsCarrousel,
+          Stream<ElementsCarrousel>
         >
-    with $FutureModifier<PubsAffichees>, $StreamProvider<PubsAffichees> {
+    with $FutureModifier<ElementsCarrousel>, $StreamProvider<ElementsCarrousel> {
   /// Pubs du carrousel d'accueil.
   CarrouselPublicitesProvider._()
     : super(
@@ -89,12 +89,12 @@ final class CarrouselPublicitesProvider
 
   @$internal
   @override
-  $StreamProviderElement<PubsAffichees> $createElement(
+  $StreamProviderElement<ElementsCarrousel> $createElement(
     $ProviderPointer pointer,
   ) => $StreamProviderElement(pointer);
 
   @override
-  Stream<PubsAffichees> create(Ref ref) {
+  Stream<ElementsCarrousel> create(Ref ref) {
     return carrouselPublicites(ref);
   }
 }

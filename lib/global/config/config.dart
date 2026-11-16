@@ -45,9 +45,16 @@ class Config {
   static Color get couleurFond =>
       _c(const Color(0xFFF3F7FB), const Color(0xFF0A1626));
 
+  /// Fond de la page d'une boulangerie : bleuté plus soutenu que
+  /// [couleurFond], pour faire ressortir les cartes blanches. En sombre,
+  /// identique à [couleurFond].
+  static Color get couleurFondBoulangerie =>
+      _c(const Color.fromARGB(255, 219, 232, 245), const Color(0xFF0A1626));
+
   /// Surfaces (cartes, feuilles, champs, barre de navigation).
   static Color get couleurSurface =>
-      _c(Colors.white, const Color(0xFF122238));
+      // _c(Colors.white, const Color(0xFF122238));
+      _c(Colors.white, const Color.fromARGB(255, 33, 51, 76));
 
   /// Bordure/séparateur neutre et discret (cartes, champs, listes).
   static Color get couleurBordure =>
@@ -80,7 +87,8 @@ class Config {
 
   // ── Actions sociales ─────────────────────────────────────────────
   /// Cœur de like (articles, partenaires, commentaires).
-  static Color get couleurLike => _c(const Color(0xFFE5484D), const Color(0xFFFF6B6F));
+  static Color get couleurLike =>
+      _c(const Color(0xFFE5484D), const Color(0xFFFF6B6F));
 
   /// Marque-page de favori.
   static Color get couleurFavori => couleurSoleil;

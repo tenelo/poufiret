@@ -59,7 +59,10 @@ class GrilleCategories extends StatelessWidget {
 }
 
 /// Tuile « Explorer » : fond pastel (bleu, vert, ambre, sarcelle en
-/// rotation selon [rang]), emoji ou image en haut, nom en bas à gauche.
+/// rotation selon [rang]).
+///  - Avec image : la photo couvre la tuile (fine bordure pastel autour),
+///    nom en blanc sur un dégradé sombre en bas.
+///  - Sans image : emoji en haut, nom en bas à gauche.
 class TuileCategorie extends StatelessWidget {
   final Categorie categorie;
   final int rang;
@@ -75,6 +78,12 @@ class TuileCategorie extends StatelessWidget {
   /// Faux : l'icône (emoji) même si la catégorie a une image.
   final bool avecImage;
 
+  /// Arrondi des coins de la tuile.
+  static const double rayonTuile = 22;
+
+  /// Bordure pastel visible autour de la photo (0 : photo bord à bord).
+  static const double margeImage = 6;
+
   /// Grisée si désactivée par l'admin OU si aucun partenaire enregistré.
   bool get _bientot =>
       !categorie.estActive ||
@@ -84,6 +93,7 @@ class TuileCategorie extends StatelessWidget {
   Widget build(BuildContext context) {
     final bientot = _bientot;
     final image = avecImage ? categorie.imageTuile : '';
+    final avecPhoto = image.isNotEmpty;
     final pastels = Config.pastels;
     final (fond, encre) = pastels[rang % pastels.length];
     final emoji = FittedBox(
@@ -94,72 +104,138 @@ class TuileCategorie extends StatelessWidget {
         style: const TextStyle(fontSize: 60, height: 1),
       ),
     );
+
+    // Légende : nom (jusqu'à 3 lignes) + « Bientôt disponible ».
+    // Blanc sur la photo, encre pastel sinon.
+    final couleurNom = avecPhoto ? Colors.white : encre;
+    final legende = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          categorie.nom,
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            color: couleurNom,
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            height: 1.15,
+          ),
+        ),
+        if (bientot)
+          Text(
+            'Bientôt disponible',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: couleurNom.withValues(alpha: avecPhoto ? 0.85 : 0.7),
+            ),
+          ),
+      ],
+    );
+
     return Material(
       color: fond,
-      borderRadius: BorderRadius.circular(22),
+      borderRadius: BorderRadius.circular(rayonTuile),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: bientot ? null : onTap,
         child: Opacity(
           opacity: bientot ? 0.45 : 1.0,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (image.isEmpty)
-                  Expanded(child: emoji)
-                else
-                  // Image reelle : elle remplit la zone visuelle. L'emoji
-                  // la remplace pendant le chargement et en cas d'erreur.
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(14),
-                      child: LayoutBuilder(
-                        builder: (context, contraintes) => ImageReseau(
-                          image,
-                          fit: BoxFit.cover,
-                          width: contraintes.maxWidth,
-                          height: contraintes.maxHeight,
-                          largeurAffichee: contraintes.maxWidth,
-                          attente: categorie.icone.isNotEmpty
-                              ? Align(
-                                  alignment: Alignment.topLeft,
-                                  child: emoji,
-                                )
-                              : const SizedBox.shrink(),
-                          errorBuilder: (_, _, _) =>
-                              Align(alignment: Alignment.topLeft, child: emoji),
-                        ),
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 10),
-                // Nom en entier : jusqu'à 3 lignes, l'image se réduit
-                // pour lui laisser la place.
-                Text(
-                  categorie.nom,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: encre,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                    height: 1.15,
+          child: avecPhoto
+              ? _TuilePhoto(
+                  image: image,
+                  emoji: emoji,
+                  emojiEnAttente: categorie.icone.isNotEmpty,
+                  legende: legende,
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(child: emoji),
+                      const SizedBox(height: 10),
+                      legende,
+                    ],
                   ),
                 ),
-                if (bientot)
-                  Text(
-                    'Bientôt disponible',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: encre.withValues(alpha: 0.7),
-                    ),
-                  ),
-              ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Contenu d'une tuile avec image : photo plein cadre (moins [margeImage]),
+/// légende posée en bas sur un dégradé sombre.
+class _TuilePhoto extends StatelessWidget {
+  const _TuilePhoto({
+    required this.image,
+    required this.emoji,
+    required this.emojiEnAttente,
+    required this.legende,
+  });
+
+  final String image;
+
+  /// Affiché pendant le chargement et en cas d'erreur de l'image.
+  final Widget emoji;
+
+  /// Faux : rien pendant le chargement (catégorie sans emoji).
+  final bool emojiEnAttente;
+  final Widget legende;
+
+  @override
+  Widget build(BuildContext context) {
+    const marge = TuileCategorie.margeImage;
+    final remplacant = Padding(
+      padding: const EdgeInsets.all(10),
+      child: Align(alignment: Alignment.topLeft, child: emoji),
+    );
+    return Padding(
+      padding: const EdgeInsets.all(marge),
+      child: ClipRRect(
+        // Coins concentriques à ceux de la tuile.
+        borderRadius: BorderRadius.circular(TuileCategorie.rayonTuile - marge),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Photo : couvre toute la zone.
+            LayoutBuilder(
+              builder: (context, contraintes) => ImageReseau(
+                image,
+                fit: BoxFit.cover,
+                width: contraintes.maxWidth,
+                height: contraintes.maxHeight,
+                largeurAffichee: contraintes.maxWidth,
+                attente: emojiEnAttente ? remplacant : const SizedBox.shrink(),
+                errorBuilder: (_, _, _) => remplacant,
+              ),
             ),
-          ),
+            // Dégradé du bas : transparent en haut, sombre sous le nom.
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0),
+                      Colors.black.withValues(alpha: 0.65),
+                    ],
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 28, 12, 12),
+                  child: legende,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

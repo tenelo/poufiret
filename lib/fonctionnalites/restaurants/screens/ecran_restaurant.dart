@@ -249,7 +249,10 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
 
     // Boulangerie (commerce) : pas l'habillage d'un restaurant.
     final commerce = widget.grille;
+    // Fond de la page : bleuté propre aux boulangeries ; restaurant : thème.
+    final fondPage = commerce ? Config.couleurFondBoulangerie : null;
     return Scaffold(
+      backgroundColor: fondPage,
       bottomNavigationBar: commerce
           ? BarrePanierCommerce(partenaireId: r.id, largeurMax: _largeurContenu)
           : _BarrePanier(restaurantId: r.id),
@@ -272,6 +275,8 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                 if (commerce && r.couverture.isEmpty)
                   SliverAppBar(
                     pinned: true,
+                    // Barre du haut : même fond que la page.
+                    backgroundColor: fondPage,
                     title: Text(r.nom),
                     actions: [
                       IconButton(
@@ -284,6 +289,7 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                 else
                   _BarreCouverture(
                     restaurant: r,
+                    fond: fondPage,
                     hauteur: (largeur * 0.5).clamp(160.0, 300.0),
                   ),
                 SliverPadding(
@@ -310,6 +316,7 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                     pinned: true,
                     delegate: _EnteteCarte(
                       marge: marge,
+                      fond: fondPage ?? Config.couleurFond,
                       champRecherche: _champRecherche,
                       indice: commerce
                           ? 'Rechercher un produit'
@@ -391,10 +398,17 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
 
 /// Barre du haut : couverture en parallaxe qui se replie en barre de titre.
 class _BarreCouverture extends StatelessWidget {
-  const _BarreCouverture({required this.restaurant, required this.hauteur});
+  const _BarreCouverture({
+    required this.restaurant,
+    required this.hauteur,
+    this.fond,
+  });
 
   final Restaurant restaurant;
   final double hauteur;
+
+  /// Fond de la barre une fois la photo repliée (null : celui du thème).
+  final Color? fond;
 
   @override
   Widget build(BuildContext context) {
@@ -404,6 +418,7 @@ class _BarreCouverture extends StatelessWidget {
     return SliverAppBar(
       pinned: true,
       expandedHeight: hauteur,
+      backgroundColor: fond,
       // Boutons sur pastille claire : lisibles sur la photo comme sur la
       // barre repliée.
       leading: Padding(
@@ -694,6 +709,7 @@ class _SectionMenuDuJour extends StatelessWidget {
 class _EnteteCarte extends SliverPersistentHeaderDelegate {
   _EnteteCarte({
     required this.marge,
+    required this.fond,
     required this.champRecherche,
     required this.indice,
     required this.onRecherche,
@@ -703,6 +719,9 @@ class _EnteteCarte extends SliverPersistentHeaderDelegate {
   });
 
   final EdgeInsets marge;
+
+  /// Fond de la bande (recherche et onglets), celui de la page.
+  final Color fond;
   final TextEditingController champRecherche;
 
   /// « Rechercher dans la carte » (restaurant) ou « Rechercher un produit ».
@@ -732,7 +751,7 @@ class _EnteteCarte extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     return Material(
-      color: Config.couleurFond,
+      color: fond,
       elevation: overlapsContent ? 1 : 0,
       child: Padding(
         padding: marge,
@@ -773,6 +792,7 @@ class _EnteteCarte extends SliverPersistentHeaderDelegate {
   bool shouldRebuild(_EnteteCarte ancien) =>
       ancien.sectionActive != sectionActive ||
       ancien.marge != marge ||
+      ancien.fond != fond ||
       ancien.indice != indice ||
       ancien.libelles.join('|') != libelles.join('|');
 }

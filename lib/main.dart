@@ -19,6 +19,7 @@ import 'fonctionnalites/auth/screens/auth_notifier.dart';
 import 'fonctionnalites/auth/screens/ecran_connexion.dart';
 import 'fonctionnalites/auth/screens/ecran_changer_pin.dart';
 import 'fonctionnalites/confidentialite/donnees/demande_consentement.dart';
+import 'fonctionnalites/publicites/donnees/proposition_decouverte.dart';
 import 'fonctionnalites/publicites/widgets/couche_publicites.dart';
 import 'fonctionnalites/publicites/widgets/observateur_interstitiel.dart';
 import 'fonctionnalites/version/donnees/version_providers.dart';
@@ -162,8 +163,14 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
     ref.read(fcmServiceProvider).initialiser();
     ref.read(sessionAnalyticsProvider.notifier).demarrer();
     // Choix de confidentialité : demandés une fois (nouvelle version du
-    // texte), sur l'accueil, sans bloquer le reste.
-    ref.read(demandeConsentementProvider).proposerSiBesoin();
+    // texte), sur l'accueil, sans bloquer le reste. Toujours APRÈS le
+    // parcours « Découvrir Poufiret ».
+    ref
+        .read(propositionDecouverteProvider)
+        .proposerSiBesoin()
+        .whenComplete(
+          () => ref.read(demandeConsentementProvider).proposerSiBesoin(),
+        );
   }
 
   @override
@@ -239,9 +246,11 @@ class _RacineState extends ConsumerState<_Racine> with WidgetsBindingObserver {
     }
     if (!_accueilAffiche) {
       _accueilAffiche = true;
-      WidgetsBinding.instance.addPostFrameCallback(
-        (_) => _lancerServicesDifferes(),
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Parcours « Découvrir Poufiret » : pour tous, connecté ou non.
+        ref.read(propositionDecouverteProvider).proposerSiBesoin();
+        _lancerServicesDifferes();
+      });
     }
     return const ObservateurInterstitiel(
       enfant: CouchePublicites(enfant: AppShell()),

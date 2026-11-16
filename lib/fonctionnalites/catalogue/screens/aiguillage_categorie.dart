@@ -28,6 +28,14 @@ Widget ecranCategorie(Categorie c) => c.enfants.isNotEmpty
         typesPartenaire: c.typesPartenaire,
       );
 
+/// Ouvre l'écran d'une catégorie. Seule navigation utilisée pour : une tuile
+/// de la grille de l'accueil, une pub Poufiret du carrousel, le bouton d'un
+/// écran « Découvrir Poufiret ».
+void ouvrirCategorie(BuildContext context, Categorie c) => Navigator.push(
+  context,
+  MaterialPageRoute(builder: (_) => ecranCategorie(c)),
+);
+
 /// Contenu d'une catégorie sans barre ni Scaffold (onglet de l'accueil).
 Widget contenuCategorie(Categorie c) => c.enfants.isNotEmpty
     ? (c.enfantsEnGrille

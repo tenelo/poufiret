@@ -15,7 +15,7 @@ import 'package:poufiret/fonctionnalites/catalogue/screens/ecran_categories.dart
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
 import 'package:poufiret/fonctionnalites/orders/metier_domaine/orders_models.dart';
 import 'package:poufiret/fonctionnalites/publicites/donnees/publicites_providers.dart';
-import 'package:poufiret/fonctionnalites/publicites/metier_domaine/pubs_affichees.dart';
+import 'package:poufiret/fonctionnalites/publicites/metier_domaine/element_carrousel.dart';
 import 'package:poufiret/global/widgets/image_reseau.dart';
 
 const _url = 'https://exemple.test/media/categories/viande.jpg';
@@ -49,7 +49,7 @@ Future<void> _monter(WidgetTester tester, List<Categorie> categories) async {
         categoriesProvider.overrideWith((ref) => Stream.value(categories)),
         paniersProvider.overrideWith((ref) async => const <Panier>[]),
         carrouselPublicitesProvider.overrideWith(
-          (ref) => Stream.value(PubsAffichees.vide),
+          (ref) => Stream.value(ElementsCarrousel.vide),
         ),
       ],
       child: MaterialApp(
@@ -112,7 +112,7 @@ void main() {
     expect(_dansTuile(find.text('Viande de Ferké')), findsOneWidget);
   });
 
-  testWidgets('tuile avec image : remplit la zone, nom en dessous', (
+  testWidgets('tuile avec image : couvre la tuile, nom blanc en bas dessus', (
     tester,
   ) async {
     await _monter(tester, [_categorie(couverture: _url)]);
@@ -123,22 +123,35 @@ void main() {
     // Décodée à la taille affichée, pas à sa taille d'origine.
     expect(image.largeurAffichee, tester.getSize(zone).width);
     expect(tester.getSize(zone).width, greaterThan(100));
-    // Coins arrondis.
+    // Fine bordure pastel autour : la photo couvre la tuile moins la marge.
+    const marge = TuileCategorie.margeImage;
+    expect(
+      tester.getSize(zone).width,
+      tester.getSize(_tuile).width - 2 * marge,
+    );
+    // Coins concentriques à ceux de la tuile.
     final cadre = tester.widget<ClipRRect>(
       find.ancestor(of: zone, matching: find.byType(ClipRRect)).first,
     );
-    expect(cadre.borderRadius, BorderRadius.circular(14));
-    // Le nom reste sous l'image.
+    expect(
+      cadre.borderRadius,
+      BorderRadius.circular(TuileCategorie.rayonTuile - marge),
+    );
+    // Le nom est posé en bas, sur l'image, en blanc.
     final nom = _dansTuile(find.text('Viande de Ferké'));
     expect(
-      tester.getTopLeft(nom).dy,
-      greaterThan(tester.getBottomLeft(zone).dy),
+      tester.getBottomLeft(nom).dy,
+      lessThan(tester.getBottomLeft(zone).dy),
     );
+    expect(tester.getTopLeft(nom).dy, greaterThan(tester.getCenter(zone).dy));
+    expect(tester.widget<Text>(nom).style?.color, Colors.white);
     // Pendant le chargement : l'emoji en repli.
     expect(_dansTuile(find.text('🥩')), findsOneWidget);
   });
 
-  testWidgets('chargement sans emoji : fond pastel de la tuile', (tester) async {
+  testWidgets('chargement sans emoji : fond pastel de la tuile', (
+    tester,
+  ) async {
     await _monter(tester, [_categorie(couverture: _url, icone: '')]);
     final image = tester.widget<ImageReseau>(
       _dansTuile(find.byType(ImageReseau)),

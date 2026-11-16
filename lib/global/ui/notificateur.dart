@@ -17,31 +17,50 @@ enum TypeNotification { succes, info, avertissement, erreur }
 class Notificateur {
   Notificateur._();
 
-  static const Duration _duree = Duration(seconds: 3);
+  /// Duree d'affichage d'une notification express (1,2 seconde).
+  static const Duration _duree = Duration(milliseconds: 1200);
 
   /// Confirmation d'une action reussie (ex. « Article ajouté au panier »).
-  static void succes(BuildContext context, String message, {SnackBarAction? action}) =>
-      _afficher(context, message, TypeNotification.succes, action: action);
+  static void succes(
+    BuildContext context,
+    String message, {
+    SnackBarAction? action,
+  }) => _afficher(context, message, TypeNotification.succes, action: action);
 
   /// Information neutre ou incitation, sans echec ni confirmation.
-  static void info(BuildContext context, String message, {SnackBarAction? action}) =>
-      _afficher(context, message, TypeNotification.info, action: action);
+  static void info(
+    BuildContext context,
+    String message, {
+    SnackBarAction? action,
+  }) => _afficher(context, message, TypeNotification.info, action: action);
 
   /// Avertissement : une intervention de l'utilisateur est nécessaire.
-  static void avertissement(BuildContext context, String message,
-          {SnackBarAction? action}) =>
-      _afficher(context, message, TypeNotification.avertissement, action: action);
+  static void avertissement(
+    BuildContext context,
+    String message, {
+    SnackBarAction? action,
+  }) => _afficher(
+    context,
+    message,
+    TypeNotification.avertissement,
+    action: action,
+  );
 
   /// Echec d'une action, erreur reseau ou serveur.
-  static void erreur(BuildContext context, String message, {SnackBarAction? action}) =>
-      _afficher(context, message, TypeNotification.erreur, action: action);
+  static void erreur(
+    BuildContext context,
+    String message, {
+    SnackBarAction? action,
+  }) => _afficher(context, message, TypeNotification.erreur, action: action);
 
   static SnackBar snackSucces(String message, {SnackBarAction? action}) =>
       construire(message, TypeNotification.succes, action: action);
   static SnackBar snackInfo(String message, {SnackBarAction? action}) =>
       construire(message, TypeNotification.info, action: action);
-  static SnackBar snackAvertissement(String message, {SnackBarAction? action}) =>
-      construire(message, TypeNotification.avertissement, action: action);
+  static SnackBar snackAvertissement(
+    String message, {
+    SnackBarAction? action,
+  }) => construire(message, TypeNotification.avertissement, action: action);
   static SnackBar snackErreur(String message, {SnackBarAction? action}) =>
       construire(message, TypeNotification.erreur, action: action);
 
@@ -65,14 +84,14 @@ class Notificateur {
   }) {
     final (couleur, icone) = switch (type) {
       TypeNotification.succes => (
-          Config.couleurSucces,
-          Icons.check_circle_outline,
-        ),
+        Config.couleurSucces,
+        Icons.check_circle_outline,
+      ),
       TypeNotification.info => (Config.couleurPrimaire, Icons.info_outline),
       TypeNotification.avertissement => (
-          Config.couleurAvertissement,
-          Icons.warning_amber_outlined,
-        ),
+        Config.couleurAvertissement,
+        Icons.warning_amber_outlined,
+      ),
       TypeNotification.erreur => (Config.couleurErreur, Icons.error_outline),
     };
 
@@ -86,6 +105,9 @@ class Notificateur {
       behavior: SnackBarBehavior.floating,
       backgroundColor: couleur,
       duration: _duree,
+      // Disparaît après [_duree] même avec un bouton (« Voir ») : sinon
+      // Flutter la garde affichée jusqu'à un appui.
+      persist: false,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       action: action,
@@ -97,10 +119,7 @@ class Notificateur {
           Expanded(
             child: Text(
               message,
-              style: TextStyle(
-                color: encre,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(color: encre, fontWeight: FontWeight.w600),
             ),
           ),
         ],

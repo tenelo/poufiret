@@ -4,6 +4,7 @@ import '../../../global/cache/cache_api.dart';
 import '../../../global/cache/contexte_cache.dart';
 import '../../../global/network/providers.dart';
 import '../metier_domaine/credit_formule.dart';
+import '../metier_domaine/element_carrousel.dart';
 import '../metier_domaine/formule_publicite.dart';
 import '../metier_domaine/publicite_detail.dart';
 import '../metier_domaine/publicite_liste.dart';
@@ -41,16 +42,19 @@ Stream<PubsAffichees> _fluxPubs(
   );
 }
 
-/// Pubs du carrousel d'accueil.
+/// Éléments du carrousel d'accueil (pubs partenaires et Poufiret). Même
+/// cache et même confirmation réseau que [_fluxPubs].
 @riverpod
-Stream<PubsAffichees> carrouselPublicites(Ref ref) {
+Stream<ElementsCarrousel> carrouselPublicites(Ref ref) {
   final repo = ref.watch(publicitesRepositoryProvider);
-  return _fluxPubs(
+  return fluxCacheSource<List<ElementCarrousel>>(
     ref,
     cle: 'pubs/carrousel',
+    politique: PolitiqueCache.publicites,
     reseau: repo.carrouselBrut,
     decoder: repo.carrouselDepuis,
-  );
+    revalider: true,
+  ).map((s) => ElementsCarrousel(s.valeur, confirmeReseau: s.depuisReseau));
 }
 
 /// Pubs de l'onglet Publicites.

@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 
 import '../../../global/config/env.dart';
 import '../metier_domaine/credit_formule.dart';
+import '../metier_domaine/element_carrousel.dart';
 import '../metier_domaine/formule_publicite.dart';
+import '../metier_domaine/parcours_decouverte.dart';
 import '../metier_domaine/publicite_detail.dart';
 import '../metier_domaine/stats_publicite.dart';
 import '../metier_domaine/publicite_liste.dart';
@@ -38,8 +40,19 @@ class PublicitesRepository {
   Future<Object?> carrouselBrut() async =>
       (await _dio.get('$_base/carrousel/')).data;
 
-  List<PubliciteListe> carrouselDepuis(Object? json) =>
-      _liste(json, 'publicites').map(PubliciteListe.fromJson).toList();
+  /// Clé `elements` (pubs partenaires et Poufiret mélangées) si présente,
+  /// sinon `publicites` (pubs partenaires seules, comportement historique).
+  List<ElementCarrousel> carrouselDepuis(Object? json) {
+    if (json is Map<String, dynamic> && json['elements'] is List) {
+      return [
+        for (final e in _liste(json, 'elements'))
+          ?ElementCarrousel.depuisJson(e),
+      ];
+    }
+    return _liste(json, 'publicites')
+        .map((e) => ElementPartenaire(PubliciteListe.fromJson(e)))
+        .toList();
+  }
 
   /// GET /publicites/ — toutes les pubs actives (onglet Publicites, public).
   Future<Object?> pagePublicitesBrut() async => (await _dio.get('$_base/')).data;
@@ -86,9 +99,41 @@ class PublicitesRepository {
     bool cliquee = false,
     int? minuteSession,
     String? sessionId,
+  }) => _impression(
+    '$_base/$id/impression/',
+    typeAffichage: typeAffichage,
+    cliquee: cliquee,
+    minuteSession: minuteSession,
+    sessionId: sessionId,
+  );
+
+  /// POST `/publicites/poufiret/<id>/impression/` — affichage ou clic d'une
+  /// pub Poufiret ; même corps que [enregistrerImpression].
+  Future<void> enregistrerImpressionPoufiret(
+    String id, {
+    required String typeAffichage,
+    bool cliquee = false,
+    int? minuteSession,
+    String? sessionId,
+  }) => _impression(
+    '$_base/poufiret/$id/impression/',
+    typeAffichage: typeAffichage,
+    cliquee: cliquee,
+    minuteSession: minuteSession,
+    sessionId: sessionId,
+  );
+
+  /// Envoi commun des impressions. Ne doit jamais casser l'UI : les erreurs
+  /// sont avalees.
+  Future<void> _impression(
+    String chemin, {
+    required String typeAffichage,
+    required bool cliquee,
+    int? minuteSession,
+    String? sessionId,
   }) async {
     try {
-      await _dio.post('$_base/$id/impression/', data: {
+      await _dio.post(chemin, data: {
         'type_affichage': typeAffichage,
         'cliquee': cliquee,
         'minute_session': ?minuteSession,
@@ -100,6 +145,13 @@ class PublicitesRepository {
     } catch (_) {
       // Tracking best-effort : on ignore silencieusement.
     }
+  }
+
+  /// GET /publicites/decouvrir/ — parcours « Découvrir Poufiret » (public).
+  Future<ParcoursDecouverte> decouvrir() async {
+    final data = (await _dio.get('$_base/decouvrir/')).data;
+    if (data is! Map) return ParcoursDecouverte.inactif;
+    return ParcoursDecouverte.fromJson(Map<String, dynamic>.from(data));
   }
 
   /// GET /publicites/mes-publicites/ — campagnes du partenaire connecte.

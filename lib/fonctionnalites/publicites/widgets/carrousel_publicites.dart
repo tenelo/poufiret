@@ -5,13 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../global/config/config.dart';
 import '../../analytics/donnees/analytics_providers.dart';
+import '../../catalogue/screens/aiguillage_categorie.dart';
 import '../donnees/publicites_providers.dart';
 import '../donnees/publicites_repository.dart';
-import '../metier_domaine/publicite_liste.dart';
+import '../metier_domaine/element_carrousel.dart';
 import '../screens/ecran_publicite_detail.dart';
 import '../../../global/widgets/image_reseau.dart';
 
-/// Carrousel de publicites pour l'accueil.
+/// Carrousel de publicites pour l'accueil : pubs partenaires et pubs
+/// Poufiret melangees (voir [ElementCarrousel]).
 ///
 /// Defile automatiquement, chaque pub restant affichee pendant la duree
 /// prevue par sa formule. Invisible s'il n'y a aucune pub active.
@@ -37,7 +39,7 @@ class _CarrouselPublicitesState extends ConsumerState<CarrouselPublicites> {
   }
 
   /// Programme le passage a la pub suivante selon la duree de la formule.
-  void _programmerSuivant(List<PubliciteListe> pubs) {
+  void _programmerSuivant(List<ElementCarrousel> pubs) {
     _minuteur?.cancel();
     if (pubs.length < 2) return;
     _minuteur = Timer(pubs[_index].dureePassage, () {
@@ -54,15 +56,52 @@ class _CarrouselPublicitesState extends ConsumerState<CarrouselPublicites> {
   /// Trace une impression une seule fois par pub et par session d'ecran,
   /// et seulement si la pub est confirmee par une reponse reseau fraiche
   /// (une pub lue dans le cache peut avoir ete arretee depuis).
-  void _tracerImpression(PubliciteListe pub, {required bool confirmee}) {
-    if (!confirmee || !_tracees.add(pub.id)) return;
-    ref
-        .read(publicitesRepositoryProvider)
-        .enregistrerImpression(
+  void _tracerImpression(ElementCarrousel pub, {required bool confirmee}) {
+    if (!confirmee || !_tracees.add(pub.cleSuivi)) return;
+    final repo = ref.read(publicitesRepositoryProvider);
+    final sessionId = ref.read(sessionAnalyticsProvider).sessionId;
+    switch (pub) {
+      case ElementPartenaire():
+        repo.enregistrerImpression(
           pub.id,
           typeAffichage: TypeAffichage.carrousel,
-          sessionId: ref.read(sessionAnalyticsProvider).sessionId,
+          sessionId: sessionId,
         );
+      // Pub Poufiret : son propre endpoint.
+      case ElementPoufiret():
+        repo.enregistrerImpressionPoufiret(
+          pub.id,
+          typeAffichage: TypeAffichage.carrousel,
+          sessionId: sessionId,
+        );
+    }
+  }
+
+  /// Appui sur une pub.
+  ///  - Partenaire : sa fiche (le clic y est journalise).
+  ///  - Poufiret : clic journalise, puis sa categorie, comme une tuile.
+  void _ouvrir(ElementCarrousel pub) {
+    switch (pub) {
+      case ElementPartenaire():
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => EcranPubliciteDetail(
+              id: pub.id,
+              typeAffichageSource: TypeAffichage.carrousel,
+            ),
+          ),
+        );
+      case ElementPoufiret():
+        ref
+            .read(publicitesRepositoryProvider)
+            .enregistrerImpressionPoufiret(
+              pub.id,
+              typeAffichage: TypeAffichage.carrousel,
+              cliquee: true,
+              sessionId: ref.read(sessionAnalyticsProvider).sessionId,
+            );
+        ouvrirCategorie(context, pub.categorie);
+    }
   }
 
   @override
@@ -101,7 +140,10 @@ class _CarrouselPublicitesState extends ConsumerState<CarrouselPublicites> {
                       setState(() => _index = i);
                       _tracerImpression(pubs[i], confirmee: confirmee);
                     },
-                    itemBuilder: (context, i) => _Diapositive(pub: pubs[i]),
+                    itemBuilder: (context, i) => _Diapositive(
+                      pub: pubs[i],
+                      onTap: () => _ouvrir(pubs[i]),
+                    ),
                   ),
                 ),
                 if (pubs.length > 1) ...[
@@ -118,8 +160,9 @@ class _CarrouselPublicitesState extends ConsumerState<CarrouselPublicites> {
 }
 
 class _Diapositive extends StatelessWidget {
-  const _Diapositive({required this.pub});
-  final PubliciteListe pub;
+  const _Diapositive({required this.pub, required this.onTap});
+  final ElementCarrousel pub;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -132,14 +175,7 @@ class _Diapositive extends StatelessWidget {
         child: Material(
           color: Config.couleurFond,
           child: InkWell(
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => EcranPubliciteDetail(
-                  id: pub.id,
-                  typeAffichageSource: TypeAffichage.carrousel,
-                ),
-              ),
-            ),
+            onTap: onTap,
             child: Stack(
               fit: StackFit.expand,
               children: [

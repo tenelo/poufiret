@@ -1,6 +1,8 @@
 import '../../fonctionnalites/account/screens/ecran_mon_compte.dart';
 import '../../fonctionnalites/favoris/screens/ecran_favoris.dart';
 import '../../fonctionnalites/partenaire/screens/ecran_espace_partenaire.dart';
+import '../../fonctionnalites/publicites/donnees/proposition_decouverte.dart';
+import '../../fonctionnalites/publicites/screens/ecran_decouvrir_poufiret.dart';
 import '../../fonctionnalites/publicites/screens/ecran_mes_publicites.dart';
 import '../../fonctionnalites/prestations/screens/ecran_mes_demandes.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +25,8 @@ class AppDrawer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authProvider).value;
     final theme = Theme.of(context);
+    // Parcours « Découvrir Poufiret » : entrée masquée s'il est inactif.
+    final parcours = ref.watch(parcoursDecouverteProvider).value;
 
     void ouvrir(Widget ecran) {
       Navigator.of(context).pop(); // ferme le drawer
@@ -110,6 +114,14 @@ class AppDrawer extends ConsumerWidget {
                       leading: const Icon(Icons.person_outline),
                       title: const Text('Mon compte'),
                       onTap: () => ouvrir(const EcranMonCompte()),
+                    ),
+                  // Pour tous, connecté ou non.
+                  if (parcours != null && parcours.affichable)
+                    ListTile(
+                      leading: const Icon(Icons.explore_outlined),
+                      title: const Text('Découvrir Poufiret'),
+                      onTap: () =>
+                          ouvrir(EcranDecouvrirPoufiret(parcours: parcours)),
                     ),
                 ],
               ),

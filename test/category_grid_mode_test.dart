@@ -16,7 +16,7 @@ import 'package:poufiret/fonctionnalites/catalogue/widgets/tuile_categorie.dart'
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
 import 'package:poufiret/fonctionnalites/orders/metier_domaine/orders_models.dart';
 import 'package:poufiret/fonctionnalites/publicites/donnees/publicites_providers.dart';
-import 'package:poufiret/fonctionnalites/publicites/metier_domaine/pubs_affichees.dart';
+import 'package:poufiret/fonctionnalites/publicites/metier_domaine/element_carrousel.dart';
 import 'package:poufiret/global/widgets/image_reseau.dart';
 
 // Accueil : le bouton flottant bascule la grille des catégories entre
@@ -69,7 +69,7 @@ Future<void> _monterAccueil(
         }),
         paniersProvider.overrideWith((ref) async => const <Panier>[]),
         carrouselPublicitesProvider.overrideWith(
-          (ref) => Stream.value(PubsAffichees.vide),
+          (ref) => Stream.value(ElementsCarrousel.vide),
         ),
         if (initial != null)
           modeGrilleInitialProvider.overrideWithValue(initial),

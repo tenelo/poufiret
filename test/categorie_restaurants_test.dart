@@ -27,7 +27,7 @@ import 'package:poufiret/fonctionnalites/geo/widgets/filtre_localites.dart';
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
 import 'package:poufiret/fonctionnalites/orders/metier_domaine/orders_models.dart';
 import 'package:poufiret/fonctionnalites/publicites/donnees/publicites_providers.dart';
-import 'package:poufiret/fonctionnalites/publicites/metier_domaine/pubs_affichees.dart';
+import 'package:poufiret/fonctionnalites/publicites/metier_domaine/element_carrousel.dart';
 import 'package:poufiret/fonctionnalites/publicites/widgets/carrousel_publicites.dart';
 import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_providers.dart';
 import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_repository.dart';
@@ -74,7 +74,7 @@ List<Override> _overrides({Stream<List<Categorie>> Function()? categories}) => [
   ),
   paniersProvider.overrideWith((ref) async => const <Panier>[]),
   carrouselPublicitesProvider.overrideWith(
-    (ref) => Stream.value(PubsAffichees.vide),
+    (ref) => Stream.value(ElementsCarrousel.vide),
   ),
   visiteCategorieProvider(categorieId: 1).overrideWith((ref) async {}),
   partenairesParCategorieProvider(

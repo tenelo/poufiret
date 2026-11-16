@@ -95,7 +95,9 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
           const _BarreRecherche(),
           const SizedBox(height: 14),
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            // 8 + marge de chaque image (12) = 20 : bords alignés sur la
+            // recherche et la grille.
+            padding: EdgeInsets.symmetric(horizontal: 8),
             child: ClipRRect(
               borderRadius: BorderRadius.all(Radius.circular(26)),
               child: CarrouselPublicites(),
@@ -159,12 +161,7 @@ class _EcranCategoriesState extends ConsumerState<EcranCategories> {
                             return GrilleCategories(
                               categories: toutes,
                               avecImages: modeGrille == ModeGrille.images,
-                              onTap: (c) => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ecranCategorie(c),
-                                ),
-                              ),
+                              onTap: (c) => ouvrirCategorie(context, c),
                               onRefresh: () =>
                                   rafraichir(ref, categoriesProvider),
                             );
