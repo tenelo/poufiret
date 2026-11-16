@@ -139,6 +139,7 @@ extension ProfilCatalogue on Gabarit {
   IconData get icone => switch (this) {
     Gabarit.restaurant => Icons.restaurant,
     Gabarit.grillades => Icons.outdoor_grill_outlined,
+    Gabarit.fastFood => Icons.fastfood_outlined,
     Gabarit.boulangerie => Icons.bakery_dining_outlined,
     Gabarit.pharmacie => Icons.medication_outlined,
     Gabarit.mode => Icons.checkroom_outlined,

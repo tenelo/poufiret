@@ -189,6 +189,10 @@ _Plat _$PlatFromJson(Map<String, dynamic> json) => _Plat(
   unitePrixLibelle: json['unite_prix_libelle'] as String?,
   suffixePrix: json['suffixe_prix'] as String?,
   prixAPartirDeServeur: versIntNullable(json['prix_a_partir_de']),
+  estCombo: json['est_combo'] as bool? ?? false,
+  prixReference: versIntNullable(json['prix_reference']),
+  populaire: json['populaire'] as bool? ?? false,
+  rangPopulaire: versIntNullable(json['rang_populaire']),
 );
 
 Map<String, dynamic> _$PlatToJson(_Plat instance) => <String, dynamic>{
@@ -211,6 +215,10 @@ Map<String, dynamic> _$PlatToJson(_Plat instance) => <String, dynamic>{
   'unite_prix_libelle': instance.unitePrixLibelle,
   'suffixe_prix': instance.suffixePrix,
   'prix_a_partir_de': instance.prixAPartirDeServeur,
+  'est_combo': instance.estCombo,
+  'prix_reference': instance.prixReference,
+  'populaire': instance.populaire,
+  'rang_populaire': instance.rangPopulaire,
 };
 
 _SectionCarte _$SectionCarteFromJson(Map<String, dynamic> json) =>

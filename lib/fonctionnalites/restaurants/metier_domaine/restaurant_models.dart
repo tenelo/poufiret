@@ -247,6 +247,21 @@ abstract class Plat with _$Plat {
     /// (null : absent, calcul local).
     @JsonKey(name: 'prix_a_partir_de', fromJson: versIntNullable)
     int? prixAPartirDeServeur,
+
+    /// Fast-food : formule (combo), badge « Formule ».
+    @JsonKey(name: 'est_combo') @Default(false) bool estCombo,
+
+    /// Fast-food : prix « au lieu de » (barré) ; null s'il ne dépasse pas le
+    /// prix affiché.
+    @JsonKey(name: 'prix_reference', fromJson: versIntNullable)
+    int? prixReference,
+
+    /// Fast-food : parmi les plus commandés, badge « 🔥 Populaire ».
+    @Default(false) bool populaire,
+
+    /// Fast-food : rang dans « Les plus commandés » (1 à 3), sinon null.
+    @JsonKey(name: 'rang_populaire', fromJson: versIntNullable)
+    int? rangPopulaire,
   }) = _Plat;
 
   factory Plat.fromJson(Map<String, dynamic> json) => _$PlatFromJson(json);

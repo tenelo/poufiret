@@ -77,9 +77,11 @@ bool estChoixUnique(GroupeOptions groupe) => maxChoix(groupe) == 1;
 String libelleContrainte(GroupeOptions groupe) {
   final min = groupe.minChoix;
   final max = maxChoix(groupe);
-  if (min <= 0) return max == 1 ? 'Facultatif · 1 au choix' : "Jusqu'à $max";
-  if (min >= max) return 'Choisissez $min';
-  return 'Choisissez de $min à $max';
+  if (min <= 0) {
+    return max == 1 ? 'Facultatif · 1 au choix' : "Facultatif · jusqu'à $max";
+  }
+  if (min >= max) return 'Obligatoire · $min au choix';
+  return 'Obligatoire · de $min à $max';
 }
 
 int _nombreChoisis(GroupeOptions groupe, Set<int> optionIds) =>

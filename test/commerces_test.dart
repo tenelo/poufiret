@@ -475,9 +475,10 @@ void main() {
   group('aiguillage', () {
     test('gabarit de la carte, sinon type du partenaire, sinon catégorie', () {
       expect(gabaritPartenaire(gabarit: 'pharmacie'), Gabarit.pharmacie);
+      // Fast-food : son gabarit (page restaurant sans menus du jour).
       expect(
         gabaritPartenaire(typesPartenaire: ['fast_food']),
-        Gabarit.restaurant,
+        Gabarit.fastFood,
       );
       expect(
         gabaritPartenaire(typesPartenaire: ['boulanger']),

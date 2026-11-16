@@ -16,6 +16,8 @@ import '../metier_domaine/restaurant_models.dart';
 import '../../auth/widgets/mur_inscription.dart';
 import '../../commerces/metier_domaine/gabarits.dart';
 import 'cartes_formats.dart';
+import 'rangee_populaires.dart';
+import 'tuile_plat.dart';
 
 /// Ouvre la fiche d'un plat en feuille plein écran : un plat de la carte
 /// ([platId]) ou une ligne du menu du jour ([ligneId]).
@@ -204,7 +206,12 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
         (ligne == null ? varianteParDefaut(plat) : null);
     // Article à formats sans format retenu : le client doit en choisir un.
     final formatManquant = variantes.isNotEmpty && variante == null;
-    final grillades = gabaritDepuis(restaurant.gabarit) == Gabarit.grillades;
+    // Titre de la section des formats selon le gabarit.
+    final titreFormats = switch (gabaritDepuis(restaurant.gabarit)) {
+      Gabarit.grillades => 'Format',
+      Gabarit.fastFood => 'Taille',
+      _ => 'Variante',
+    };
     final groupes = plat.groupesActifs;
 
     final motif = motifIndisponible(
@@ -249,6 +256,20 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                    // Formule (fast-food) : badge et prix « au lieu de ».
+                    if (plat.estCombo || plat.prixReference != null) ...[
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          if (plat.estCombo) const BadgeFormule(),
+                          if (plat.prixReference case final reference?)
+                            PrixBarre(formatMontant(reference)),
+                        ],
+                      ),
+                    ],
                     if (plat.tempsPreparationMin != null) ...[
                       const SizedBox(height: 4),
                       Row(
@@ -291,10 +312,7 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
                 ),
               ),
               if (variantes.isNotEmpty) ...[
-                _TitreGroupe(
-                  titre: grillades ? 'Format' : 'Variante',
-                  contrainte: 'Choisissez 1',
-                ),
+                _TitreGroupe(titre: titreFormats, contrainte: 'Choisissez 1'),
                 // Un format au moins a une photo : cartes ; sinon, la liste.
                 if (CartesFormats.avecPhotos(variantes))
                   Padding(

@@ -348,8 +348,8 @@ void main() {
 
   group('validation des groupes', () {
     test('libellés de contrainte', () {
-      expect(libelleContrainte(accompagnement), 'Choisissez 1');
-      expect(libelleContrainte(sauces), "Jusqu'à 2");
+      expect(libelleContrainte(accompagnement), 'Obligatoire · 1 au choix');
+      expect(libelleContrainte(sauces), "Facultatif · jusqu'à 2");
       expect(estChoixUnique(accompagnement), isTrue);
       expect(estChoixUnique(sauces), isFalse);
     });

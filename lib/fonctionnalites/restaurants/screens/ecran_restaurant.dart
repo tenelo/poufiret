@@ -35,6 +35,7 @@ import '../../commerces/screens/ecran_produit.dart';
 import '../../commerces/widgets/ajout_panier.dart';
 import '../../commerces/widgets/liste_produits_paginee.dart';
 import '../../commerces/widgets/tuiles_produits.dart';
+import '../widgets/rangee_populaires.dart';
 
 /// Largeur maximale du contenu sur grand écran.
 const double _largeurContenu = 700;
@@ -253,6 +254,7 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
         : _sectionActive.clamp(0, r.carte.length - 1);
     final section = r.carte.isEmpty ? null : r.carte[active];
     final plats = enRecherche ? resultats : section?.plats ?? const <Plat>[];
+    final populaires = platsPopulaires(r);
     // Un menu sans plat n'est pas affiché ; aucun menu pour les grillades.
     final menus = [
       if (widget.avecMenus)
@@ -321,6 +323,17 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                         service: _service,
                         onService: (s) => setState(() => _service = s),
                         onLigne: (ligne) => _ouvrirPlat(ligneId: ligne.id),
+                      ),
+                    ),
+                  ),
+                // Fast-food : « Les plus commandés », avant les rubriques.
+                if (!enRecherche && populaires.isNotEmpty)
+                  SliverPadding(
+                    padding: marge,
+                    sliver: SliverToBoxAdapter(
+                      child: RangeePopulaires(
+                        plats: populaires,
+                        onTap: (p) => _ouvrirPlat(platId: p.id),
                       ),
                     ),
                   ),
@@ -860,6 +873,14 @@ class _TuilePlatCarte extends StatelessWidget {
       description: plat.description,
       image: plat.image,
       prix: aPrixVariable(plat) ? 'à partir de $prix' : prix,
+      // Fast-food : formule et popularité, puis le prix « au lieu de ».
+      etiquettes: [
+        if (plat.estCombo) const BadgeFormule(),
+        if (plat.populaire) const BadgePopulaire(),
+      ],
+      prixBarre: plat.prixReference == null
+          ? ''
+          : formatMontant(plat.prixReference!),
       badges: [
         if (plat.estEnPromotion && !plat.indisponible)
           BadgeTexte('Promo', couleur: Config.couleurPrimaire),

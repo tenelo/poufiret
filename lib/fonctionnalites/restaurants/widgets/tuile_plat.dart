@@ -13,6 +13,8 @@ class TuilePlat extends StatelessWidget {
     this.description = '',
     this.image = '',
     this.badges = const [],
+    this.etiquettes = const [],
+    this.prixBarre = '',
     this.mention = '',
     this.attenue = false,
     this.onTap,
@@ -25,6 +27,13 @@ class TuilePlat extends StatelessWidget {
   final String description;
   final String image;
   final List<Widget> badges;
+
+  /// Badges sur leur propre ligne, au-dessus du prix (« Formule »,
+  /// « 🔥 Populaire ») : la ligne du prix reste inchangée.
+  final List<Widget> etiquettes;
+
+  /// Prix « au lieu de », déjà mis en forme, barré sous le prix ('' : rien).
+  final String prixBarre;
 
   /// Précision sous le prix (« Plus que 3 », « Commandable jusqu'à 14h »).
   final String mention;
@@ -84,6 +93,10 @@ class TuilePlat extends StatelessWidget {
                         ),
                       ),
                     ],
+                    if (etiquettes.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Wrap(spacing: 6, runSpacing: 4, children: etiquettes),
+                    ],
                     const SizedBox(height: 6),
                     Row(
                       children: [
@@ -104,6 +117,7 @@ class TuilePlat extends StatelessWidget {
                         ],
                       ],
                     ),
+                    if (prixBarre.isNotEmpty) PrixBarre(prixBarre),
                     if (mention.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Text(
@@ -123,6 +137,35 @@ class TuilePlat extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// « au lieu de X F », le montant barré (formule de fast-food).
+class PrixBarre extends StatelessWidget {
+  const PrixBarre(this.montant, {super.key});
+
+  /// Montant déjà mis en forme (« 3 500 F »).
+  final String montant;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = Theme.of(
+      context,
+    ).textTheme.bodySmall?.copyWith(color: Config.couleurTexteSecondaire);
+    return Text.rich(
+      TextSpan(
+        text: 'au lieu de ',
+        children: [
+          TextSpan(
+            text: montant,
+            style: const TextStyle(decoration: TextDecoration.lineThrough),
+          ),
+        ],
+      ),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: style,
     );
   }
 }
