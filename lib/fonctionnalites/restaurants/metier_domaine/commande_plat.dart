@@ -15,7 +15,9 @@ int prixVariante(Plat plat, VariantePlat variante) =>
     variante.prixPour(prixDeBase(plat));
 
 /// Plus petit prix auquel le plat peut être commandé (« à partir de »).
+/// Celui du serveur s'il est fourni, sinon calculé ici.
 int prixAPartirDe(Plat plat) {
+  if (plat.prixAPartirDeServeur case final serveur?) return serveur;
   final variantes = plat.variantesActives;
   if (variantes.isEmpty) return prixDeBase(plat);
   return variantes
@@ -27,15 +29,11 @@ int prixAPartirDe(Plat plat) {
 bool aPrixVariable(Plat plat) =>
     plat.variantesActives.map((v) => prixVariante(plat, v)).toSet().length > 1;
 
-/// Variante présélectionnée : celle par défaut, sinon la première.
-VariantePlat? varianteParDefaut(Plat plat) {
-  final variantes = plat.variantesActives;
-  if (variantes.isEmpty) return null;
-  return variantes.firstWhere(
-    (v) => v.estParDefaut,
-    orElse: () => variantes.first,
-  );
-}
+/// Format présélectionné : celui par défaut s'il est disponible, sinon
+/// aucun (le client doit choisir, comme l'exige le serveur).
+VariantePlat? varianteParDefaut(Plat plat) => plat.variantesActives
+    .where((v) => v.estParDefaut && !v.epuisee)
+    .firstOrNull;
 
 /// Prix d'une unité : base + variante + options choisies.
 int prixUnitaire(

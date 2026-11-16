@@ -172,6 +172,9 @@ abstract class VariantePlat with _$VariantePlat {
     /// null = stock non suivi.
     @JsonKey(fromJson: versIntNullable) int? stock,
     @JsonKey(name: 'est_epuise') @Default(false) bool estEpuise,
+
+    /// Photo du format (URL absolue), ou null.
+    String? image,
   }) = _VariantePlat;
 
   const VariantePlat._();
@@ -239,6 +242,11 @@ abstract class Plat with _$Plat {
 
     /// Suffixe du prix fourni par le serveur : « f/kg », « f/tête »…
     @JsonKey(name: 'suffixe_prix') String? suffixePrix,
+
+    /// Plus petit prix proposé, formats compris, calculé par le serveur
+    /// (null : absent, calcul local).
+    @JsonKey(name: 'prix_a_partir_de', fromJson: versIntNullable)
+    int? prixAPartirDeServeur,
   }) = _Plat;
 
   factory Plat.fromJson(Map<String, dynamic> json) => _$PlatFromJson(json);

@@ -1441,7 +1441,8 @@ mixin _$VariantePlat {
 /// supplément. null : prix du plat + [prixSupplement].
 @JsonKey(fromJson: versIntNullable) int? get prix;/// Prix unitaire facturé au panier, calculé par le serveur.
 @JsonKey(name: 'prix_effectif', fromJson: versIntNullable) int? get prixEffectif;@JsonKey(name: 'est_par_defaut') bool get estParDefaut;@JsonKey(name: 'est_active') bool get estActive;/// null = stock non suivi.
-@JsonKey(fromJson: versIntNullable) int? get stock;@JsonKey(name: 'est_epuise') bool get estEpuise;
+@JsonKey(fromJson: versIntNullable) int? get stock;@JsonKey(name: 'est_epuise') bool get estEpuise;/// Photo du format (URL absolue), ou null.
+ String? get image;
 /// Create a copy of VariantePlat
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1454,16 +1455,16 @@ $VariantePlatCopyWith<VariantePlat> get copyWith => _$VariantePlatCopyWithImpl<V
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VariantePlat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prixSupplement, prixSupplement) || other.prixSupplement == prixSupplement)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixEffectif, prixEffectif) || other.prixEffectif == prixEffectif)&&(identical(other.estParDefaut, estParDefaut) || other.estParDefaut == estParDefaut)&&(identical(other.estActive, estActive) || other.estActive == estActive)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VariantePlat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prixSupplement, prixSupplement) || other.prixSupplement == prixSupplement)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixEffectif, prixEffectif) || other.prixEffectif == prixEffectif)&&(identical(other.estParDefaut, estParDefaut) || other.estParDefaut == estParDefaut)&&(identical(other.estActive, estActive) || other.estActive == estActive)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise)&&(identical(other.image, image) || other.image == image));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,prixSupplement,prix,prixEffectif,estParDefaut,estActive,stock,estEpuise);
+int get hashCode => Object.hash(runtimeType,id,nom,prixSupplement,prix,prixEffectif,estParDefaut,estActive,stock,estEpuise,image);
 
 @override
 String toString() {
-  return 'VariantePlat(id: $id, nom: $nom, prixSupplement: $prixSupplement, prix: $prix, prixEffectif: $prixEffectif, estParDefaut: $estParDefaut, estActive: $estActive, stock: $stock, estEpuise: $estEpuise)';
+  return 'VariantePlat(id: $id, nom: $nom, prixSupplement: $prixSupplement, prix: $prix, prixEffectif: $prixEffectif, estParDefaut: $estParDefaut, estActive: $estActive, stock: $stock, estEpuise: $estEpuise, image: $image)';
 }
 
 
@@ -1474,7 +1475,7 @@ abstract mixin class $VariantePlatCopyWith<$Res>  {
   factory $VariantePlatCopyWith(VariantePlat value, $Res Function(VariantePlat) _then) = _$VariantePlatCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom,@JsonKey(name: 'prix_supplement', fromJson: versInt) int prixSupplement,@JsonKey(fromJson: versIntNullable) int? prix,@JsonKey(name: 'prix_effectif', fromJson: versIntNullable) int? prixEffectif,@JsonKey(name: 'est_par_defaut') bool estParDefaut,@JsonKey(name: 'est_active') bool estActive,@JsonKey(fromJson: versIntNullable) int? stock,@JsonKey(name: 'est_epuise') bool estEpuise
+ int id, String nom,@JsonKey(name: 'prix_supplement', fromJson: versInt) int prixSupplement,@JsonKey(fromJson: versIntNullable) int? prix,@JsonKey(name: 'prix_effectif', fromJson: versIntNullable) int? prixEffectif,@JsonKey(name: 'est_par_defaut') bool estParDefaut,@JsonKey(name: 'est_active') bool estActive,@JsonKey(fromJson: versIntNullable) int? stock,@JsonKey(name: 'est_epuise') bool estEpuise, String? image
 });
 
 
@@ -1491,7 +1492,7 @@ class _$VariantePlatCopyWithImpl<$Res>
 
 /// Create a copy of VariantePlat
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? prixSupplement = null,Object? prix = freezed,Object? prixEffectif = freezed,Object? estParDefaut = null,Object? estActive = null,Object? stock = freezed,Object? estEpuise = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? prixSupplement = null,Object? prix = freezed,Object? prixEffectif = freezed,Object? estParDefaut = null,Object? estActive = null,Object? stock = freezed,Object? estEpuise = null,Object? image = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -1502,7 +1503,8 @@ as int?,estParDefaut: null == estParDefaut ? _self.estParDefaut : estParDefaut /
 as bool,estActive: null == estActive ? _self.estActive : estActive // ignore: cast_nullable_to_non_nullable
 as bool,stock: freezed == stock ? _self.stock : stock // ignore: cast_nullable_to_non_nullable
 as int?,estEpuise: null == estEpuise ? _self.estEpuise : estEpuise // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,image: freezed == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -1587,10 +1589,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom, @JsonKey(name: 'prix_supplement', fromJson: versInt)  int prixSupplement, @JsonKey(fromJson: versIntNullable)  int? prix, @JsonKey(name: 'prix_effectif', fromJson: versIntNullable)  int? prixEffectif, @JsonKey(name: 'est_par_defaut')  bool estParDefaut, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(fromJson: versIntNullable)  int? stock, @JsonKey(name: 'est_epuise')  bool estEpuise)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom, @JsonKey(name: 'prix_supplement', fromJson: versInt)  int prixSupplement, @JsonKey(fromJson: versIntNullable)  int? prix, @JsonKey(name: 'prix_effectif', fromJson: versIntNullable)  int? prixEffectif, @JsonKey(name: 'est_par_defaut')  bool estParDefaut, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(fromJson: versIntNullable)  int? stock, @JsonKey(name: 'est_epuise')  bool estEpuise,  String? image)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VariantePlat() when $default != null:
-return $default(_that.id,_that.nom,_that.prixSupplement,_that.prix,_that.prixEffectif,_that.estParDefaut,_that.estActive,_that.stock,_that.estEpuise);case _:
+return $default(_that.id,_that.nom,_that.prixSupplement,_that.prix,_that.prixEffectif,_that.estParDefaut,_that.estActive,_that.stock,_that.estEpuise,_that.image);case _:
   return orElse();
 
 }
@@ -1608,10 +1610,10 @@ return $default(_that.id,_that.nom,_that.prixSupplement,_that.prix,_that.prixEff
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom, @JsonKey(name: 'prix_supplement', fromJson: versInt)  int prixSupplement, @JsonKey(fromJson: versIntNullable)  int? prix, @JsonKey(name: 'prix_effectif', fromJson: versIntNullable)  int? prixEffectif, @JsonKey(name: 'est_par_defaut')  bool estParDefaut, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(fromJson: versIntNullable)  int? stock, @JsonKey(name: 'est_epuise')  bool estEpuise)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom, @JsonKey(name: 'prix_supplement', fromJson: versInt)  int prixSupplement, @JsonKey(fromJson: versIntNullable)  int? prix, @JsonKey(name: 'prix_effectif', fromJson: versIntNullable)  int? prixEffectif, @JsonKey(name: 'est_par_defaut')  bool estParDefaut, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(fromJson: versIntNullable)  int? stock, @JsonKey(name: 'est_epuise')  bool estEpuise,  String? image)  $default,) {final _that = this;
 switch (_that) {
 case _VariantePlat():
-return $default(_that.id,_that.nom,_that.prixSupplement,_that.prix,_that.prixEffectif,_that.estParDefaut,_that.estActive,_that.stock,_that.estEpuise);case _:
+return $default(_that.id,_that.nom,_that.prixSupplement,_that.prix,_that.prixEffectif,_that.estParDefaut,_that.estActive,_that.stock,_that.estEpuise,_that.image);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1628,10 +1630,10 @@ return $default(_that.id,_that.nom,_that.prixSupplement,_that.prix,_that.prixEff
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom, @JsonKey(name: 'prix_supplement', fromJson: versInt)  int prixSupplement, @JsonKey(fromJson: versIntNullable)  int? prix, @JsonKey(name: 'prix_effectif', fromJson: versIntNullable)  int? prixEffectif, @JsonKey(name: 'est_par_defaut')  bool estParDefaut, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(fromJson: versIntNullable)  int? stock, @JsonKey(name: 'est_epuise')  bool estEpuise)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom, @JsonKey(name: 'prix_supplement', fromJson: versInt)  int prixSupplement, @JsonKey(fromJson: versIntNullable)  int? prix, @JsonKey(name: 'prix_effectif', fromJson: versIntNullable)  int? prixEffectif, @JsonKey(name: 'est_par_defaut')  bool estParDefaut, @JsonKey(name: 'est_active')  bool estActive, @JsonKey(fromJson: versIntNullable)  int? stock, @JsonKey(name: 'est_epuise')  bool estEpuise,  String? image)?  $default,) {final _that = this;
 switch (_that) {
 case _VariantePlat() when $default != null:
-return $default(_that.id,_that.nom,_that.prixSupplement,_that.prix,_that.prixEffectif,_that.estParDefaut,_that.estActive,_that.stock,_that.estEpuise);case _:
+return $default(_that.id,_that.nom,_that.prixSupplement,_that.prix,_that.prixEffectif,_that.estParDefaut,_that.estActive,_that.stock,_that.estEpuise,_that.image);case _:
   return null;
 
 }
@@ -1643,7 +1645,7 @@ return $default(_that.id,_that.nom,_that.prixSupplement,_that.prix,_that.prixEff
 @JsonSerializable()
 
 class _VariantePlat extends VariantePlat {
-  const _VariantePlat({required this.id, this.nom = '', @JsonKey(name: 'prix_supplement', fromJson: versInt) this.prixSupplement = 0, @JsonKey(fromJson: versIntNullable) this.prix, @JsonKey(name: 'prix_effectif', fromJson: versIntNullable) this.prixEffectif, @JsonKey(name: 'est_par_defaut') this.estParDefaut = false, @JsonKey(name: 'est_active') this.estActive = true, @JsonKey(fromJson: versIntNullable) this.stock, @JsonKey(name: 'est_epuise') this.estEpuise = false}): super._();
+  const _VariantePlat({required this.id, this.nom = '', @JsonKey(name: 'prix_supplement', fromJson: versInt) this.prixSupplement = 0, @JsonKey(fromJson: versIntNullable) this.prix, @JsonKey(name: 'prix_effectif', fromJson: versIntNullable) this.prixEffectif, @JsonKey(name: 'est_par_defaut') this.estParDefaut = false, @JsonKey(name: 'est_active') this.estActive = true, @JsonKey(fromJson: versIntNullable) this.stock, @JsonKey(name: 'est_epuise') this.estEpuise = false, this.image}): super._();
   factory _VariantePlat.fromJson(Map<String, dynamic> json) => _$VariantePlatFromJson(json);
 
 @override final  int id;
@@ -1659,6 +1661,8 @@ class _VariantePlat extends VariantePlat {
 /// null = stock non suivi.
 @override@JsonKey(fromJson: versIntNullable) final  int? stock;
 @override@JsonKey(name: 'est_epuise') final  bool estEpuise;
+/// Photo du format (URL absolue), ou null.
+@override final  String? image;
 
 /// Create a copy of VariantePlat
 /// with the given fields replaced by the non-null parameter values.
@@ -1673,16 +1677,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VariantePlat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prixSupplement, prixSupplement) || other.prixSupplement == prixSupplement)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixEffectif, prixEffectif) || other.prixEffectif == prixEffectif)&&(identical(other.estParDefaut, estParDefaut) || other.estParDefaut == estParDefaut)&&(identical(other.estActive, estActive) || other.estActive == estActive)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _VariantePlat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.prixSupplement, prixSupplement) || other.prixSupplement == prixSupplement)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixEffectif, prixEffectif) || other.prixEffectif == prixEffectif)&&(identical(other.estParDefaut, estParDefaut) || other.estParDefaut == estParDefaut)&&(identical(other.estActive, estActive) || other.estActive == estActive)&&(identical(other.stock, stock) || other.stock == stock)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise)&&(identical(other.image, image) || other.image == image));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,prixSupplement,prix,prixEffectif,estParDefaut,estActive,stock,estEpuise);
+int get hashCode => Object.hash(runtimeType,id,nom,prixSupplement,prix,prixEffectif,estParDefaut,estActive,stock,estEpuise,image);
 
 @override
 String toString() {
-  return 'VariantePlat(id: $id, nom: $nom, prixSupplement: $prixSupplement, prix: $prix, prixEffectif: $prixEffectif, estParDefaut: $estParDefaut, estActive: $estActive, stock: $stock, estEpuise: $estEpuise)';
+  return 'VariantePlat(id: $id, nom: $nom, prixSupplement: $prixSupplement, prix: $prix, prixEffectif: $prixEffectif, estParDefaut: $estParDefaut, estActive: $estActive, stock: $stock, estEpuise: $estEpuise, image: $image)';
 }
 
 
@@ -1693,7 +1697,7 @@ abstract mixin class _$VariantePlatCopyWith<$Res> implements $VariantePlatCopyWi
   factory _$VariantePlatCopyWith(_VariantePlat value, $Res Function(_VariantePlat) _then) = __$VariantePlatCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom,@JsonKey(name: 'prix_supplement', fromJson: versInt) int prixSupplement,@JsonKey(fromJson: versIntNullable) int? prix,@JsonKey(name: 'prix_effectif', fromJson: versIntNullable) int? prixEffectif,@JsonKey(name: 'est_par_defaut') bool estParDefaut,@JsonKey(name: 'est_active') bool estActive,@JsonKey(fromJson: versIntNullable) int? stock,@JsonKey(name: 'est_epuise') bool estEpuise
+ int id, String nom,@JsonKey(name: 'prix_supplement', fromJson: versInt) int prixSupplement,@JsonKey(fromJson: versIntNullable) int? prix,@JsonKey(name: 'prix_effectif', fromJson: versIntNullable) int? prixEffectif,@JsonKey(name: 'est_par_defaut') bool estParDefaut,@JsonKey(name: 'est_active') bool estActive,@JsonKey(fromJson: versIntNullable) int? stock,@JsonKey(name: 'est_epuise') bool estEpuise, String? image
 });
 
 
@@ -1710,7 +1714,7 @@ class __$VariantePlatCopyWithImpl<$Res>
 
 /// Create a copy of VariantePlat
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? prixSupplement = null,Object? prix = freezed,Object? prixEffectif = freezed,Object? estParDefaut = null,Object? estActive = null,Object? stock = freezed,Object? estEpuise = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? prixSupplement = null,Object? prix = freezed,Object? prixEffectif = freezed,Object? estParDefaut = null,Object? estActive = null,Object? stock = freezed,Object? estEpuise = null,Object? image = freezed,}) {
   return _then(_VariantePlat(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -1721,7 +1725,8 @@ as int?,estParDefaut: null == estParDefaut ? _self.estParDefaut : estParDefaut /
 as bool,estActive: null == estActive ? _self.estActive : estActive // ignore: cast_nullable_to_non_nullable
 as bool,stock: freezed == stock ? _self.stock : stock // ignore: cast_nullable_to_non_nullable
 as int?,estEpuise: null == estEpuise ? _self.estEpuise : estEpuise // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,image: freezed == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -1739,7 +1744,9 @@ mixin _$Plat {
 @JsonKey(name: 'unite_vente') String? get uniteVente;/// Élevage : piece | kg | tete | plaquette (null hors élevage).
 @JsonKey(name: 'unite_prix') String? get unitePrixCode;/// « kg », « tête »… (null hors élevage).
 @JsonKey(name: 'unite_prix_libelle') String? get unitePrixLibelle;/// Suffixe du prix fourni par le serveur : « f/kg », « f/tête »…
-@JsonKey(name: 'suffixe_prix') String? get suffixePrix;
+@JsonKey(name: 'suffixe_prix') String? get suffixePrix;/// Plus petit prix proposé, formats compris, calculé par le serveur
+/// (null : absent, calcul local).
+@JsonKey(name: 'prix_a_partir_de', fromJson: versIntNullable) int? get prixAPartirDeServeur;
 /// Create a copy of Plat
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1752,16 +1759,16 @@ $PlatCopyWith<Plat> get copyWith => _$PlatCopyWithImpl<Plat>(this as Plat, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Plat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixEffectif, prixEffectif) || other.prixEffectif == prixEffectif)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.estDisponible, estDisponible) || other.estDisponible == estDisponible)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise)&&(identical(other.tempsPreparationMin, tempsPreparationMin) || other.tempsPreparationMin == tempsPreparationMin)&&const DeepCollectionEquality().equals(other.images, images)&&const DeepCollectionEquality().equals(other.variantes, variantes)&&const DeepCollectionEquality().equals(other.groupesOptions, groupesOptions)&&(identical(other.commandable, commandable) || other.commandable == commandable)&&const DeepCollectionEquality().equals(other.ficheSpecifique, ficheSpecifique)&&(identical(other.uniteVente, uniteVente) || other.uniteVente == uniteVente)&&(identical(other.unitePrixCode, unitePrixCode) || other.unitePrixCode == unitePrixCode)&&(identical(other.unitePrixLibelle, unitePrixLibelle) || other.unitePrixLibelle == unitePrixLibelle)&&(identical(other.suffixePrix, suffixePrix) || other.suffixePrix == suffixePrix));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Plat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixEffectif, prixEffectif) || other.prixEffectif == prixEffectif)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.estDisponible, estDisponible) || other.estDisponible == estDisponible)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise)&&(identical(other.tempsPreparationMin, tempsPreparationMin) || other.tempsPreparationMin == tempsPreparationMin)&&const DeepCollectionEquality().equals(other.images, images)&&const DeepCollectionEquality().equals(other.variantes, variantes)&&const DeepCollectionEquality().equals(other.groupesOptions, groupesOptions)&&(identical(other.commandable, commandable) || other.commandable == commandable)&&const DeepCollectionEquality().equals(other.ficheSpecifique, ficheSpecifique)&&(identical(other.uniteVente, uniteVente) || other.uniteVente == uniteVente)&&(identical(other.unitePrixCode, unitePrixCode) || other.unitePrixCode == unitePrixCode)&&(identical(other.unitePrixLibelle, unitePrixLibelle) || other.unitePrixLibelle == unitePrixLibelle)&&(identical(other.suffixePrix, suffixePrix) || other.suffixePrix == suffixePrix)&&(identical(other.prixAPartirDeServeur, prixAPartirDeServeur) || other.prixAPartirDeServeur == prixAPartirDeServeur));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,description,prix,prixEffectif,estEnPromotion,estDisponible,estEpuise,tempsPreparationMin,const DeepCollectionEquality().hash(images),const DeepCollectionEquality().hash(variantes),const DeepCollectionEquality().hash(groupesOptions),commandable,const DeepCollectionEquality().hash(ficheSpecifique),uniteVente,unitePrixCode,unitePrixLibelle,suffixePrix);
+int get hashCode => Object.hashAll([runtimeType,id,nom,description,prix,prixEffectif,estEnPromotion,estDisponible,estEpuise,tempsPreparationMin,const DeepCollectionEquality().hash(images),const DeepCollectionEquality().hash(variantes),const DeepCollectionEquality().hash(groupesOptions),commandable,const DeepCollectionEquality().hash(ficheSpecifique),uniteVente,unitePrixCode,unitePrixLibelle,suffixePrix,prixAPartirDeServeur]);
 
 @override
 String toString() {
-  return 'Plat(id: $id, nom: $nom, description: $description, prix: $prix, prixEffectif: $prixEffectif, estEnPromotion: $estEnPromotion, estDisponible: $estDisponible, estEpuise: $estEpuise, tempsPreparationMin: $tempsPreparationMin, images: $images, variantes: $variantes, groupesOptions: $groupesOptions, commandable: $commandable, ficheSpecifique: $ficheSpecifique, uniteVente: $uniteVente, unitePrixCode: $unitePrixCode, unitePrixLibelle: $unitePrixLibelle, suffixePrix: $suffixePrix)';
+  return 'Plat(id: $id, nom: $nom, description: $description, prix: $prix, prixEffectif: $prixEffectif, estEnPromotion: $estEnPromotion, estDisponible: $estDisponible, estEpuise: $estEpuise, tempsPreparationMin: $tempsPreparationMin, images: $images, variantes: $variantes, groupesOptions: $groupesOptions, commandable: $commandable, ficheSpecifique: $ficheSpecifique, uniteVente: $uniteVente, unitePrixCode: $unitePrixCode, unitePrixLibelle: $unitePrixLibelle, suffixePrix: $suffixePrix, prixAPartirDeServeur: $prixAPartirDeServeur)';
 }
 
 
@@ -1772,7 +1779,7 @@ abstract mixin class $PlatCopyWith<$Res>  {
   factory $PlatCopyWith(Plat value, $Res Function(Plat) _then) = _$PlatCopyWithImpl;
 @useResult
 $Res call({
- int id, String nom, String description,@JsonKey(fromJson: versInt) int prix,@JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) int prixEffectif,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'est_disponible') bool estDisponible,@JsonKey(name: 'est_epuise') bool estEpuise,@JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) int? tempsPreparationMin,@JsonKey(readValue: _lireImages) List<String> images, List<VariantePlat> variantes,@JsonKey(name: 'groupes_options') List<GroupeOptions> groupesOptions, bool commandable,@JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet) Map<String, dynamic> ficheSpecifique,@JsonKey(name: 'unite_vente') String? uniteVente,@JsonKey(name: 'unite_prix') String? unitePrixCode,@JsonKey(name: 'unite_prix_libelle') String? unitePrixLibelle,@JsonKey(name: 'suffixe_prix') String? suffixePrix
+ int id, String nom, String description,@JsonKey(fromJson: versInt) int prix,@JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) int prixEffectif,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'est_disponible') bool estDisponible,@JsonKey(name: 'est_epuise') bool estEpuise,@JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) int? tempsPreparationMin,@JsonKey(readValue: _lireImages) List<String> images, List<VariantePlat> variantes,@JsonKey(name: 'groupes_options') List<GroupeOptions> groupesOptions, bool commandable,@JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet) Map<String, dynamic> ficheSpecifique,@JsonKey(name: 'unite_vente') String? uniteVente,@JsonKey(name: 'unite_prix') String? unitePrixCode,@JsonKey(name: 'unite_prix_libelle') String? unitePrixLibelle,@JsonKey(name: 'suffixe_prix') String? suffixePrix,@JsonKey(name: 'prix_a_partir_de', fromJson: versIntNullable) int? prixAPartirDeServeur
 });
 
 
@@ -1789,7 +1796,7 @@ class _$PlatCopyWithImpl<$Res>
 
 /// Create a copy of Plat
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? prix = null,Object? prixEffectif = null,Object? estEnPromotion = null,Object? estDisponible = null,Object? estEpuise = null,Object? tempsPreparationMin = freezed,Object? images = null,Object? variantes = null,Object? groupesOptions = null,Object? commandable = null,Object? ficheSpecifique = null,Object? uniteVente = freezed,Object? unitePrixCode = freezed,Object? unitePrixLibelle = freezed,Object? suffixePrix = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? prix = null,Object? prixEffectif = null,Object? estEnPromotion = null,Object? estDisponible = null,Object? estEpuise = null,Object? tempsPreparationMin = freezed,Object? images = null,Object? variantes = null,Object? groupesOptions = null,Object? commandable = null,Object? ficheSpecifique = null,Object? uniteVente = freezed,Object? unitePrixCode = freezed,Object? unitePrixLibelle = freezed,Object? suffixePrix = freezed,Object? prixAPartirDeServeur = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -1809,7 +1816,8 @@ as Map<String, dynamic>,uniteVente: freezed == uniteVente ? _self.uniteVente : u
 as String?,unitePrixCode: freezed == unitePrixCode ? _self.unitePrixCode : unitePrixCode // ignore: cast_nullable_to_non_nullable
 as String?,unitePrixLibelle: freezed == unitePrixLibelle ? _self.unitePrixLibelle : unitePrixLibelle // ignore: cast_nullable_to_non_nullable
 as String?,suffixePrix: freezed == suffixePrix ? _self.suffixePrix : suffixePrix // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,prixAPartirDeServeur: freezed == prixAPartirDeServeur ? _self.prixAPartirDeServeur : prixAPartirDeServeur // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -1894,10 +1902,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String description, @JsonKey(fromJson: versInt)  int prix, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt)  int prixEffectif, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_epuise')  bool estEpuise, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable)  int? tempsPreparationMin, @JsonKey(readValue: _lireImages)  List<String> images,  List<VariantePlat> variantes, @JsonKey(name: 'groupes_options')  List<GroupeOptions> groupesOptions,  bool commandable, @JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet)  Map<String, dynamic> ficheSpecifique, @JsonKey(name: 'unite_vente')  String? uniteVente, @JsonKey(name: 'unite_prix')  String? unitePrixCode, @JsonKey(name: 'unite_prix_libelle')  String? unitePrixLibelle, @JsonKey(name: 'suffixe_prix')  String? suffixePrix)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String nom,  String description, @JsonKey(fromJson: versInt)  int prix, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt)  int prixEffectif, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_epuise')  bool estEpuise, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable)  int? tempsPreparationMin, @JsonKey(readValue: _lireImages)  List<String> images,  List<VariantePlat> variantes, @JsonKey(name: 'groupes_options')  List<GroupeOptions> groupesOptions,  bool commandable, @JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet)  Map<String, dynamic> ficheSpecifique, @JsonKey(name: 'unite_vente')  String? uniteVente, @JsonKey(name: 'unite_prix')  String? unitePrixCode, @JsonKey(name: 'unite_prix_libelle')  String? unitePrixLibelle, @JsonKey(name: 'suffixe_prix')  String? suffixePrix, @JsonKey(name: 'prix_a_partir_de', fromJson: versIntNullable)  int? prixAPartirDeServeur)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Plat() when $default != null:
-return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffectif,_that.estEnPromotion,_that.estDisponible,_that.estEpuise,_that.tempsPreparationMin,_that.images,_that.variantes,_that.groupesOptions,_that.commandable,_that.ficheSpecifique,_that.uniteVente,_that.unitePrixCode,_that.unitePrixLibelle,_that.suffixePrix);case _:
+return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffectif,_that.estEnPromotion,_that.estDisponible,_that.estEpuise,_that.tempsPreparationMin,_that.images,_that.variantes,_that.groupesOptions,_that.commandable,_that.ficheSpecifique,_that.uniteVente,_that.unitePrixCode,_that.unitePrixLibelle,_that.suffixePrix,_that.prixAPartirDeServeur);case _:
   return orElse();
 
 }
@@ -1915,10 +1923,10 @@ return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffect
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String description, @JsonKey(fromJson: versInt)  int prix, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt)  int prixEffectif, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_epuise')  bool estEpuise, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable)  int? tempsPreparationMin, @JsonKey(readValue: _lireImages)  List<String> images,  List<VariantePlat> variantes, @JsonKey(name: 'groupes_options')  List<GroupeOptions> groupesOptions,  bool commandable, @JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet)  Map<String, dynamic> ficheSpecifique, @JsonKey(name: 'unite_vente')  String? uniteVente, @JsonKey(name: 'unite_prix')  String? unitePrixCode, @JsonKey(name: 'unite_prix_libelle')  String? unitePrixLibelle, @JsonKey(name: 'suffixe_prix')  String? suffixePrix)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String nom,  String description, @JsonKey(fromJson: versInt)  int prix, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt)  int prixEffectif, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_epuise')  bool estEpuise, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable)  int? tempsPreparationMin, @JsonKey(readValue: _lireImages)  List<String> images,  List<VariantePlat> variantes, @JsonKey(name: 'groupes_options')  List<GroupeOptions> groupesOptions,  bool commandable, @JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet)  Map<String, dynamic> ficheSpecifique, @JsonKey(name: 'unite_vente')  String? uniteVente, @JsonKey(name: 'unite_prix')  String? unitePrixCode, @JsonKey(name: 'unite_prix_libelle')  String? unitePrixLibelle, @JsonKey(name: 'suffixe_prix')  String? suffixePrix, @JsonKey(name: 'prix_a_partir_de', fromJson: versIntNullable)  int? prixAPartirDeServeur)  $default,) {final _that = this;
 switch (_that) {
 case _Plat():
-return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffectif,_that.estEnPromotion,_that.estDisponible,_that.estEpuise,_that.tempsPreparationMin,_that.images,_that.variantes,_that.groupesOptions,_that.commandable,_that.ficheSpecifique,_that.uniteVente,_that.unitePrixCode,_that.unitePrixLibelle,_that.suffixePrix);case _:
+return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffectif,_that.estEnPromotion,_that.estDisponible,_that.estEpuise,_that.tempsPreparationMin,_that.images,_that.variantes,_that.groupesOptions,_that.commandable,_that.ficheSpecifique,_that.uniteVente,_that.unitePrixCode,_that.unitePrixLibelle,_that.suffixePrix,_that.prixAPartirDeServeur);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1935,10 +1943,10 @@ return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffect
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String description, @JsonKey(fromJson: versInt)  int prix, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt)  int prixEffectif, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_epuise')  bool estEpuise, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable)  int? tempsPreparationMin, @JsonKey(readValue: _lireImages)  List<String> images,  List<VariantePlat> variantes, @JsonKey(name: 'groupes_options')  List<GroupeOptions> groupesOptions,  bool commandable, @JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet)  Map<String, dynamic> ficheSpecifique, @JsonKey(name: 'unite_vente')  String? uniteVente, @JsonKey(name: 'unite_prix')  String? unitePrixCode, @JsonKey(name: 'unite_prix_libelle')  String? unitePrixLibelle, @JsonKey(name: 'suffixe_prix')  String? suffixePrix)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String nom,  String description, @JsonKey(fromJson: versInt)  int prix, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt)  int prixEffectif, @JsonKey(name: 'est_en_promotion')  bool estEnPromotion, @JsonKey(name: 'est_disponible')  bool estDisponible, @JsonKey(name: 'est_epuise')  bool estEpuise, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable)  int? tempsPreparationMin, @JsonKey(readValue: _lireImages)  List<String> images,  List<VariantePlat> variantes, @JsonKey(name: 'groupes_options')  List<GroupeOptions> groupesOptions,  bool commandable, @JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet)  Map<String, dynamic> ficheSpecifique, @JsonKey(name: 'unite_vente')  String? uniteVente, @JsonKey(name: 'unite_prix')  String? unitePrixCode, @JsonKey(name: 'unite_prix_libelle')  String? unitePrixLibelle, @JsonKey(name: 'suffixe_prix')  String? suffixePrix, @JsonKey(name: 'prix_a_partir_de', fromJson: versIntNullable)  int? prixAPartirDeServeur)?  $default,) {final _that = this;
 switch (_that) {
 case _Plat() when $default != null:
-return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffectif,_that.estEnPromotion,_that.estDisponible,_that.estEpuise,_that.tempsPreparationMin,_that.images,_that.variantes,_that.groupesOptions,_that.commandable,_that.ficheSpecifique,_that.uniteVente,_that.unitePrixCode,_that.unitePrixLibelle,_that.suffixePrix);case _:
+return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffectif,_that.estEnPromotion,_that.estDisponible,_that.estEpuise,_that.tempsPreparationMin,_that.images,_that.variantes,_that.groupesOptions,_that.commandable,_that.ficheSpecifique,_that.uniteVente,_that.unitePrixCode,_that.unitePrixLibelle,_that.suffixePrix,_that.prixAPartirDeServeur);case _:
   return null;
 
 }
@@ -1950,7 +1958,7 @@ return $default(_that.id,_that.nom,_that.description,_that.prix,_that.prixEffect
 @JsonSerializable()
 
 class _Plat extends Plat {
-  const _Plat({required this.id, this.nom = '', this.description = '', @JsonKey(fromJson: versInt) this.prix = 0, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) this.prixEffectif = 0, @JsonKey(name: 'est_en_promotion') this.estEnPromotion = false, @JsonKey(name: 'est_disponible') this.estDisponible = true, @JsonKey(name: 'est_epuise') this.estEpuise = false, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) this.tempsPreparationMin, @JsonKey(readValue: _lireImages) final  List<String> images = const <String>[], final  List<VariantePlat> variantes = const <VariantePlat>[], @JsonKey(name: 'groupes_options') final  List<GroupeOptions> groupesOptions = const <GroupeOptions>[], this.commandable = true, @JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet) final  Map<String, dynamic> ficheSpecifique = const <String, dynamic>{}, @JsonKey(name: 'unite_vente') this.uniteVente, @JsonKey(name: 'unite_prix') this.unitePrixCode, @JsonKey(name: 'unite_prix_libelle') this.unitePrixLibelle, @JsonKey(name: 'suffixe_prix') this.suffixePrix}): _images = images,_variantes = variantes,_groupesOptions = groupesOptions,_ficheSpecifique = ficheSpecifique,super._();
+  const _Plat({required this.id, this.nom = '', this.description = '', @JsonKey(fromJson: versInt) this.prix = 0, @JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) this.prixEffectif = 0, @JsonKey(name: 'est_en_promotion') this.estEnPromotion = false, @JsonKey(name: 'est_disponible') this.estDisponible = true, @JsonKey(name: 'est_epuise') this.estEpuise = false, @JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) this.tempsPreparationMin, @JsonKey(readValue: _lireImages) final  List<String> images = const <String>[], final  List<VariantePlat> variantes = const <VariantePlat>[], @JsonKey(name: 'groupes_options') final  List<GroupeOptions> groupesOptions = const <GroupeOptions>[], this.commandable = true, @JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet) final  Map<String, dynamic> ficheSpecifique = const <String, dynamic>{}, @JsonKey(name: 'unite_vente') this.uniteVente, @JsonKey(name: 'unite_prix') this.unitePrixCode, @JsonKey(name: 'unite_prix_libelle') this.unitePrixLibelle, @JsonKey(name: 'suffixe_prix') this.suffixePrix, @JsonKey(name: 'prix_a_partir_de', fromJson: versIntNullable) this.prixAPartirDeServeur}): _images = images,_variantes = variantes,_groupesOptions = groupesOptions,_ficheSpecifique = ficheSpecifique,super._();
   factory _Plat.fromJson(Map<String, dynamic> json) => _$PlatFromJson(json);
 
 @override final  int id;
@@ -2004,6 +2012,9 @@ class _Plat extends Plat {
 @override@JsonKey(name: 'unite_prix_libelle') final  String? unitePrixLibelle;
 /// Suffixe du prix fourni par le serveur : « f/kg », « f/tête »…
 @override@JsonKey(name: 'suffixe_prix') final  String? suffixePrix;
+/// Plus petit prix proposé, formats compris, calculé par le serveur
+/// (null : absent, calcul local).
+@override@JsonKey(name: 'prix_a_partir_de', fromJson: versIntNullable) final  int? prixAPartirDeServeur;
 
 /// Create a copy of Plat
 /// with the given fields replaced by the non-null parameter values.
@@ -2018,16 +2029,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Plat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixEffectif, prixEffectif) || other.prixEffectif == prixEffectif)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.estDisponible, estDisponible) || other.estDisponible == estDisponible)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise)&&(identical(other.tempsPreparationMin, tempsPreparationMin) || other.tempsPreparationMin == tempsPreparationMin)&&const DeepCollectionEquality().equals(other._images, _images)&&const DeepCollectionEquality().equals(other._variantes, _variantes)&&const DeepCollectionEquality().equals(other._groupesOptions, _groupesOptions)&&(identical(other.commandable, commandable) || other.commandable == commandable)&&const DeepCollectionEquality().equals(other._ficheSpecifique, _ficheSpecifique)&&(identical(other.uniteVente, uniteVente) || other.uniteVente == uniteVente)&&(identical(other.unitePrixCode, unitePrixCode) || other.unitePrixCode == unitePrixCode)&&(identical(other.unitePrixLibelle, unitePrixLibelle) || other.unitePrixLibelle == unitePrixLibelle)&&(identical(other.suffixePrix, suffixePrix) || other.suffixePrix == suffixePrix));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Plat&&(identical(other.id, id) || other.id == id)&&(identical(other.nom, nom) || other.nom == nom)&&(identical(other.description, description) || other.description == description)&&(identical(other.prix, prix) || other.prix == prix)&&(identical(other.prixEffectif, prixEffectif) || other.prixEffectif == prixEffectif)&&(identical(other.estEnPromotion, estEnPromotion) || other.estEnPromotion == estEnPromotion)&&(identical(other.estDisponible, estDisponible) || other.estDisponible == estDisponible)&&(identical(other.estEpuise, estEpuise) || other.estEpuise == estEpuise)&&(identical(other.tempsPreparationMin, tempsPreparationMin) || other.tempsPreparationMin == tempsPreparationMin)&&const DeepCollectionEquality().equals(other._images, _images)&&const DeepCollectionEquality().equals(other._variantes, _variantes)&&const DeepCollectionEquality().equals(other._groupesOptions, _groupesOptions)&&(identical(other.commandable, commandable) || other.commandable == commandable)&&const DeepCollectionEquality().equals(other._ficheSpecifique, _ficheSpecifique)&&(identical(other.uniteVente, uniteVente) || other.uniteVente == uniteVente)&&(identical(other.unitePrixCode, unitePrixCode) || other.unitePrixCode == unitePrixCode)&&(identical(other.unitePrixLibelle, unitePrixLibelle) || other.unitePrixLibelle == unitePrixLibelle)&&(identical(other.suffixePrix, suffixePrix) || other.suffixePrix == suffixePrix)&&(identical(other.prixAPartirDeServeur, prixAPartirDeServeur) || other.prixAPartirDeServeur == prixAPartirDeServeur));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,nom,description,prix,prixEffectif,estEnPromotion,estDisponible,estEpuise,tempsPreparationMin,const DeepCollectionEquality().hash(_images),const DeepCollectionEquality().hash(_variantes),const DeepCollectionEquality().hash(_groupesOptions),commandable,const DeepCollectionEquality().hash(_ficheSpecifique),uniteVente,unitePrixCode,unitePrixLibelle,suffixePrix);
+int get hashCode => Object.hashAll([runtimeType,id,nom,description,prix,prixEffectif,estEnPromotion,estDisponible,estEpuise,tempsPreparationMin,const DeepCollectionEquality().hash(_images),const DeepCollectionEquality().hash(_variantes),const DeepCollectionEquality().hash(_groupesOptions),commandable,const DeepCollectionEquality().hash(_ficheSpecifique),uniteVente,unitePrixCode,unitePrixLibelle,suffixePrix,prixAPartirDeServeur]);
 
 @override
 String toString() {
-  return 'Plat(id: $id, nom: $nom, description: $description, prix: $prix, prixEffectif: $prixEffectif, estEnPromotion: $estEnPromotion, estDisponible: $estDisponible, estEpuise: $estEpuise, tempsPreparationMin: $tempsPreparationMin, images: $images, variantes: $variantes, groupesOptions: $groupesOptions, commandable: $commandable, ficheSpecifique: $ficheSpecifique, uniteVente: $uniteVente, unitePrixCode: $unitePrixCode, unitePrixLibelle: $unitePrixLibelle, suffixePrix: $suffixePrix)';
+  return 'Plat(id: $id, nom: $nom, description: $description, prix: $prix, prixEffectif: $prixEffectif, estEnPromotion: $estEnPromotion, estDisponible: $estDisponible, estEpuise: $estEpuise, tempsPreparationMin: $tempsPreparationMin, images: $images, variantes: $variantes, groupesOptions: $groupesOptions, commandable: $commandable, ficheSpecifique: $ficheSpecifique, uniteVente: $uniteVente, unitePrixCode: $unitePrixCode, unitePrixLibelle: $unitePrixLibelle, suffixePrix: $suffixePrix, prixAPartirDeServeur: $prixAPartirDeServeur)';
 }
 
 
@@ -2038,7 +2049,7 @@ abstract mixin class _$PlatCopyWith<$Res> implements $PlatCopyWith<$Res> {
   factory _$PlatCopyWith(_Plat value, $Res Function(_Plat) _then) = __$PlatCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String nom, String description,@JsonKey(fromJson: versInt) int prix,@JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) int prixEffectif,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'est_disponible') bool estDisponible,@JsonKey(name: 'est_epuise') bool estEpuise,@JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) int? tempsPreparationMin,@JsonKey(readValue: _lireImages) List<String> images, List<VariantePlat> variantes,@JsonKey(name: 'groupes_options') List<GroupeOptions> groupesOptions, bool commandable,@JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet) Map<String, dynamic> ficheSpecifique,@JsonKey(name: 'unite_vente') String? uniteVente,@JsonKey(name: 'unite_prix') String? unitePrixCode,@JsonKey(name: 'unite_prix_libelle') String? unitePrixLibelle,@JsonKey(name: 'suffixe_prix') String? suffixePrix
+ int id, String nom, String description,@JsonKey(fromJson: versInt) int prix,@JsonKey(name: 'prix_effectif', readValue: _lirePrixEffectif, fromJson: versInt) int prixEffectif,@JsonKey(name: 'est_en_promotion') bool estEnPromotion,@JsonKey(name: 'est_disponible') bool estDisponible,@JsonKey(name: 'est_epuise') bool estEpuise,@JsonKey(name: 'temps_preparation_min', fromJson: versIntNullable) int? tempsPreparationMin,@JsonKey(readValue: _lireImages) List<String> images, List<VariantePlat> variantes,@JsonKey(name: 'groupes_options') List<GroupeOptions> groupesOptions, bool commandable,@JsonKey(name: 'fiche_specifique', readValue: _lireFicheSpecifique, fromJson: _versObjet) Map<String, dynamic> ficheSpecifique,@JsonKey(name: 'unite_vente') String? uniteVente,@JsonKey(name: 'unite_prix') String? unitePrixCode,@JsonKey(name: 'unite_prix_libelle') String? unitePrixLibelle,@JsonKey(name: 'suffixe_prix') String? suffixePrix,@JsonKey(name: 'prix_a_partir_de', fromJson: versIntNullable) int? prixAPartirDeServeur
 });
 
 
@@ -2055,7 +2066,7 @@ class __$PlatCopyWithImpl<$Res>
 
 /// Create a copy of Plat
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? prix = null,Object? prixEffectif = null,Object? estEnPromotion = null,Object? estDisponible = null,Object? estEpuise = null,Object? tempsPreparationMin = freezed,Object? images = null,Object? variantes = null,Object? groupesOptions = null,Object? commandable = null,Object? ficheSpecifique = null,Object? uniteVente = freezed,Object? unitePrixCode = freezed,Object? unitePrixLibelle = freezed,Object? suffixePrix = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? nom = null,Object? description = null,Object? prix = null,Object? prixEffectif = null,Object? estEnPromotion = null,Object? estDisponible = null,Object? estEpuise = null,Object? tempsPreparationMin = freezed,Object? images = null,Object? variantes = null,Object? groupesOptions = null,Object? commandable = null,Object? ficheSpecifique = null,Object? uniteVente = freezed,Object? unitePrixCode = freezed,Object? unitePrixLibelle = freezed,Object? suffixePrix = freezed,Object? prixAPartirDeServeur = freezed,}) {
   return _then(_Plat(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,nom: null == nom ? _self.nom : nom // ignore: cast_nullable_to_non_nullable
@@ -2075,7 +2086,8 @@ as Map<String, dynamic>,uniteVente: freezed == uniteVente ? _self.uniteVente : u
 as String?,unitePrixCode: freezed == unitePrixCode ? _self.unitePrixCode : unitePrixCode // ignore: cast_nullable_to_non_nullable
 as String?,unitePrixLibelle: freezed == unitePrixLibelle ? _self.unitePrixLibelle : unitePrixLibelle // ignore: cast_nullable_to_non_nullable
 as String?,suffixePrix: freezed == suffixePrix ? _self.suffixePrix : suffixePrix // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,prixAPartirDeServeur: freezed == prixAPartirDeServeur ? _self.prixAPartirDeServeur : prixAPartirDeServeur // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

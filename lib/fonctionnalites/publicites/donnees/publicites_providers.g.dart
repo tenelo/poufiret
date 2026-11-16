@@ -57,12 +57,14 @@ final class PublicitesRepositoryProvider
 String _$publicitesRepositoryHash() =>
     r'97ead81326abcdff2be751e29b30d8913f974180';
 
-/// Pubs du carrousel d'accueil.
+/// Éléments du carrousel d'accueil (pubs partenaires et Poufiret). Même
+/// cache et même confirmation réseau que [_fluxPubs].
 
 @ProviderFor(carrouselPublicites)
 final carrouselPublicitesProvider = CarrouselPublicitesProvider._();
 
-/// Pubs du carrousel d'accueil.
+/// Éléments du carrousel d'accueil (pubs partenaires et Poufiret). Même
+/// cache et même confirmation réseau que [_fluxPubs].
 
 final class CarrouselPublicitesProvider
     extends
@@ -71,8 +73,11 @@ final class CarrouselPublicitesProvider
           ElementsCarrousel,
           Stream<ElementsCarrousel>
         >
-    with $FutureModifier<ElementsCarrousel>, $StreamProvider<ElementsCarrousel> {
-  /// Pubs du carrousel d'accueil.
+    with
+        $FutureModifier<ElementsCarrousel>,
+        $StreamProvider<ElementsCarrousel> {
+  /// Éléments du carrousel d'accueil (pubs partenaires et Poufiret). Même
+  /// cache et même confirmation réseau que [_fluxPubs].
   CarrouselPublicitesProvider._()
     : super(
         from: null,
@@ -100,7 +105,7 @@ final class CarrouselPublicitesProvider
 }
 
 String _$carrouselPublicitesHash() =>
-    r'64832385ac12f268c33c28c4ae9e4735fe4ae756';
+    r'bcc3567c8c0c9a5cff491e3c4bff06ced4154086';
 
 /// Pubs de l'onglet Publicites.
 

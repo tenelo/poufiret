@@ -53,10 +53,14 @@ class EcranRestaurant extends ConsumerWidget {
     this.nom = '',
     this.siIntrouvable,
     this.grille = false,
+    this.avecMenus = true,
   });
 
   final int restaurantId;
   final bool grille;
+
+  /// Faux (grillades) : pas de « Menu du jour », seulement la carte.
+  final bool avecMenus;
 
   /// Nom déjà connu de l'écran précédent, affiché pendant le chargement.
   final String nom;
@@ -91,17 +95,25 @@ class EcranRestaurant extends ConsumerWidget {
                   onReessayer: () => ref.invalidate(provider),
                 ),
               ),
-          data: (restaurant) =>
-              _PageRestaurant(restaurant: restaurant, grille: grille),
+          data: (restaurant) => _PageRestaurant(
+            restaurant: restaurant,
+            grille: grille,
+            avecMenus: avecMenus,
+          ),
         );
   }
 }
 
 class _PageRestaurant extends ConsumerStatefulWidget {
-  const _PageRestaurant({required this.restaurant, this.grille = false});
+  const _PageRestaurant({
+    required this.restaurant,
+    this.grille = false,
+    this.avecMenus = true,
+  });
 
   final Restaurant restaurant;
   final bool grille;
+  final bool avecMenus;
 
   @override
   ConsumerState<_PageRestaurant> createState() => _PageRestaurantState();
@@ -241,10 +253,11 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
         : _sectionActive.clamp(0, r.carte.length - 1);
     final section = r.carte.isEmpty ? null : r.carte[active];
     final plats = enRecherche ? resultats : section?.plats ?? const <Plat>[];
-    // Un menu sans plat n'est pas affiché.
+    // Un menu sans plat n'est pas affiché ; aucun menu pour les grillades.
     final menus = [
-      for (final m in r.menus)
-        if (m.lignes.isNotEmpty) m,
+      if (widget.avecMenus)
+        for (final m in r.menus)
+          if (m.lignes.isNotEmpty) m,
     ];
 
     // Boulangerie (commerce) : pas l'habillage d'un restaurant.

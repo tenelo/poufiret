@@ -136,6 +136,7 @@ _VariantePlat _$VariantePlatFromJson(Map<String, dynamic> json) =>
       estActive: json['est_active'] as bool? ?? true,
       stock: versIntNullable(json['stock']),
       estEpuise: json['est_epuise'] as bool? ?? false,
+      image: json['image'] as String?,
     );
 
 Map<String, dynamic> _$VariantePlatToJson(_VariantePlat instance) =>
@@ -149,6 +150,7 @@ Map<String, dynamic> _$VariantePlatToJson(_VariantePlat instance) =>
       'est_active': instance.estActive,
       'stock': instance.stock,
       'est_epuise': instance.estEpuise,
+      'image': instance.image,
     };
 
 _Plat _$PlatFromJson(Map<String, dynamic> json) => _Plat(
@@ -186,6 +188,7 @@ _Plat _$PlatFromJson(Map<String, dynamic> json) => _Plat(
   unitePrixCode: json['unite_prix'] as String?,
   unitePrixLibelle: json['unite_prix_libelle'] as String?,
   suffixePrix: json['suffixe_prix'] as String?,
+  prixAPartirDeServeur: versIntNullable(json['prix_a_partir_de']),
 );
 
 Map<String, dynamic> _$PlatToJson(_Plat instance) => <String, dynamic>{
@@ -207,6 +210,7 @@ Map<String, dynamic> _$PlatToJson(_Plat instance) => <String, dynamic>{
   'unite_prix': instance.unitePrixCode,
   'unite_prix_libelle': instance.unitePrixLibelle,
   'suffixe_prix': instance.suffixePrix,
+  'prix_a_partir_de': instance.prixAPartirDeServeur,
 };
 
 _SectionCarte _$SectionCarteFromJson(Map<String, dynamic> json) =>

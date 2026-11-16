@@ -4,8 +4,9 @@ import '../../restaurants/screens/ecran_restaurant.dart';
 import '../metier_domaine/gabarits.dart';
 import 'ecran_catalogue.dart';
 
-/// Page dédiée d'un commerce selon son gabarit : la page restaurant (en
-/// grille pour une boulangerie) ou la page catalogue (pharmacie, mode,
+/// Page dédiée d'un commerce selon son gabarit : la page restaurant (sans
+/// menus du jour pour un grilleur, en grille pour une boulangerie) ou la
+/// page catalogue (pharmacie, mode,
 /// librairie, éleveur). [siIntrouvable] est
 /// affiché si le serveur ne connaît pas ce commerce (404).
 Widget pageGabarit(
@@ -18,6 +19,12 @@ Widget pageGabarit(
     restaurantId: commerceId,
     nom: nom,
     siIntrouvable: siIntrouvable,
+  ),
+  Gabarit.grillades => EcranRestaurant(
+    restaurantId: commerceId,
+    nom: nom,
+    siIntrouvable: siIntrouvable,
+    avecMenus: false,
   ),
   Gabarit.boulangerie => EcranRestaurant(
     restaurantId: commerceId,

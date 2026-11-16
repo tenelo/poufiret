@@ -1,13 +1,25 @@
 // Gabarits de page des commerces servis par l'API « restaurants » : un
-// fast-food garde la page restaurant, une boulangerie la réutilise en grille,
-// pharmacie, mode, librairie et élevage ont leur page catalogue.
+// fast-food garde la page restaurant, un grilleur la reprend sans menus du
+// jour, une boulangerie la réutilise en grille, pharmacie, mode, librairie
+// et élevage ont leur page catalogue.
 
 /// Page dédiée ouverte par le toucher d'un partenaire.
-enum Gabarit { restaurant, boulangerie, pharmacie, mode, librairie, elevage }
+enum Gabarit {
+  restaurant,
+
+  /// Grillades & braisés : page restaurant sans menus du jour (la carte).
+  grillades,
+  boulangerie,
+  pharmacie,
+  mode,
+  librairie,
+  elevage,
+}
 
 /// Gabarit par valeur reçue du serveur (« restaurant », « pharmacie »...).
 Gabarit? gabaritDepuis(String? valeur) => switch ((valeur ?? '').trim()) {
   'restaurant' || 'fast_food' || 'fastfood' => Gabarit.restaurant,
+  'grillades' || 'grilleur' => Gabarit.grillades,
   'boulangerie' => Gabarit.boulangerie,
   'pharmacie' => Gabarit.pharmacie,
   'mode' || 'boutique_mode' || 'chaussures' => Gabarit.mode,
@@ -21,6 +33,7 @@ Gabarit? gabaritDepuis(String? valeur) => switch ((valeur ?? '').trim()) {
 const gabaritsParType = {
   'restaurateur': Gabarit.restaurant,
   'fast_food': Gabarit.restaurant,
+  'grilleur': Gabarit.grillades,
   'boulanger': Gabarit.boulangerie,
   'pharmacien': Gabarit.pharmacie,
   'boutique_mode': Gabarit.mode,

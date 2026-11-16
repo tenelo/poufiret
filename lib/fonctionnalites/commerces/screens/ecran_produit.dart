@@ -17,6 +17,7 @@ import '../metier_domaine/gabarits.dart';
 import '../widgets/ajout_panier.dart';
 import '../widgets/galerie_miniatures.dart';
 import '../widgets/tuiles_produits.dart';
+import '../../restaurants/widgets/cartes_formats.dart';
 
 /// Fiche d'un produit de commerce : galerie à miniatures, informations du
 /// gabarit (pointures, auteur, forme et dosage...), prix selon la variante,
@@ -79,9 +80,8 @@ extension on Gabarit {
     _ => 'Choix',
   };
 
-  String get consigneVariante => this == Gabarit.mode
-      ? 'Choisissez une pointure'
-      : 'Choisissez une option';
+  String get consigneVariante =>
+      this == Gabarit.mode ? 'Choisissez une pointure' : 'Choisissez un format';
 
   String get titreAutres => switch (this) {
     Gabarit.mode => 'Autres articles',
@@ -191,16 +191,14 @@ class _FicheState extends ConsumerState<_Fiche> {
         )
       : 1;
 
-  /// Variante retenue : celle choisie, sinon (hors mode, où la pointure se
-  /// choisit) la variante par défaut si elle est en stock.
+  /// Format retenu : celui choisi, sinon (hors mode, où la pointure se
+  /// choisit) le format par défaut s'il est disponible, sinon aucun.
   VariantePlat? get _variante {
     final variantes = _p.variantesActives;
     final choisie = variantes.where((v) => v.id == _varianteId).firstOrNull;
     if (choisie != null && !choisie.epuisee) return choisie;
     if (widget.gabarit == Gabarit.mode) return null;
-    final defaut = varianteParDefaut(_p);
-    if (defaut != null && !defaut.epuisee) return defaut;
-    return variantes.where((v) => !v.epuisee).firstOrNull;
+    return varianteParDefaut(_p);
   }
 
   Future<void> _ajouter(VariantePlat? variante) async {
@@ -334,23 +332,38 @@ class _FicheState extends ConsumerState<_Fiche> {
                     if (variantes.isNotEmpty)
                       _Section(
                         titre: g.titreVariantes,
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final v in variantes)
-                              ChoiceChip(
-                                key: ValueKey('variante-${v.id}'),
-                                label: Text(v.nom),
-                                selected: v.id == variante?.id,
-                                // Épuisée : grisée, non sélectionnable.
-                                onSelected: v.epuisee
-                                    ? null
-                                    : (_) => setState(() => _varianteId = v.id),
-                                tooltip: v.epuisee ? '${v.nom} : épuisé' : null,
+                        // Un format au moins a une photo : cartes ; sinon,
+                        // les pastilles.
+                        child: CartesFormats.avecPhotos(variantes)
+                            ? CartesFormats(
+                                formats: variantes,
+                                selection: variante?.id,
+                                prixDe: (v) =>
+                                    formatMontant(v.prixPour(p.prixEffectif)),
+                                onChoisir: (id) =>
+                                    setState(() => _varianteId = id),
+                              )
+                            : Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  for (final v in variantes)
+                                    ChoiceChip(
+                                      key: ValueKey('variante-${v.id}'),
+                                      label: Text(v.nom),
+                                      selected: v.id == variante?.id,
+                                      // Épuisée : grisée, non sélectionnable.
+                                      onSelected: v.epuisee
+                                          ? null
+                                          : (_) => setState(
+                                              () => _varianteId = v.id,
+                                            ),
+                                      tooltip: v.epuisee
+                                          ? '${v.nom} : épuisé'
+                                          : null,
+                                    ),
+                                ],
                               ),
-                          ],
-                        ),
                       ),
                     if (informationsProduit(p, g) case final infos
                         when infos.isNotEmpty)

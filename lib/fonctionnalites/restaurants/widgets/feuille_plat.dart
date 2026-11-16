@@ -14,6 +14,8 @@ import '../donnees/restaurants_providers.dart';
 import '../metier_domaine/commande_plat.dart';
 import '../metier_domaine/restaurant_models.dart';
 import '../../auth/widgets/mur_inscription.dart';
+import '../../commerces/metier_domaine/gabarits.dart';
+import 'cartes_formats.dart';
 
 /// Ouvre la fiche d'un plat en feuille plein écran : un plat de la carte
 /// ([platId]) ou une ligne du menu du jour ([ligneId]).
@@ -59,7 +61,7 @@ class FeuillePlat extends ConsumerStatefulWidget {
 }
 
 class _FeuillePlatState extends ConsumerState<FeuillePlat> {
-  /// null = variante par défaut du plat.
+  /// null = format par défaut du plat (s'il existe et est disponible).
   int? _varianteId;
   Set<int> _options = {};
   int _quantite = 1;
@@ -198,8 +200,11 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
         ? plat.variantesActives
         : const <VariantePlat>[];
     final variante =
-        variantes.where((v) => v.id == _varianteId).firstOrNull ??
+        variantes.where((v) => v.id == _varianteId && !v.epuisee).firstOrNull ??
         (ligne == null ? varianteParDefaut(plat) : null);
+    // Article à formats sans format retenu : le client doit en choisir un.
+    final formatManquant = variantes.isNotEmpty && variante == null;
+    final grillades = gabaritDepuis(restaurant.gabarit) == Gabarit.grillades;
     final groupes = plat.groupesActifs;
 
     final motif = motifIndisponible(
@@ -219,7 +224,8 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
       optionIds: _options,
       quantite: math.max(quantite, 1),
     );
-    final peutAjouter = motif == null && erreurChoix == null && !_envoi;
+    final peutAjouter =
+        motif == null && erreurChoix == null && !formatManquant && !_envoi;
 
     // La feuille prend la hauteur de son contenu (plein écran au plus) : un
     // plat sans photo ni description ne laisse pas de grand vide.
@@ -285,32 +291,44 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
                 ),
               ),
               if (variantes.isNotEmpty) ...[
-                const _TitreGroupe(
-                  titre: 'Variante',
+                _TitreGroupe(
+                  titre: grillades ? 'Format' : 'Variante',
                   contrainte: 'Choisissez 1',
                 ),
-                RadioGroup<int>(
-                  groupValue: variante?.id,
-                  onChanged: (id) => setState(() => _varianteId = id),
-                  child: Column(
-                    children: [
-                      for (final v in variantes)
-                        RadioListTile<int>(
-                          value: v.id,
-                          dense: true,
-                          // Variante épuisée : grisée, non sélectionnable.
-                          enabled: !v.epuisee,
-                          title: Text(v.nom),
-                          secondary: Text(
-                            formatMontant(prixVariante(plat, v)),
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
+                // Un format au moins a une photo : cartes ; sinon, la liste.
+                if (CartesFormats.avecPhotos(variantes))
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                    child: CartesFormats(
+                      formats: variantes,
+                      selection: variante?.id,
+                      prixDe: (v) => formatMontant(prixVariante(plat, v)),
+                      onChoisir: (id) => setState(() => _varianteId = id),
+                    ),
+                  )
+                else
+                  RadioGroup<int>(
+                    groupValue: variante?.id,
+                    onChanged: (id) => setState(() => _varianteId = id),
+                    child: Column(
+                      children: [
+                        for (final v in variantes)
+                          RadioListTile<int>(
+                            value: v.id,
+                            dense: true,
+                            // Variante épuisée : grisée, non sélectionnable.
+                            enabled: !v.epuisee,
+                            title: Text(v.nom),
+                            secondary: Text(
+                              formatMontant(prixVariante(plat, v)),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
               ],
               for (final groupe in groupes)
                 _GroupeOptions(
@@ -391,6 +409,8 @@ class _FeuillePlatState extends ConsumerState<FeuillePlat> {
                               : Text(
                                   motif != null
                                       ? 'Indisponible'
+                                      : formatManquant
+                                      ? 'Choisissez un format'
                                       : 'Ajouter au panier · '
                                             '${formatMontant(total)}',
                                   maxLines: 1,

@@ -104,8 +104,10 @@ class FiltreCatalogue {
   int get hashCode => cle.hashCode;
 }
 
-/// Plus petit prix du produit, variantes en stock comprises.
+/// Plus petit prix du produit, variantes en stock comprises : celui du
+/// serveur s'il est fourni, sinon calculé ici.
 int prixAPartirDeProduit(Plat p) {
+  if (p.prixAPartirDeServeur case final serveur?) return serveur;
   final variantes = p.variantesActives.where((v) => !v.epuisee).toList();
   if (variantes.isEmpty) return p.prixEffectif;
   return variantes
