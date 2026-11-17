@@ -45,3 +45,4 @@ app.*.map.json
 /android/app/release
 apply_flutter_livraison.py
 *.py
+android/.kotlin/
