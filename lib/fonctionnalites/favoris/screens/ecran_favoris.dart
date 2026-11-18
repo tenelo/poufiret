@@ -5,6 +5,7 @@ import '../../catalogue/screens/ecran_article_detail.dart';
 import '../../partenaire/screens/ecran_vitrine_partenaire.dart';
 import '../donnees/favoris_providers.dart';
 import '../metier_domaine/favoris_models.dart';
+import '../../../global/ui/format_montant.dart';
 
 /// Onglet Favoris : articles et commerçants mis de côté par le client.
 class EcranFavoris extends ConsumerWidget {
@@ -81,7 +82,7 @@ class _ListeArticles extends StatelessWidget {
                   maxLines: 1, overflow: TextOverflow.ellipsis),
               subtitle: Text(a.partenaireNom),
               trailing: Text(
-                '${a.prix} f',
+                formatMontant(a.prix),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w600,

@@ -11,6 +11,7 @@ import '../donnees/invalidations_publicites.dart';
 import '../donnees/publicites_providers.dart';
 import '../metier_domaine/credit_formule.dart';
 import '../metier_domaine/formule_publicite.dart';
+import '../../../global/ui/format_montant.dart';
 
 /// Parcours partenaire : choisir un forfait, puis deposer son affiche.
 class EcranFairePublicite extends ConsumerStatefulWidget {
@@ -225,7 +226,7 @@ class _CarteForfait extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '${formule.prix} f',
+                    formatMontant(formule.prix),
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: Config.couleurPrimaire,
                       fontWeight: FontWeight.w600,
@@ -440,7 +441,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
         title: const Text('Demande envoyée'),
         content: Text(
           'Votre publicité a été transmise.\n\n'
-          'Réglez ${widget.formule.prix} f auprès de l\'administration '
+          'Réglez ${formatMontant(widget.formule.prix)} auprès de l\'administration '
           'Poufiret. Dès le paiement confirmé et la publicité validée, '
           'elle sera diffusée pendant ${widget.formule.dureeJours} jour'
           '${widget.formule.dureeJours > 1 ? 's' : ''}.',
@@ -488,7 +489,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                             Text(
                               _creditId != null
                                   ? 'Forfait ${f.nom} — Offert'
-                                  : 'Forfait ${f.nom} — ${f.prix} f',
+                                  : 'Forfait ${f.nom} — ${formatMontant(f.prix)}',
                               style: const TextStyle(
                                   fontWeight: FontWeight.w600),
                             ),

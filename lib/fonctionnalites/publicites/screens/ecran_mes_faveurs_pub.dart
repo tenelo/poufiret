@@ -5,6 +5,7 @@ import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../donnees/publicites_providers.dart';
 import '../metier_domaine/credit_formule.dart';
+import '../../../global/ui/format_montant.dart';
 
 /// Recapitulatif des faveurs publicitaires (credits de formule) accordees
 /// au partenaire : celles encore disponibles et celles deja consommees.
@@ -136,7 +137,7 @@ class _CarteCredit extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Valeur : ${credit.formulePrix} f',
+              'Valeur : ${formatMontant(credit.formulePrix)}',
               style: TextStyle(
                   fontSize: 12, color: Config.couleurTexteSecondaire),
             ),

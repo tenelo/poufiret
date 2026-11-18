@@ -11,6 +11,7 @@ import '../../avis/metier_domaine/avis.dart';
 import '../../avis/widgets/widgets_avis.dart';
 import 'ecran_mes_demandes.dart' show couleurStatut;
 import '../../../global/widgets/image_reseau.dart';
+import '../../../global/ui/format_montant.dart';
 
 /// Détail d'une demande d'intervention, actions selon le rôle.
 class EcranDemandeDetail extends ConsumerStatefulWidget {
@@ -396,7 +397,7 @@ class _Contenu extends StatelessWidget {
               style: theme.textTheme.titleSmall),
           const SizedBox(height: 4),
           if (demande.prixPropose != null)
-            Text('Prix : ${demande.prixPropose} f'),
+            Text('Prix : ${formatMontant(demande.prixPropose!)}'),
           if (demande.dateProposee != null)
             Text('Date : ${demande.dateProposee!.split('T').first}'),
         ],

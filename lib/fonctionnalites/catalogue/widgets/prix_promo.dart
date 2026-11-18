@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../global/config/config.dart';
+import '../../../global/ui/format_montant.dart';
 
 /// Affiche un prix, avec gestion de la promotion.
 ///
@@ -33,16 +34,8 @@ class PrixPromo extends StatelessWidget {
   /// Aligner le contenu à droite (utile dans certaines cartes).
   final bool aligneADroite;
 
-  String _format(double v) {
-    // Entier sans décimales, séparateur de milliers avec espace insécable.
-    final s = v.toStringAsFixed(0);
-    final tampon = StringBuffer();
-    for (int i = 0; i < s.length; i++) {
-      if (i > 0 && (s.length - i) % 3 == 0) tampon.write('\u00A0');
-      tampon.write(s[i]);
-    }
-    return '${tampon.toString()} f';
-  }
+  /// Arrondi au franc, puis mis en forme par [formatMontant].
+  String _format(double v) => formatMontant(v.round());
 
   @override
   Widget build(BuildContext context) {

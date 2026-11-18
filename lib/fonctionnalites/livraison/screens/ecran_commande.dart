@@ -9,6 +9,7 @@ import '../../geo/widgets/champ_departement.dart';
 import '../../geo/widgets/champ_quartier.dart';
 import '../../map/donnees/service_position.dart';
 import '../donnees/livraison_providers.dart';
+import '../../../global/ui/format_montant.dart';
 
 /// Position du demandeur par rapport a la course.
 enum RoleDemandeur {
@@ -497,7 +498,7 @@ class _EcranCommandeState extends ConsumerState<EcranCommande> {
                     _champVerrouille(
                       icone: Icons.payments_outlined,
                       libelle: 'Prix de la livraison',
-                      valeur: '$_prix f',
+                      valeur: formatMontant(_prix),
                     ),
                     const SizedBox(height: 24),
                     FilledButton.icon(
