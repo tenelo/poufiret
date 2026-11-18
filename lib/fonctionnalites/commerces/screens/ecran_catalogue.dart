@@ -201,14 +201,26 @@ class _PageState extends ConsumerState<_Page> {
     if (choisi != null && mounted) setState(() => _filtre = choisi);
   }
 
-  /// Produits affichés : recherche sur tout le commerce, sinon le rayon
-  /// choisi.
-  RequeteProduits get _requete {
+  /// Pastille « Tous » en tête des onglets (éleveur) : [_rayon] est alors
+  /// le rang de l'onglet, 0 = « Tous ».
+  bool get _avecTous => widget.gabarit.avecOngletTous;
+
+  /// « Tous » choisi : tous les produits du commerce.
+  bool get _tousActif => _avecTous && _rayon == 0;
+
+  /// Rayon de l'onglet choisi ; null pour « Tous » ou sans rayon.
+  SectionCarte? get _rayonActif {
     final rayons = widget.commerce.carte;
+    if (rayons.isEmpty || _tousActif) return null;
+    final rang = _rayon - (_avecTous ? 1 : 0);
+    return rayons[rang.clamp(0, rayons.length - 1)];
+  }
+
+  /// Produits affichés : recherche sur tout le commerce, « Tous », sinon le
+  /// rayon choisi.
+  RequeteProduits get _requete {
     final enRecherche = _recherche.isNotEmpty;
-    final rayon = rayons.isEmpty
-        ? null
-        : rayons[_rayon.clamp(0, rayons.length - 1)];
+    final rayon = _rayonActif;
     return RequeteProduits(
       commerceId: widget.commerce.id,
       sectionId: enRecherche ? null : rayon?.id,
@@ -294,11 +306,25 @@ class _PageState extends ConsumerState<_Page> {
     final g = widget.gabarit;
     final rayons = c.carte;
     final enRecherche = _recherche.isNotEmpty;
-    final rayon = rayons.isEmpty
-        ? null
-        : rayons[_rayon.clamp(0, rayons.length - 1)];
+    final rayon = _rayonActif;
     final requete = _requete;
-    final avecOnglets = rayons.length > 1 && !enRecherche;
+    // « Tous » reste proposé même avec un seul rayon.
+    final libellesOnglets = [
+      if (_avecTous) libelleOngletTous,
+      for (final r in rayons) r.nom,
+    ];
+    final avecOnglets =
+        rayons.isNotEmpty && libellesOnglets.length > 1 && !enRecherche;
+    // Produits joints à la fiche : ceux du rayon, ou de tous les rayons
+    // (« Tous », sans doublon).
+    final vus = <int>{};
+    final produitsLocaux = _tousActif
+        ? [
+            for (final r in rayons)
+              for (final p in r.plats)
+                if (vus.add(p.id)) p,
+          ]
+        : rayon?.plats ?? const <Plat>[];
     // Mode (boutique en grille) : tuile ajustée à son contenu, rien de
     // vide sous le prix.
     double hauteurAjusteeMode(List<Plat> produits) => hauteurTexteAjustee(
@@ -396,12 +422,10 @@ class _PageState extends ConsumerState<_Page> {
                     titre: enRecherche
                         ? 'Résultats pour « $_recherche »'
                         : rayon?.nom ?? 'Produits',
-                    onglets: avecOnglets
-                        ? [for (final r in rayons) r.nom]
-                        : const [],
+                    onglets: avecOnglets ? libellesOnglets : const [],
                     ongletActif: _rayon.clamp(
                       0,
-                      math.max(rayons.length - 1, 0),
+                      math.max(libellesOnglets.length - 1, 0),
                     ),
                     onOnglet: (i) => setState(() => _rayon = i),
                   ),
@@ -413,9 +437,11 @@ class _PageState extends ConsumerState<_Page> {
                   sliver:
                       !c.paginationPublique &&
                           !enRecherche &&
-                          (rayon?.plats.isNotEmpty ?? false)
+                          produitsLocaux.isNotEmpty
                       ? _GrilleLocale(
-                          produits: rayon!.plats.where(_filtre.garde).toList(),
+                          produits: produitsLocaux
+                              .where(_filtre.garde)
+                              .toList(),
                           hauteurTexte: g.hauteurTexteGrille,
                           hauteurTexteSelon: hauteurAjustee,
                           tuile: _tuile,

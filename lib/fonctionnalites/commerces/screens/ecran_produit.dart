@@ -406,16 +406,20 @@ class _FicheState extends ConsumerState<_Fiche> {
                                       ? autre.auteur
                                       : '',
                                   icone: g.icone,
-                                  onTap: () => Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => EcranProduit(
-                                        produitId: autre.id,
-                                        gabarit: g,
-                                        titre: autre.nom,
-                                        telephoneCommerce: widget.telephone,
+                                  // Remplace la fiche courante : une seule
+                                  // fiche au-dessus du catalogue, un seul
+                                  // « retour » pour y revenir.
+                                  onTap: () =>
+                                      Navigator.of(context).pushReplacement(
+                                        MaterialPageRoute<void>(
+                                          builder: (_) => EcranProduit(
+                                            produitId: autre.id,
+                                            gabarit: g,
+                                            titre: autre.nom,
+                                            telephoneCommerce: widget.telephone,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
                                 ),
                               );
                             },

@@ -8,6 +8,7 @@ import 'package:poufiret/fonctionnalites/analytics/donnees/analytics_providers.d
 import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
 import 'package:poufiret/fonctionnalites/commerces/metier_domaine/gabarits.dart';
 import 'package:poufiret/fonctionnalites/commerces/screens/page_gabarit.dart';
+import 'package:poufiret/fonctionnalites/commerces/widgets/tuiles_produits.dart';
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_repository.dart';
 import 'package:poufiret/fonctionnalites/orders/metier_domaine/orders_models.dart';
@@ -20,6 +21,7 @@ import 'package:poufiret/fonctionnalites/restaurants/widgets/cartes_formats.dart
 import 'package:poufiret/fonctionnalites/restaurants/widgets/feuille_plat.dart';
 import 'package:poufiret/global/errors/api_exception.dart';
 import 'package:poufiret/global/ui/format_montant.dart';
+import 'package:poufiret/global/widgets/barre_onglets.dart';
 
 import 'aide_session.dart';
 
@@ -202,6 +204,39 @@ void main() {
     ) async {
       await _monter(tester, const EcranRestaurant(restaurantId: 60));
       expect(find.text('Menu du jour'), findsOneWidget);
+    });
+  });
+
+  group('onglet « Tous »', () {
+    test('page grilleur : « Tous » proposé ; restaurant : non', () {
+      final grilleur = pageGabarit(Gabarit.grillades, commerceId: 60);
+      expect((grilleur as EcranRestaurant).avecTous, isTrue);
+      final restaurant = pageGabarit(Gabarit.restaurant, commerceId: 60);
+      expect((restaurant as EcranRestaurant).avecTous, isFalse);
+    });
+
+    testWidgets('une seule rubrique : « Tous » gardé, choisi, en grille', (
+      tester,
+    ) async {
+      await _monter(tester, pageGabarit(Gabarit.grillades, commerceId: 60));
+      final onglets = tester.widget<BarreOnglets>(find.byType(BarreOnglets));
+      expect(onglets.libelles, ['Tous', 'Braisés']);
+      expect(onglets.selectionIndex, 0);
+      expect(find.byType(TuileGrilleProduit), findsNWidgets(2));
+      expect(find.text('Poulet braisé'), findsOneWidget);
+      expect(find.text('Brochette'), findsOneWidget);
+
+      // La rubrique : la liste d'aujourd'hui, inchangée.
+      await tester.tap(find.text('Braisés'));
+      await tester.pumpAndSettle();
+      expect(find.byType(TuileGrilleProduit), findsNothing);
+      expect(find.text('à partir de ${formatMontant(2000)}'), findsOneWidget);
+      expect(find.text(formatMontant(1000)), findsOneWidget);
+    });
+
+    testWidgets('page restaurant : pas de « Tous »', (tester) async {
+      await _monter(tester, const EcranRestaurant(restaurantId: 60));
+      expect(find.text('Tous'), findsNothing);
     });
   });
 

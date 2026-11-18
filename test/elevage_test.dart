@@ -32,6 +32,7 @@ import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_reposit
 import 'package:poufiret/fonctionnalites/restaurants/metier_domaine/commande_plat.dart';
 import 'package:poufiret/fonctionnalites/restaurants/metier_domaine/restaurant_models.dart';
 import 'package:poufiret/global/ui/format_montant.dart';
+import 'package:poufiret/global/widgets/barre_onglets.dart';
 
 // Le gabarit « elevage » est développé en parallèle côté serveur : les
 // réponses ci-dessous suivent le contrat (décimaux en chaîne, booléens,
@@ -555,7 +556,8 @@ void main() {
           tester.widget<EcranCatalogue>(find.byType(EcranCatalogue)).gabarit,
           Gabarit.elevage,
         );
-        expect(find.byType(TuileElevage), findsNWidgets(2));
+        // « Tous » à l'ouverture : les quatre produits des deux rayons.
+        expect(find.byType(TuileElevage), findsNWidgets(4));
       });
     }
   });
@@ -579,7 +581,24 @@ void main() {
       expect(find.byType(FilterChip), findsNothing);
       expect(find.text('Ouvert'), findsNothing);
       expect(find.text('Fermé'), findsNothing);
-      // Premier onglet seulement.
+      // « Tous » en tête, choisi à l'ouverture : tous les produits.
+      final onglets = tester.widget<BarreOnglets>(find.byType(BarreOnglets));
+      expect(onglets.libelles, ['Tous', 'Volailles', 'Porcs et ovins']);
+      expect(onglets.selectionIndex, 0);
+      for (final nom in [
+        'Poulet bicyclette',
+        'Pintade abattue',
+        'Porc découpé',
+        'Mouton de Tabaski',
+      ]) {
+        expect(find.text(nom), findsOneWidget, reason: nom);
+      }
+      expect(find.byType(TuileElevage), findsNWidgets(4));
+      expect(serveur.appels, 0);
+
+      // « Volailles » : ce rayon seulement, comme avant.
+      await tester.tap(find.text('Volailles'));
+      await tester.pumpAndSettle();
       expect(find.text('Poulet bicyclette'), findsOneWidget);
       expect(find.text('Pintade abattue'), findsOneWidget);
       expect(find.text('Porc découpé'), findsNothing);
@@ -626,6 +645,110 @@ void main() {
       expect(find.text('Pintade abattue'), findsOneWidget);
       expect(find.text('Poulet bicyclette'), findsNothing);
     });
+
+    testWidgets('un seul rayon : « Tous » reste proposé et choisi', (
+      tester,
+    ) async {
+      final unRayon = _eleveur.copyWith(carte: [_eleveur.carte.first]);
+      await _monter(
+        tester,
+        const EcranCatalogue(commerceId: 90, gabarit: Gabarit.elevage),
+        overrides: [
+          vueVitrineProvider(partenaireId: 90).overrideWith((ref) async {}),
+          restaurantDetailProvider(
+            id: 90,
+          ).overrideWith((ref) => Stream.value(unRayon)),
+          commercesRepositoryProvider.overrideWithValue(_PasDePagination()),
+        ],
+      );
+      final onglets = tester.widget<BarreOnglets>(find.byType(BarreOnglets));
+      expect(onglets.libelles, ['Tous', 'Volailles']);
+      expect(onglets.selectionIndex, 0);
+      expect(find.byType(TuileElevage), findsNWidgets(2));
+    });
+  });
+
+  group('navigation entre fiches', () {
+    /// Fiches 1 (poulet), 3 (pintade) et 2 (porc), chacune proposant les
+    /// deux autres sous le produit.
+    List<Override> fiches() => [
+      for (final (id, autres) in [
+        (1, [3, 2]),
+        (3, [1, 2]),
+        (2, [1, 3]),
+      ])
+        produitDetailProvider(id: id).overrideWith(
+          (ref) => Stream.value(
+            ProduitDetail(
+              produit: _plat({'id': id}),
+              commerceId: 90,
+              autres: [for (final a in autres) _plat({'id': a})],
+            ),
+          ),
+        ),
+      ordersRepositoryProvider.overrideWithValue(_FauxPanier()),
+    ];
+
+    Future<void> attendre(WidgetTester tester) async {
+      for (var i = 0; i < 6; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+    }
+
+    /// Depuis le catalogue (rayon « Volailles ») : A (poulet), puis B
+    /// (pintade), C (porc) et de nouveau A par « Autres produits ». Une
+    /// seule fiche au-dessus du catalogue à chaque étape.
+    Future<void> parcourir(WidgetTester tester) async {
+      await tester.tap(find.text('Poulet bicyclette'));
+      await attendre(tester);
+      for (final id in [3, 2, 1]) {
+        final autre = find.byKey(ValueKey('autre-$id'));
+        await tester.ensureVisible(autre);
+        await tester.pump();
+        await tester.tap(autre);
+        await attendre(tester);
+        expect(
+          find.byType(EcranProduit, skipOffstage: false),
+          findsOneWidget,
+          reason: 'fiche $id',
+        );
+        expect(
+          tester.widget<EcranProduit>(find.byType(EcranProduit)).produitId,
+          id,
+        );
+      }
+    }
+
+    void expectCatalogue(WidgetTester tester) {
+      expect(find.byType(EcranProduit, skipOffstage: false), findsNothing);
+      expect(find.byType(TuileElevage), findsNWidgets(2));
+      // Retour sur la pastille où l'on était.
+      expect(
+        tester.widget<BarreOnglets>(find.byType(BarreOnglets)).selectionIndex,
+        1,
+      );
+    }
+
+    for (final (nom, retour) in <(String, Future<void> Function(WidgetTester))>[
+      ('flèche de la barre', (t) => t.pageBack()),
+      ('retour système', (t) => t.binding.handlePopRoute()),
+    ]) {
+      testWidgets('A → B → C → A puis un seul retour ($nom) : le catalogue', (
+        tester,
+      ) async {
+        await _monter(
+          tester,
+          const EcranCatalogue(commerceId: 90, gabarit: Gabarit.elevage),
+          overrides: [..._page(_PasDePagination()), ...fiches()],
+        );
+        await tester.tap(find.text('Volailles'));
+        await tester.pumpAndSettle();
+        await parcourir(tester);
+        await retour(tester);
+        await attendre(tester);
+        expectCatalogue(tester);
+      });
+    }
   });
 
   group('fiche produit éleveur', () {

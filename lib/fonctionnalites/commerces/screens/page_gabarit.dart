@@ -26,6 +26,7 @@ Widget pageGabarit(
     nom: nom,
     siIntrouvable: siIntrouvable,
     avecMenus: false,
+    avecTous: gabarit.avecOngletTous,
   ),
   Gabarit.boulangerie => EcranRestaurant(
     restaurantId: commerceId,

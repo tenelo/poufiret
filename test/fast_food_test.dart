@@ -8,6 +8,7 @@ import 'package:poufiret/fonctionnalites/analytics/donnees/analytics_providers.d
 import 'package:poufiret/fonctionnalites/auth/screens/auth_notifier.dart';
 import 'package:poufiret/fonctionnalites/commerces/metier_domaine/gabarits.dart';
 import 'package:poufiret/fonctionnalites/commerces/screens/page_gabarit.dart';
+import 'package:poufiret/fonctionnalites/commerces/widgets/tuiles_produits.dart';
 import 'package:poufiret/fonctionnalites/orders/donnees/orders_providers.dart';
 import 'package:poufiret/fonctionnalites/orders/metier_domaine/orders_models.dart';
 import 'package:poufiret/fonctionnalites/restaurants/donnees/restaurants_providers.dart';
@@ -18,6 +19,7 @@ import 'package:poufiret/fonctionnalites/restaurants/screens/ecran_restaurant.da
 import 'package:poufiret/fonctionnalites/restaurants/widgets/feuille_plat.dart';
 import 'package:poufiret/fonctionnalites/restaurants/widgets/rangee_populaires.dart';
 import 'package:poufiret/global/ui/format_montant.dart';
+import 'package:poufiret/global/widgets/barre_onglets.dart';
 
 import 'aide_session.dart';
 
@@ -103,8 +105,9 @@ Future<void> _monter(
   WidgetTester tester,
   Widget ecran, {
   double largeur = 400,
+  double hauteur = 900,
 }) async {
-  tester.view.physicalSize = Size(largeur, 900);
+  tester.view.physicalSize = Size(largeur, hauteur);
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
@@ -230,6 +233,69 @@ void main() {
       await _monter(
         tester,
         const EcranRestaurant(restaurantId: 70, avecMenus: false),
+        largeur: 320,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('onglet « Tous »', () {
+    test('page fast-food : « Tous » proposé', () {
+      final page = pageGabarit(Gabarit.fastFood, commerceId: 70);
+      expect((page as EcranRestaurant).avecTous, isTrue);
+    });
+
+    testWidgets('en tête, choisi à l\'ouverture : tous les plats en grille', (
+      tester,
+    ) async {
+      await _monter(
+        tester,
+        pageGabarit(Gabarit.fastFood, commerceId: 70),
+        hauteur: 1600,
+      );
+      final onglets = tester.widget<BarreOnglets>(find.byType(BarreOnglets));
+      expect(onglets.libelles, ['Tous', 'Menus', 'Desserts']);
+      expect(onglets.selectionIndex, 0);
+      // Les quatre plats des deux rubriques, en tuiles de grille.
+      expect(find.byType(TuileGrilleProduit), findsNWidgets(4));
+      for (final id in [301, 302, 303, 304]) {
+        expect(find.byKey(ValueKey(id)), findsOneWidget, reason: '$id');
+      }
+      // « Les plus commandés » ne change pas.
+      expect(find.text('Les plus commandés'), findsOneWidget);
+      expect(find.byKey(const ValueKey('populaire-302')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('une rubrique : la liste habituelle, badges compris', (
+      tester,
+    ) async {
+      await _monter(tester, pageGabarit(Gabarit.fastFood, commerceId: 70));
+      await tester.tap(find.text('Menus'));
+      await tester.pumpAndSettle();
+      expect(find.byType(TuileGrilleProduit), findsNothing);
+      expect(find.text('Formule'), findsOneWidget);
+      expect(find.text('🔥 Populaire'), findsNWidgets(2));
+      expect(_texteRiche('au lieu de ${formatMontant(3500)}'), findsOneWidget);
+    });
+
+    testWidgets('toucher un plat de « Tous » : la feuille du plat', (
+      tester,
+    ) async {
+      await _monter(
+        tester,
+        pageGabarit(Gabarit.fastFood, commerceId: 70),
+        hauteur: 1600,
+      );
+      await tester.tap(find.byKey(const ValueKey(304)));
+      await tester.pumpAndSettle();
+      expect(find.byType(FeuillePlat), findsOneWidget);
+    });
+
+    testWidgets('320 px : aucun débordement', (tester) async {
+      await _monter(
+        tester,
+        pageGabarit(Gabarit.fastFood, commerceId: 70),
         largeur: 320,
       );
       expect(tester.takeException(), isNull);

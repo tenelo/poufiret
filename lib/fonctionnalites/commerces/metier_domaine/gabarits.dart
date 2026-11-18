@@ -19,6 +19,18 @@ enum Gabarit {
   elevage,
 }
 
+/// Libellé de la pastille qui réunit tous les produits d'un partenaire.
+const libelleOngletTous = 'Tous';
+
+extension OngletTous on Gabarit {
+  /// Pastille « Tous » en tête des rubriques, choisie à l'ouverture (tous
+  /// les produits en grille) : éleveur, grilleur, fast-food.
+  bool get avecOngletTous =>
+      this == Gabarit.elevage ||
+      this == Gabarit.grillades ||
+      this == Gabarit.fastFood;
+}
+
 /// Gabarit par valeur reçue du serveur (« restaurant », « pharmacie »...).
 Gabarit? gabaritDepuis(String? valeur) => switch ((valeur ?? '').trim()) {
   'restaurant' => Gabarit.restaurant,

@@ -55,6 +55,7 @@ class EcranRestaurant extends ConsumerWidget {
     this.siIntrouvable,
     this.grille = false,
     this.avecMenus = true,
+    this.avecTous = false,
   });
 
   final int restaurantId;
@@ -62,6 +63,10 @@ class EcranRestaurant extends ConsumerWidget {
 
   /// Faux (grillades) : pas de « Menu du jour », seulement la carte.
   final bool avecMenus;
+
+  /// Grilleur, fast-food : pastille « Tous » en tête des rubriques, choisie
+  /// à l'ouverture (tous les plats en grille).
+  final bool avecTous;
 
   /// Nom déjà connu de l'écran précédent, affiché pendant le chargement.
   final String nom;
@@ -100,6 +105,7 @@ class EcranRestaurant extends ConsumerWidget {
             restaurant: restaurant,
             grille: grille,
             avecMenus: avecMenus,
+            avecTous: avecTous,
           ),
         );
   }
@@ -110,11 +116,13 @@ class _PageRestaurant extends ConsumerStatefulWidget {
     required this.restaurant,
     this.grille = false,
     this.avecMenus = true,
+    this.avecTous = false,
   });
 
   final Restaurant restaurant;
   final bool grille;
   final bool avecMenus;
+  final bool avecTous;
 
   @override
   ConsumerState<_PageRestaurant> createState() => _PageRestaurantState();
@@ -125,8 +133,12 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
 
   String _recherche = '';
 
-  /// Section affichée (une seule à la fois), par son rang dans la carte.
+  /// Onglet affiché (une section à la fois), par son rang dans la rangée :
+  /// avec « Tous », 0 = tous les plats et la section n est au rang n + 1.
   int _sectionActive = 0;
+
+  /// Rang de la première section dans la rangée d'onglets.
+  int get _decalage => widget.avecTous ? 1 : 0;
 
   /// Service du menu du jour choisi par l'utilisateur (null = automatique).
   String? _service;
@@ -140,7 +152,7 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
   /// Liste comme grille (rayon de boulangerie) : un onglet choisit la
   /// section affichée, une seule à la fois.
   void _choisirSection(int index) {
-    final nb = widget.restaurant.carte.length;
+    final nb = widget.restaurant.carte.length + _decalage;
     if (index < 0 || index >= nb || index == _sectionActive) return;
     setState(() => _sectionActive = index);
   }
@@ -232,6 +244,40 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
     ];
   }
 
+  /// « Tous » (grilleur, fast-food) : tous les plats en grille, avec la
+  /// tuile produit de la boulangerie ; le toucher ouvre la même feuille du
+  /// plat que la liste (formats, options, ajout au panier).
+  List<Widget> _tousEnGrille(List<Plat> plats, EdgeInsets marge) {
+    final hauteur = hauteurTexteAjustee(
+      context,
+      mention: plats.any(
+        (p) => p.toutEpuise || p.mentionSurCommande.isNotEmpty,
+      ),
+    );
+    return [
+      SliverPadding(
+        padding: marge.add(const EdgeInsets.fromLTRB(12, 12, 12, 0)),
+        sliver: SliverLayoutBuilder(
+          builder: (context, contraintes) => SliverGrid.builder(
+            gridDelegate: grilleProduits(
+              context,
+              contraintes.crossAxisExtent,
+              hauteurTexte: hauteur,
+            ),
+            itemCount: plats.length,
+            itemBuilder: (context, i) => TuileGrilleProduit(
+              key: ValueKey(plats[i].id),
+              produit: plats[i],
+              mention: plats[i].mentionSurCommande,
+              icone: Icons.restaurant_menu,
+              onTap: () => _ouvrirPlat(platId: plats[i].id),
+            ),
+          ),
+        ),
+      ),
+    ];
+  }
+
   void _ouvrirPlat({int? platId, int? ligneId}) => ouvrirFeuillePlat(
     context,
     restaurantId: widget.restaurant.id,
@@ -251,9 +297,22 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
         : const <Plat>[];
     final active = r.carte.isEmpty
         ? 0
-        : _sectionActive.clamp(0, r.carte.length - 1);
-    final section = r.carte.isEmpty ? null : r.carte[active];
-    final plats = enRecherche ? resultats : section?.plats ?? const <Plat>[];
+        : _sectionActive.clamp(0, r.carte.length - 1 + _decalage);
+    // « Tous » : les plats de toutes les rubriques, sans doublon, en grille.
+    final tousActif = widget.avecTous && r.carte.isNotEmpty && active == 0;
+    final section = r.carte.isEmpty || tousActif
+        ? null
+        : r.carte[active - _decalage];
+    final vus = <int>{};
+    final plats = enRecherche
+        ? resultats
+        : tousActif
+        ? [
+            for (final s in r.carte)
+              for (final p in s.plats)
+                if (vus.add(p.id)) p,
+          ]
+        : section?.plats ?? const <Plat>[];
     final populaires = platsPopulaires(r);
     // Un menu sans plat n'est pas affiché ; aucun menu pour les grillades.
     final menus = [
@@ -353,7 +412,10 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                       // s'effacent.
                       libelles: enRecherche
                           ? const []
-                          : [for (final s in r.carte) s.nom],
+                          : [
+                              if (widget.avecTous) libelleOngletTous,
+                              for (final s in r.carte) s.nom,
+                            ],
                       sectionActive: active,
                       onSection: _choisirSection,
                     ),
@@ -361,6 +423,8 @@ class _PageRestaurantState extends ConsumerState<_PageRestaurant> {
                 // Boulangerie : le rayon actif (ou les résultats) en grille.
                 if (widget.grille)
                   ..._rayonEnGrille(r, plats, marge)
+                else if (tousActif && !enRecherche)
+                  ..._tousEnGrille(plats, marge)
                 else ...[
                   if (section != null && !enRecherche)
                     SliverPadding(
