@@ -101,7 +101,7 @@ void main() {
       });
       expect(v.vente.mode, ModeAnnonce.locationVente);
       expect(v.vente.prixVente, 12500000);
-      expect(v.vente.prixVenteLisible, '12 500 000 FCFA');
+      expect(v.vente.prixVenteLisible, '12 500 000 f');
       expect(v.vente.aVendre, isTrue);
       // Seulement les champs renseignés.
       expect(v.vente.lignesVehicule, [

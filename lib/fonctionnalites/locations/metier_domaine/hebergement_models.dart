@@ -125,7 +125,7 @@ abstract class Etablissement with _$Etablissement {
   /// Nombre d'étoiles affichables (1 à 5), 0 sinon.
   int get nbEtoiles => (etoiles ?? 0).clamp(0, 5);
 
-  /// « Inclus », « En option (3 000 F) », « Non proposé » ; vide si inconnu.
+  /// « Inclus », « En option (3 000 f) », « Non proposé » ; vide si inconnu.
   String get petitDejeunerLisible {
     if (petitDejeunerLibelle.isNotEmpty) {
       final prix = prixPetitDejeuner ?? 0;
@@ -347,7 +347,7 @@ class EstimationSejour {
 
   int get total => nuits * prixNuit * unites;
 
-  /// « 3 nuits × 25 000 F × 1 chambre = 75 000 F ».
+  /// « 3 nuits × 25 000 f × 1 chambre = 75 000 f ».
   String get libelle =>
       '${pluriel(nuits, 'nuit')} × ${formatMontant(prixNuit)} × '
       '${pluriel(unites, 'chambre')} = ${formatMontant(total)}';

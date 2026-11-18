@@ -120,7 +120,7 @@ final _amoxicilline = Plat.fromJson(
   ),
 );
 
-/// Une chaussure : 41 épuisée, 42 en stock (+500 F), 43 stock non suivi.
+/// Une chaussure : 41 épuisée, 42 en stock (+500 f), 43 stock non suivi.
 final _basket = Plat.fromJson({
   ..._produit(10),
   'nom': 'Basket Air',
@@ -811,7 +811,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Filtrer (1)'), findsOneWidget);
       expect(serveur.requetes.last['prix_max'], 20000);
-      // Réappliqué sur place : la basket à 25 000 F disparaît.
+      // Réappliqué sur place : la basket à 25 000 f disparaît.
       expect(find.text('Basket Air'), findsNothing);
     });
   });

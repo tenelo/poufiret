@@ -314,7 +314,7 @@ class EstimationLocation {
 
   int get total => jours * prixJour;
 
-  /// « 3 jours × 25 000 F = 75 000 F ».
+  /// « 3 jours × 25 000 f = 75 000 f ».
   String get libelle =>
       '${pluriel(jours, 'jour')} × ${formatMontant(prixJour)} = '
       '${formatMontant(total)}';

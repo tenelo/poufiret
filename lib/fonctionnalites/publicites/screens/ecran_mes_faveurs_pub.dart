@@ -136,7 +136,7 @@ class _CarteCredit extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              'Valeur : ${credit.formulePrix} FCFA',
+              'Valeur : ${credit.formulePrix} f',
               style: TextStyle(
                   fontSize: 12, color: Config.couleurTexteSecondaire),
             ),

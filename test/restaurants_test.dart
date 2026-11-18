@@ -162,11 +162,11 @@ void main() {
   final sauces = poulet.groupesOptions[1];
 
   group('format des montants', () {
-    test('« 7 000 F » avec espaces insécables', () {
-      expect(formatMontant(7000), '7 000 F');
-      expect(formatMontant(500), '500 F');
-      expect(formatMontant(1250000), '1 250 000 F');
-      expect(formatSupplement(1000), '+1 000 F');
+    test('« 7 000 f » avec espaces insécables', () {
+      expect(formatMontant(7000), '7 000 f');
+      expect(formatMontant(500), '500 f');
+      expect(formatMontant(1250000), '1 250 000 f');
+      expect(formatSupplement(1000), '+1 000 f');
     });
   });
 
@@ -313,7 +313,7 @@ void main() {
         ],
       });
       expect(ligne.ligneMenu, 70);
-      expect(ligne.detailChoix, 'Demi · Alloco (+1 000 F) · Piment');
+      expect(ligne.detailChoix, 'Demi · Alloco (+1 000 f) · Piment');
     });
   });
 
@@ -494,18 +494,18 @@ void main() {
       );
       // Variante par défaut présélectionnée, accompagnement manquant.
       expect(find.text('Entier'), findsOneWidget);
-      expect(find.textContaining('6 000 F'), findsWidgets);
+      expect(find.textContaining('6 000 f'), findsWidgets);
       expect(boutonAjout(tester).onPressed, isNull);
 
       await tester.tap(find.text('Demi'));
       await tester.tap(find.text('Alloco'));
       await tester.pump();
-      expect(find.text('Ajouter au panier · 4 500 F'), findsOneWidget);
+      expect(find.text('Ajouter au panier · 4 500 f'), findsOneWidget);
       expect(boutonAjout(tester).onPressed, isNotNull);
 
       await tester.tap(find.byTooltip('Plus'));
       await tester.pump();
-      expect(find.text('Ajouter au panier · 9 000 F'), findsOneWidget);
+      expect(find.text('Ajouter au panier · 9 000 f'), findsOneWidget);
     });
 
     testWidgets('restaurant fermé : ajout possible, refus du serveur notifié', (
@@ -551,7 +551,7 @@ void main() {
       expect(find.text('Indisponible'), findsNothing);
       expect(boutonAjout(tester).onPressed, isNotNull);
 
-      await tester.tap(find.text('Ajouter au panier · 500\u00A0F'));
+      await tester.tap(find.text('Ajouter au panier · 500\u00A0f'));
       await tester.pumpAndSettle();
 
       // Le serveur a refusé : feuille refermée, son message en notification.
@@ -661,7 +661,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Bissap'));
       await tester.pumpAndSettle();
-      expect(find.text('Ajouter au panier · 500\u00A0F'), findsOneWidget);
+      expect(find.text('Ajouter au panier · 500\u00A0f'), findsOneWidget);
     });
 
     testWidgets('menu du jour sans plat : bloc masqué', (tester) async {

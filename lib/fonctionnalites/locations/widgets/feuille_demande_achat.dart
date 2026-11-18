@@ -43,7 +43,7 @@ class FeuilleDemandeAchat extends ConsumerStatefulWidget {
   final int objetId;
   final String titre;
 
-  /// Prix de vente affiché sous le titre (« 12 500 000 FCFA »).
+  /// Prix de vente affiché sous le titre (« 12 500 000 f »).
   final String prix;
 
   @override

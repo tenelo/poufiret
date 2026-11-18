@@ -1,4 +1,7 @@
-/// Montant en francs CFA au format « 7 000 F » : séparateur de milliers et
+/// Symbole monétaire affiché partout dans l'appli : « f » minuscule.
+const symboleMonnaie = 'f';
+
+/// Montant en francs CFA au format « 7 000 f » : séparateur de milliers et
 /// espace avant l'unité insécables, pour ne jamais couper un prix en deux
 /// lignes.
 String formatMontant(int montant) {
@@ -8,10 +11,10 @@ String formatMontant(int montant) {
     if (i > 0 && (chiffres.length - i) % 3 == 0) tampon.write(' ');
     tampon.write(chiffres[i]);
   }
-  return '$tampon F';
+  return '$tampon $symboleMonnaie';
 }
 
-/// Surcoût d'une option : « +1 000 F ».
+/// Surcoût d'une option : « +1 000 f ».
 String formatSupplement(int montant) => '+${formatMontant(montant)}';
 
 /// Quantité au format français : « 3 », « 2,5 », « 2,5 kg ».

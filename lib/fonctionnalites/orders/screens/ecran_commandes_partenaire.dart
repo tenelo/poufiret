@@ -268,7 +268,7 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
                         ],
                       ),
                     ),
-                    Text('${l.prixLigne} FCFA'),
+                    Text('${l.prixLigne} f'),
                   ],
                 ),
               ),
@@ -278,7 +278,7 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Total', style: theme.textTheme.titleSmall),
-                Text('${c.total} FCFA',
+                Text('${c.total} f',
                     style: theme.textTheme.titleSmall?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.w600,

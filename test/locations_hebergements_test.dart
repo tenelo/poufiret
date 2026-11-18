@@ -406,7 +406,7 @@ void main() {
       expect(nombreNuits(_j(24, 10), _j(2)), 9);
     });
 
-    test('3 nuits × 25 000 F × 1 chambre = 75 000 F', () {
+    test('3 nuits × 25 000 f × 1 chambre = 75 000 f', () {
       const une = EstimationSejour(nuits: 3, prixNuit: 25000, unites: 1);
       expect(une.total, 75000);
       expect(

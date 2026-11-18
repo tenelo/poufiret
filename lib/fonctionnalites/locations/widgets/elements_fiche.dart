@@ -458,7 +458,7 @@ class BarreActionsFiche extends StatelessWidget {
 class EncadreMontant extends StatelessWidget {
   const EncadreMontant({super.key, required this.libelle, this.vide = ''});
 
-  /// « 3 jours × 25 000 F = 75 000 F » ; null tant qu'il manque un choix.
+  /// « 3 jours × 25 000 f = 75 000 f » ; null tant qu'il manque un choix.
   final String? libelle;
 
   /// Invitation affichée tant que [libelle] est null.

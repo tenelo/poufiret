@@ -225,7 +225,7 @@ class _CarteForfait extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '${formule.prix} FCFA',
+                    '${formule.prix} f',
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: Config.couleurPrimaire,
                       fontWeight: FontWeight.w600,
@@ -440,7 +440,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
         title: const Text('Demande envoyée'),
         content: Text(
           'Votre publicité a été transmise.\n\n'
-          'Réglez ${widget.formule.prix} FCFA auprès de l\'administration '
+          'Réglez ${widget.formule.prix} f auprès de l\'administration '
           'Poufiret. Dès le paiement confirmé et la publicité validée, '
           'elle sera diffusée pendant ${widget.formule.dureeJours} jour'
           '${widget.formule.dureeJours > 1 ? 's' : ''}.',
@@ -488,7 +488,7 @@ class _EtapeFormulaireState extends ConsumerState<_EtapeFormulaire> {
                             Text(
                               _creditId != null
                                   ? 'Forfait ${f.nom} — Offert'
-                                  : 'Forfait ${f.nom} — ${f.prix} FCFA',
+                                  : 'Forfait ${f.nom} — ${f.prix} f',
                               style: const TextStyle(
                                   fontWeight: FontWeight.w600),
                             ),

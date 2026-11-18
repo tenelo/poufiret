@@ -246,7 +246,7 @@ class _CarteCommande extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  '${c.total} FCFA',
+                  '${c.total} f',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -414,7 +414,7 @@ class _EcranCommandeDetailState extends ConsumerState<EcranCommandeDetail> {
                                 ],
                               ),
                             ),
-                            Text('${l.prixLigne} FCFA'),
+                            Text('${l.prixLigne} f'),
                           ],
                         ),
                       ),
@@ -431,7 +431,7 @@ class _EcranCommandeDetailState extends ConsumerState<EcranCommandeDetail> {
                       children: [
                         Text('Total', style: theme.textTheme.titleLarge),
                         Text(
-                          '${c.total} FCFA',
+                          '${c.total} f',
                           style: theme.textTheme.titleLarge?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.w600,

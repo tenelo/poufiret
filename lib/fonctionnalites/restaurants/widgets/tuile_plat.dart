@@ -22,7 +22,7 @@ class TuilePlat extends StatelessWidget {
 
   final String nom;
 
-  /// Prix déjà mis en forme (« 3 500 F », « à partir de 3 500 F »).
+  /// Prix déjà mis en forme (« 3 500 f », « à partir de 3 500 f »).
   final String prix;
   final String description;
   final String image;
@@ -141,11 +141,11 @@ class TuilePlat extends StatelessWidget {
   }
 }
 
-/// « au lieu de X F », le montant barré (formule de fast-food).
+/// « au lieu de X f », le montant barré (formule de fast-food).
 class PrixBarre extends StatelessWidget {
   const PrixBarre(this.montant, {super.key});
 
-  /// Montant déjà mis en forme (« 3 500 F »).
+  /// Montant déjà mis en forme (« 3 500 f »).
   final String montant;
 
   @override

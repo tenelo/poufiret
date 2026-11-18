@@ -485,7 +485,7 @@ class _Contenu extends ConsumerWidget {
                                       trailing: Text(
                                         v.prix != null
                                             ? formatMontant(v.prix!)
-                                            : '+${v.supplement.toStringAsFixed(0)} FCFA',
+                                            : '+${v.supplement.toStringAsFixed(0)} f',
                                       ),
                                     ),
                                   ),
@@ -501,7 +501,7 @@ class _Contenu extends ConsumerWidget {
                                       contentPadding: EdgeInsets.zero,
                                       title: Text(s.nom),
                                       trailing: Text(
-                                        '+${s.montant.toStringAsFixed(0)} FCFA',
+                                        '+${s.montant.toStringAsFixed(0)} f',
                                       ),
                                     ),
                                   ),

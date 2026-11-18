@@ -110,7 +110,7 @@ class _FeuilleFiltreCatalogueState extends State<FeuilleFiltreCatalogue> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: const InputDecoration(
                   labelText: 'Prix maximum',
-                  suffixText: 'F',
+                  suffixText: 'f',
                 ),
               ),
             ],

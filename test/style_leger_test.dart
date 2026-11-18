@@ -101,7 +101,7 @@ Widget _vitrine() => ListView(
     TuilePlat(
       nom: 'Garba poisson thon avec attiéké et piment',
       description: 'Attiéké frais, thon frit, oignons, tomates et piment.',
-      prix: 'à partir de 1 500 F',
+      prix: 'à partir de 1 500 f',
       mention: 'Plus que 3',
       onTap: () {},
     ),
@@ -111,13 +111,13 @@ Widget _vitrine() => ListView(
       iconeSansPhoto: Icons.home_outlined,
       titre: 'Villa 4 pièces avec cour et garage à Bromakoté',
       sousTitre: 'Ferké - Bromakoté - Rue Princesse',
-      prix: '150 000 F/mois',
+      prix: '150 000 f/mois',
       puces: const ['4 chambres', '2 sdb', 'Meublé'],
       onTap: () {},
     ),
     const SizedBox(height: 12),
     const EncadreMontant(
-      libelle: '3 nuits × 25 000 F × 2 chambres = 150 000 F',
+      libelle: '3 nuits × 25 000 f × 2 chambres = 150 000 f',
     ),
     const LigneFiche("Compteur d'électricité individuel", 'Oui'),
     const SizedBox(height: 12),
@@ -143,7 +143,7 @@ Widget _vitrine() => ListView(
     const SizedBox(height: 12),
     FilledButton(
       onPressed: () {},
-      child: const Text('Ajouter au panier · 10 500 F'),
+      child: const Text('Ajouter au panier · 10 500 f'),
     ),
   ],
 );

@@ -396,7 +396,7 @@ class _Contenu extends StatelessWidget {
               style: theme.textTheme.titleSmall),
           const SizedBox(height: 4),
           if (demande.prixPropose != null)
-            Text('Prix : ${demande.prixPropose} FCFA'),
+            Text('Prix : ${demande.prixPropose} f'),
           if (demande.dateProposee != null)
             Text('Date : ${demande.dateProposee!.split('T').first}'),
         ],

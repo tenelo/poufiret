@@ -85,7 +85,7 @@ abstract class InfosVente with _$InfosVente {
   /// Actions proposées sur la fiche.
   ActionsAnnonce get actions => ActionsAnnonce.pour(mode, vendu: vendu);
 
-  /// « 12 500 000 FCFA » ; vide sans prix de vente.
+  /// « 12 500 000 f » ; vide sans prix de vente.
   String get prixVenteLisible =>
       prixVente == null ? '' : formatPrixVente(prixVente!);
 
@@ -117,8 +117,8 @@ abstract class InfosVente with _$InfosVente {
   ];
 }
 
-/// « 12 500 000 FCFA ».
-String formatPrixVente(int prix) => '${formatMontant(prix)}CFA';
+/// « 12 500 000 f ».
+String formatPrixVente(int prix) => formatMontant(prix);
 
 /// « 1 250 000 » (séparateur de milliers).
 String formatNombre(int n) {

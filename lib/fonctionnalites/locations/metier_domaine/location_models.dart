@@ -30,13 +30,13 @@ TypeLocation? typeLocation(Iterable<String> typesPartenaire) =>
     ? TypeLocation.hebergement
     : null;
 
-/// « 50 000 F/mois ».
+/// « 50 000 f/mois ».
 String formatLoyer(int loyer) => '${formatMontant(loyer)}/mois';
 
-/// « 25 000 F/jour ».
+/// « 25 000 f/jour ».
 String formatPrixJour(int prix) => '${formatMontant(prix)}/jour';
 
-/// « 25 000 F/nuit ».
+/// « 25 000 f/nuit ».
 String formatPrixNuit(int prix) => '${formatMontant(prix)}/nuit';
 
 /// « 1 chambre », « 3 chambres ».

@@ -81,7 +81,7 @@ class _ListeArticles extends StatelessWidget {
                   maxLines: 1, overflow: TextOverflow.ellipsis),
               subtitle: Text(a.partenaireNom),
               trailing: Text(
-                '${a.prix} FCFA',
+                '${a.prix} f',
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.w600,

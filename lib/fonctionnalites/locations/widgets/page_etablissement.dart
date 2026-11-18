@@ -16,7 +16,7 @@ int? prixMinimumNuit(Iterable<HebergementResume> hebergements) {
   return prix.reduce((a, b) => a < b ? a : b);
 }
 
-/// « à partir de 20 000 F/nuit ».
+/// « à partir de 20 000 f/nuit ».
 String aPartirDe(int prix) => 'à partir de ${formatPrixNuit(prix)}';
 
 /// Résidence meublée : « logements » ; sinon (hôtel) « chambres ».
@@ -275,7 +275,7 @@ class SectionHebergements extends StatelessWidget {
   }
 }
 
-/// Barre fixe du bas : « À partir de X F/nuit » et « Voir les chambres ».
+/// Barre fixe du bas : « À partir de X f/nuit » et « Voir les chambres ».
 class BarreChambres extends StatelessWidget {
   const BarreChambres({
     super.key,

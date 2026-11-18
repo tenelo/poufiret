@@ -216,7 +216,7 @@ void main() {
         expect(_page.loueur.whatsapp, '0700000070');
         final villa = _page.resultats.first;
         expect(villa.loyer, 50000);
-        expect(formatLoyer(villa.loyer), '50 000 F/mois');
+        expect(formatLoyer(villa.loyer), '50 000 f/mois');
         expect(villa.puces, ['3 chambres', '2 sdb', 'Meublé']);
         expect(_page.resultats[1].loyer, 25000);
         expect(_page.resultats[1].puces, ['1 chambre', '1 sdb']);
@@ -426,7 +426,7 @@ void main() {
       expect(find.text('2 logements disponibles'), findsOneWidget);
       expect(find.text('Villa 3 pièces à Bromakoté'), findsOneWidget);
       expect(find.text('Ferké - Bromakoté'), findsOneWidget);
-      expect(find.text('50 000 F/mois'), findsOneWidget);
+      expect(find.text('50 000 f/mois'), findsOneWidget);
       expect(find.text('3 chambres'), findsOneWidget);
       expect(find.text('2 sdb'), findsOneWidget);
       expect(find.text('Meublé'), findsOneWidget);
@@ -464,7 +464,7 @@ void main() {
       );
       expect(find.text('Ferké - Bromakoté - Rue Princesse'), findsOneWidget);
       expect(find.text('Villa'), findsOneWidget);
-      expect(find.text('50 000 F/mois'), findsNWidgets(2));
+      expect(find.text('50 000 f/mois'), findsNWidgets(2));
       // Caractéristiques.
       expect(find.text('3 chambres'), findsOneWidget);
       expect(find.text('1 salon'), findsOneWidget);
@@ -474,7 +474,7 @@ void main() {
       // Conditions.
       expect(find.text('2 mois'), findsOneWidget);
       expect(find.text('3 mois'), findsOneWidget);
-      expect(find.text('25 000 F'), findsOneWidget);
+      expect(find.text('25 000 f'), findsOneWidget);
       expect(find.text('01/11/2026'), findsOneWidget);
       // Équipements : libellés de la meta réelle.
       expect(find.text('Climatisation'), findsOneWidget);

@@ -357,7 +357,9 @@ void main() {
       expect(p.quantiteDisponible, 12);
       expect(p.commandeAvanceJours, isNull);
       expect(p.livraisonPossible, isTrue);
-      expect(p.disponibiliteElevage, 'En stock : 12');
+      expect(p.disponibiliteElevageSelon(avecStock: true), 'En stock : 12');
+      // Stock masqué (afficherStockElevage = false) : rien à dire.
+      expect(p.disponibiliteElevage, '');
       expect(p.stockAZero, isFalse);
       expect(p.toutEpuise, isFalse);
     });
@@ -369,7 +371,11 @@ void main() {
       expect(p.unitePrix, UnitePrix.kg);
       expect(p.prixEffectif, 2500);
       expect(p.quantiteDisponible, 4.5);
-      expect(p.disponibiliteElevage, 'En stock : 4,5${_nb}kg');
+      expect(
+        p.disponibiliteElevageSelon(avecStock: true),
+        'En stock : 4,5${_nb}kg',
+      );
+      expect(p.disponibiliteElevage, isNot(contains('En stock')));
       expect(p.livraisonPossible, isFalse);
     });
 
@@ -555,7 +561,7 @@ void main() {
   });
 
   group('page éleveur', () {
-    testWidgets('en-tête, onglets, grille : état, prix, poids, stock', (
+    testWidgets('en-tête, onglets, grille : prix, poids, délai, sans état ni stock', (
       tester,
     ) async {
       final serveur = _PasDePagination();
@@ -577,11 +583,12 @@ void main() {
       expect(find.text('Poulet bicyclette'), findsOneWidget);
       expect(find.text('Pintade abattue'), findsOneWidget);
       expect(find.text('Porc découpé'), findsNothing);
-      expect(find.text('Vivant'), findsOneWidget);
-      expect(find.text('Abattu entier'), findsOneWidget);
+      // État de vente et stock : plus affichés.
+      expect(find.text('Vivant'), findsNothing);
+      expect(find.text('Abattu entier'), findsNothing);
       expect(find.text('3${_nb}500${_nb}f/pièce'), findsOneWidget);
       expect(find.text('Poids moyen : 2,5${_nb}kg'), findsOneWidget);
-      expect(find.text('En stock : 12'), findsOneWidget);
+      expect(find.textContaining('En stock'), findsNothing);
       expect(find.text("Sur commande · 3 jours à l'avance"), findsOneWidget);
       expect(find.text('Livraison possible'), findsNWidgets(2));
       expect(serveur.appels, 0);
@@ -589,9 +596,9 @@ void main() {
       await tester.tap(find.text('Porcs et ovins'));
       await tester.pumpAndSettle();
       expect(find.text('Poulet bicyclette'), findsNothing);
-      expect(find.text('Découpé'), findsOneWidget);
+      expect(find.text('Découpé'), findsNothing);
       expect(find.text('2${_nb}500${_nb}f/kg'), findsOneWidget);
-      expect(find.text('En stock : 4,5${_nb}kg'), findsOneWidget);
+      expect(find.textContaining('En stock'), findsNothing);
       expect(find.text('Épuisé'), findsOneWidget);
     });
 
@@ -638,19 +645,28 @@ void main() {
       );
       for (final texte in [
         'porc',
-        'Découpé',
         '2${_nb}500${_nb}f/kg',
-        '4,5${_nb}kg',
         'Non proposée',
         'Poids (kg)',
       ]) {
         expect(find.text(texte), findsWidgets, reason: texte);
       }
+      // Ni état de vente ni stock dans la fiche (Informations comprises).
+      for (final texte in [
+        'Découpé',
+        'État de vente',
+        'Quantité disponible',
+        '4,5${_nb}kg',
+      ]) {
+        expect(find.text(texte), findsNothing, reason: texte);
+      }
       Text texte(String cle) => tester.widget<Text>(find.byKey(ValueKey(cle)));
       expect(texte('quantite-elevage').data, '0,5${_nb}kg');
+      // Plus de ligne « quantité × prix = total » : le total est au bouton.
+      expect(find.byKey(const ValueKey('total-elevage')), findsNothing);
       expect(
-        texte('total-elevage').data,
-        '0,5${_nb}kg × ${formatMontant(2500)} = ${formatMontant(1250)}',
+        find.text('Ajouter au panier · ${formatMontant(1250)}'),
+        findsOneWidget,
       );
 
       final plus = find.byTooltip('Plus');

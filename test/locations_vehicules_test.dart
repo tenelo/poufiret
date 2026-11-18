@@ -773,7 +773,7 @@ void main() {
       expect(nombreJours(DateTime(2026, 12, 30), DateTime(2027, 1, 2)), 3);
     });
 
-    test('2 jours × 25 000 F = 50 000 F, puis avec chauffeur', () {
+    test('2 jours × 25 000 f = 50 000 f, puis avec chauffeur', () {
       final sans = EstimationLocation.pour(
         _vehicule,
         du: _j(10),

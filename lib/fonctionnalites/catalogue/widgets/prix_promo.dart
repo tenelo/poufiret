@@ -41,7 +41,7 @@ class PrixPromo extends StatelessWidget {
       if (i > 0 && (s.length - i) % 3 == 0) tampon.write('\u00A0');
       tampon.write(s[i]);
     }
-    return '${tampon.toString()} FCFA';
+    return '${tampon.toString()} f';
   }
 
   @override

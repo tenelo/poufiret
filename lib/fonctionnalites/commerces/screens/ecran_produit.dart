@@ -120,7 +120,6 @@ List<(String, String)> informationsProduit(Plat p, Gabarit gabarit) => [
     ],
     Gabarit.elevage => [
       ('Espèce', p.espece),
-      ('État de vente', p.etatVente),
       ('Âge', p.age),
       (
         'Poids moyen',
@@ -130,7 +129,7 @@ List<(String, String)> informationsProduit(Plat p, Gabarit gabarit) => [
       ),
       (
         'Quantité disponible',
-        p.quantiteDisponible == null
+        !afficherStockElevage || p.quantiteDisponible == null
             ? ''
             : formatQuantiteUnite(p.quantiteDisponible!, p.unitePrix),
       ),
@@ -271,8 +270,12 @@ class _FicheState extends ConsumerState<_Fiche> {
                       titre: p.nom,
                       ratio: g.ratioPhoto,
                       iconeVide: g.icone,
-                      // La page éleveur garde sa rangée défilante.
+                      // La page éleveur garde sa rangée défilante, et sa
+                      // photo remplit le cadre (pas de bandes).
                       rangeeDefilante: g == Gabarit.elevage,
+                      ajustement: g == Gabarit.elevage
+                          ? BoxFit.cover
+                          : BoxFit.contain,
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -325,7 +328,6 @@ class _FicheState extends ConsumerState<_Fiche> {
                         child: _SelecteurQuantite(
                           produit: p,
                           quantite: _quantiteRetenue,
-                          prixUnitaire: prixUnitaire,
                           onChanged: (q) => setState(() => _quantite = q),
                         ),
                       ),
@@ -601,18 +603,17 @@ class _Info extends StatelessWidget {
 }
 
 /// Sélecteur « − quantité + » d'un produit d'éleveur (pièces entières ou
-/// kg par 0,5), plafonné par le stock, avec le total recalculé en direct.
+/// kg par 0,5), plafonné par le stock. Le total est dans le bouton
+/// « Ajouter au panier ».
 class _SelecteurQuantite extends StatelessWidget {
   const _SelecteurQuantite({
     required this.produit,
     required this.quantite,
-    required this.prixUnitaire,
     required this.onChanged,
   });
 
   final Plat produit;
   final num quantite;
-  final int prixUnitaire;
   final ValueChanged<num> onChanged;
 
   @override
@@ -621,46 +622,32 @@ class _SelecteurQuantite extends StatelessWidget {
     final unite = produit.unitePrix;
     final max = produit.quantiteMax;
     final peutAjouter = max == null || quantite + unite.pas <= max;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Row(
-          children: [
-            IconButton.outlined(
-              tooltip: 'Moins',
-              onPressed: quantite > unite.pas
-                  ? () => onChanged(quantite - unite.pas)
-                  : null,
-              icon: const Icon(Icons.remove),
-            ),
-            SizedBox(
-              width: 96,
-              child: Text(
-                formatQuantiteUnite(quantite, unite),
-                key: const ValueKey('quantite-elevage'),
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            IconButton.outlined(
-              tooltip: 'Plus',
-              onPressed: peutAjouter
-                  ? () => onChanged(quantite + unite.pas)
-                  : null,
-              icon: const Icon(Icons.add),
-            ),
-          ],
+        IconButton.outlined(
+          tooltip: 'Moins',
+          onPressed: quantite > unite.pas
+              ? () => onChanged(quantite - unite.pas)
+              : null,
+          icon: const Icon(Icons.remove),
         ),
-        const SizedBox(height: 8),
-        Text(
-          libelleTotalElevage(prixUnitaire, quantite, unite),
-          key: const ValueKey('total-elevage'),
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: theme.colorScheme.primary,
-            fontWeight: FontWeight.w600,
+        SizedBox(
+          width: 96,
+          child: Text(
+            formatQuantiteUnite(quantite, unite),
+            key: const ValueKey('quantite-elevage'),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
+        ),
+        IconButton.outlined(
+          tooltip: 'Plus',
+          onPressed: peutAjouter
+              ? () => onChanged(quantite + unite.pas)
+              : null,
+          icon: const Icon(Icons.add),
         ),
       ],
     );

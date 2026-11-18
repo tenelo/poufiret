@@ -306,7 +306,14 @@ class _PageState extends ConsumerState<_Page> {
       surTitre: produits.any((p) => p.marque.isNotEmpty),
       mention: produits.any((p) => p.toutEpuise),
     );
-    final hauteurAjustee = g == Gabarit.mode ? hauteurAjusteeMode : null;
+    // Éleveur : idem, prix juste sous le nom, sans blanc dans la case.
+    double hauteurAjusteeElevage(List<Plat> produits) =>
+        hauteurTexteElevageAjustee(context, produits);
+    final hauteurAjustee = switch (g) {
+      Gabarit.mode => hauteurAjusteeMode,
+      Gabarit.elevage => hauteurAjusteeElevage,
+      _ => null,
+    };
 
     return Scaffold(
       appBar: AppBar(

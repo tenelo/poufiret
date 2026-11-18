@@ -104,7 +104,7 @@ class _FeuilleFiltreState extends ConsumerState<_FeuilleFiltre> {
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: const InputDecoration(
                 labelText: 'Loyer maximum',
-                suffixText: 'F/mois',
+                suffixText: 'f/mois',
               ),
             ),
             const SizedBox(height: 12),

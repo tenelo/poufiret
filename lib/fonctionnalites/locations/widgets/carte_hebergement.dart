@@ -8,7 +8,7 @@ import '../screens/ecran_hebergement.dart';
 import 'carte_logement.dart';
 
 /// Carte d'un hébergement : photo à gauche ; à droite le titre, le type,
-/// « 2 adultes · 1 enfant », les lits et « 25 000 F/nuit ».
+/// « 2 adultes · 1 enfant », les lits et « 25 000 f/nuit ».
 class CarteHebergement extends StatelessWidget {
   const CarteHebergement({
     super.key,

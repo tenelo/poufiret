@@ -104,7 +104,7 @@ abstract class LignePanier with _$LignePanier {
   }
 
   /// Variante et options de la ligne, à afficher après le nom du plat :
-  /// « Demi · Alloco (+1 000 F) ». Vide pour un article simple.
+  /// « Demi · Alloco (+1 000 f) ». Vide pour un article simple.
   String get detailChoix => [
     if (varianteNom.isNotEmpty) varianteNom,
     for (final o in choix)

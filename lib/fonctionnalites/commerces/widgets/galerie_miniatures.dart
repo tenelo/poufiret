@@ -20,7 +20,12 @@ class GalerieMiniatures extends StatefulWidget {
     this.ratio = 1,
     this.iconeVide = Icons.image_outlined,
     this.rangeeDefilante = false,
+    this.ajustement = BoxFit.contain,
   });
+
+  /// Cadrage de la grande image : [BoxFit.contain] (photo entière, bandes
+  /// possibles) ou [BoxFit.cover] (cadre rempli, sans bandes).
+  final BoxFit ajustement;
 
   final List<String> images;
   final String? titre;
@@ -138,7 +143,7 @@ class _GalerieMiniaturesState extends State<GalerieMiniatures> {
                           child: ImageReseau(
                             images[_index],
                             key: ValueKey('grande-${images[_index]}'),
-                            fit: BoxFit.contain,
+                            fit: widget.ajustement,
                             largeurAffichee: largeur,
                           ),
                         ),

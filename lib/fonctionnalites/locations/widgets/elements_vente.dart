@@ -69,7 +69,7 @@ class BandeauVendu extends StatelessWidget {
   }
 }
 
-/// Prix de vente : « 12 500 000 FCFA » et, s'il l'est, « négociable ».
+/// Prix de vente : « 12 500 000 f » et, s'il l'est, « négociable ».
 class PrixVente extends StatelessWidget {
   const PrixVente({super.key, required this.infos, this.grand = false});
 

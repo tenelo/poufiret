@@ -497,7 +497,7 @@ class _EcranCommandeState extends ConsumerState<EcranCommande> {
                     _champVerrouille(
                       icone: Icons.payments_outlined,
                       libelle: 'Prix de la livraison',
-                      valeur: '$_prix FCFA',
+                      valeur: '$_prix f',
                     ),
                     const SizedBox(height: 24),
                     FilledButton.icon(

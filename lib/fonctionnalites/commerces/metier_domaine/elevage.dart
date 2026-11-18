@@ -33,7 +33,12 @@ enum UnitePrix {
   String get suffixe => 'f/$libelle';
 }
 
-/// Libellés des états de vente.
+/// Indications de stock (« En stock : 40 », quantité disponible) sur les
+/// cases et la fiche d'un éleveur : masquées pour l'instant. Le stock reste
+/// lu et plafonne toujours le sélecteur de quantité.
+const bool afficherStockElevage = false;
+
+/// Libellés des états de vente (donnée conservée, plus affichée).
 const libellesEtatVente = {
   'vivant': 'Vivant',
   'abattu_entier': 'Abattu entier',
@@ -44,7 +49,9 @@ const libellesEtatVente = {
 /// « 2 500 f/kg », « 5 000 f/tête », « 3 500 f/pièce » : [suffixe] du
 /// serveur s'il est fourni, sinon celui de l'unité.
 String formatPrixUnite(int prix, UnitePrix unite, {String? suffixe}) {
-  final chiffres = formatMontant(prix).replaceFirst(RegExp(r'\s?F$'), '');
+  final chiffres = formatMontant(
+    prix,
+  ).replaceFirst(RegExp('\\s?$symboleMonnaie\$'), '');
   final s = suffixe == null || suffixe.trim().isEmpty
       ? unite.suffixe
       : suffixe.trim();
@@ -76,7 +83,7 @@ num ajusterQuantite(num quantite, UnitePrix unite, {num? max}) {
 int totalElevage(int prixUnitaire, num quantite) =>
     (prixUnitaire * quantite).round();
 
-/// « 2,5 kg × 2 500 F = 6 250 F », « 3 pièces × 3 500 F = 10 500 F ».
+/// « 2,5 kg × 2 500 f = 6 250 f », « 3 pièces × 3 500 f = 10 500 f ».
 String libelleTotalElevage(int prixUnitaire, num quantite, UnitePrix unite) =>
     '${formatQuantiteUnite(quantite, unite)} × ${formatMontant(prixUnitaire)}'
     ' = ${formatMontant(totalElevage(prixUnitaire, quantite))}';
@@ -131,11 +138,15 @@ extension ProduitElevage on Plat {
   /// Stock déclaré à zéro : rien à ajouter au panier.
   bool get stockAZero => quantiteDisponible != null && quantiteDisponible! <= 0;
 
-  /// « En stock : 12 », « En stock : 40 kg », « Sur commande · 3 jours à
-  /// l'avance » ; vide si ni stock ni délai.
-  String get disponibiliteElevage {
+  /// Disponibilité affichée, selon [afficherStockElevage].
+  String get disponibiliteElevage =>
+      disponibiliteElevageSelon(avecStock: afficherStockElevage);
+
+  /// « En stock : 12 », « En stock : 40 kg » (si [avecStock]), sinon
+  /// « Sur commande · 3 jours à l'avance » ; vide si rien à dire.
+  String disponibiliteElevageSelon({required bool avecStock}) {
     final q = quantiteDisponible;
-    if (q != null && q > 0) {
+    if (avecStock && q != null && q > 0) {
       return 'En stock : ${unitePrix == UnitePrix.kg ? formatQuantite(q, unite: 'kg') : formatQuantite(q)}';
     }
     final j = commandeAvanceJours;
