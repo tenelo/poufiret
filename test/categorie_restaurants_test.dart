@@ -152,9 +152,10 @@ void _attendreAnnuaire() {
   for (final nom in ['Business Center', 'Chez Capi', 'Chez Sara']) {
     expect(dans(find.text(nom)), findsOneWidget);
   }
-  // Rien de propre aux restaurants.
+  // Rien de propre aux restaurants ; seule la recherche de l'annuaire.
   expect(dans(find.byType(FilterChip)), findsNothing);
-  expect(dans(find.byType(TextField)), findsNothing);
+  expect(dans(find.byType(TextField)), findsOneWidget);
+  expect(dans(find.text('Rechercher un partenaire')), findsOneWidget);
   expect(find.text('Livraison'), findsNothing);
   expect(find.text('Ouvert'), findsNothing);
   expect(find.text('Fermé'), findsNothing);

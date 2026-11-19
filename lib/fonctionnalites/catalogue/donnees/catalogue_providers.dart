@@ -1,5 +1,6 @@
 import '../metier_domaine/partenaire_categorie.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:dio/dio.dart' show CancelToken;
 
 import '../../../global/cache/cache_api.dart';
 import '../../../global/cache/contexte_cache.dart';
@@ -99,13 +100,44 @@ class LocalitesChoisies extends _$LocalitesChoisies {
   void reinitialiser() => state = const [];
 }
 
-/// Annuaire des prestataires d'une catégorie, filtre par les localites
-/// choisies (le backend applique aussi la regle de portee).
+/// Partenaires par page de l'annuaire d'une catégorie (`?page_size=`).
+const taillePageAnnuaire = 20;
+
+/// Première page de l'annuaire d'une catégorie (`?page=1`), filtrée par les
+/// localites choisies (le backend applique aussi la regle de portee) et par
+/// [recherche] (`?q=`). Les pages suivantes sont chargées au défilement.
+///
+/// Sans recherche : cache disque (consultable hors connexion). Avec
+/// recherche : réseau seul, requête annulée dès que la saisie change (le
+/// provider de l'ancienne saisie est libéré).
 @riverpod
-Stream<List<PartenaireCategorie>> partenairesParCategorie(Ref ref,
-    {required String slug, String? typeEtablissement, int? sousCategorie}) {
+Stream<List<PartenaireCategorie>> partenairesParCategorie(
+  Ref ref, {
+  required String slug,
+  String? typeEtablissement,
+  int? sousCategorie,
+  String recherche = '',
+}) {
   final localites = ref.watch(localitesChoisiesProvider);
   final repo = ref.watch(catalogueRepositoryProvider);
+  Future<Object?> premierePage({CancelToken? annulation}) =>
+      repo.partenairesParCategorieBrut(
+        slug,
+        localites: localites,
+        typeEtablissement: typeEtablissement,
+        sousCategorie: sousCategorie,
+        recherche: recherche,
+        page: 1,
+        taillePage: taillePageAnnuaire,
+        annulation: annulation,
+      );
+  if (recherche.trim().isNotEmpty) {
+    final annulation = CancelToken();
+    ref.onDispose(annulation.cancel);
+    return Stream.fromFuture(
+      premierePage(annulation: annulation).then(repo.partenairesDepuis),
+    );
+  }
   // Les localites choisies (et le type d'etablissement) changent le
   // resultat : ils font partie de la cle.
   final loc = ([...localites]..sort()).join(',');
@@ -113,14 +145,9 @@ Stream<List<PartenaireCategorie>> partenairesParCategorie(Ref ref,
   final sous = sousCategorie == null ? '' : '&sous=$sousCategorie';
   return fluxCache(
     ref,
-    cle: 'partenaires/$slug?loc=$loc$type$sous',
+    cle: 'partenaires/$slug?loc=$loc$type$sous&page=1',
     politique: PolitiqueCache.partenaires,
-    reseau: () => repo.partenairesParCategorieBrut(
-      slug,
-      localites: localites,
-      typeEtablissement: typeEtablissement,
-      sousCategorie: sousCategorie,
-    ),
+    reseau: premierePage,
     decoder: repo.partenairesDepuis,
   );
 }

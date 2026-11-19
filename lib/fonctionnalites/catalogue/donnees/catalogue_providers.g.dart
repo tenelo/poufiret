@@ -537,14 +537,24 @@ abstract class _$LocalitesChoisies extends $Notifier<List<String>> {
   }
 }
 
-/// Annuaire des prestataires d'une catégorie, filtre par les localites
-/// choisies (le backend applique aussi la regle de portee).
+/// Première page de l'annuaire d'une catégorie (`?page=1`), filtrée par les
+/// localites choisies (le backend applique aussi la regle de portee) et par
+/// [recherche] (`?q=`). Les pages suivantes sont chargées au défilement.
+///
+/// Sans recherche : cache disque (consultable hors connexion). Avec
+/// recherche : réseau seul, requête annulée dès que la saisie change (le
+/// provider de l'ancienne saisie est libéré).
 
 @ProviderFor(partenairesParCategorie)
 final partenairesParCategorieProvider = PartenairesParCategorieFamily._();
 
-/// Annuaire des prestataires d'une catégorie, filtre par les localites
-/// choisies (le backend applique aussi la regle de portee).
+/// Première page de l'annuaire d'une catégorie (`?page=1`), filtrée par les
+/// localites choisies (le backend applique aussi la regle de portee) et par
+/// [recherche] (`?q=`). Les pages suivantes sont chargées au défilement.
+///
+/// Sans recherche : cache disque (consultable hors connexion). Avec
+/// recherche : réseau seul, requête annulée dès que la saisie change (le
+/// provider de l'ancienne saisie est libéré).
 
 final class PartenairesParCategorieProvider
     extends
@@ -556,11 +566,21 @@ final class PartenairesParCategorieProvider
     with
         $FutureModifier<List<PartenaireCategorie>>,
         $StreamProvider<List<PartenaireCategorie>> {
-  /// Annuaire des prestataires d'une catégorie, filtre par les localites
-  /// choisies (le backend applique aussi la regle de portee).
+  /// Première page de l'annuaire d'une catégorie (`?page=1`), filtrée par les
+  /// localites choisies (le backend applique aussi la regle de portee) et par
+  /// [recherche] (`?q=`). Les pages suivantes sont chargées au défilement.
+  ///
+  /// Sans recherche : cache disque (consultable hors connexion). Avec
+  /// recherche : réseau seul, requête annulée dès que la saisie change (le
+  /// provider de l'ancienne saisie est libéré).
   PartenairesParCategorieProvider._({
     required PartenairesParCategorieFamily super.from,
-    required ({String slug, String? typeEtablissement, int? sousCategorie})
+    required ({
+      String slug,
+      String? typeEtablissement,
+      int? sousCategorie,
+      String recherche,
+    })
     super.argument,
   }) : super(
          retry: null,
@@ -590,12 +610,18 @@ final class PartenairesParCategorieProvider
   Stream<List<PartenaireCategorie>> create(Ref ref) {
     final argument =
         this.argument
-            as ({String slug, String? typeEtablissement, int? sousCategorie});
+            as ({
+              String slug,
+              String? typeEtablissement,
+              int? sousCategorie,
+              String recherche,
+            });
     return partenairesParCategorie(
       ref,
       slug: argument.slug,
       typeEtablissement: argument.typeEtablissement,
       sousCategorie: argument.sousCategorie,
+      recherche: argument.recherche,
     );
   }
 
@@ -612,16 +638,26 @@ final class PartenairesParCategorieProvider
 }
 
 String _$partenairesParCategorieHash() =>
-    r'027410ca430824b2e1728a240ed38b65d0b824e9';
+    r'ec17650f7c2b7f3afe3a146fba000658c52d9d92';
 
-/// Annuaire des prestataires d'une catégorie, filtre par les localites
-/// choisies (le backend applique aussi la regle de portee).
+/// Première page de l'annuaire d'une catégorie (`?page=1`), filtrée par les
+/// localites choisies (le backend applique aussi la regle de portee) et par
+/// [recherche] (`?q=`). Les pages suivantes sont chargées au défilement.
+///
+/// Sans recherche : cache disque (consultable hors connexion). Avec
+/// recherche : réseau seul, requête annulée dès que la saisie change (le
+/// provider de l'ancienne saisie est libéré).
 
 final class PartenairesParCategorieFamily extends $Family
     with
         $FunctionalFamilyOverride<
           Stream<List<PartenaireCategorie>>,
-          ({String slug, String? typeEtablissement, int? sousCategorie})
+          ({
+            String slug,
+            String? typeEtablissement,
+            int? sousCategorie,
+            String recherche,
+          })
         > {
   PartenairesParCategorieFamily._()
     : super(
@@ -632,18 +668,25 @@ final class PartenairesParCategorieFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Annuaire des prestataires d'une catégorie, filtre par les localites
-  /// choisies (le backend applique aussi la regle de portee).
+  /// Première page de l'annuaire d'une catégorie (`?page=1`), filtrée par les
+  /// localites choisies (le backend applique aussi la regle de portee) et par
+  /// [recherche] (`?q=`). Les pages suivantes sont chargées au défilement.
+  ///
+  /// Sans recherche : cache disque (consultable hors connexion). Avec
+  /// recherche : réseau seul, requête annulée dès que la saisie change (le
+  /// provider de l'ancienne saisie est libéré).
 
   PartenairesParCategorieProvider call({
     required String slug,
     String? typeEtablissement,
     int? sousCategorie,
+    String recherche = '',
   }) => PartenairesParCategorieProvider._(
     argument: (
       slug: slug,
       typeEtablissement: typeEtablissement,
       sousCategorie: sousCategorie,
+      recherche: recherche,
     ),
     from: this,
   );

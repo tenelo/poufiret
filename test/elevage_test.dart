@@ -572,12 +572,13 @@ void main() {
         const EcranCatalogue(commerceId: 90, gabarit: Gabarit.elevage),
         overrides: _page(serveur),
       );
-      // En-tête : nom, Appeler, WhatsApp ; pas de recherche, pas de puces de
-      // filtre, pas de badge Ouvert / Fermé.
+      // En-tête : nom, Appeler, WhatsApp ; la seule recherche est celle du
+      // catalogue ; pas de puces de filtre, pas de badge Ouvert / Fermé.
       expect(find.text('Ferme Koné'), findsWidgets);
       expect(find.text('Appeler'), findsOneWidget);
       expect(find.text('WhatsApp'), findsOneWidget);
-      expect(find.byType(TextField), findsNothing);
+      expect(find.byType(TextField), findsOneWidget);
+      expect(find.text('Rechercher dans le catalogue'), findsOneWidget);
       expect(find.byType(FilterChip), findsNothing);
       expect(find.text('Ouvert'), findsNothing);
       expect(find.text('Fermé'), findsNothing);
@@ -644,6 +645,109 @@ void main() {
       expect(find.text('Filtrer (1)'), findsOneWidget);
       expect(find.text('Pintade abattue'), findsOneWidget);
       expect(find.text('Poulet bicyclette'), findsNothing);
+    });
+
+    testWidgets('recherche : début de mot, casse et accents, avec la pastille', (
+      tester,
+    ) async {
+      await _monter(
+        tester,
+        const EcranCatalogue(commerceId: 90, gabarit: Gabarit.elevage),
+        overrides: _page(_PasDePagination()),
+      );
+      Future<void> chercher(String texte) async {
+        await tester.enterText(find.byType(TextField), texte);
+        await tester.pumpAndSettle();
+      }
+
+      Iterable<String> noms() => tester
+          .widgetList<TuileElevage>(find.byType(TuileElevage))
+          .map((t) => t.produit.nom);
+
+      // « Tous » : début de mot, sans casse.
+      await chercher('POUL');
+      expect(noms(), ['Poulet bicyclette']);
+      // Sans accents : « decoupe » trouve « Porc découpé ».
+      await chercher('decoupe');
+      expect(noms(), ['Porc découpé']);
+      // Milieu de mot : rien, message vide.
+      await chercher('oulet');
+      expect(find.byType(TuileElevage), findsNothing);
+      expect(
+        find.text('Aucun produit ne correspond à ces critères.'),
+        findsOneWidget,
+      );
+
+      // Avec une pastille : « p » sur « Porcs et ovins » seulement.
+      await chercher('p');
+      expect(noms(), containsAll(['Poulet bicyclette', 'Porc découpé']));
+      await tester.tap(find.text('Porcs et ovins'));
+      await tester.pumpAndSettle();
+      expect(noms(), ['Porc découpé']);
+
+      // La croix efface : tout le rayon revient.
+      await tester.tap(find.byTooltip('Effacer'));
+      await tester.pumpAndSettle();
+      expect(noms(), ['Porc découpé', 'Mouton de Tabaski']);
+    });
+
+    testWidgets('recherche et Filtrer se combinent', (tester) async {
+      await _monter(
+        tester,
+        const EcranCatalogue(commerceId: 90, gabarit: Gabarit.elevage),
+        overrides: _page(_PasDePagination()),
+      );
+      await tester.tap(find.text('Filtrer'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const ValueKey('filtre-etat_vente')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Abattu entier').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Appliquer'));
+      await tester.pumpAndSettle();
+      // Filtre : la pintade seule ; « p » la garde, « poul » l'écarte.
+      await tester.enterText(find.byType(TextField), 'p');
+      await tester.pumpAndSettle();
+      expect(find.byType(TuileElevage), findsOneWidget);
+      expect(find.text('Pintade abattue'), findsOneWidget);
+      await tester.enterText(find.byType(TextField), 'poul');
+      await tester.pumpAndSettle();
+      expect(find.byType(TuileElevage), findsNothing);
+    });
+
+    testWidgets('cartes à la hauteur de leur contenu, sans blanc dessous', (
+      tester,
+    ) async {
+      await _monter(
+        tester,
+        const EcranCatalogue(commerceId: 90, gabarit: Gabarit.elevage),
+        overrides: _page(_PasDePagination()),
+      );
+      Rect carte(String nom) => tester.getRect(
+        find.ancestor(
+          of: find.text(nom),
+          matching: find.byType(TuileElevage),
+        ),
+      );
+      // Poulet : prix, poids, livraison ; mouton : prix et « Épuisé ».
+      final poulet = carte('Poulet bicyclette');
+      final mouton = carte('Mouton de Tabaski');
+      expect(poulet.width, mouton.width);
+      expect(poulet.height, greaterThan(mouton.height));
+      // Le dernier texte touche le bas de la carte (marge de 8 seulement).
+      final livraison = tester.getRect(
+        find.descendant(
+          of: find.ancestor(
+            of: find.text('Poulet bicyclette'),
+            matching: find.byType(TuileElevage),
+          ),
+          matching: find.text('Livraison possible'),
+        ),
+      );
+      expect(poulet.bottom - livraison.bottom, lessThanOrEqualTo(10));
+      final epuise = tester.getRect(find.text('Épuisé'));
+      expect(mouton.bottom - epuise.bottom, lessThanOrEqualTo(10));
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('un seul rayon : « Tous » reste proposé et choisi', (

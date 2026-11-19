@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:dio/dio.dart' show CancelToken;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,6 +14,7 @@ import 'package:poufiret/fonctionnalites/partenaire/screens/ecran_vitrine_parten
 import 'package:poufiret/fonctionnalites/analytics/donnees/analytics_providers.dart';
 import 'package:poufiret/fonctionnalites/chat/donnees/chat_providers.dart';
 import 'package:poufiret/fonctionnalites/chat/screens/ecran_discussion.dart';
+import '../../../global/widgets/champ_recherche.dart';
 import '../../../global/widgets/puces_filtre.dart';
 import '../../../global/widgets/image_reseau.dart';
 import '../../../global/ui/notificateur.dart';
@@ -120,6 +124,108 @@ class _ContenuPrestatairesState extends ConsumerState<ContenuPrestataires> {
   /// Type d'établissement choisi (null : tous).
   String? _typeEtablissement;
 
+  /// « Rechercher un partenaire » : saisie, et terme envoyé au serveur
+  /// après une pause de frappe.
+  final _champ = TextEditingController();
+  Timer? _attente;
+  String _recherche = '';
+
+  /// Pages suivantes (2, 3...) chargées au défilement, pour la requête
+  /// [_cleSuite] et la première page [_premiere].
+  String _cleSuite = '';
+  List<PartenaireCategorie>? _premiere;
+  final _suite = <PartenaireCategorie>[];
+  int _pagesChargees = 1;
+  bool _aSuite = false;
+  bool _chargementSuite = false;
+  Object? _erreurSuite;
+  CancelToken? _annulationSuite;
+
+  @override
+  void dispose() {
+    _attente?.cancel();
+    _annulationSuite?.cancel();
+    _champ.dispose();
+    super.dispose();
+  }
+
+  void _surSaisie(String texte) {
+    _attente?.cancel();
+    _attente = Timer(const Duration(milliseconds: 400), () {
+      if (mounted) setState(() => _recherche = texte.trim());
+    });
+  }
+
+  void _effacer() {
+    _attente?.cancel();
+    _champ.clear();
+    setState(() => _recherche = '');
+  }
+
+  /// Nouvelle requête (catégorie, localités, type, sous-catégorie,
+  /// recherche) ou nouvelle première page : la suite repart de la page 2.
+  void _suivre(String cle, List<PartenaireCategorie> premiere) {
+    if (cle == _cleSuite && identical(premiere, _premiere)) return;
+    _annulationSuite?.cancel();
+    _annulationSuite = null;
+    _cleSuite = cle;
+    _premiere = premiere;
+    _suite.clear();
+    _pagesChargees = 1;
+    // Une page pleine laisse supposer une suite ; la page suivante dira
+    // (`next`) s'il y en a encore.
+    _aSuite = premiere.length >= taillePageAnnuaire;
+    _chargementSuite = false;
+    _erreurSuite = null;
+  }
+
+  /// Page suivante, à l'approche du bas de la liste.
+  Future<void> _chargerSuite({
+    required String cle,
+    required String? type,
+  }) async {
+    if (_chargementSuite || !_aSuite || _erreurSuite != null) return;
+    if (cle != _cleSuite) return;
+    final annulation = CancelToken();
+    _annulationSuite = annulation;
+    setState(() => _chargementSuite = true);
+    final page = _pagesChargees + 1;
+    final repo = ref.read(catalogueRepositoryProvider);
+    try {
+      final recu = repo.pagePartenairesDepuis(
+        await repo.partenairesParCategorieBrut(
+          widget.categorieSlug,
+          localites: ref.read(localitesChoisiesProvider),
+          typeEtablissement: type,
+          sousCategorie: widget.sousCategorieId,
+          recherche: _recherche,
+          page: page,
+          taillePage: taillePageAnnuaire,
+          annulation: annulation,
+        ),
+      );
+      if (!mounted || cle != _cleSuite) return;
+      final connus = {
+        for (final p in [...?_premiere, ..._suite]) p.id,
+      };
+      final nouveaux = recu.partenaires.where((p) => connus.add(p.id));
+      setState(() {
+        _suite.addAll(nouveaux);
+        _pagesChargees = page;
+        // Rien de neuf : on s'arrête (serveur sans pagination).
+        _aSuite = recu.aSuite && nouveaux.isNotEmpty;
+        _chargementSuite = false;
+      });
+    } catch (e) {
+      if (!mounted || cle != _cleSuite) return;
+      if (annulation.isCancelled) return;
+      setState(() {
+        _chargementSuite = false;
+        _erreurSuite = e;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final categorieId = widget.categorieId;
@@ -136,10 +242,38 @@ class _ContenuPrestatairesState extends ConsumerState<ContenuPrestataires> {
       slug: categorieSlug,
       typeEtablissement: type,
       sousCategorie: widget.sousCategorieId,
+      recherche: _recherche,
     );
     final annuaireAsync = ref.watch(provider);
+    final localites = ref.watch(localitesChoisiesProvider);
+    final cle = [
+      categorieSlug,
+      type ?? '',
+      widget.sousCategorieId ?? '',
+      ([...localites]..sort()).join(','),
+      _recherche,
+    ].join('|');
     return Column(
       children: [
+        // Sous la barre, au-dessus des pastilles : recherche serveur
+        // (nom, quartier, localité, secteur, description).
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: SizedBox(
+              height: ChampRecherche.hauteurBande,
+              child: Padding(
+                padding: ChampRecherche.marges,
+                child: ChampRecherche(
+                  controleur: _champ,
+                  indice: 'Rechercher un partenaire',
+                  onChanged: _surSaisie,
+                  onEffacer: _effacer,
+                ),
+              ),
+            ),
+          ),
+        ),
         const FiltreLocalites(),
         ?widget.entete,
         if (hoteliers)
@@ -170,17 +304,37 @@ class _ContenuPrestatairesState extends ConsumerState<ContenuPrestataires> {
                 ),
               );
             },
-            data: (tous) {
-              final prestataires = filtrerEtablissements(tous, type);
-              if (prestataires.isEmpty) {
-                return const Center(
-                  child: Text('Aucun prestataire dans cette catégorie.'),
+            data: (premiere) {
+              _suivre(cle, premiere);
+              final prestataires = filtrerEtablissements([
+                ...premiere,
+                ..._suite,
+              ], type);
+              if (prestataires.isEmpty && !_aSuite) {
+                return Center(
+                  child: Text(
+                    _recherche.isEmpty
+                        ? 'Aucun prestataire dans cette catégorie.'
+                        : 'Aucun partenaire trouvé',
+                    textAlign: TextAlign.center,
+                  ),
                 );
               }
               return GrillePrestataires(
                 deuxColonnes: widget.deuxColonnes,
                 prestataires: prestataires,
                 onRefresh: () => rafraichir(ref, provider),
+                onApprocheFin: _aSuite
+                    ? () => _chargerSuite(cle: cle, type: type)
+                    : null,
+                pied: _PiedAnnuaire(
+                  chargement: _chargementSuite,
+                  erreur: _erreurSuite,
+                  onReessayer: () {
+                    setState(() => _erreurSuite = null);
+                    _chargerSuite(cle: cle, type: type);
+                  },
+                ),
                 // Mur d'inscription : un visiteur non enregistre voit la
                 // liste mais doit creer un compte pour ouvrir une fiche
                 // partenaire.
@@ -254,11 +408,22 @@ class GrillePrestataires extends StatelessWidget {
     required this.onRefresh,
     required this.onTap,
     this.deuxColonnes = false,
+    this.onApprocheFin,
+    this.pied,
   });
 
   final List<PartenaireCategorie> prestataires;
   final Future<void> Function() onRefresh;
   final ValueChanged<PartenaireCategorie> onTap;
+
+  /// Appelé quand les dernières cartes se construisent (page suivante).
+  final VoidCallback? onApprocheFin;
+
+  /// Sous la grille : chargement de la suite, ou erreur avec « Réessayer ».
+  final Widget? pied;
+
+  /// Cartes restantes avant le bas qui déclenchent [onApprocheFin].
+  static const int _avance = 4;
 
   /// Toujours 2 colonnes, cartes compactes (sous-catégories).
   final bool deuxColonnes;
@@ -277,26 +442,92 @@ class GrillePrestataires extends StatelessWidget {
             width: largeur,
             child: RefreshIndicator(
               onRefresh: onRefresh,
-              child: GridView.builder(
+              child: CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(12),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: colonnes,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: deuxColonnes ? 0.78 : 16 / 11,
-                ),
-                itemCount: prestataires.length,
-                itemBuilder: (context, i) => _CartePrestataire(
-                  compacte: deuxColonnes,
-                  prestataire: prestataires[i],
-                  onTap: () => onTap(prestataires[i]),
-                ),
+                slivers: [
+                  SliverPadding(
+                    padding: pied == null
+                        ? const EdgeInsets.all(12)
+                        : const EdgeInsets.fromLTRB(12, 12, 12, 0),
+                    sliver: SliverGrid.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: colonnes,
+                        mainAxisSpacing: 12,
+                        crossAxisSpacing: 12,
+                        childAspectRatio: deuxColonnes ? 0.78 : 16 / 11,
+                      ),
+                      itemCount: prestataires.length,
+                      itemBuilder: (context, i) {
+                        final fin = onApprocheFin;
+                        if (fin != null && i >= prestataires.length - _avance) {
+                          WidgetsBinding.instance.addPostFrameCallback(
+                            (_) => fin(),
+                          );
+                        }
+                        return _CartePrestataire(
+                          compacte: deuxColonnes,
+                          prestataire: prestataires[i],
+                          onTap: () => onTap(prestataires[i]),
+                        );
+                      },
+                    ),
+                  ),
+                  if (pied != null) SliverToBoxAdapter(child: pied),
+                ],
               ),
             ),
           ),
         );
       },
+    );
+  }
+}
+
+/// Bas de l'annuaire : indicateur pendant le chargement de la page
+/// suivante, ou erreur réseau avec « Réessayer ».
+class _PiedAnnuaire extends StatelessWidget {
+  const _PiedAnnuaire({
+    required this.chargement,
+    required this.erreur,
+    required this.onReessayer,
+  });
+
+  final bool chargement;
+  final Object? erreur;
+  final VoidCallback onReessayer;
+
+  @override
+  Widget build(BuildContext context) {
+    final e = erreur;
+    if (e != null) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(
+              e is ApiException ? e.messageLisible : 'Erreur de chargement.',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            FilledButton(
+              onPressed: onReessayer,
+              child: const Text('Réessayer'),
+            ),
+          ],
+        ),
+      );
+    }
+    if (!chargement) return const SizedBox(height: 12);
+    return const Padding(
+      key: ValueKey('annuaire-suite'),
+      padding: EdgeInsets.all(20),
+      child: Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      ),
     );
   }
 }

@@ -9,10 +9,27 @@ import '../metier_domaine/publicite_liste.dart';
 import '../screens/ecran_publicite_detail.dart';
 import '../../../global/widgets/image_reseau.dart';
 
+/// Pubs deja ouvertes depuis le bandeau pendant la session : le bandeau ne
+/// les propose plus (une autre pub peut prendre la place, selon les regles
+/// habituelles). Rien n'est garde au-dela de la session.
+class PubsOuvertesDepuisBandeau extends Notifier<Set<String>> {
+  @override
+  Set<String> build() => const {};
+
+  void ajouter(String id) => state = {...state, id};
+}
+
+final pubsOuvertesDepuisBandeauProvider =
+    NotifierProvider<PubsOuvertesDepuisBandeau, Set<String>>(
+      PubsOuvertesDepuisBandeau.new,
+    );
+
 /// Bandeau publicitaire discret, ancre en bas de l'ecran.
 ///
 /// Semi-transparent pour ne pas masquer le contenu. Invisible s'il n'y a
-/// aucune pub a servir, et refermable par l'utilisateur.
+/// aucune pub a servir, et refermable par l'utilisateur. Toucher le bandeau
+/// le referme aussitot puis ouvre la page de la pub : il ne la recouvre
+/// jamais, et cette pub n'y revient plus pendant la session.
 class BandeauBasPublicite extends ConsumerStatefulWidget {
   const BandeauBasPublicite({super.key});
 
@@ -37,6 +54,24 @@ class _BandeauBasPubliciteState extends ConsumerState<BandeauBasPublicite> {
         );
   }
 
+  /// Toucher : le bandeau se ferme d'abord (il flotte au-dessus de toutes
+  /// les routes et recouvrirait la page de la pub), la pub est retiree du
+  /// bandeau pour la session, puis sa page s'ouvre. Le clic est compte par
+  /// la page de la pub, une fois, comme avant.
+  void _ouvrir(BuildContext context, PubliciteListe pub) {
+    final navigateur = Navigator.of(context);
+    setState(() => _ferme = true);
+    ref.read(pubsOuvertesDepuisBandeauProvider.notifier).ajouter(pub.id);
+    navigateur.push(
+      MaterialPageRoute(
+        builder: (_) => EcranPubliciteDetail(
+          id: pub.id,
+          typeAffichageSource: TypeAffichage.bandeauBas,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_ferme) return const SizedBox.shrink();
@@ -46,20 +81,34 @@ class _BandeauBasPubliciteState extends ConsumerState<BandeauBasPublicite> {
     // bandeau clignote a chaque navigation. `value` reste renseigne
     // pendant un rechargement, contrairement a maybeWhen(data:).
     final donnees = async.value;
-    // Jamais de pub dont la diffusion est terminee, meme en cache.
-    final pub = donnees?.affichables().firstOrNull;
+    // Jamais de pub dont la diffusion est terminee, meme en cache, ni de
+    // pub deja ouverte depuis le bandeau pendant la session.
+    final ouvertes = ref.watch(pubsOuvertesDepuisBandeauProvider);
+    final pub = donnees
+        ?.affichables()
+        .where((p) => !ouvertes.contains(p.id))
+        .firstOrNull;
     if (donnees == null || pub == null) return const SizedBox.shrink();
 
     // Impression seulement pour une pub confirmee par le reseau.
     if (donnees.confirmeReseau) _tracer(pub);
-    return _Bandeau(pub: pub, onFermer: () => setState(() => _ferme = true));
+    return _Bandeau(
+      pub: pub,
+      onOuvrir: () => _ouvrir(context, pub),
+      onFermer: () => setState(() => _ferme = true),
+    );
   }
 }
 
 class _Bandeau extends StatelessWidget {
-  const _Bandeau({required this.pub, required this.onFermer});
+  const _Bandeau({
+    required this.pub,
+    required this.onOuvrir,
+    required this.onFermer,
+  });
 
   final PubliciteListe pub;
+  final VoidCallback onOuvrir;
   final VoidCallback onFermer;
 
   @override
@@ -84,7 +133,7 @@ class _Bandeau extends StatelessWidget {
             builder: (context, contraintes) {
               final largeur = contraintes.maxWidth;
               // Hauteur proportionnelle a la largeur, bornee.
-              final hauteur = (largeur * 0.14).clamp(54.0, 74.0);
+              final hauteur = (largeur * 0.25).clamp(65.0, 85.0);
               // TAILLE DE L'IMAGE : reduire le "- 12" pour AGRANDIR l'image,
               // l'augmenter (ex. "- 20") pour la DIMINUER.
               final tailleImage = hauteur - 12;
@@ -96,14 +145,7 @@ class _Bandeau extends StatelessWidget {
                   children: [
                     Expanded(
                       child: InkWell(
-                        onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => EcranPubliciteDetail(
-                              id: pub.id,
-                              typeAffichageSource: TypeAffichage.bandeauBas,
-                            ),
-                          ),
-                        ),
+                        onTap: onOuvrir,
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(10, 6, 6, 6),
                           child: Row(

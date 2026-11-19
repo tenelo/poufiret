@@ -9,6 +9,7 @@ import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/format_montant.dart';
 import '../../../global/ui/squelette.dart';
 import '../../../global/widgets/barre_onglets.dart';
+import '../../../global/widgets/champ_recherche.dart';
 import '../../../global/widgets/image_reseau.dart';
 import '../../../global/widgets/message_erreur.dart';
 import '../../analytics/donnees/analytics_providers.dart';
@@ -851,16 +852,10 @@ class _EnteteCarte extends SliverPersistentHeaderDelegate {
               height: _hauteurRecherche,
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-                child: TextField(
-                  controller: champRecherche,
+                child: ChampRecherche(
+                  controleur: champRecherche,
+                  indice: indice,
                   onChanged: onRecherche,
-                  textInputAction: TextInputAction.search,
-                  decoration: InputDecoration(
-                    hintText: indice,
-                    prefixIcon: const Icon(Icons.search),
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
                 ),
               ),
             ),

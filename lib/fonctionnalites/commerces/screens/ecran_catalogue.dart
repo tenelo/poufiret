@@ -10,12 +10,15 @@ import '../../../global/config/config.dart';
 import '../../../global/errors/api_exception.dart';
 import '../../../global/ui/squelette.dart';
 import '../../../global/widgets/barre_onglets.dart';
+import '../../../global/widgets/champ_recherche.dart';
 import '../../../global/widgets/couverture_nommee.dart';
 import '../../../global/widgets/message_erreur.dart';
 import '../../analytics/donnees/analytics_providers.dart';
 import '../../analytics/donnees/service_suivi.dart';
 import '../../restaurants/donnees/restaurants_providers.dart';
 import '../../restaurants/metier_domaine/restaurant_models.dart';
+import '../../restaurants/metier_domaine/tri_restaurants.dart'
+    show filtrerPlatsDebutDeMot;
 import '../../restaurants/widgets/carte_restaurant.dart' show MedaillonLogo;
 import '../../restaurants/widgets/feuille_infos_restaurant.dart';
 import '../donnees/commerces_providers.dart';
@@ -119,6 +122,14 @@ extension ProfilCatalogue on Gabarit {
 
   bool get avecPrixMax => this == Gabarit.mode;
 
+  /// Éleveur : « Rechercher dans le catalogue », sur la pastille choisie,
+  /// combinée au bouton Filtrer.
+  bool get avecRechercheCatalogue => this == Gabarit.elevage;
+
+  /// Éleveur : chaque case prend la hauteur de son contenu (colonnes
+  /// décalées).
+  bool get grilleHauteurLibre => this == Gabarit.elevage;
+
   Presentation get presentation =>
       this == Gabarit.mode || this == Gabarit.elevage
       ? Presentation.grille
@@ -166,6 +177,14 @@ class _PageState extends ConsumerState<_Page> {
   final _champ = TextEditingController();
   Timer? _attente;
   String _recherche = '';
+
+  /// Éleveur : saisie de « Rechercher dans le catalogue », appliquée tout
+  /// de suite aux produits joints à la fiche...
+  final _champCatalogue = TextEditingController();
+  String _texteCatalogue = '';
+
+  /// ... et, après une pause de frappe, à la liste paginée (serveur).
+  String _texteCatalogueServeur = '';
   int _rayon = 0;
   FiltreCatalogue _filtre = const FiltreCatalogue();
 
@@ -173,6 +192,7 @@ class _PageState extends ConsumerState<_Page> {
   void dispose() {
     _attente?.cancel();
     _champ.dispose();
+    _champCatalogue.dispose();
     super.dispose();
   }
 
@@ -181,6 +201,24 @@ class _PageState extends ConsumerState<_Page> {
     _attente?.cancel();
     _attente = Timer(const Duration(milliseconds: 400), () {
       if (mounted) setState(() => _recherche = texte.trim());
+    });
+  }
+
+  /// Saisie dans le catalogue de l'éleveur.
+  void _surSaisieCatalogue(String texte) {
+    setState(() => _texteCatalogue = texte);
+    _attente?.cancel();
+    _attente = Timer(const Duration(milliseconds: 400), () {
+      if (mounted) setState(() => _texteCatalogueServeur = texte.trim());
+    });
+  }
+
+  void _effacerCatalogue() {
+    _attente?.cancel();
+    setState(() {
+      _champCatalogue.clear();
+      _texteCatalogue = '';
+      _texteCatalogueServeur = '';
     });
   }
 
@@ -224,7 +262,8 @@ class _PageState extends ConsumerState<_Page> {
     return RequeteProduits(
       commerceId: widget.commerce.id,
       sectionId: enRecherche ? null : rayon?.id,
-      recherche: _recherche,
+      // Éleveur paginé : la recherche du catalogue reste sur la pastille.
+      recherche: enRecherche ? _recherche : _texteCatalogueServeur,
       filtre: _filtre,
     );
   }
@@ -332,14 +371,7 @@ class _PageState extends ConsumerState<_Page> {
       surTitre: produits.any((p) => p.marque.isNotEmpty),
       mention: produits.any((p) => p.toutEpuise),
     );
-    // Éleveur : idem, prix juste sous le nom, sans blanc dans la case.
-    double hauteurAjusteeElevage(List<Plat> produits) =>
-        hauteurTexteElevageAjustee(context, produits);
-    final hauteurAjustee = switch (g) {
-      Gabarit.mode => hauteurAjusteeMode,
-      Gabarit.elevage => hauteurAjusteeElevage,
-      _ => null,
-    };
+    final hauteurAjustee = g == Gabarit.mode ? hauteurAjusteeMode : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -407,7 +439,17 @@ class _PageState extends ConsumerState<_Page> {
                                     ),
                             ),
                           )
+                        : g.avecRechercheCatalogue
+                        ? ChampRecherche(
+                            controleur: _champCatalogue,
+                            indice: 'Rechercher dans le catalogue',
+                            onChanged: _surSaisieCatalogue,
+                            onEffacer: _effacerCatalogue,
+                          )
                         : null,
+                    hauteurRecherche: g.avecRechercheCatalogue
+                        ? ChampRecherche.hauteurBande
+                        : _BarreCatalogue.hauteurRechercheBoutique,
                     boutonFiltre: _avecFiltre
                         ? OutlinedButton.icon(
                             onPressed: _filtrer,
@@ -439,11 +481,13 @@ class _PageState extends ConsumerState<_Page> {
                           !enRecherche &&
                           produitsLocaux.isNotEmpty
                       ? _GrilleLocale(
-                          produits: produitsLocaux
-                              .where(_filtre.garde)
-                              .toList(),
+                          produits: filtrerPlatsDebutDeMot(
+                            produitsLocaux.where(_filtre.garde).toList(),
+                            _texteCatalogue,
+                          ),
                           hauteurTexte: g.hauteurTexteGrille,
                           hauteurTexteSelon: hauteurAjustee,
+                          hauteurLibre: g.grilleHauteurLibre,
                           tuile: _tuile,
                         )
                       : SliverProduitsPagines(
@@ -452,6 +496,7 @@ class _PageState extends ConsumerState<_Page> {
                           presentation: g.presentation,
                           hauteurTexte: g.hauteurTexteGrille,
                           hauteurTexteSelon: hauteurAjustee,
+                          hauteurLibre: g.grilleHauteurLibre,
                           tuile: _tuile,
                           vide: 'Aucun produit dans ce rayon pour le moment.',
                         ),
@@ -771,11 +816,15 @@ class _GrilleLocale extends StatelessWidget {
     required this.hauteurTexte,
     required this.hauteurTexteSelon,
     required this.tuile,
+    this.hauteurLibre = false,
   });
 
   final List<Plat> produits;
   final double hauteurTexte;
   final double Function(List<Plat> produits)? hauteurTexteSelon;
+
+  /// Cases à la hauteur de leur contenu (colonnes décalées).
+  final bool hauteurLibre;
   final Widget Function(BuildContext context, Plat produit) tuile;
 
   @override
@@ -788,6 +837,15 @@ class _GrilleLocale extends StatelessWidget {
             'Aucun produit ne correspond à ces critères.',
             textAlign: TextAlign.center,
           ),
+        ),
+      );
+    }
+    if (hauteurLibre) {
+      return SliverPadding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 24),
+        sliver: grilleHauteurLibre(
+          nombre: produits.length,
+          element: (context, i) => tuile(context, produits[i]),
         ),
       );
     }
@@ -820,23 +878,28 @@ class _BarreCatalogue extends SliverPersistentHeaderDelegate {
     required this.onglets,
     required this.ongletActif,
     required this.onOnglet,
+    this.hauteurRecherche = hauteurRechercheBoutique,
   });
 
   final EdgeInsets marge;
   final Widget? recherche;
+
+  /// Hauteur de la bande de recherche : celle des boutiques (pharmacie,
+  /// librairie), ou celle de la carte d'un restaurant (éleveur).
+  final double hauteurRecherche;
+  static const double hauteurRechercheBoutique = 60;
   final Widget? boutonFiltre;
   final String titre;
   final List<String> onglets;
   final int ongletActif;
   final ValueChanged<int> onOnglet;
 
-  static const double _hauteurRecherche = 60;
   static const double _hauteurTitre = 48;
   static const double _hauteurOnglets = 46;
 
   @override
   double get minExtent =>
-      (recherche == null ? 0 : _hauteurRecherche) +
+      (recherche == null ? 0 : hauteurRecherche) +
       _hauteurTitre +
       (onglets.isEmpty ? 0 : _hauteurOnglets);
 
@@ -855,9 +918,9 @@ class _BarreCatalogue extends SliverPersistentHeaderDelegate {
           children: [
             if (recherche != null)
               SizedBox(
-                height: _hauteurRecherche,
+                height: hauteurRecherche,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+                  padding: ChampRecherche.marges,
                   child: recherche,
                 ),
               ),

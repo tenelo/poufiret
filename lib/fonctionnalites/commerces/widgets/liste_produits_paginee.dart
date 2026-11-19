@@ -23,6 +23,7 @@ class SliverProduitsPagines extends ConsumerWidget {
     this.hauteurTexte = 132,
     this.hauteurTexteSelon,
     this.hauteurLigne,
+    this.hauteurLibre = false,
     this.vide = 'Aucun produit pour le moment.',
     this.videRecherche = 'Aucun produit ne correspond à votre recherche.',
   });
@@ -43,6 +44,10 @@ class SliverProduitsPagines extends ConsumerWidget {
 
   /// Hauteur fixe d'une ligne de liste (sinon hauteur libre).
   final double? hauteurLigne;
+
+  /// Grille : chaque case prend la hauteur de son contenu (colonnes
+  /// décalées) au lieu d'une hauteur commune.
+  final bool hauteurLibre;
   final String vide;
   final String videRecherche;
 
@@ -96,6 +101,10 @@ class SliverProduitsPagines extends ConsumerWidget {
 
     final hauteurTexte = hauteurTexteSelon?.call(produits) ?? this.hauteurTexte;
     final corps = switch (presentation) {
+      Presentation.grille when hauteurLibre => SliverPadding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+        sliver: grilleHauteurLibre(nombre: produits.length, element: element),
+      ),
       Presentation.grille => SliverPadding(
         padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
         sliver: SliverLayoutBuilder(

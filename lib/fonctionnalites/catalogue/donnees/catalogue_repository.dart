@@ -8,6 +8,16 @@ import '../metier_domaine/article_detail.dart';
 import '../metier_domaine/resultats_recherche.dart';
 import '../metier_domaine/video_article.dart';
 
+/// Une page de l'annuaire d'une catégorie.
+class PagePartenaires {
+  const PagePartenaires({required this.partenaires, required this.aSuite});
+
+  final List<PartenaireCategorie> partenaires;
+
+  /// Le serveur annonce une page suivante.
+  final bool aSuite;
+}
+
 class CatalogueRepository {
   final Dio _dio;
 
@@ -63,12 +73,21 @@ class CatalogueRepository {
   );
 
   /// GET /catalogue/categories/<slug>/partenaires/ — annuaire d'une catégorie.
+  ///
+  /// [recherche] : `?q=` (début de mot, casse et accents ignorés, côté
+  /// serveur). [page] : réponse paginée `{count, next, previous, results}`
+  /// ([taillePage] par page) ; sans [page], liste simple.
   Future<Object?> partenairesParCategorieBrut(
     String slug, {
     List<String>? localites,
     String? typeEtablissement,
     int? sousCategorie,
+    String recherche = '',
+    int? page,
+    int? taillePage,
+    CancelToken? annulation,
   }) async {
+    final terme = recherche.trim();
     final r = await _dio.get(
       '${Env.apiPrefix}/catalogue/categories/$slug/partenaires/',
       queryParameters: {
@@ -78,14 +97,32 @@ class CatalogueRepository {
         'type_etablissement': ?typeEtablissement,
         // Catégorie parente : une seule sous-catégorie (et ses descendantes).
         'sous_categorie': ?sousCategorie,
+        if (terme.isNotEmpty) 'q': terme,
+        'page': ?page,
+        'page_size': ?taillePage,
       },
+      cancelToken: annulation,
     );
     return r.data;
   }
 
-  List<PartenaireCategorie> partenairesDepuis(Object? json) => (json as List)
-      .map((e) => PartenaireCategorie.fromJson(e as Map<String, dynamic>))
-      .toList();
+  /// Partenaires d'une réponse paginée (`results`) ou d'une liste simple.
+  List<PartenaireCategorie> partenairesDepuis(Object? json) =>
+      pagePartenairesDepuis(json).partenaires;
+
+  /// Page de l'annuaire : partenaires et présence d'une page suivante
+  /// (`next`). Une liste simple (serveur sans pagination) est complète.
+  PagePartenaires pagePartenairesDepuis(Object? json) {
+    final paginee = json is Map;
+    final brut = paginee ? json['results'] : json;
+    return PagePartenaires(
+      partenaires: [
+        for (final e in brut as List? ?? const [])
+          PartenaireCategorie.fromJson(e as Map<String, dynamic>),
+      ],
+      aSuite: paginee && json['next'] != null,
+    );
+  }
 
   /// GET /catalogue/carte/partenaires/ — tous les partenaires geolocalises
   /// de la portee (pour la carte). Filtre optionnel par [categorie] (slug).

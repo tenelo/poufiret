@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../../../global/config/config.dart';
 import '../../../global/ui/format_montant.dart';
@@ -61,6 +62,19 @@ SliverGridDelegate grilleProduits(
         MediaQuery.textScalerOf(context).scale(hauteurTexte),
   );
 }
+
+/// Grille 2 colonnes en colonnes décalées : chaque case prend la hauteur de
+/// son contenu, mêmes écarts que [grilleProduits].
+Widget grilleHauteurLibre({
+  required int nombre,
+  required Widget Function(BuildContext context, int index) element,
+}) => SliverMasonryGrid.count(
+  crossAxisCount: 2,
+  mainAxisSpacing: 12,
+  crossAxisSpacing: 12,
+  childCount: nombre,
+  itemBuilder: element,
+);
 
 /// Zone de texte d'une [TuileGrilleProduit] ajustée à son contenu : nom
 /// (2 lignes au plus) et prix, plus le sur-titre ou la mention (2 lignes)
