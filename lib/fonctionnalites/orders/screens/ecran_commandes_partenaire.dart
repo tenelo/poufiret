@@ -7,7 +7,8 @@ import '../../../global/ui/notificateur.dart';
 import '../../../global/ui/format_montant.dart';
 import '../metier_domaine/orders_models.dart';
 
-/// Transitions autorisées côté partenaire, calquées sur le backend.
+/// Repli pour une ancienne réponse sans `transitions_possibles` : les
+/// transitions côté partenaire d'avant le parcours raccourci.
 /// Clé = statut courant, valeur = liste (statut cible, libellé du bouton).
 const _actionsPartenaire = <String, List<(String, String)>>{
   'nouvelle': [('acceptee', 'Accepter'), ('refusee', 'Refuser')],
@@ -16,6 +17,21 @@ const _actionsPartenaire = <String, List<(String, String)>>{
   'prete': [('en_livraison', 'En livraison'), ('livree', 'Livrée')],
   'en_livraison': [('livree', 'Livrée')],
 };
+
+/// Boutons d'action d'une commande reçue : ceux que le serveur expose
+/// (`transitions_possibles`), sinon la table de repli. Le refus demande
+/// toujours un motif ; une autre action, seulement si le serveur l'exige.
+List<TransitionCommande> actionsPartenaire(Commande c) =>
+    c.transitionsPossibles ??
+    [
+      for (final (cible, libelle)
+          in _actionsPartenaire[c.statut] ?? const <(String, String)>[])
+        TransitionCommande(action: cible, libelle: libelle),
+    ];
+
+/// Actions qui font sortir la commande de son parcours (bouton de contour
+/// rouge plutôt que bouton plein).
+const _actionsNegatives = {'refusee', 'annulee', 'expiree'};
 
 /// Commandes reçues par le partenaire connecté.
 class EcranCommandesPartenaire extends ConsumerWidget {
@@ -74,14 +90,20 @@ class _CarteCommandeRecue extends ConsumerStatefulWidget {
 class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
   bool _occupe = false;
 
-  Future<void> _transition(String cible, String libelle) async {
+  Future<void> _transition(
+    String cible,
+    String libelle, {
+    bool motifObligatoire = false,
+  }) async {
     if (_occupe) return;
     final messenger = ScaffoldMessenger.of(context);
 
-    // Le refus demande un motif.
+    // Le refus demande un motif ; une autre action, si le serveur l'exige.
     String? motif;
-    if (cible == 'refusee') {
-      motif = await _demanderMotif();
+    if (cible == 'refusee' || motifObligatoire) {
+      motif = cible == 'refusee'
+          ? await _demanderMotif()
+          : await _demanderMotif(titre: 'Motif', confirmer: libelle);
       if (motif == null) return; // annulé
     }
 
@@ -169,12 +191,15 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
     }
   }
 
-  Future<String?> _demanderMotif() {
+  Future<String?> _demanderMotif({
+    String titre = 'Motif du refus',
+    String confirmer = 'Refuser',
+  }) {
     final controleur = TextEditingController();
     return showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Motif du refus'),
+        title: Text(titre),
         content: TextField(
           controller: controleur,
           autofocus: true,
@@ -189,7 +214,7 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, controleur.text.trim()),
-            child: const Text('Refuser'),
+            child: Text(confirmer),
           ),
         ],
       ),
@@ -200,13 +225,13 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final c = widget.commande;
-    var actions = _actionsPartenaire[c.statut] ?? const <(String, String)>[];
+    var actions = actionsPartenaire(c);
     // Commande en livraison + prete : le pont livreur remplace les
     // transitions manuelles (en_livraison / livree sont pilotes par la course).
     final bool proposerLivreur =
         c.statut == 'prete' && c.modeLivraison == 'livraison';
     if (proposerLivreur) {
-      actions = const <(String, String)>[];
+      actions = const <TransitionCommande>[];
     }
 
     return Card(
@@ -324,19 +349,27 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    for (final (cible, libelle) in actions)
-                      if (cible == 'refusee')
+                    for (final a in actions)
+                      if (_actionsNegatives.contains(a.action))
                         OutlinedButton(
-                          onPressed: () => _transition(cible, libelle),
+                          onPressed: () => _transition(
+                            a.action,
+                            _libelle(a),
+                            motifObligatoire: a.commentaireObligatoire,
+                          ),
                           style: OutlinedButton.styleFrom(
                             foregroundColor: theme.colorScheme.error,
                           ),
-                          child: Text(libelle),
+                          child: Text(_libelle(a)),
                         )
                       else
                         FilledButton(
-                          onPressed: () => _transition(cible, libelle),
-                          child: Text(libelle),
+                          onPressed: () => _transition(
+                            a.action,
+                            _libelle(a),
+                            motifObligatoire: a.commentaireObligatoire,
+                          ),
+                          child: Text(_libelle(a)),
                         ),
                   ],
                 ),
@@ -347,6 +380,10 @@ class _CarteCommandeRecueState extends ConsumerState<_CarteCommandeRecue> {
     );
   }
 }
+
+/// Libellé du bouton : celui du serveur, sinon le statut cible.
+String _libelle(TransitionCommande a) =>
+    a.libelle.isNotEmpty ? a.libelle : libelleStatutCommande(a.action);
 
 class _Vide extends StatelessWidget {
   const _Vide();

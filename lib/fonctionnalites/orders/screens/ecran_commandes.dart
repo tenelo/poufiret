@@ -378,6 +378,13 @@ class _EcranCommandeDetailState extends ConsumerState<EcranCommandeDetail> {
                         ),
                       ],
                     ),
+                    // Frise du parcours de CETTE commande (étapes du
+                    // serveur) ; absente sur une ancienne réponse ou une
+                    // commande refusée / annulée / expirée.
+                    if (c.frise != null) ...[
+                      const SizedBox(height: 16),
+                      FriseCommande(commande: c),
+                    ],
                     if (c.raisonRefus.isNotEmpty) ...[
                       const SizedBox(height: 8),
                       Text(
@@ -475,6 +482,60 @@ class _EcranCommandeDetailState extends ConsumerState<EcranCommandeDetail> {
           },
         ),
       ),
+    );
+  }
+}
+
+/// Frise verticale du suivi : une ligne par étape du parcours de la
+/// commande (`etapes`), cochée si franchie, mise en avant si en cours.
+class FriseCommande extends StatelessWidget {
+  const FriseCommande({super.key, required this.commande});
+
+  final Commande commande;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final etapes = commande.frise ?? const <String>[];
+    final rang = commande.rangEtape;
+    final actif = theme.colorScheme.primary;
+    final inactif = theme.colorScheme.outline;
+    return Column(
+      key: const ValueKey('frise-commande'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < etapes.length; i++)
+          Padding(
+            key: ValueKey('etape-${etapes[i]}'),
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Icon(
+                  i < rang
+                      ? Icons.check_circle
+                      : i == rang
+                      ? Icons.radio_button_checked
+                      : Icons.radio_button_unchecked,
+                  size: 20,
+                  color: i <= rang ? actif : inactif,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    libelleStatutCommande(
+                      etapes[i],
+                      parcours: commande.parcours,
+                    ),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: i <= rang ? null : inactif,
+                      fontWeight: i == rang ? FontWeight.w600 : null,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }

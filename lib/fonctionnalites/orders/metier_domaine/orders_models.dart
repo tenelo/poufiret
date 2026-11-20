@@ -155,6 +155,49 @@ abstract class LigneCommande with _$LigneCommande {
       _$LigneCommandeFromJson(json);
 }
 
+/// Action possible sur une commande, telle que le serveur l'expose
+/// (`transitions_possibles`) : statut cible, libellé du bouton, motif exigé.
+@freezed
+abstract class TransitionCommande with _$TransitionCommande {
+  const factory TransitionCommande({
+    required String action,
+    @Default('') String libelle,
+    @JsonKey(name: 'commentaire_obligatoire')
+    @Default(false)
+    bool commentaireObligatoire,
+  }) = _TransitionCommande;
+
+  factory TransitionCommande.fromJson(Map<String, dynamic> json) =>
+      _$TransitionCommandeFromJson(json);
+}
+
+/// Parcours de la restauration (« Accepter » lance la préparation) ; les
+/// commerces suivent le parcours « court ».
+const parcoursRestauration = 'restauration';
+
+/// Statuts hors frise : la commande a quitté son parcours normal.
+const statutsHorsFrise = {'refusee', 'annulee', 'expiree'};
+
+/// Libellé lisible d'un statut de commande. « acceptee » devient « Acceptée
+/// · en préparation » au parcours restauration.
+String libelleStatutCommande(String statut, {String parcours = ''}) {
+  if (statut == 'acceptee' && parcours == parcoursRestauration) {
+    return 'Acceptée · en préparation';
+  }
+  return const {
+        'nouvelle': 'Nouvelle',
+        'acceptee': 'Acceptée',
+        'refusee': 'Refusée',
+        'en_preparation': 'En préparation',
+        'prete': 'Prête',
+        'en_livraison': 'En livraison',
+        'livree': 'Livrée',
+        'annulee': 'Annulée',
+        'expiree': 'Expirée',
+      }[statut] ??
+      statut;
+}
+
 /// Une commande passée.
 @freezed
 abstract class Commande with _$Commande {
@@ -185,25 +228,47 @@ abstract class Commande with _$Commande {
     /// et id de l'avis déjà donné.
     @JsonKey(name: 'peut_noter') @Default(false) bool peutNoter,
     @JsonKey(name: 'mon_avis', fromJson: versIntNullable) int? monAvis,
+
+    /// « court » (commerces) ou « restauration » ; vide sur une ancienne
+    /// réponse.
+    @Default('') String parcours,
+
+    /// Statuts du parcours normal de CETTE commande, dans l'ordre (frise de
+    /// suivi) ; null sur une ancienne réponse.
+    List<String>? etapes,
+
+    /// Actions que le demandeur peut faire maintenant ; null sur une
+    /// ancienne réponse.
+    @JsonKey(name: 'transitions_possibles')
+    List<TransitionCommande>? transitionsPossibles,
   }) = _Commande;
 
   factory Commande.fromJson(Map<String, dynamic> json) =>
       _$CommandeFromJson(json);
 
   /// Libellé lisible du statut.
-  String get statutLibelle =>
-      const {
-        'nouvelle': 'Nouvelle',
-        'acceptee': 'Acceptée',
-        'refusee': 'Refusée',
-        'en_preparation': 'En préparation',
-        'prete': 'Prête',
-        'en_livraison': 'En livraison',
-        'livree': 'Livrée',
-        'annulee': 'Annulée',
-        'expiree': 'Expirée',
-      }[statut] ??
-      statut;
+  String get statutLibelle => libelleStatutCommande(statut, parcours: parcours);
+
+  /// Frise de suivi à afficher : les étapes reçues, si la commande est
+  /// encore dans son parcours normal. null : affichage habituel (ancienne
+  /// réponse sans étapes, ou commande refusée / annulée / expirée).
+  List<String>? get frise {
+    final e = etapes;
+    if (e == null || e.isEmpty || statutsHorsFrise.contains(statut)) {
+      return null;
+    }
+    return e;
+  }
+
+  /// Rang de l'étape atteinte dans la [frise] (-1 si inconnu). Une ancienne
+  /// commande « en préparation » se place sur l'étape « acceptee ».
+  int get rangEtape {
+    final e = frise;
+    if (e == null) return -1;
+    final rang = e.indexOf(statut);
+    if (rang >= 0) return rang;
+    return statut == 'en_preparation' ? e.indexOf('acceptee') : -1;
+  }
 
   /// Libellé du mode de livraison.
   String get modeLivraisonLibelle =>

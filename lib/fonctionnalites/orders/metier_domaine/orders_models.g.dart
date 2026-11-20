@@ -127,6 +127,20 @@ Map<String, dynamic> _$LigneCommandeToJson(_LigneCommande instance) =>
       'image': instance.image,
     };
 
+_TransitionCommande _$TransitionCommandeFromJson(Map<String, dynamic> json) =>
+    _TransitionCommande(
+      action: json['action'] as String,
+      libelle: json['libelle'] as String? ?? '',
+      commentaireObligatoire: json['commentaire_obligatoire'] as bool? ?? false,
+    );
+
+Map<String, dynamic> _$TransitionCommandeToJson(_TransitionCommande instance) =>
+    <String, dynamic>{
+      'action': instance.action,
+      'libelle': instance.libelle,
+      'commentaire_obligatoire': instance.commentaireObligatoire,
+    };
+
 _Commande _$CommandeFromJson(Map<String, dynamic> json) => _Commande(
   id: (json['id'] as num).toInt(),
   numero: json['numero'] as String? ?? '',
@@ -153,6 +167,11 @@ _Commande _$CommandeFromJson(Map<String, dynamic> json) => _Commande(
   createdAt: json['created_at'] as String?,
   peutNoter: json['peut_noter'] as bool? ?? false,
   monAvis: versIntNullable(json['mon_avis']),
+  parcours: json['parcours'] as String? ?? '',
+  etapes: (json['etapes'] as List<dynamic>?)?.map((e) => e as String).toList(),
+  transitionsPossibles: (json['transitions_possibles'] as List<dynamic>?)
+      ?.map((e) => TransitionCommande.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$CommandeToJson(_Commande instance) => <String, dynamic>{
@@ -175,4 +194,7 @@ Map<String, dynamic> _$CommandeToJson(_Commande instance) => <String, dynamic>{
   'created_at': instance.createdAt,
   'peut_noter': instance.peutNoter,
   'mon_avis': instance.monAvis,
+  'parcours': instance.parcours,
+  'etapes': instance.etapes,
+  'transitions_possibles': instance.transitionsPossibles,
 };

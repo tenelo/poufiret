@@ -1192,11 +1192,286 @@ as String?,
 
 
 /// @nodoc
+mixin _$TransitionCommande {
+
+ String get action; String get libelle;@JsonKey(name: 'commentaire_obligatoire') bool get commentaireObligatoire;
+/// Create a copy of TransitionCommande
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TransitionCommandeCopyWith<TransitionCommande> get copyWith => _$TransitionCommandeCopyWithImpl<TransitionCommande>(this as TransitionCommande, _$identity);
+
+  /// Serializes this TransitionCommande to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TransitionCommande&&(identical(other.action, action) || other.action == action)&&(identical(other.libelle, libelle) || other.libelle == libelle)&&(identical(other.commentaireObligatoire, commentaireObligatoire) || other.commentaireObligatoire == commentaireObligatoire));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,action,libelle,commentaireObligatoire);
+
+@override
+String toString() {
+  return 'TransitionCommande(action: $action, libelle: $libelle, commentaireObligatoire: $commentaireObligatoire)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TransitionCommandeCopyWith<$Res>  {
+  factory $TransitionCommandeCopyWith(TransitionCommande value, $Res Function(TransitionCommande) _then) = _$TransitionCommandeCopyWithImpl;
+@useResult
+$Res call({
+ String action, String libelle,@JsonKey(name: 'commentaire_obligatoire') bool commentaireObligatoire
+});
+
+
+
+
+}
+/// @nodoc
+class _$TransitionCommandeCopyWithImpl<$Res>
+    implements $TransitionCommandeCopyWith<$Res> {
+  _$TransitionCommandeCopyWithImpl(this._self, this._then);
+
+  final TransitionCommande _self;
+  final $Res Function(TransitionCommande) _then;
+
+/// Create a copy of TransitionCommande
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? action = null,Object? libelle = null,Object? commentaireObligatoire = null,}) {
+  return _then(_self.copyWith(
+action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
+as String,libelle: null == libelle ? _self.libelle : libelle // ignore: cast_nullable_to_non_nullable
+as String,commentaireObligatoire: null == commentaireObligatoire ? _self.commentaireObligatoire : commentaireObligatoire // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [TransitionCommande].
+extension TransitionCommandePatterns on TransitionCommande {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TransitionCommande value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _TransitionCommande() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TransitionCommande value)  $default,){
+final _that = this;
+switch (_that) {
+case _TransitionCommande():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TransitionCommande value)?  $default,){
+final _that = this;
+switch (_that) {
+case _TransitionCommande() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String action,  String libelle, @JsonKey(name: 'commentaire_obligatoire')  bool commentaireObligatoire)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _TransitionCommande() when $default != null:
+return $default(_that.action,_that.libelle,_that.commentaireObligatoire);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String action,  String libelle, @JsonKey(name: 'commentaire_obligatoire')  bool commentaireObligatoire)  $default,) {final _that = this;
+switch (_that) {
+case _TransitionCommande():
+return $default(_that.action,_that.libelle,_that.commentaireObligatoire);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String action,  String libelle, @JsonKey(name: 'commentaire_obligatoire')  bool commentaireObligatoire)?  $default,) {final _that = this;
+switch (_that) {
+case _TransitionCommande() when $default != null:
+return $default(_that.action,_that.libelle,_that.commentaireObligatoire);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _TransitionCommande implements TransitionCommande {
+  const _TransitionCommande({required this.action, this.libelle = '', @JsonKey(name: 'commentaire_obligatoire') this.commentaireObligatoire = false});
+  factory _TransitionCommande.fromJson(Map<String, dynamic> json) => _$TransitionCommandeFromJson(json);
+
+@override final  String action;
+@override@JsonKey() final  String libelle;
+@override@JsonKey(name: 'commentaire_obligatoire') final  bool commentaireObligatoire;
+
+/// Create a copy of TransitionCommande
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TransitionCommandeCopyWith<_TransitionCommande> get copyWith => __$TransitionCommandeCopyWithImpl<_TransitionCommande>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$TransitionCommandeToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TransitionCommande&&(identical(other.action, action) || other.action == action)&&(identical(other.libelle, libelle) || other.libelle == libelle)&&(identical(other.commentaireObligatoire, commentaireObligatoire) || other.commentaireObligatoire == commentaireObligatoire));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,action,libelle,commentaireObligatoire);
+
+@override
+String toString() {
+  return 'TransitionCommande(action: $action, libelle: $libelle, commentaireObligatoire: $commentaireObligatoire)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$TransitionCommandeCopyWith<$Res> implements $TransitionCommandeCopyWith<$Res> {
+  factory _$TransitionCommandeCopyWith(_TransitionCommande value, $Res Function(_TransitionCommande) _then) = __$TransitionCommandeCopyWithImpl;
+@override @useResult
+$Res call({
+ String action, String libelle,@JsonKey(name: 'commentaire_obligatoire') bool commentaireObligatoire
+});
+
+
+
+
+}
+/// @nodoc
+class __$TransitionCommandeCopyWithImpl<$Res>
+    implements _$TransitionCommandeCopyWith<$Res> {
+  __$TransitionCommandeCopyWithImpl(this._self, this._then);
+
+  final _TransitionCommande _self;
+  final $Res Function(_TransitionCommande) _then;
+
+/// Create a copy of TransitionCommande
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? action = null,Object? libelle = null,Object? commentaireObligatoire = null,}) {
+  return _then(_TransitionCommande(
+action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
+as String,libelle: null == libelle ? _self.libelle : libelle // ignore: cast_nullable_to_non_nullable
+as String,commentaireObligatoire: null == commentaireObligatoire ? _self.commentaireObligatoire : commentaireObligatoire // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$Commande {
 
  int get id; String get numero; int? get partenaire;@JsonKey(name: 'partenaire_nom') String get partenaireNom;@JsonKey(name: 'client_nom') String get clientNom;@JsonKey(name: 'client_telephone') String get clientTelephone;@JsonKey(name: 'mode_livraison') String get modeLivraison;@JsonKey(name: 'adresse_snapshot') String get adresseSnapshot; String get statut;@JsonKey(name: 'raison_refus') String get raisonRefus;@JsonKey(name: 'sous_total', fromJson: _versInt) int get sousTotal;@JsonKey(name: 'frais_livraison', fromJson: _versInt) int get fraisLivraison;@JsonKey(fromJson: _versInt) int get total;@JsonKey(name: 'mode_paiement') String get modePaiement;@JsonKey(name: 'notes_client') String get notesClient; List<LigneCommande> get lignes;@JsonKey(name: 'created_at') String? get createdAt;/// Avis client : notable maintenant (livré / terminé, pas encore noté),
 /// et id de l'avis déjà donné.
-@JsonKey(name: 'peut_noter') bool get peutNoter;@JsonKey(name: 'mon_avis', fromJson: versIntNullable) int? get monAvis;
+@JsonKey(name: 'peut_noter') bool get peutNoter;@JsonKey(name: 'mon_avis', fromJson: versIntNullable) int? get monAvis;/// « court » (commerces) ou « restauration » ; vide sur une ancienne
+/// réponse.
+ String get parcours;/// Statuts du parcours normal de CETTE commande, dans l'ordre (frise de
+/// suivi) ; null sur une ancienne réponse.
+ List<String>? get etapes;/// Actions que le demandeur peut faire maintenant ; null sur une
+/// ancienne réponse.
+@JsonKey(name: 'transitions_possibles') List<TransitionCommande>? get transitionsPossibles;
 /// Create a copy of Commande
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1209,16 +1484,16 @@ $CommandeCopyWith<Commande> get copyWith => _$CommandeCopyWithImpl<Commande>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Commande&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.partenaire, partenaire) || other.partenaire == partenaire)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.clientNom, clientNom) || other.clientNom == clientNom)&&(identical(other.clientTelephone, clientTelephone) || other.clientTelephone == clientTelephone)&&(identical(other.modeLivraison, modeLivraison) || other.modeLivraison == modeLivraison)&&(identical(other.adresseSnapshot, adresseSnapshot) || other.adresseSnapshot == adresseSnapshot)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.raisonRefus, raisonRefus) || other.raisonRefus == raisonRefus)&&(identical(other.sousTotal, sousTotal) || other.sousTotal == sousTotal)&&(identical(other.fraisLivraison, fraisLivraison) || other.fraisLivraison == fraisLivraison)&&(identical(other.total, total) || other.total == total)&&(identical(other.modePaiement, modePaiement) || other.modePaiement == modePaiement)&&(identical(other.notesClient, notesClient) || other.notesClient == notesClient)&&const DeepCollectionEquality().equals(other.lignes, lignes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.peutNoter, peutNoter) || other.peutNoter == peutNoter)&&(identical(other.monAvis, monAvis) || other.monAvis == monAvis));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Commande&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.partenaire, partenaire) || other.partenaire == partenaire)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.clientNom, clientNom) || other.clientNom == clientNom)&&(identical(other.clientTelephone, clientTelephone) || other.clientTelephone == clientTelephone)&&(identical(other.modeLivraison, modeLivraison) || other.modeLivraison == modeLivraison)&&(identical(other.adresseSnapshot, adresseSnapshot) || other.adresseSnapshot == adresseSnapshot)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.raisonRefus, raisonRefus) || other.raisonRefus == raisonRefus)&&(identical(other.sousTotal, sousTotal) || other.sousTotal == sousTotal)&&(identical(other.fraisLivraison, fraisLivraison) || other.fraisLivraison == fraisLivraison)&&(identical(other.total, total) || other.total == total)&&(identical(other.modePaiement, modePaiement) || other.modePaiement == modePaiement)&&(identical(other.notesClient, notesClient) || other.notesClient == notesClient)&&const DeepCollectionEquality().equals(other.lignes, lignes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.peutNoter, peutNoter) || other.peutNoter == peutNoter)&&(identical(other.monAvis, monAvis) || other.monAvis == monAvis)&&(identical(other.parcours, parcours) || other.parcours == parcours)&&const DeepCollectionEquality().equals(other.etapes, etapes)&&const DeepCollectionEquality().equals(other.transitionsPossibles, transitionsPossibles));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,numero,partenaire,partenaireNom,clientNom,clientTelephone,modeLivraison,adresseSnapshot,statut,raisonRefus,sousTotal,fraisLivraison,total,modePaiement,notesClient,const DeepCollectionEquality().hash(lignes),createdAt,peutNoter,monAvis]);
+int get hashCode => Object.hashAll([runtimeType,id,numero,partenaire,partenaireNom,clientNom,clientTelephone,modeLivraison,adresseSnapshot,statut,raisonRefus,sousTotal,fraisLivraison,total,modePaiement,notesClient,const DeepCollectionEquality().hash(lignes),createdAt,peutNoter,monAvis,parcours,const DeepCollectionEquality().hash(etapes),const DeepCollectionEquality().hash(transitionsPossibles)]);
 
 @override
 String toString() {
-  return 'Commande(id: $id, numero: $numero, partenaire: $partenaire, partenaireNom: $partenaireNom, clientNom: $clientNom, clientTelephone: $clientTelephone, modeLivraison: $modeLivraison, adresseSnapshot: $adresseSnapshot, statut: $statut, raisonRefus: $raisonRefus, sousTotal: $sousTotal, fraisLivraison: $fraisLivraison, total: $total, modePaiement: $modePaiement, notesClient: $notesClient, lignes: $lignes, createdAt: $createdAt, peutNoter: $peutNoter, monAvis: $monAvis)';
+  return 'Commande(id: $id, numero: $numero, partenaire: $partenaire, partenaireNom: $partenaireNom, clientNom: $clientNom, clientTelephone: $clientTelephone, modeLivraison: $modeLivraison, adresseSnapshot: $adresseSnapshot, statut: $statut, raisonRefus: $raisonRefus, sousTotal: $sousTotal, fraisLivraison: $fraisLivraison, total: $total, modePaiement: $modePaiement, notesClient: $notesClient, lignes: $lignes, createdAt: $createdAt, peutNoter: $peutNoter, monAvis: $monAvis, parcours: $parcours, etapes: $etapes, transitionsPossibles: $transitionsPossibles)';
 }
 
 
@@ -1229,7 +1504,7 @@ abstract mixin class $CommandeCopyWith<$Res>  {
   factory $CommandeCopyWith(Commande value, $Res Function(Commande) _then) = _$CommandeCopyWithImpl;
 @useResult
 $Res call({
- int id, String numero, int? partenaire,@JsonKey(name: 'partenaire_nom') String partenaireNom,@JsonKey(name: 'client_nom') String clientNom,@JsonKey(name: 'client_telephone') String clientTelephone,@JsonKey(name: 'mode_livraison') String modeLivraison,@JsonKey(name: 'adresse_snapshot') String adresseSnapshot, String statut,@JsonKey(name: 'raison_refus') String raisonRefus,@JsonKey(name: 'sous_total', fromJson: _versInt) int sousTotal,@JsonKey(name: 'frais_livraison', fromJson: _versInt) int fraisLivraison,@JsonKey(fromJson: _versInt) int total,@JsonKey(name: 'mode_paiement') String modePaiement,@JsonKey(name: 'notes_client') String notesClient, List<LigneCommande> lignes,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'peut_noter') bool peutNoter,@JsonKey(name: 'mon_avis', fromJson: versIntNullable) int? monAvis
+ int id, String numero, int? partenaire,@JsonKey(name: 'partenaire_nom') String partenaireNom,@JsonKey(name: 'client_nom') String clientNom,@JsonKey(name: 'client_telephone') String clientTelephone,@JsonKey(name: 'mode_livraison') String modeLivraison,@JsonKey(name: 'adresse_snapshot') String adresseSnapshot, String statut,@JsonKey(name: 'raison_refus') String raisonRefus,@JsonKey(name: 'sous_total', fromJson: _versInt) int sousTotal,@JsonKey(name: 'frais_livraison', fromJson: _versInt) int fraisLivraison,@JsonKey(fromJson: _versInt) int total,@JsonKey(name: 'mode_paiement') String modePaiement,@JsonKey(name: 'notes_client') String notesClient, List<LigneCommande> lignes,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'peut_noter') bool peutNoter,@JsonKey(name: 'mon_avis', fromJson: versIntNullable) int? monAvis, String parcours, List<String>? etapes,@JsonKey(name: 'transitions_possibles') List<TransitionCommande>? transitionsPossibles
 });
 
 
@@ -1246,7 +1521,7 @@ class _$CommandeCopyWithImpl<$Res>
 
 /// Create a copy of Commande
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? numero = null,Object? partenaire = freezed,Object? partenaireNom = null,Object? clientNom = null,Object? clientTelephone = null,Object? modeLivraison = null,Object? adresseSnapshot = null,Object? statut = null,Object? raisonRefus = null,Object? sousTotal = null,Object? fraisLivraison = null,Object? total = null,Object? modePaiement = null,Object? notesClient = null,Object? lignes = null,Object? createdAt = freezed,Object? peutNoter = null,Object? monAvis = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? numero = null,Object? partenaire = freezed,Object? partenaireNom = null,Object? clientNom = null,Object? clientTelephone = null,Object? modeLivraison = null,Object? adresseSnapshot = null,Object? statut = null,Object? raisonRefus = null,Object? sousTotal = null,Object? fraisLivraison = null,Object? total = null,Object? modePaiement = null,Object? notesClient = null,Object? lignes = null,Object? createdAt = freezed,Object? peutNoter = null,Object? monAvis = freezed,Object? parcours = null,Object? etapes = freezed,Object? transitionsPossibles = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,numero: null == numero ? _self.numero : numero // ignore: cast_nullable_to_non_nullable
@@ -1267,7 +1542,10 @@ as String,lignes: null == lignes ? _self.lignes : lignes // ignore: cast_nullabl
 as List<LigneCommande>,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String?,peutNoter: null == peutNoter ? _self.peutNoter : peutNoter // ignore: cast_nullable_to_non_nullable
 as bool,monAvis: freezed == monAvis ? _self.monAvis : monAvis // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,parcours: null == parcours ? _self.parcours : parcours // ignore: cast_nullable_to_non_nullable
+as String,etapes: freezed == etapes ? _self.etapes : etapes // ignore: cast_nullable_to_non_nullable
+as List<String>?,transitionsPossibles: freezed == transitionsPossibles ? _self.transitionsPossibles : transitionsPossibles // ignore: cast_nullable_to_non_nullable
+as List<TransitionCommande>?,
   ));
 }
 
@@ -1352,10 +1630,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String numero,  int? partenaire, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'client_nom')  String clientNom, @JsonKey(name: 'client_telephone')  String clientTelephone, @JsonKey(name: 'mode_livraison')  String modeLivraison, @JsonKey(name: 'adresse_snapshot')  String adresseSnapshot,  String statut, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'sous_total', fromJson: _versInt)  int sousTotal, @JsonKey(name: 'frais_livraison', fromJson: _versInt)  int fraisLivraison, @JsonKey(fromJson: _versInt)  int total, @JsonKey(name: 'mode_paiement')  String modePaiement, @JsonKey(name: 'notes_client')  String notesClient,  List<LigneCommande> lignes, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'peut_noter')  bool peutNoter, @JsonKey(name: 'mon_avis', fromJson: versIntNullable)  int? monAvis)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String numero,  int? partenaire, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'client_nom')  String clientNom, @JsonKey(name: 'client_telephone')  String clientTelephone, @JsonKey(name: 'mode_livraison')  String modeLivraison, @JsonKey(name: 'adresse_snapshot')  String adresseSnapshot,  String statut, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'sous_total', fromJson: _versInt)  int sousTotal, @JsonKey(name: 'frais_livraison', fromJson: _versInt)  int fraisLivraison, @JsonKey(fromJson: _versInt)  int total, @JsonKey(name: 'mode_paiement')  String modePaiement, @JsonKey(name: 'notes_client')  String notesClient,  List<LigneCommande> lignes, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'peut_noter')  bool peutNoter, @JsonKey(name: 'mon_avis', fromJson: versIntNullable)  int? monAvis,  String parcours,  List<String>? etapes, @JsonKey(name: 'transitions_possibles')  List<TransitionCommande>? transitionsPossibles)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Commande() when $default != null:
-return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that.clientNom,_that.clientTelephone,_that.modeLivraison,_that.adresseSnapshot,_that.statut,_that.raisonRefus,_that.sousTotal,_that.fraisLivraison,_that.total,_that.modePaiement,_that.notesClient,_that.lignes,_that.createdAt,_that.peutNoter,_that.monAvis);case _:
+return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that.clientNom,_that.clientTelephone,_that.modeLivraison,_that.adresseSnapshot,_that.statut,_that.raisonRefus,_that.sousTotal,_that.fraisLivraison,_that.total,_that.modePaiement,_that.notesClient,_that.lignes,_that.createdAt,_that.peutNoter,_that.monAvis,_that.parcours,_that.etapes,_that.transitionsPossibles);case _:
   return orElse();
 
 }
@@ -1373,10 +1651,10 @@ return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String numero,  int? partenaire, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'client_nom')  String clientNom, @JsonKey(name: 'client_telephone')  String clientTelephone, @JsonKey(name: 'mode_livraison')  String modeLivraison, @JsonKey(name: 'adresse_snapshot')  String adresseSnapshot,  String statut, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'sous_total', fromJson: _versInt)  int sousTotal, @JsonKey(name: 'frais_livraison', fromJson: _versInt)  int fraisLivraison, @JsonKey(fromJson: _versInt)  int total, @JsonKey(name: 'mode_paiement')  String modePaiement, @JsonKey(name: 'notes_client')  String notesClient,  List<LigneCommande> lignes, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'peut_noter')  bool peutNoter, @JsonKey(name: 'mon_avis', fromJson: versIntNullable)  int? monAvis)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String numero,  int? partenaire, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'client_nom')  String clientNom, @JsonKey(name: 'client_telephone')  String clientTelephone, @JsonKey(name: 'mode_livraison')  String modeLivraison, @JsonKey(name: 'adresse_snapshot')  String adresseSnapshot,  String statut, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'sous_total', fromJson: _versInt)  int sousTotal, @JsonKey(name: 'frais_livraison', fromJson: _versInt)  int fraisLivraison, @JsonKey(fromJson: _versInt)  int total, @JsonKey(name: 'mode_paiement')  String modePaiement, @JsonKey(name: 'notes_client')  String notesClient,  List<LigneCommande> lignes, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'peut_noter')  bool peutNoter, @JsonKey(name: 'mon_avis', fromJson: versIntNullable)  int? monAvis,  String parcours,  List<String>? etapes, @JsonKey(name: 'transitions_possibles')  List<TransitionCommande>? transitionsPossibles)  $default,) {final _that = this;
 switch (_that) {
 case _Commande():
-return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that.clientNom,_that.clientTelephone,_that.modeLivraison,_that.adresseSnapshot,_that.statut,_that.raisonRefus,_that.sousTotal,_that.fraisLivraison,_that.total,_that.modePaiement,_that.notesClient,_that.lignes,_that.createdAt,_that.peutNoter,_that.monAvis);case _:
+return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that.clientNom,_that.clientTelephone,_that.modeLivraison,_that.adresseSnapshot,_that.statut,_that.raisonRefus,_that.sousTotal,_that.fraisLivraison,_that.total,_that.modePaiement,_that.notesClient,_that.lignes,_that.createdAt,_that.peutNoter,_that.monAvis,_that.parcours,_that.etapes,_that.transitionsPossibles);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1393,10 +1671,10 @@ return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String numero,  int? partenaire, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'client_nom')  String clientNom, @JsonKey(name: 'client_telephone')  String clientTelephone, @JsonKey(name: 'mode_livraison')  String modeLivraison, @JsonKey(name: 'adresse_snapshot')  String adresseSnapshot,  String statut, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'sous_total', fromJson: _versInt)  int sousTotal, @JsonKey(name: 'frais_livraison', fromJson: _versInt)  int fraisLivraison, @JsonKey(fromJson: _versInt)  int total, @JsonKey(name: 'mode_paiement')  String modePaiement, @JsonKey(name: 'notes_client')  String notesClient,  List<LigneCommande> lignes, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'peut_noter')  bool peutNoter, @JsonKey(name: 'mon_avis', fromJson: versIntNullable)  int? monAvis)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String numero,  int? partenaire, @JsonKey(name: 'partenaire_nom')  String partenaireNom, @JsonKey(name: 'client_nom')  String clientNom, @JsonKey(name: 'client_telephone')  String clientTelephone, @JsonKey(name: 'mode_livraison')  String modeLivraison, @JsonKey(name: 'adresse_snapshot')  String adresseSnapshot,  String statut, @JsonKey(name: 'raison_refus')  String raisonRefus, @JsonKey(name: 'sous_total', fromJson: _versInt)  int sousTotal, @JsonKey(name: 'frais_livraison', fromJson: _versInt)  int fraisLivraison, @JsonKey(fromJson: _versInt)  int total, @JsonKey(name: 'mode_paiement')  String modePaiement, @JsonKey(name: 'notes_client')  String notesClient,  List<LigneCommande> lignes, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'peut_noter')  bool peutNoter, @JsonKey(name: 'mon_avis', fromJson: versIntNullable)  int? monAvis,  String parcours,  List<String>? etapes, @JsonKey(name: 'transitions_possibles')  List<TransitionCommande>? transitionsPossibles)?  $default,) {final _that = this;
 switch (_that) {
 case _Commande() when $default != null:
-return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that.clientNom,_that.clientTelephone,_that.modeLivraison,_that.adresseSnapshot,_that.statut,_that.raisonRefus,_that.sousTotal,_that.fraisLivraison,_that.total,_that.modePaiement,_that.notesClient,_that.lignes,_that.createdAt,_that.peutNoter,_that.monAvis);case _:
+return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that.clientNom,_that.clientTelephone,_that.modeLivraison,_that.adresseSnapshot,_that.statut,_that.raisonRefus,_that.sousTotal,_that.fraisLivraison,_that.total,_that.modePaiement,_that.notesClient,_that.lignes,_that.createdAt,_that.peutNoter,_that.monAvis,_that.parcours,_that.etapes,_that.transitionsPossibles);case _:
   return null;
 
 }
@@ -1408,7 +1686,7 @@ return $default(_that.id,_that.numero,_that.partenaire,_that.partenaireNom,_that
 @JsonSerializable()
 
 class _Commande extends Commande {
-  const _Commande({required this.id, this.numero = '', this.partenaire, @JsonKey(name: 'partenaire_nom') this.partenaireNom = '', @JsonKey(name: 'client_nom') this.clientNom = '', @JsonKey(name: 'client_telephone') this.clientTelephone = '', @JsonKey(name: 'mode_livraison') this.modeLivraison = 'emporter', @JsonKey(name: 'adresse_snapshot') this.adresseSnapshot = '', this.statut = 'nouvelle', @JsonKey(name: 'raison_refus') this.raisonRefus = '', @JsonKey(name: 'sous_total', fromJson: _versInt) this.sousTotal = 0, @JsonKey(name: 'frais_livraison', fromJson: _versInt) this.fraisLivraison = 0, @JsonKey(fromJson: _versInt) this.total = 0, @JsonKey(name: 'mode_paiement') this.modePaiement = 'cash', @JsonKey(name: 'notes_client') this.notesClient = '', final  List<LigneCommande> lignes = const <LigneCommande>[], @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'peut_noter') this.peutNoter = false, @JsonKey(name: 'mon_avis', fromJson: versIntNullable) this.monAvis}): _lignes = lignes,super._();
+  const _Commande({required this.id, this.numero = '', this.partenaire, @JsonKey(name: 'partenaire_nom') this.partenaireNom = '', @JsonKey(name: 'client_nom') this.clientNom = '', @JsonKey(name: 'client_telephone') this.clientTelephone = '', @JsonKey(name: 'mode_livraison') this.modeLivraison = 'emporter', @JsonKey(name: 'adresse_snapshot') this.adresseSnapshot = '', this.statut = 'nouvelle', @JsonKey(name: 'raison_refus') this.raisonRefus = '', @JsonKey(name: 'sous_total', fromJson: _versInt) this.sousTotal = 0, @JsonKey(name: 'frais_livraison', fromJson: _versInt) this.fraisLivraison = 0, @JsonKey(fromJson: _versInt) this.total = 0, @JsonKey(name: 'mode_paiement') this.modePaiement = 'cash', @JsonKey(name: 'notes_client') this.notesClient = '', final  List<LigneCommande> lignes = const <LigneCommande>[], @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'peut_noter') this.peutNoter = false, @JsonKey(name: 'mon_avis', fromJson: versIntNullable) this.monAvis, this.parcours = '', final  List<String>? etapes, @JsonKey(name: 'transitions_possibles') final  List<TransitionCommande>? transitionsPossibles}): _lignes = lignes,_etapes = etapes,_transitionsPossibles = transitionsPossibles,super._();
   factory _Commande.fromJson(Map<String, dynamic> json) => _$CommandeFromJson(json);
 
 @override final  int id;
@@ -1438,6 +1716,35 @@ class _Commande extends Commande {
 /// et id de l'avis déjà donné.
 @override@JsonKey(name: 'peut_noter') final  bool peutNoter;
 @override@JsonKey(name: 'mon_avis', fromJson: versIntNullable) final  int? monAvis;
+/// « court » (commerces) ou « restauration » ; vide sur une ancienne
+/// réponse.
+@override@JsonKey() final  String parcours;
+/// Statuts du parcours normal de CETTE commande, dans l'ordre (frise de
+/// suivi) ; null sur une ancienne réponse.
+ final  List<String>? _etapes;
+/// Statuts du parcours normal de CETTE commande, dans l'ordre (frise de
+/// suivi) ; null sur une ancienne réponse.
+@override List<String>? get etapes {
+  final value = _etapes;
+  if (value == null) return null;
+  if (_etapes is EqualUnmodifiableListView) return _etapes;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+/// Actions que le demandeur peut faire maintenant ; null sur une
+/// ancienne réponse.
+ final  List<TransitionCommande>? _transitionsPossibles;
+/// Actions que le demandeur peut faire maintenant ; null sur une
+/// ancienne réponse.
+@override@JsonKey(name: 'transitions_possibles') List<TransitionCommande>? get transitionsPossibles {
+  final value = _transitionsPossibles;
+  if (value == null) return null;
+  if (_transitionsPossibles is EqualUnmodifiableListView) return _transitionsPossibles;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
 
 /// Create a copy of Commande
 /// with the given fields replaced by the non-null parameter values.
@@ -1452,16 +1759,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Commande&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.partenaire, partenaire) || other.partenaire == partenaire)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.clientNom, clientNom) || other.clientNom == clientNom)&&(identical(other.clientTelephone, clientTelephone) || other.clientTelephone == clientTelephone)&&(identical(other.modeLivraison, modeLivraison) || other.modeLivraison == modeLivraison)&&(identical(other.adresseSnapshot, adresseSnapshot) || other.adresseSnapshot == adresseSnapshot)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.raisonRefus, raisonRefus) || other.raisonRefus == raisonRefus)&&(identical(other.sousTotal, sousTotal) || other.sousTotal == sousTotal)&&(identical(other.fraisLivraison, fraisLivraison) || other.fraisLivraison == fraisLivraison)&&(identical(other.total, total) || other.total == total)&&(identical(other.modePaiement, modePaiement) || other.modePaiement == modePaiement)&&(identical(other.notesClient, notesClient) || other.notesClient == notesClient)&&const DeepCollectionEquality().equals(other._lignes, _lignes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.peutNoter, peutNoter) || other.peutNoter == peutNoter)&&(identical(other.monAvis, monAvis) || other.monAvis == monAvis));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Commande&&(identical(other.id, id) || other.id == id)&&(identical(other.numero, numero) || other.numero == numero)&&(identical(other.partenaire, partenaire) || other.partenaire == partenaire)&&(identical(other.partenaireNom, partenaireNom) || other.partenaireNom == partenaireNom)&&(identical(other.clientNom, clientNom) || other.clientNom == clientNom)&&(identical(other.clientTelephone, clientTelephone) || other.clientTelephone == clientTelephone)&&(identical(other.modeLivraison, modeLivraison) || other.modeLivraison == modeLivraison)&&(identical(other.adresseSnapshot, adresseSnapshot) || other.adresseSnapshot == adresseSnapshot)&&(identical(other.statut, statut) || other.statut == statut)&&(identical(other.raisonRefus, raisonRefus) || other.raisonRefus == raisonRefus)&&(identical(other.sousTotal, sousTotal) || other.sousTotal == sousTotal)&&(identical(other.fraisLivraison, fraisLivraison) || other.fraisLivraison == fraisLivraison)&&(identical(other.total, total) || other.total == total)&&(identical(other.modePaiement, modePaiement) || other.modePaiement == modePaiement)&&(identical(other.notesClient, notesClient) || other.notesClient == notesClient)&&const DeepCollectionEquality().equals(other._lignes, _lignes)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.peutNoter, peutNoter) || other.peutNoter == peutNoter)&&(identical(other.monAvis, monAvis) || other.monAvis == monAvis)&&(identical(other.parcours, parcours) || other.parcours == parcours)&&const DeepCollectionEquality().equals(other._etapes, _etapes)&&const DeepCollectionEquality().equals(other._transitionsPossibles, _transitionsPossibles));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,numero,partenaire,partenaireNom,clientNom,clientTelephone,modeLivraison,adresseSnapshot,statut,raisonRefus,sousTotal,fraisLivraison,total,modePaiement,notesClient,const DeepCollectionEquality().hash(_lignes),createdAt,peutNoter,monAvis]);
+int get hashCode => Object.hashAll([runtimeType,id,numero,partenaire,partenaireNom,clientNom,clientTelephone,modeLivraison,adresseSnapshot,statut,raisonRefus,sousTotal,fraisLivraison,total,modePaiement,notesClient,const DeepCollectionEquality().hash(_lignes),createdAt,peutNoter,monAvis,parcours,const DeepCollectionEquality().hash(_etapes),const DeepCollectionEquality().hash(_transitionsPossibles)]);
 
 @override
 String toString() {
-  return 'Commande(id: $id, numero: $numero, partenaire: $partenaire, partenaireNom: $partenaireNom, clientNom: $clientNom, clientTelephone: $clientTelephone, modeLivraison: $modeLivraison, adresseSnapshot: $adresseSnapshot, statut: $statut, raisonRefus: $raisonRefus, sousTotal: $sousTotal, fraisLivraison: $fraisLivraison, total: $total, modePaiement: $modePaiement, notesClient: $notesClient, lignes: $lignes, createdAt: $createdAt, peutNoter: $peutNoter, monAvis: $monAvis)';
+  return 'Commande(id: $id, numero: $numero, partenaire: $partenaire, partenaireNom: $partenaireNom, clientNom: $clientNom, clientTelephone: $clientTelephone, modeLivraison: $modeLivraison, adresseSnapshot: $adresseSnapshot, statut: $statut, raisonRefus: $raisonRefus, sousTotal: $sousTotal, fraisLivraison: $fraisLivraison, total: $total, modePaiement: $modePaiement, notesClient: $notesClient, lignes: $lignes, createdAt: $createdAt, peutNoter: $peutNoter, monAvis: $monAvis, parcours: $parcours, etapes: $etapes, transitionsPossibles: $transitionsPossibles)';
 }
 
 
@@ -1472,7 +1779,7 @@ abstract mixin class _$CommandeCopyWith<$Res> implements $CommandeCopyWith<$Res>
   factory _$CommandeCopyWith(_Commande value, $Res Function(_Commande) _then) = __$CommandeCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String numero, int? partenaire,@JsonKey(name: 'partenaire_nom') String partenaireNom,@JsonKey(name: 'client_nom') String clientNom,@JsonKey(name: 'client_telephone') String clientTelephone,@JsonKey(name: 'mode_livraison') String modeLivraison,@JsonKey(name: 'adresse_snapshot') String adresseSnapshot, String statut,@JsonKey(name: 'raison_refus') String raisonRefus,@JsonKey(name: 'sous_total', fromJson: _versInt) int sousTotal,@JsonKey(name: 'frais_livraison', fromJson: _versInt) int fraisLivraison,@JsonKey(fromJson: _versInt) int total,@JsonKey(name: 'mode_paiement') String modePaiement,@JsonKey(name: 'notes_client') String notesClient, List<LigneCommande> lignes,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'peut_noter') bool peutNoter,@JsonKey(name: 'mon_avis', fromJson: versIntNullable) int? monAvis
+ int id, String numero, int? partenaire,@JsonKey(name: 'partenaire_nom') String partenaireNom,@JsonKey(name: 'client_nom') String clientNom,@JsonKey(name: 'client_telephone') String clientTelephone,@JsonKey(name: 'mode_livraison') String modeLivraison,@JsonKey(name: 'adresse_snapshot') String adresseSnapshot, String statut,@JsonKey(name: 'raison_refus') String raisonRefus,@JsonKey(name: 'sous_total', fromJson: _versInt) int sousTotal,@JsonKey(name: 'frais_livraison', fromJson: _versInt) int fraisLivraison,@JsonKey(fromJson: _versInt) int total,@JsonKey(name: 'mode_paiement') String modePaiement,@JsonKey(name: 'notes_client') String notesClient, List<LigneCommande> lignes,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'peut_noter') bool peutNoter,@JsonKey(name: 'mon_avis', fromJson: versIntNullable) int? monAvis, String parcours, List<String>? etapes,@JsonKey(name: 'transitions_possibles') List<TransitionCommande>? transitionsPossibles
 });
 
 
@@ -1489,7 +1796,7 @@ class __$CommandeCopyWithImpl<$Res>
 
 /// Create a copy of Commande
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? numero = null,Object? partenaire = freezed,Object? partenaireNom = null,Object? clientNom = null,Object? clientTelephone = null,Object? modeLivraison = null,Object? adresseSnapshot = null,Object? statut = null,Object? raisonRefus = null,Object? sousTotal = null,Object? fraisLivraison = null,Object? total = null,Object? modePaiement = null,Object? notesClient = null,Object? lignes = null,Object? createdAt = freezed,Object? peutNoter = null,Object? monAvis = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? numero = null,Object? partenaire = freezed,Object? partenaireNom = null,Object? clientNom = null,Object? clientTelephone = null,Object? modeLivraison = null,Object? adresseSnapshot = null,Object? statut = null,Object? raisonRefus = null,Object? sousTotal = null,Object? fraisLivraison = null,Object? total = null,Object? modePaiement = null,Object? notesClient = null,Object? lignes = null,Object? createdAt = freezed,Object? peutNoter = null,Object? monAvis = freezed,Object? parcours = null,Object? etapes = freezed,Object? transitionsPossibles = freezed,}) {
   return _then(_Commande(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,numero: null == numero ? _self.numero : numero // ignore: cast_nullable_to_non_nullable
@@ -1510,7 +1817,10 @@ as String,lignes: null == lignes ? _self._lignes : lignes // ignore: cast_nullab
 as List<LigneCommande>,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String?,peutNoter: null == peutNoter ? _self.peutNoter : peutNoter // ignore: cast_nullable_to_non_nullable
 as bool,monAvis: freezed == monAvis ? _self.monAvis : monAvis // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,parcours: null == parcours ? _self.parcours : parcours // ignore: cast_nullable_to_non_nullable
+as String,etapes: freezed == etapes ? _self._etapes : etapes // ignore: cast_nullable_to_non_nullable
+as List<String>?,transitionsPossibles: freezed == transitionsPossibles ? _self._transitionsPossibles : transitionsPossibles // ignore: cast_nullable_to_non_nullable
+as List<TransitionCommande>?,
   ));
 }
 
